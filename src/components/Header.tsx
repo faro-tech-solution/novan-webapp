@@ -1,11 +1,13 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Search, ShoppingCart } from 'lucide-react';
+import { Menu, X, Search, ShoppingCart, User, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useUser } from '@/contexts/UserContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useUser();
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -30,12 +32,11 @@ const Header = () => {
             <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
               Instructors
             </Link>
-            <Link to="/about" className="text-gray-700 hover:text-teal-600 transition-colors">
-              About
-            </Link>
-            <Link to="/contact" className="text-gray-700 hover:text-teal-600 transition-colors">
-              Contact
-            </Link>
+            {user && (
+              <Link to="/dashboard" className="text-gray-700 hover:text-teal-600 transition-colors">
+                Dashboard
+              </Link>
+            )}
           </nav>
 
           {/* Right side actions */}
@@ -49,9 +50,29 @@ const Header = () => {
                 0
               </span>
             </Button>
-            <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-              Try for free
-            </Button>
+            
+            {user ? (
+              <Link to="/dashboard">
+                <Button variant="outline">
+                  <User className="h-4 w-4 mr-2" />
+                  {user.name}
+                </Button>
+              </Link>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link to="/login">
+                  <Button variant="outline">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button className="bg-teal-500 hover:bg-teal-600 text-white">
+                    Try for free
+                  </Button>
+                </Link>
+              </div>
+            )}
             
             {/* Mobile menu button */}
             <Button
@@ -78,12 +99,21 @@ const Header = () => {
               <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
                 Instructors
               </Link>
-              <Link to="/about" className="text-gray-700 hover:text-teal-600 transition-colors">
-                About
-              </Link>
-              <Link to="/contact" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Contact
-              </Link>
+              {user && (
+                <Link to="/dashboard" className="text-gray-700 hover:text-teal-600 transition-colors">
+                  Dashboard
+                </Link>
+              )}
+              {!user && (
+                <>
+                  <Link to="/login" className="text-gray-700 hover:text-teal-600 transition-colors">
+                    Sign In
+                  </Link>
+                  <Link to="/register" className="text-gray-700 hover:text-teal-600 transition-colors">
+                    Register
+                  </Link>
+                </>
+              )}
             </nav>
           </div>
         )}

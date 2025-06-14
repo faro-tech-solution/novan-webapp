@@ -8,6 +8,13 @@ import Index from "./pages/Index";
 import Courses from "./pages/Courses";
 import Instructors from "./pages/Instructors";
 import CourseDetail from "./pages/CourseDetail";
+import Dashboard from "./pages/Dashboard";
+import TrainerDashboard from "./pages/TrainerDashboard";
+import TraineeDashboard from "./pages/TraineeDashboard";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ExerciseDetail from "./pages/ExerciseDetail";
+import ClassManagement from "./pages/ClassManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +30,13 @@ const App = () => (
           <Route path="/courses" element={<Courses />} />
           <Route path="/instructors" element={<Instructors />} />
           <Route path="/course/:id" element={<CourseDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/trainer" element={<TrainerDashboard />} />
+          <Route path="/dashboard/trainee" element={<TraineeDashboard />} />
+          <Route path="/exercise/:id" element={<ExerciseDetail />} />
+          <Route path="/classes" element={<ClassManagement />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
