@@ -93,7 +93,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+    font-family: 'Peyda', 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
     direction: rtl;
   }
 
@@ -109,6 +109,6 @@
 
 /* Custom styles for better Persian text rendering */
 .persian-text {
-  font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+  font-family: 'Peyda', 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
   line-height: 1.8;
 }

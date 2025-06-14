@@ -65,7 +65,8 @@ export default {
 				}
 			},
 			fontFamily: {
-				'peyda': ['Vazirmatn', 'Tahoma', 'Arial', 'sans-serif'],
+				'sans': ['Peyda', 'Vazirmatn', 'Tahoma', 'Arial', 'sans-serif'],
+				'peyda': ['Peyda', 'Vazirmatn', 'Tahoma', 'Arial', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
