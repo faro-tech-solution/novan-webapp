@@ -8,8 +8,8 @@ import {
   BookOpen
 } from 'lucide-react';
 
-interface Student {
-  id: number;
+interface StudentData {
+  id: string;
   name: string;
   email: string;
   courseName: string;
@@ -20,10 +20,11 @@ interface Student {
   averageScore: number;
   lastActivity: string;
   totalPoints: number;
+  termName?: string;
 }
 
 interface StudentsStatsProps {
-  students: Student[];
+  students: StudentData[];
 }
 
 const StudentsStats = ({ students }: StudentsStatsProps) => {
@@ -31,12 +32,12 @@ const StudentsStats = ({ students }: StudentsStatsProps) => {
     total: students.length,
     active: students.filter(s => s.status === 'active').length,
     inactive: students.filter(s => s.status === 'inactive').length,
-    averageScore: Math.round(
+    averageScore: students.length > 0 ? Math.round(
       students.reduce((sum, s) => sum + s.averageScore, 0) / students.length
-    ),
-    averageCompletion: Math.round(
+    ) : 0,
+    averageCompletion: students.length > 0 ? Math.round(
       students.reduce((sum, s) => sum + (s.completedExercises / s.totalExercises) * 100, 0) / students.length
-    )
+    ) : 0
   };
 
   return (
