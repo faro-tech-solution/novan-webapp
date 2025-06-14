@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAuth, UserRole } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useToast } from '@/hooks/use-toast';
@@ -15,7 +14,6 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<UserRole>('trainee');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -26,7 +24,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const { error } = await register(name, email, password, role);
+      const { error } = await register(name, email, password, 'trainee');
       if (error) {
         toast({
           title: "خطا در ثبت نام",
@@ -97,19 +95,6 @@ const Register = () => {
                   required
                   minLength={6}
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="role">نقش</Label>
-                <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="نقش خود را انتخاب کنید" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="trainee">دانشجو</SelectItem>
-                    <SelectItem value="trainer">مربی</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
