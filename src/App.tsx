@@ -4,8 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
@@ -29,7 +29,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
 
   return (
     <Routes>
@@ -135,19 +135,21 @@ const AppRoutes = () => {
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <BrowserRouter>
-          <div className="min-h-screen bg-background font-sans antialiased">
-            <Suspense fallback={<div>Loading...</div>}>
-              <AppRoutes />
-            </Suspense>
-            <Toaster />
-            <Sonner />
-          </div>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <BrowserRouter>
+            <div className="min-h-screen bg-background font-sans antialiased">
+              <Suspense fallback={<div>Loading...</div>}>
+                <AppRoutes />
+              </Suspense>
+              <Toaster />
+              <Sonner />
+            </div>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   );
 };
 
