@@ -14,17 +14,24 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, profile } = useAuth();
+  const { login, profile, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Add debugging logs
+  console.log('Login component - profile:', profile);
+  console.log('Login component - user:', user);
 
   // Redirect if already logged in
   useEffect(() => {
     if (profile) {
+      console.log('Redirecting user with role:', profile.role);
       if (profile.role === 'trainer') {
         navigate('/dashboard/trainer');
       } else if (profile.role === 'trainee') {
         navigate('/dashboard/trainee');
+      } else if (profile.role === 'admin') {
+        navigate('/dashboard/admin');
       }
     }
   }, [profile, navigate]);
@@ -34,14 +41,17 @@ const Login = () => {
     setLoading(true);
 
     try {
+      console.log('Attempting login...');
       const { error } = await login(email, password);
       if (error) {
+        console.error('Login error:', error);
         toast({
           title: "خطا در ورود",
           description: error.message || 'اطلاعات نادرست است',
           variant: "destructive",
         });
       } else {
+        console.log('Login successful');
         toast({
           title: "ورود موفق",
           description: "به داشبورد منتقل می‌شوید...",
@@ -50,6 +60,7 @@ const Login = () => {
         // once the profile is loaded from the AuthContext
       }
     } catch (err) {
+      console.error('Login catch error:', err);
       toast({
         title: "خطا",
         description: 'ورود ناموفق. لطفا دوباره تلاش کنید.',
