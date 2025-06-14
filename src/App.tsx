@@ -42,7 +42,26 @@ const AppRoutes = () => {
         path="/dashboard" 
         element={
           <ProtectedRoute>
-            {profile?.role === 'trainer' ? <TrainerDashboard /> : <TraineeDashboard />}
+            <Dashboard />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Specific dashboard routes */}
+      <Route 
+        path="/dashboard/trainer" 
+        element={
+          <ProtectedRoute requiredRole="trainer">
+            <TrainerDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/dashboard/trainee" 
+        element={
+          <ProtectedRoute requiredRole="trainee">
+            <TraineeDashboard />
           </ProtectedRoute>
         } 
       />
