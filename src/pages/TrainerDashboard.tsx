@@ -1,12 +1,16 @@
-
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Users, FileText, Award, TrendingUp, Plus, Eye } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
+import CreateExerciseDialog from '@/components/CreateExerciseDialog';
 
 const TrainerDashboard = () => {
+  const navigate = useNavigate();
+  const [showCreateExercise, setShowCreateExercise] = useState(false);
+
   // Mock data
   const stats = {
     totalStudents: 24,
@@ -26,6 +30,18 @@ const TrainerDashboard = () => {
     { name: 'مایک چن', score: 94, exercises: 12 },
     { name: 'اما دیویس', score: 92, exercises: 18 },
   ];
+
+  const handleCreateExercise = () => {
+    setShowCreateExercise(true);
+  };
+
+  const handleManageCourses = () => {
+    navigate('/courses-management');
+  };
+
+  const handleReviewSubmissions = () => {
+    navigate('/exercises');
+  };
 
   return (
     <DashboardLayout title="داشبورد مربی">
@@ -144,15 +160,26 @@ const TrainerDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button className="h-20 flex flex-col items-center justify-center space-y-2">
+              <Button 
+                className="h-20 flex flex-col items-center justify-center space-y-2"
+                onClick={handleCreateExercise}
+              >
                 <Plus className="h-6 w-6" />
                 <span>ایجاد تمرین</span>
               </Button>
-              <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col items-center justify-center space-y-2"
+                onClick={handleManageCourses}
+              >
                 <Users className="h-6 w-6" />
                 <span>مدیریت دوره‌ها</span>
               </Button>
-              <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col items-center justify-center space-y-2"
+                onClick={handleReviewSubmissions}
+              >
                 <Award className="h-6 w-6" />
                 <span>بررسی ارسال‌ها</span>
               </Button>
@@ -160,6 +187,14 @@ const TrainerDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Create Exercise Dialog */}
+      {showCreateExercise && (
+        <CreateExerciseDialog 
+          open={showCreateExercise}
+          onOpenChange={setShowCreateExercise}
+        />
+      )}
     </DashboardLayout>
   );
 };
