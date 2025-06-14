@@ -262,7 +262,7 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
               حذف
             </AlertDialogAction>
           </AlertDialogFooter>
-        </AlertDialog>
+        </AlertDialogContent>
       </AlertDialog>
     </Card>
   );
