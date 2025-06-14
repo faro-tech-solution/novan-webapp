@@ -9,6 +9,86 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      course_enrollments: {
+        Row: {
+          course_id: string
+          enrolled_at: string
+          id: string
+          status: string
+          student_email: string
+          student_id: string
+          student_name: string
+        }
+        Insert: {
+          course_id: string
+          enrolled_at?: string
+          id?: string
+          status?: string
+          student_email: string
+          student_id: string
+          student_name: string
+        }
+        Update: {
+          course_id?: string
+          enrolled_at?: string
+          id?: string
+          status?: string
+          student_email?: string
+          student_id?: string
+          student_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          instructor_id: string
+          instructor_name: string
+          max_students: number | null
+          name: string
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          instructor_id: string
+          instructor_name: string
+          max_students?: number | null
+          name: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          instructor_id?: string
+          instructor_name?: string
+          max_students?: number | null
+          name?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           class_id: string | null

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,67 +7,168 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Users, Search, MoreHorizontal, UserPlus } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
+import CreateCourseDialog from '@/components/CreateCourseDialog';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+
+interface Course {
+  id: string;
+  name: string;
+  description: string | null;
+  instructor_name: string;
+  start_date: string | null;
+  end_date: string | null;
+  status: string;
+  max_students: number | null;
+  created_at: string;
+  student_count?: number;
+}
+
+interface CourseEnrollment {
+  id: string;
+  course_id: string;
+  student_name: string;
+  student_email: string;
+  enrolled_at: string;
+  status: string;
+  course?: {
+    name: string;
+  };
+}
 
 const CourseManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [enrollments, setEnrollments] = useState<CourseEnrollment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const { profile } = useAuth();
+  const { toast } = useToast();
 
-  // Mock data
-  const courses = [
-    {
-      id: '1',
-      name: 'Web Development Basics',
-      students: 24,
-      exercises: 12,
-      averageScore: 85,
-      instructor: 'John Trainer',
-      startDate: '2025-01-15',
-      status: 'active'
-    },
-    {
-      id: '2',
-      name: 'Advanced JavaScript',
-      students: 18,
-      exercises: 8,
-      averageScore: 78,
-      instructor: 'Sarah Wilson',
-      startDate: '2025-02-01',
-      status: 'active'
-    },
-    {
-      id: '3',
-      name: 'React Fundamentals',
-      students: 15,
-      exercises: 6,
-      averageScore: 92,
-      instructor: 'Mike Johnson',
-      startDate: '2025-03-01',
-      status: 'upcoming'
+  const fetchCourses = async () => {
+    if (!profile) return;
+
+    try {
+      const { data: coursesData, error: coursesError } = await supabase
+        .from('courses')
+        .select('*')
+        .eq('instructor_id', profile.id)
+        .order('created_at', { ascending: false });
+
+      if (coursesError) throw coursesError;
+
+      // Get enrollment counts for each course
+      const coursesWithCounts = await Promise.all(
+        (coursesData || []).map(async (course) => {
+          const { count } = await supabase
+            .from('course_enrollments')
+            .select('*', { count: 'exact', head: true })
+            .eq('course_id', course.id)
+            .eq('status', 'active');
+
+          return {
+            ...course,
+            student_count: count || 0,
+          };
+        })
+      );
+
+      setCourses(coursesWithCounts);
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+      toast({
+        title: 'خطا',
+        description: 'خطا در بارگذاری درس‌ها',
+        variant: 'destructive',
+      });
     }
-  ];
+  };
 
-  const students = [
-    { id: '1', name: 'Jane Student', email: 'jane@example.com', courseId: '1', joinDate: '2025-01-15', status: 'active' },
-    { id: '2', name: 'Bob Learner', email: 'bob@example.com', courseId: '1', joinDate: '2025-01-16', status: 'active' },
-    { id: '3', name: 'Alice Wonder', email: 'alice@example.com', courseId: '2', joinDate: '2025-02-01', status: 'active' },
-    { id: '4', name: 'Charlie Brown', email: 'charlie@example.com', courseId: '1', joinDate: '2025-01-20', status: 'inactive' },
-  ];
+  const fetchEnrollments = async () => {
+    if (!profile) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('course_enrollments')
+        .select(`
+          *,
+          courses!inner(name, instructor_id)
+        `)
+        .eq('courses.instructor_id', profile.id)
+        .order('enrolled_at', { ascending: false });
+
+      if (error) throw error;
+
+      const enrollmentsWithCourse = data?.map(enrollment => ({
+        ...enrollment,
+        course: { name: (enrollment as any).courses.name }
+      })) || [];
+
+      setEnrollments(enrollmentsWithCourse);
+    } catch (error) {
+      console.error('Error fetching enrollments:', error);
+      toast({
+        title: 'خطا',
+        description: 'خطا در بارگذاری ثبت‌نام‌ها',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([fetchCourses(), fetchEnrollments()]);
+      setLoading(false);
+    };
+
+    if (profile) {
+      loadData();
+    }
+  }, [profile]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
       case 'upcoming': return 'bg-blue-100 text-blue-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
+      case 'completed': return 'bg-gray-100 text-gray-800';
+      case 'inactive': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const filteredStudents = students.filter(student =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'active': return 'فعال';
+      case 'upcoming': return 'آینده';
+      case 'completed': return 'تکمیل شده';
+      case 'inactive': return 'غیرفعال';
+      default: return status;
+    }
+  };
+
+  const filteredEnrollments = enrollments.filter(enrollment =>
+    enrollment.student_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    enrollment.student_email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleCourseCreated = () => {
+    fetchCourses();
+  };
+
+  if (loading) {
+    return (
+      <DashboardLayout title="مدیریت درس‌ها">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">در حال بارگذاری...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
-    <DashboardLayout title="Course Management">
+    <DashboardLayout title="مدیریت درس‌ها">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -75,7 +176,7 @@ const CourseManagement = () => {
             <h2 className="text-2xl font-bold text-gray-900">درس‌ها</h2>
             <p className="text-gray-600">مدیریت درس‌ها و دانشجویان شما</p>
           </div>
-          <Button>
+          <Button onClick={() => setShowCreateDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
             ایجاد درس
           </Button>
@@ -90,11 +191,11 @@ const CourseManagement = () => {
                   <div>
                     <CardTitle className="text-lg">{course.name}</CardTitle>
                     <CardDescription>
-                      مربی: {course.instructor}
+                      مربی: {course.instructor_name}
                     </CardDescription>
                   </div>
                   <Badge className={getStatusColor(course.status)}>
-                    {course.status}
+                    {getStatusText(course.status)}
                   </Badge>
                 </div>
               </CardHeader>
@@ -102,20 +203,23 @@ const CourseManagement = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">دانشجویان:</span>
-                    <span className="font-medium">{course.students}</span>
+                    <span className="font-medium">{course.student_count || 0}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">تمرین‌ها:</span>
-                    <span className="font-medium">{course.exercises}</span>
+                    <span className="text-gray-600">حداکثر ظرفیت:</span>
+                    <span className="font-medium">{course.max_students || 'نامحدود'}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">میانگین نمره:</span>
-                    <span className="font-medium">{course.averageScore}%</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">تاریخ شروع:</span>
-                    <span className="font-medium">{course.startDate}</span>
-                  </div>
+                  {course.description && (
+                    <div className="text-sm text-gray-600">
+                      <p className="line-clamp-2">{course.description}</p>
+                    </div>
+                  )}
+                  {course.start_date && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">تاریخ شروع:</span>
+                      <span className="font-medium">{course.start_date}</span>
+                    </div>
+                  )}
                   
                   <div className="flex space-x-2 pt-2">
                     <Button size="sm" variant="outline" className="flex-1">
@@ -130,6 +234,19 @@ const CourseManagement = () => {
               </CardContent>
             </Card>
           ))}
+
+          {courses.length === 0 && (
+            <div className="col-span-3 text-center py-8">
+              <p className="text-gray-500">هنوز درسی ایجاد نکرده‌اید</p>
+              <Button 
+                className="mt-4" 
+                onClick={() => setShowCreateDialog(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                ایجاد اولین درس
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Students Management */}
@@ -165,38 +282,49 @@ const CourseManagement = () => {
                   <TableHead>نام</TableHead>
                   <TableHead>ایمیل</TableHead>
                   <TableHead>درس</TableHead>
-                  <TableHead>تاریخ پیوستن</TableHead>
+                  <TableHead>تاریخ ثبت‌نام</TableHead>
                   <TableHead>وضعیت</TableHead>
                   <TableHead>عملیات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStudents.map((student) => {
-                  const studentCourse = courses.find(c => c.id === student.courseId);
-                  return (
-                    <TableRow key={student.id}>
-                      <TableCell className="font-medium">{student.name}</TableCell>
-                      <TableCell>{student.email}</TableCell>
-                      <TableCell>{studentCourse?.name || 'بدون درس'}</TableCell>
-                      <TableCell>{student.joinDate}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(student.status)}>
-                          {student.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button size="sm" variant="outline">
-                          مشاهده پروفایل
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {filteredEnrollments.map((enrollment) => (
+                  <TableRow key={enrollment.id}>
+                    <TableCell className="font-medium">{enrollment.student_name}</TableCell>
+                    <TableCell>{enrollment.student_email}</TableCell>
+                    <TableCell>{enrollment.course?.name || 'نامشخص'}</TableCell>
+                    <TableCell>{new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR')}</TableCell>
+                    <TableCell>
+                      <Badge className={getStatusColor(enrollment.status)}>
+                        {getStatusText(enrollment.status)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button size="sm" variant="outline">
+                        مشاهده پروفایل
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filteredEnrollments.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                      {searchTerm ? 'هیچ دانشجویی یافت نشد' : 'هنوز دانشجویی ثبت‌نام نکرده'}
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
         </Card>
       </div>
+
+      {/* Create Course Dialog */}
+      <CreateCourseDialog 
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onCourseCreated={handleCourseCreated}
+      />
     </DashboardLayout>
   );
 };
