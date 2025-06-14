@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,8 +16,6 @@ interface Course {
   name: string;
   description: string | null;
   instructor_name: string;
-  start_date: string | null;
-  end_date: string | null;
   status: string;
   max_students: number | null;
   created_at: string;
@@ -207,17 +204,13 @@ const CourseManagement = () => {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">حداکثر ظرفیت:</span>
-                    <span className="font-medium">{course.max_students || 'نامحدود'}</span>
+                    <span className="font-medium">
+                      {course.max_students === 0 || course.max_students === null ? 'نامحدود' : course.max_students}
+                    </span>
                   </div>
                   {course.description && (
                     <div className="text-sm text-gray-600">
                       <p className="line-clamp-2">{course.description}</p>
-                    </div>
-                  )}
-                  {course.start_date && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">تاریخ شروع:</span>
-                      <span className="font-medium">{course.start_date}</span>
                     </div>
                   )}
                   
