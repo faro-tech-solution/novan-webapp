@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -184,7 +183,7 @@ const StudentCourses = () => {
         </div>
 
         {/* Courses Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {filteredCourses.map((course) => (
             <Card key={course.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
