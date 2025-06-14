@@ -19,6 +19,7 @@ import MyExercises from "./pages/MyExercises";
 import Progress from "./pages/Progress";
 import StudentCourses from "./pages/StudentCourses";
 import Exercises from "./pages/Exercises";
+import Students from "./pages/Students";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
