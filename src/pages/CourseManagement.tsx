@@ -474,7 +474,7 @@ const CourseManagement = () => {
               حذف
             </AlertDialogAction>
           </AlertDialogFooter>
-        </AlertDialog>
+        </AlertDialogContent>
       </AlertDialog>
     </DashboardLayout>
   );
