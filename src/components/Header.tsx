@@ -29,6 +29,11 @@ const Header = () => {
             <Link to="/courses" className="text-gray-700 hover:text-teal-600 transition-colors">
               دوره‌ها
             </Link>
+            {(profile?.role === 'trainer' || profile?.role === 'admin') && (
+              <Link to="/students" className="text-gray-700 hover:text-teal-600 transition-colors">
+                دانشجویان
+              </Link>
+            )}
             <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
               مربیان
             </Link>
@@ -98,6 +103,11 @@ const Header = () => {
               <Link to="/courses" className="text-gray-700 hover:text-teal-600 transition-colors">
                 دوره‌ها
               </Link>
+              {(profile?.role === 'trainer' || profile?.role === 'admin') && (
+                <Link to="/students" className="text-gray-700 hover:text-teal-600 transition-colors">
+                  دانشجویان
+                </Link>
+              )}
               <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
                 مربیان
               </Link>

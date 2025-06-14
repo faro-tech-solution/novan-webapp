@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -25,6 +24,7 @@ import Progress from "@/pages/Progress";
 import CourseManagement from "@/pages/CourseManagement";
 import NotFound from "@/pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminDashboard from "@/pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +62,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute requiredRole="trainee">
             <TraineeDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/dashboard/admin" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminDashboard />
           </ProtectedRoute>
         } 
       />

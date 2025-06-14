@@ -19,6 +19,8 @@ const Dashboard = () => {
         navigate('/dashboard/trainer');
       } else if (profile.role === 'trainee') {
         navigate('/dashboard/trainee');
+      } else if (profile.role === 'admin') {
+        navigate('/dashboard/admin');
       }
     }
   }, [profile, loading, navigate]);

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import StudentsStats from '@/components/StudentsStats';
@@ -6,6 +5,7 @@ import StudentsFilters from '@/components/StudentsFilters';
 import StudentsTable from '@/components/StudentsTable';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface StudentData {
   id: string;
@@ -23,6 +23,7 @@ interface StudentData {
 }
 
 const Students = () => {
+  const { profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [courseFilter, setCourseFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -41,8 +42,7 @@ const Students = () => {
         throw new Error('User not authenticated');
       }
 
-      // Fetch course enrollments with course and term information
-      const { data: enrollments, error } = await supabase
+      let query = supabase
         .from('course_enrollments')
         .select(`
           *,
@@ -53,8 +53,18 @@ const Students = () => {
           course_terms(
             name
           )
-        `)
-        .eq('courses.instructor_id', user.id);
+        `);
+
+      // If user is admin, fetch all enrollments
+      // If user is trainer, only fetch enrollments for their courses
+      if (profile?.role === 'admin') {
+        // Admins can see all enrollments - no additional filter needed
+      } else {
+        // Trainers can only see their own course enrollments
+        query = query.eq('courses.instructor_id', user.id);
+      }
+
+      const { data: enrollments, error } = await query;
 
       if (error) throw error;
 
