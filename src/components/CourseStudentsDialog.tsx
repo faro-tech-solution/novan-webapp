@@ -43,7 +43,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [addStudentEmail, setAddStudentEmail] = useState('');
-  const [selectedTermId, setSelectedTermId] = useState<string>('');
+  const [selectedTermId, setSelectedTermId] = useState<string>('general');
   const [addingStudent, setAddingStudent] = useState(false);
   const { toast } = useToast();
 
@@ -151,7 +151,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
         student_name: profileData.name || 'نام نامشخص',
         student_email: profileData.email,
         status: 'active',
-        ...(selectedTermId && { term_id: selectedTermId })
+        ...(selectedTermId !== 'general' && { term_id: selectedTermId })
       };
 
       const { error: enrollmentError } = await supabase
@@ -167,7 +167,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
 
       // Reset form and refresh data
       setAddStudentEmail('');
-      setSelectedTermId('');
+      setSelectedTermId('general');
       setShowAddForm(false);
       fetchEnrollments();
 
@@ -253,7 +253,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
                         <SelectValue placeholder="انتخاب ترم" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">عمومی (بدون ترم)</SelectItem>
+                        <SelectItem value="general">عمومی (بدون ترم)</SelectItem>
                         {terms.map((term) => (
                           <SelectItem key={term.id} value={term.id}>
                             {term.name}
