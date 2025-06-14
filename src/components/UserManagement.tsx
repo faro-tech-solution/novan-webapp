@@ -33,7 +33,16 @@ const UserManagement = () => {
 
       if (error) throw error;
 
-      setUsers(data || []);
+      // Map the data to ensure proper typing
+      const mappedUsers: UserProfile[] = (data || []).map(user => ({
+        id: user.id,
+        name: user.name || '',
+        email: user.email || '',
+        role: user.role as UserRole,
+        created_at: user.created_at || '',
+      }));
+
+      setUsers(mappedUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
