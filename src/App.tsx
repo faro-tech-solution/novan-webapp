@@ -16,6 +16,7 @@ import Register from "./pages/Register";
 import ExerciseDetail from "./pages/ExerciseDetail";
 import ClassManagement from "./pages/ClassManagement";
 import MyExercises from "./pages/MyExercises";
+import Progress from "./pages/Progress";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/exercise/:id" element={<ExerciseDetail />} />
           <Route path="/classes" element={<ClassManagement />} />
           <Route path="/my-exercises" element={<MyExercises />} />
+          <Route path="/progress" element={<Progress />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
