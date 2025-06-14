@@ -1,87 +1,99 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { UserPlus } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import StudentsStats from '@/components/StudentsStats';
 import StudentsFilters from '@/components/StudentsFilters';
 import StudentsTable from '@/components/StudentsTable';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+interface StudentData {
+  id: string;
+  name: string;
+  email: string;
+  courseName: string;
+  joinDate: string;
+  status: string;
+  completedExercises: number;
+  totalExercises: number;
+  averageScore: number;
+  lastActivity: string;
+  totalPoints: number;
+  termName?: string;
+}
 
 const Students = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [courseFilter, setCourseFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [students, setStudents] = useState<StudentData[]>([]);
+  const [courses, setCourses] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  // Mock students data
-  const students = [
-    {
-      id: 1,
-      name: 'سارا احمدی',
-      email: 'sara.ahmadi@example.com',
-      courseName: 'توسعه وب مقدماتی',
-      joinDate: '۱۴۰۳/۰۵/۱۵',
-      status: 'active',
-      completedExercises: 12,
-      totalExercises: 15,
-      averageScore: 88,
-      lastActivity: '۲ ساعت پیش',
-      totalPoints: 1240
-    },
-    {
-      id: 2,
-      name: 'علی محمدی',
-      email: 'ali.mohammadi@example.com',
-      courseName: 'توسعه وب مقدماتی',
-      joinDate: '۱۴۰۳/۰۵/۲۰',
-      status: 'active',
-      completedExercises: 10,
-      totalExercises: 15,
-      averageScore: 92,
-      lastActivity: '۱ روز پیش',
-      totalPoints: 1380
-    },
-    {
-      id: 3,
-      name: 'فاطمه رضایی',
-      email: 'fatemeh.rezaei@example.com',
-      courseName: 'توسعه وب پیشرفته',
-      joinDate: '۱۴۰۳/۰۴/۱۰',
-      status: 'active',
-      completedExercises: 18,
-      totalExercises: 20,
-      averageScore: 95,
-      lastActivity: '۳۰ دقیقه پیش',
-      totalPoints: 1710
-    },
-    {
-      id: 4,
-      name: 'محمد حسینی',
-      email: 'mohammad.hosseini@example.com',
-      courseName: 'توسعه وب مقدماتی',
-      joinDate: '۱۴۰۳/۰۶/۰۱',
-      status: 'inactive',
-      completedExercises: 5,
-      totalExercises: 15,
-      averageScore: 72,
-      lastActivity: '۱ هفته پیش',
-      totalPoints: 360
-    },
-    {
-      id: 5,
-      name: 'زهرا کریمی',
-      email: 'zahra.karimi@example.com',
-      courseName: 'موبایل اپلیکیشن',
-      joinDate: '۱۴۰۳/۰۵/۰۸',
-      status: 'active',
-      completedExercises: 14,
-      totalExercises: 16,
-      averageScore: 89,
-      lastActivity: '۴ ساعت پیش',
-      totalPoints: 1246
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch course enrollments with course information
+      const { data: enrollments, error } = await supabase
+        .from('course_enrollments')
+        .select(`
+          *,
+          courses!inner(
+            name,
+            instructor_id
+          ),
+          course_terms(
+            name
+          )
+        `)
+        .eq('courses.instructor_id', (await supabase.auth.getUser()).data.user?.id);
+
+      if (error) throw error;
+
+      console.log('Fetched enrollments:', enrollments);
+
+      // Transform the data to match the expected format
+      const transformedStudents: StudentData[] = (enrollments || []).map((enrollment) => ({
+        id: enrollment.id,
+        name: enrollment.student_name,
+        email: enrollment.student_email,
+        courseName: enrollment.courses?.name || 'نامشخص',
+        joinDate: new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR'),
+        status: enrollment.status,
+        // Mock data for exercise-related fields since we don't have exercises table yet
+        completedExercises: Math.floor(Math.random() * 15) + 5,
+        totalExercises: 20,
+        averageScore: Math.floor(Math.random() * 30) + 70,
+        lastActivity: `${Math.floor(Math.random() * 7) + 1} روز پیش`,
+        totalPoints: Math.floor(Math.random() * 1000) + 500,
+        termName: enrollment.course_terms?.name || 'عمومی'
+      }));
+
+      setStudents(transformedStudents);
+
+      // Extract unique course names for filter
+      const uniqueCourses = [...new Set(transformedStudents.map(s => s.courseName))];
+      setCourses(uniqueCourses);
+
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      toast({
+        title: 'خطا',
+        description: 'خطا در بارگذاری دانشجویان',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  const courses = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
+  useEffect(() => {
+    fetchStudents();
+  }, []);
 
   // Filter students
   const filteredStudents = students.filter(student => {
@@ -93,6 +105,16 @@ const Students = () => {
     return matchesSearch && matchesCourse && matchesStatus;
   });
 
+  if (loading) {
+    return (
+      <DashboardLayout title="مدیریت دانشجویان">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">در حال بارگذاری...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout title="مدیریت دانشجویان">
       <div className="space-y-6">
@@ -102,7 +124,12 @@ const Students = () => {
             <h2 className="text-2xl font-bold text-gray-900 font-peyda">مدیریت دانشجویان</h2>
             <p className="text-gray-600">مشاهده و مدیریت دانشجویان دوره‌های شما</p>
           </div>
-          <Button>
+          <Button onClick={() => {
+            toast({
+              title: 'راهنمایی',
+              description: 'برای افزودن دانشجو، از بخش مدیریت دوره‌ها استفاده کنید',
+            });
+          }}>
             <UserPlus className="h-4 w-4 ml-2" />
             افزودن دانشجو
           </Button>
