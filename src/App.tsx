@@ -93,11 +93,16 @@ const AppRoutes = () => {
         } 
       />
       
+      {/* Updated to allow both trainers and admins */}
       <Route 
         path="/courses-management" 
         element={
-          <ProtectedRoute requiredRole="trainer">
-            <CourseManagement />
+          <ProtectedRoute>
+            {(profile?.role === 'trainer' || profile?.role === 'admin') ? (
+              <CourseManagement />
+            ) : (
+              <NotFound />
+            )}
           </ProtectedRoute>
         } 
       />

@@ -42,7 +42,40 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/student-courses', icon: BookOpen, label: 'دوره‌های من' },
   ];
 
-  const navItems = profile?.role === 'trainer' ? trainerNavItems : traineeNavItems;
+  const adminNavItems = [
+    { href: '/dashboard/admin', icon: LayoutDashboard, label: 'داشبورد' },
+    { href: '/courses-management', icon: Users, label: 'مدیریت درس‌ها' },
+    { href: '/students', icon: Award, label: 'دانشجویان' },
+    { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
+  ];
+
+  const getNavItems = () => {
+    switch (profile?.role) {
+      case 'trainer':
+        return trainerNavItems;
+      case 'trainee':
+        return traineeNavItems;
+      case 'admin':
+        return adminNavItems;
+      default:
+        return traineeNavItems;
+    }
+  };
+
+  const navItems = getNavItems();
+
+  const getRoleLabel = (role?: string) => {
+    switch (role) {
+      case 'trainer':
+        return 'مربی';
+      case 'trainee':
+        return 'دانشجو';
+      case 'admin':
+        return 'مدیر';
+      default:
+        return 'کاربر';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -66,7 +99,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
             </Button>
             <div className="flex items-center space-x-2 space-x-reverse">
               <span className="text-sm text-gray-700">
-                {profile?.name} ({profile?.role === 'trainer' ? 'مربی' : 'دانشجو'})
+                {profile?.name} ({getRoleLabel(profile?.role)})
               </span>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 ml-2" />

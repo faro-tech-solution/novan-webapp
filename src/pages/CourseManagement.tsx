@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -43,11 +42,18 @@ const CourseManagement = () => {
     if (!profile) return;
 
     try {
-      const { data: coursesData, error: coursesError } = await supabase
+      let query = supabase
         .from('courses')
         .select('*')
-        .eq('instructor_id', profile.id)
         .order('created_at', { ascending: false });
+
+      // If user is trainer, only show their courses
+      // If user is admin, show all courses
+      if (profile.role === 'trainer') {
+        query = query.eq('instructor_id', profile.id);
+      }
+
+      const { data: coursesData, error: coursesError } = await query;
 
       if (coursesError) throw coursesError;
 
@@ -180,9 +186,12 @@ const CourseManagement = () => {
     fetchCourses();
   };
 
+  // Determine if user can create courses (trainers can, admins cannot unless they're also trainers)
+  const canCreateCourses = profile?.role === 'trainer';
+
   if (loading) {
     return (
-      <DashboardLayout title="مدیریت درس‌ها">
+      <DashboardLayout title={profile?.role === 'admin' ? 'مدیریت درس‌ها' : 'مدیریت درس‌ها'}>
         <div className="flex items-center justify-center h-64">
           <div className="text-lg">در حال بارگذاری...</div>
         </div>
@@ -191,18 +200,27 @@ const CourseManagement = () => {
   }
 
   return (
-    <DashboardLayout title="مدیریت درس‌ها">
+    <DashboardLayout title={profile?.role === 'admin' ? 'مدیریت درس‌ها' : 'مدیریت درس‌ها'}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">درس‌ها</h2>
-            <p className="text-gray-600">مدیریت درس‌ها و دانشجویان شما</p>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {profile?.role === 'admin' ? 'تمام درس‌ها' : 'درس‌ها'}
+            </h2>
+            <p className="text-gray-600">
+              {profile?.role === 'admin' 
+                ? 'مدیریت تمام درس‌های سیستم' 
+                : 'مدیریت درس‌ها و دانشجویان شما'
+              }
+            </p>
           </div>
-          <Button onClick={() => setShowCreateDialog(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            ایجاد درس
-          </Button>
+          {canCreateCourses && (
+            <Button onClick={() => setShowCreateDialog(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              ایجاد درس
+            </Button>
+          )}
         </div>
 
         {/* Courses Overview */}
@@ -235,20 +253,42 @@ const CourseManagement = () => {
                           <Calendar className="h-4 w-4 mr-2" />
                           مدیریت ترم‌ها
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleEditCourse(course)}
-                          className="cursor-pointer"
-                        >
-                          <Pencil className="h-4 w-4 mr-2" />
-                          ویرایش
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteCourse(course)}
-                          className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          حذف
-                        </DropdownMenuItem>
+                        {(profile?.role === 'trainer' && course.instructor_id === profile.id) && (
+                          <>
+                            <DropdownMenuItem 
+                              onClick={() => handleEditCourse(course)}
+                              className="cursor-pointer"
+                            >
+                              <Pencil className="h-4 w-4 mr-2" />
+                              ویرایش
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteCourse(course)}
+                              className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              حذف
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                        {profile?.role === 'admin' && (
+                          <>
+                            <DropdownMenuItem 
+                              onClick={() => handleEditCourse(course)}
+                              className="cursor-pointer"
+                            >
+                              <Pencil className="h-4 w-4 mr-2" />
+                              ویرایش
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDeleteCourse(course)}
+                              className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              حذف
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -290,14 +330,21 @@ const CourseManagement = () => {
 
           {courses.length === 0 && (
             <div className="col-span-3 text-center py-8">
-              <p className="text-gray-500">هنوز درسی ایجاد نکرده‌اید</p>
-              <Button 
-                className="mt-4" 
-                onClick={() => setShowCreateDialog(true)}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                ایجاد اولین درس
-              </Button>
+              <p className="text-gray-500">
+                {profile?.role === 'admin' 
+                  ? 'هنوز درسی در سیستم ایجاد نشده است' 
+                  : 'هنوز درسی ایجاد نکرده‌اید'
+                }
+              </p>
+              {canCreateCourses && (
+                <Button 
+                  className="mt-4" 
+                  onClick={() => setShowCreateDialog(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  ایجاد اولین درس
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -327,11 +374,13 @@ const CourseManagement = () => {
       </div>
 
       {/* Create Course Dialog */}
-      <CreateCourseDialog 
-        open={showCreateDialog}
-        onOpenChange={setShowCreateDialog}
-        onCourseCreated={handleCourseCreated}
-      />
+      {canCreateCourses && (
+        <CreateCourseDialog 
+          open={showCreateDialog}
+          onOpenChange={setShowCreateDialog}
+          onCourseCreated={handleCourseCreated}
+        />
+      )}
 
       {/* Edit Course Dialog */}
       {selectedCourse && (
