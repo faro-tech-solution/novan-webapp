@@ -1,4 +1,3 @@
-
 import { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -39,7 +38,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/dashboard/trainee', icon: LayoutDashboard, label: 'داشبورد' },
     { href: '/my-exercises', icon: FileText, label: 'تمرین‌های من' },
     { href: '/progress', icon: Award, label: 'پیشرفت' },
-    { href: '/courses', icon: BookOpen, label: 'دوره‌ها' },
+    { href: '/student-courses', icon: BookOpen, label: 'دوره‌های من' },
   ];
 
   const navItems = user?.role === 'trainer' ? trainerNavItems : traineeNavItems;
