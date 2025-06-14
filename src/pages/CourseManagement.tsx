@@ -1,16 +1,16 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Users, Search, MoreHorizontal, UserPlus, Pencil, Trash2, Calendar } from 'lucide-react';
+import { Plus, Users, MoreHorizontal, Pencil, Trash2, Calendar } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import CreateCourseDialog from '@/components/CreateCourseDialog';
 import EditCourseDialog from '@/components/EditCourseDialog';
 import CourseTermsManagement from '@/components/CourseTermsManagement';
+import CourseStudentsDialog from '@/components/CourseStudentsDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -26,27 +26,14 @@ interface Course {
   student_count?: number;
 }
 
-interface CourseEnrollment {
-  id: string;
-  course_id: string;
-  student_name: string;
-  student_email: string;
-  enrolled_at: string;
-  status: string;
-  course?: {
-    name: string;
-  };
-}
-
 const CourseManagement = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [courses, setCourses] = useState<Course[]>([]);
-  const [enrollments, setEnrollments] = useState<CourseEnrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
+  const [showStudentsDialog, setShowStudentsDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const { profile } = useAuth();
   const { toast } = useToast();
@@ -90,41 +77,10 @@ const CourseManagement = () => {
     }
   };
 
-  const fetchEnrollments = async () => {
-    if (!profile) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('course_enrollments')
-        .select(`
-          *,
-          courses!inner(name, instructor_id)
-        `)
-        .eq('courses.instructor_id', profile.id)
-        .order('enrolled_at', { ascending: false });
-
-      if (error) throw error;
-
-      const enrollmentsWithCourse = data?.map(enrollment => ({
-        ...enrollment,
-        course: { name: (enrollment as any).courses.name }
-      })) || [];
-
-      setEnrollments(enrollmentsWithCourse);
-    } catch (error) {
-      console.error('Error fetching enrollments:', error);
-      toast({
-        title: 'خطا',
-        description: 'خطا در بارگذاری ثبت‌نام‌ها',
-        variant: 'destructive',
-      });
-    }
-  };
-
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchCourses(), fetchEnrollments()]);
+      await fetchCourses();
       setLoading(false);
     };
 
@@ -146,6 +102,11 @@ const CourseManagement = () => {
   const handleManageTerms = (course: Course) => {
     setSelectedCourse(course);
     setShowTermsDialog(true);
+  };
+
+  const handleViewStudents = (course: Course) => {
+    setSelectedCourse(course);
+    setShowStudentsDialog(true);
   };
 
   const confirmDeleteCourse = async () => {
@@ -209,11 +170,6 @@ const CourseManagement = () => {
       default: return status;
     }
   };
-
-  const filteredEnrollments = enrollments.filter(enrollment =>
-    enrollment.student_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    enrollment.student_email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleCourseCreated = () => {
     fetchCourses();
@@ -316,7 +272,12 @@ const CourseManagement = () => {
                   )}
                   
                   <div className="flex space-x-2 pt-2">
-                    <Button size="sm" variant="outline" className="flex-1">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => handleViewStudents(course)}
+                    >
                       <Users className="h-4 w-4 mr-1" />
                       مشاهده دانشجویان
                     </Button>
@@ -362,75 +323,6 @@ const CourseManagement = () => {
             </div>
           </div>
         )}
-
-        {/* Students Management */}
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <div>
-                <CardTitle>دانشجویان</CardTitle>
-                <CardDescription>مدیریت ثبت‌نام دانشجویان و وضعیت آن‌ها</CardDescription>
-              </div>
-              <Button variant="outline">
-                <UserPlus className="h-4 w-4 mr-2" />
-                ثبت‌نام دانشجو
-              </Button>
-            </div>
-            
-            <div className="flex items-center space-x-2 mt-4">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="جستجوی دانشجویان..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>نام</TableHead>
-                  <TableHead>ایمیل</TableHead>
-                  <TableHead>درس</TableHead>
-                  <TableHead>تاریخ ثبت‌نام</TableHead>
-                  <TableHead>وضعیت</TableHead>
-                  <TableHead>عملیات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredEnrollments.map((enrollment) => (
-                  <TableRow key={enrollment.id}>
-                    <TableCell className="font-medium">{enrollment.student_name}</TableCell>
-                    <TableCell>{enrollment.student_email}</TableCell>
-                    <TableCell>{enrollment.course?.name || 'نامشخص'}</TableCell>
-                    <TableCell>{new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR')}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(enrollment.status)}>
-                        {getStatusText(enrollment.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button size="sm" variant="outline">
-                        مشاهده پروفایل
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {filteredEnrollments.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                      {searchTerm ? 'هیچ دانشجویی یافت نشد' : 'هنوز دانشجویی ثبت‌نام نکرده'}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Create Course Dialog */}
@@ -447,6 +339,16 @@ const CourseManagement = () => {
           onOpenChange={setShowEditDialog}
           course={selectedCourse}
           onCourseUpdated={handleCourseUpdated}
+        />
+      )}
+
+      {/* Students Dialog */}
+      {selectedCourse && (
+        <CourseStudentsDialog
+          open={showStudentsDialog}
+          onOpenChange={setShowStudentsDialog}
+          courseId={selectedCourse.id}
+          courseName={selectedCourse.name}
         />
       )}
 
