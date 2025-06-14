@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -15,6 +16,7 @@ const formSchema = z.object({
   name: z.string().min(1, 'نام درس الزامی است'),
   description: z.string().optional(),
   maxStudents: z.number().min(0, 'حداکثر تعداد دانشجویان نمی‌تواند منفی باشد').default(0),
+  instructorId: z.string().min(1, 'انتخاب مربی الزامی است'),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -24,6 +26,7 @@ interface Course {
   name: string;
   description: string | null;
   max_students: number | null;
+  instructor_id: string;
 }
 
 interface EditCourseDialogProps {
@@ -33,8 +36,15 @@ interface EditCourseDialogProps {
   onCourseUpdated: () => void;
 }
 
+interface Instructor {
+  id: string;
+  name: string;
+  email: string;
+}
+
 const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditCourseDialogProps) => {
   const [loading, setLoading] = useState(false);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -43,8 +53,16 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
       name: '',
       description: '',
       maxStudents: 0,
+      instructorId: '',
     },
   });
+
+  // Fetch instructors when dialog opens
+  useEffect(() => {
+    if (open) {
+      fetchInstructors();
+    }
+  }, [open]);
 
   useEffect(() => {
     if (course && open) {
@@ -52,19 +70,45 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
         name: course.name,
         description: course.description || '',
         maxStudents: course.max_students || 0,
+        instructorId: course.instructor_id,
       });
     }
   }, [course, open, form]);
 
+  const fetchInstructors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, name, email')
+        .eq('role', 'trainer');
+
+      if (error) throw error;
+
+      setInstructors(data || []);
+    } catch (error) {
+      console.error('Error fetching instructors:', error);
+      toast({
+        title: 'خطا',
+        description: 'خطا در بارگذاری لیست مربیان',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
+      // Get selected instructor details
+      const selectedInstructor = instructors.find(inst => inst.id === data.instructorId);
+      
       const { error } = await supabase
         .from('courses')
         .update({
           name: data.name,
           description: data.description,
           max_students: data.maxStudents,
+          instructor_id: data.instructorId,
+          instructor_name: selectedInstructor?.name || 'Unknown',
         })
         .eq('id', course.id);
 
@@ -128,6 +172,31 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="instructorId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>مربی</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="مربی را انتخاب کنید" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {instructors.map((instructor) => (
+                        <SelectItem key={instructor.id} value={instructor.id}>
+                          {instructor.name} ({instructor.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

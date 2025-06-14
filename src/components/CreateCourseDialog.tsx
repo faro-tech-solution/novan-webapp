@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,6 +17,7 @@ const formSchema = z.object({
   name: z.string().min(1, 'نام درس الزامی است'),
   description: z.string().optional(),
   maxStudents: z.number().min(0, 'حداکثر تعداد دانشجویان نمی‌تواند منفی باشد').default(50),
+  instructorId: z.string().min(1, 'انتخاب مربی الزامی است'),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -26,8 +28,15 @@ interface CreateCourseDialogProps {
   onCourseCreated: () => void;
 }
 
+interface Instructor {
+  id: string;
+  name: string;
+  email: string;
+}
+
 const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCourseDialogProps) => {
   const [loading, setLoading] = useState(false);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const { profile } = useAuth();
   const { toast } = useToast();
 
@@ -37,21 +46,52 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
       name: '',
       description: '',
       maxStudents: 50,
+      instructorId: '',
     },
   });
+
+  // Fetch instructors when dialog opens
+  useEffect(() => {
+    if (open) {
+      fetchInstructors();
+    }
+  }, [open]);
+
+  const fetchInstructors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, name, email')
+        .eq('role', 'trainer');
+
+      if (error) throw error;
+
+      setInstructors(data || []);
+    } catch (error) {
+      console.error('Error fetching instructors:', error);
+      toast({
+        title: 'خطا',
+        description: 'خطا در بارگذاری لیست مربیان',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const onSubmit = async (data: FormData) => {
     if (!profile) return;
 
     setLoading(true);
     try {
+      // Get selected instructor details
+      const selectedInstructor = instructors.find(inst => inst.id === data.instructorId);
+      
       const { error } = await supabase
         .from('courses')
         .insert({
           name: data.name,
           description: data.description,
-          instructor_id: profile.id,
-          instructor_name: profile.name || 'Unknown',
+          instructor_id: data.instructorId,
+          instructor_name: selectedInstructor?.name || 'Unknown',
           max_students: data.maxStudents,
           status: 'upcoming',
         });
@@ -117,6 +157,31 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="instructorId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>مربی</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="مربی را انتخاب کنید" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {instructors.map((instructor) => (
+                        <SelectItem key={instructor.id} value={instructor.id}>
+                          {instructor.name} ({instructor.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
