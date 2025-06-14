@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import DashboardLayout from '@/components/DashboardLayout';
+import CreateExerciseDialog from '@/components/CreateExerciseDialog';
 
 const Exercises = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -150,10 +151,7 @@ const Exercises = () => {
             <h2 className="text-2xl font-bold text-gray-900 font-peyda">مدیریت تمرین‌ها</h2>
             <p className="text-gray-600">ایجاد و مدیریت تمرین‌های دانشجویان</p>
           </div>
-          <Button>
-            <Plus className="h-4 w-4 ml-2" />
-            تمرین جدید
-          </Button>
+          <CreateExerciseDialog />
         </div>
 
         {/* Stats Cards */}
