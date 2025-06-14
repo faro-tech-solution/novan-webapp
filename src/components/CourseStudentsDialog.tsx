@@ -4,8 +4,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Search, Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -16,6 +19,14 @@ interface CourseEnrollment {
   student_email: string;
   enrolled_at: string;
   status: string;
+  term_id?: string;
+}
+
+interface CourseTerm {
+  id: string;
+  name: string;
+  start_date: string | null;
+  end_date: string | null;
 }
 
 interface CourseStudentsDialogProps {
@@ -28,7 +39,12 @@ interface CourseStudentsDialogProps {
 const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: CourseStudentsDialogProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [enrollments, setEnrollments] = useState<CourseEnrollment[]>([]);
+  const [terms, setTerms] = useState<CourseTerm[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addStudentEmail, setAddStudentEmail] = useState('');
+  const [selectedTermId, setSelectedTermId] = useState<string>('');
+  const [addingStudent, setAddingStudent] = useState(false);
   const { toast } = useToast();
 
   const fetchEnrollments = async () => {
@@ -57,11 +73,115 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
     }
   };
 
+  const fetchTerms = async () => {
+    if (!courseId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('course_terms')
+        .select('*')
+        .eq('course_id', courseId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setTerms(data || []);
+    } catch (error) {
+      console.error('Error fetching terms:', error);
+    }
+  };
+
   useEffect(() => {
     if (open && courseId) {
       fetchEnrollments();
+      fetchTerms();
     }
   }, [open, courseId]);
+
+  const handleAddStudent = async () => {
+    if (!addStudentEmail.trim()) {
+      toast({
+        title: 'خطا',
+        description: 'لطفا ایمیل دانشجو را وارد کنید',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setAddingStudent(true);
+
+    try {
+      // First, try to find the user by email in profiles
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', addStudentEmail.trim())
+        .single();
+
+      if (profileError || !profileData) {
+        toast({
+          title: 'خطا',
+          description: 'کاربری با این ایمیل یافت نشد',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Check if student is already enrolled
+      const { data: existingEnrollment } = await supabase
+        .from('course_enrollments')
+        .select('*')
+        .eq('course_id', courseId)
+        .eq('student_id', profileData.id)
+        .single();
+
+      if (existingEnrollment) {
+        toast({
+          title: 'خطا',
+          description: 'این دانشجو قبلاً در این درس ثبت‌نام کرده است',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Add student to course
+      const enrollmentData = {
+        course_id: courseId,
+        student_id: profileData.id,
+        student_name: profileData.name || 'نام نامشخص',
+        student_email: profileData.email,
+        status: 'active',
+        ...(selectedTermId && { term_id: selectedTermId })
+      };
+
+      const { error: enrollmentError } = await supabase
+        .from('course_enrollments')
+        .insert([enrollmentData]);
+
+      if (enrollmentError) throw enrollmentError;
+
+      toast({
+        title: 'موفقیت',
+        description: 'دانشجو با موفقیت به درس اضافه شد',
+      });
+
+      // Reset form and refresh data
+      setAddStudentEmail('');
+      setSelectedTermId('');
+      setShowAddForm(false);
+      fetchEnrollments();
+
+    } catch (error) {
+      console.error('Error adding student:', error);
+      toast({
+        title: 'خطا',
+        description: 'خطا در افزودن دانشجو',
+        variant: 'destructive',
+      });
+    } finally {
+      setAddingStudent(false);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -79,6 +199,12 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
     }
   };
 
+  const getTermName = (termId: string | undefined) => {
+    if (!termId) return 'عمومی';
+    const term = terms.find(t => t.id === termId);
+    return term ? term.name : 'نامشخص';
+  };
+
   const filteredEnrollments = enrollments.filter(enrollment =>
     enrollment.student_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     enrollment.student_email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -86,12 +212,71 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>دانشجویان درس {courseName}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
+          {/* Add Student Form */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-lg">افزودن دانشجو</CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAddForm(!showAddForm)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {showAddForm ? 'بستن' : 'افزودن دانشجو'}
+                </Button>
+              </div>
+            </CardHeader>
+            {showAddForm && (
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="studentEmail">ایمیل دانشجو</Label>
+                    <Input
+                      id="studentEmail"
+                      type="email"
+                      placeholder="example@email.com"
+                      value={addStudentEmail}
+                      onChange={(e) => setAddStudentEmail(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="termSelect">ترم (اختیاری)</Label>
+                    <Select value={selectedTermId} onValueChange={setSelectedTermId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="انتخاب ترم" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">عمومی (بدون ترم)</SelectItem>
+                        {terms.map((term) => (
+                          <SelectItem key={term.id} value={term.id}>
+                            {term.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-end">
+                    <Button 
+                      onClick={handleAddStudent}
+                      disabled={addingStudent}
+                      className="w-full"
+                    >
+                      {addingStudent ? 'در حال افزودن...' : 'افزودن دانشجو'}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Search */}
           <div className="flex items-center space-x-2">
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -104,6 +289,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
             </div>
           </div>
 
+          {/* Students Table */}
           {loading ? (
             <div className="flex items-center justify-center h-32">
               <div className="text-lg">در حال بارگذاری...</div>
@@ -114,6 +300,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
                 <TableRow>
                   <TableHead>نام</TableHead>
                   <TableHead>ایمیل</TableHead>
+                  <TableHead>ترم</TableHead>
                   <TableHead>تاریخ ثبت‌نام</TableHead>
                   <TableHead>وضعیت</TableHead>
                   <TableHead>عملیات</TableHead>
@@ -124,6 +311,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
                   <TableRow key={enrollment.id}>
                     <TableCell className="font-medium">{enrollment.student_name}</TableCell>
                     <TableCell>{enrollment.student_email}</TableCell>
+                    <TableCell>{getTermName(enrollment.term_id)}</TableCell>
                     <TableCell>{new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR')}</TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(enrollment.status)}>
@@ -139,7 +327,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
                 ))}
                 {filteredEnrollments.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={6} className="text-center py-8 text-gray-500">
                       {searchTerm ? 'هیچ دانشجویی یافت نشد' : 'هنوز دانشجویی ثبت‌نام نکرده'}
                     </TableCell>
                   </TableRow>
