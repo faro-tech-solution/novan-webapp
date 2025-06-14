@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ExerciseDetail from "./pages/ExerciseDetail";
 import ClassManagement from "./pages/ClassManagement";
+import MyExercises from "./pages/MyExercises";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/dashboard/trainee" element={<TraineeDashboard />} />
           <Route path="/exercise/:id" element={<ExerciseDetail />} />
           <Route path="/classes" element={<ClassManagement />} />
+          <Route path="/my-exercises" element={<MyExercises />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
