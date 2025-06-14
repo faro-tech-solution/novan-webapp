@@ -18,6 +18,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   maxStudents: z.number().min(0, 'حداکثر تعداد دانشجویان نمی‌تواند منفی باشد').default(50),
   instructorId: z.string().min(1, 'انتخاب مربی الزامی است'),
+  status: z.string().min(1, 'انتخاب وضعیت الزامی است'),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -47,6 +48,7 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
       description: '',
       maxStudents: 50,
       instructorId: '',
+      status: 'upcoming',
     },
   });
 
@@ -93,7 +95,7 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
           instructor_id: data.instructorId,
           instructor_name: selectedInstructor?.name || 'Unknown',
           max_students: data.maxStudents,
-          status: 'upcoming',
+          status: data.status,
         });
 
       if (error) throw error;
@@ -180,6 +182,30 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
                           {instructor.name} ({instructor.email})
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>وضعیت درس</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="وضعیت را انتخاب کنید" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="active">فعال</SelectItem>
+                      <SelectItem value="inactive">غیرفعال</SelectItem>
+                      <SelectItem value="upcoming">آینده</SelectItem>
+                      <SelectItem value="preregister">پیش‌ثبت‌نام</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -19,6 +19,7 @@ interface Course {
   id: string;
   name: string;
   description: string | null;
+  instructor_id: string;
   instructor_name: string;
   status: string;
   max_students: number | null;

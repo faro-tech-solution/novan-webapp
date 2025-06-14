@@ -17,6 +17,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   maxStudents: z.number().min(0, 'حداکثر تعداد دانشجویان نمی‌تواند منفی باشد').default(0),
   instructorId: z.string().min(1, 'انتخاب مربی الزامی است'),
+  status: z.string().min(1, 'انتخاب وضعیت الزامی است'),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -27,6 +28,7 @@ interface Course {
   description: string | null;
   max_students: number | null;
   instructor_id: string;
+  status: string;
 }
 
 interface EditCourseDialogProps {
@@ -54,6 +56,7 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
       description: '',
       maxStudents: 0,
       instructorId: '',
+      status: '',
     },
   });
 
@@ -71,6 +74,7 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
         description: course.description || '',
         maxStudents: course.max_students || 0,
         instructorId: course.instructor_id,
+        status: course.status,
       });
     }
   }, [course, open, form]);
@@ -109,6 +113,7 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
           max_students: data.maxStudents,
           instructor_id: data.instructorId,
           instructor_name: selectedInstructor?.name || 'Unknown',
+          status: data.status,
         })
         .eq('id', course.id);
 
@@ -195,6 +200,30 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
                           {instructor.name} ({instructor.email})
                         </SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>وضعیت درس</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="وضعیت را انتخاب کنید" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="active">فعال</SelectItem>
+                      <SelectItem value="inactive">غیرفعال</SelectItem>
+                      <SelectItem value="upcoming">آینده</SelectItem>
+                      <SelectItem value="preregister">پیش‌ثبت‌نام</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
