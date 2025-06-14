@@ -5,32 +5,44 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const { login } = useUser();
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
-      const success = await login(email, password);
-      if (success) {
-        navigate('/dashboard');
+      const { error } = await login(email, password);
+      if (error) {
+        toast({
+          title: "خطا در ورود",
+          description: error.message || 'اطلاعات نادرست است',
+          variant: "destructive",
+        });
       } else {
-        setError('اطلاعات نادرست. trainer@example.com یا student@example.com را امتحان کنید');
+        toast({
+          title: "ورود موفق",
+          description: "به داشبورد منتقل می‌شوید...",
+        });
+        navigate('/dashboard');
       }
     } catch (err) {
-      setError('ورود ناموفق. لطفا دوباره تلاش کنید.');
+      toast({
+        title: "خطا",
+        description: 'ورود ناموفق. لطفا دوباره تلاش کنید.',
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -72,10 +84,6 @@ const Login = () => {
                 />
               </div>
 
-              {error && (
-                <div className="text-red-600 text-sm">{error}</div>
-              )}
-
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'در حال ورود...' : 'ورود'}
               </Button>
@@ -86,13 +94,6 @@ const Login = () => {
               <Link to="/register" className="text-teal-600 hover:text-teal-700 font-medium">
                 ثبت نام
               </Link>
-            </div>
-
-            <div className="mt-4 p-3 bg-gray-100 rounded-md text-xs">
-              <p className="font-medium">حساب‌های آزمایشی:</p>
-              <p>مربی: trainer@example.com</p>
-              <p>دانشجو: student@example.com</p>
-              <p>رمز عبور: هر چیزی</p>
             </div>
           </CardContent>
         </Card>

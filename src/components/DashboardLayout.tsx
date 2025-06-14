@@ -1,7 +1,8 @@
+
 import { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   LayoutDashboard, 
   Users, 
@@ -19,11 +20,11 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
-  const { user, logout } = useUser();
+  const { profile, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -41,7 +42,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/student-courses', icon: BookOpen, label: 'دوره‌های من' },
   ];
 
-  const navItems = user?.role === 'trainer' ? trainerNavItems : traineeNavItems;
+  const navItems = profile?.role === 'trainer' ? trainerNavItems : traineeNavItems;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,7 +66,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
             </Button>
             <div className="flex items-center space-x-2 space-x-reverse">
               <span className="text-sm text-gray-700">
-                {user?.name} ({user?.role === 'trainer' ? 'مربی' : 'دانشجو'})
+                {profile?.name} ({profile?.role === 'trainer' ? 'مربی' : 'دانشجو'})
               </span>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 ml-2" />

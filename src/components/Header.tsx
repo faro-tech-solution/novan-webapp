@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Search, ShoppingCart, User, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user } = useUser();
+  const { profile, loading } = useAuth();
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -32,7 +32,7 @@ const Header = () => {
             <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
               مربیان
             </Link>
-            {user && (
+            {profile && (
               <Link to="/dashboard" className="text-gray-700 hover:text-teal-600 transition-colors">
                 داشبورد
               </Link>
@@ -51,27 +51,29 @@ const Header = () => {
               </span>
             </Button>
             
-            {user ? (
-              <Link to="/dashboard">
-                <Button variant="outline">
-                  <User className="h-4 w-4 ml-2" />
-                  {user.name}
-                </Button>
-              </Link>
-            ) : (
-              <div className="flex items-center space-x-2 space-x-reverse">
-                <Link to="/login">
+            {!loading && (
+              profile ? (
+                <Link to="/dashboard">
                   <Button variant="outline">
-                    <LogIn className="h-4 w-4 ml-2" />
-                    ورود
+                    <User className="h-4 w-4 ml-2" />
+                    {profile.name}
                   </Button>
                 </Link>
-                <Link to="/register">
-                  <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-                    رایگان امتحان کنید
-                  </Button>
-                </Link>
-              </div>
+              ) : (
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  <Link to="/login">
+                    <Button variant="outline">
+                      <LogIn className="h-4 w-4 ml-2" />
+                      ورود
+                    </Button>
+                  </Link>
+                  <Link to="/register">
+                    <Button className="bg-teal-500 hover:bg-teal-600 text-white">
+                      رایگان امتحان کنید
+                    </Button>
+                  </Link>
+                </div>
+              )
             )}
             
             {/* Mobile menu button */}
@@ -99,12 +101,12 @@ const Header = () => {
               <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
                 مربیان
               </Link>
-              {user && (
+              {profile && (
                 <Link to="/dashboard" className="text-gray-700 hover:text-teal-600 transition-colors">
                   داشبورد
                 </Link>
               )}
-              {!user && (
+              {!profile && (
                 <>
                   <Link to="/login" className="text-gray-700 hover:text-teal-600 transition-colors">
                     ورود
