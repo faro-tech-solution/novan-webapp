@@ -1,7 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { UserPlus } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import StudentsStats from '@/components/StudentsStats';
 import StudentsFilters from '@/components/StudentsFilters';
@@ -37,7 +35,13 @@ const Students = () => {
     try {
       setLoading(true);
       
-      // Fetch course enrollments with course information
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      // Fetch course enrollments with course and term information
       const { data: enrollments, error } = await supabase
         .from('course_enrollments')
         .select(`
@@ -50,7 +54,7 @@ const Students = () => {
             name
           )
         `)
-        .eq('courses.instructor_id', (await supabase.auth.getUser()).data.user?.id);
+        .eq('courses.instructor_id', user.id);
 
       if (error) throw error;
 
@@ -119,20 +123,9 @@ const Students = () => {
     <DashboardLayout title="مدیریت دانشجویان">
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 font-peyda">مدیریت دانشجویان</h2>
-            <p className="text-gray-600">مشاهده و مدیریت دانشجویان دوره‌های شما</p>
-          </div>
-          <Button onClick={() => {
-            toast({
-              title: 'راهنمایی',
-              description: 'برای افزودن دانشجو، از بخش مدیریت دوره‌ها استفاده کنید',
-            });
-          }}>
-            <UserPlus className="h-4 w-4 ml-2" />
-            افزودن دانشجو
-          </Button>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 font-peyda">مدیریت دانشجویان</h2>
+          <p className="text-gray-600">مشاهده و مدیریت دانشجویان دوره‌های شما</p>
         </div>
 
         {/* Stats Cards */}
