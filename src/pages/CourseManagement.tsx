@@ -1,12 +1,16 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Users, Search, MoreHorizontal, UserPlus } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Plus, Users, Search, MoreHorizontal, UserPlus, Pencil, Trash2 } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import CreateCourseDialog from '@/components/CreateCourseDialog';
+import EditCourseDialog from '@/components/EditCourseDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -40,6 +44,9 @@ const CourseManagement = () => {
   const [enrollments, setEnrollments] = useState<CourseEnrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const { profile } = useAuth();
   const { toast } = useToast();
 
@@ -125,6 +132,58 @@ const CourseManagement = () => {
     }
   }, [profile]);
 
+  const handleEditCourse = (course: Course) => {
+    setSelectedCourse(course);
+    setShowEditDialog(true);
+  };
+
+  const handleDeleteCourse = (course: Course) => {
+    setSelectedCourse(course);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDeleteCourse = async () => {
+    if (!selectedCourse) return;
+
+    // Check if course has students
+    if (selectedCourse.student_count && selectedCourse.student_count > 0) {
+      toast({
+        title: 'خطا',
+        description: 'نمی‌توانید درسی را که دانشجو دارد حذف کنید',
+        variant: 'destructive',
+      });
+      setShowDeleteDialog(false);
+      setSelectedCourse(null);
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('courses')
+        .delete()
+        .eq('id', selectedCourse.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'موفقیت',
+        description: 'درس با موفقیت حذف شد',
+      });
+
+      fetchCourses();
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      toast({
+        title: 'خطا',
+        description: 'خطا در حذف درس',
+        variant: 'destructive',
+      });
+    } finally {
+      setShowDeleteDialog(false);
+      setSelectedCourse(null);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
@@ -151,6 +210,10 @@ const CourseManagement = () => {
   );
 
   const handleCourseCreated = () => {
+    fetchCourses();
+  };
+
+  const handleCourseUpdated = () => {
     fetchCourses();
   };
 
@@ -191,9 +254,34 @@ const CourseManagement = () => {
                       مربی: {course.instructor_name}
                     </CardDescription>
                   </div>
-                  <Badge className={getStatusColor(course.status)}>
-                    {getStatusText(course.status)}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge className={getStatusColor(course.status)}>
+                      {getStatusText(course.status)}
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-white border shadow-md">
+                        <DropdownMenuItem 
+                          onClick={() => handleEditCourse(course)}
+                          className="cursor-pointer"
+                        >
+                          <Pencil className="h-4 w-4 mr-2" />
+                          ویرایش
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDeleteCourse(course)}
+                          className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          حذف
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -218,9 +306,6 @@ const CourseManagement = () => {
                     <Button size="sm" variant="outline" className="flex-1">
                       <Users className="h-4 w-4 mr-1" />
                       مشاهده دانشجویان
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -318,6 +403,43 @@ const CourseManagement = () => {
         onOpenChange={setShowCreateDialog}
         onCourseCreated={handleCourseCreated}
       />
+
+      {/* Edit Course Dialog */}
+      {selectedCourse && (
+        <EditCourseDialog 
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          course={selectedCourse}
+          onCourseUpdated={handleCourseUpdated}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأیید حذف درس</AlertDialogTitle>
+            <AlertDialogDescription>
+              آیا مطمئن هستید که می‌خواهید درس "{selectedCourse?.name}" را حذف کنید؟
+              {selectedCourse?.student_count && selectedCourse.student_count > 0 && (
+                <span className="block mt-2 text-red-600 font-medium">
+                  این درس {selectedCourse.student_count} دانشجو دارد و قابل حذف نیست.
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>لغو</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteCourse}
+              disabled={selectedCourse?.student_count ? selectedCourse.student_count > 0 : false}
+              className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300"
+            >
+              حذف
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 };
