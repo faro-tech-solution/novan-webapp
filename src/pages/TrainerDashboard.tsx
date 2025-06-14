@@ -150,7 +150,7 @@ const TrainerDashboard = () => {
               </Button>
               <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
                 <Users className="h-6 w-6" />
-                <span>مدیریت کلاس‌ها</span>
+                <span>مدیریت دوره‌ها</span>
               </Button>
               <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
                 <Award className="h-6 w-6" />

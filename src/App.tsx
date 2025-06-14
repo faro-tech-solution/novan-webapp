@@ -14,7 +14,7 @@ import TraineeDashboard from "./pages/TraineeDashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ExerciseDetail from "./pages/ExerciseDetail";
-import ClassManagement from "./pages/ClassManagement";
+import CourseManagement from "./pages/CourseManagement";
 import MyExercises from "./pages/MyExercises";
 import Progress from "./pages/Progress";
 import StudentCourses from "./pages/StudentCourses";
@@ -42,7 +42,7 @@ const App = () => (
           <Route path="/dashboard/trainee" element={<TraineeDashboard />} />
           <Route path="/exercise/:id" element={<ExerciseDetail />} />
           <Route path="/exercises" element={<Exercises />} />
-          <Route path="/classes" element={<ClassManagement />} />
+          <Route path="/courses-management" element={<CourseManagement />} />
           <Route path="/my-exercises" element={<MyExercises />} />
           <Route path="/progress" element={<Progress />} />
           <Route path="/student-courses" element={<StudentCourses />} />

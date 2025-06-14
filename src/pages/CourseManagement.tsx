@@ -8,11 +8,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Users, Search, MoreHorizontal, UserPlus } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 
-const ClassManagement = () => {
+const CourseManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Mock data
-  const classes = [
+  const courses = [
     {
       id: '1',
       name: 'Web Development Basics',
@@ -46,10 +46,10 @@ const ClassManagement = () => {
   ];
 
   const students = [
-    { id: '1', name: 'Jane Student', email: 'jane@example.com', classId: '1', joinDate: '2025-01-15', status: 'active' },
-    { id: '2', name: 'Bob Learner', email: 'bob@example.com', classId: '1', joinDate: '2025-01-16', status: 'active' },
-    { id: '3', name: 'Alice Wonder', email: 'alice@example.com', classId: '2', joinDate: '2025-02-01', status: 'active' },
-    { id: '4', name: 'Charlie Brown', email: 'charlie@example.com', classId: '1', joinDate: '2025-01-20', status: 'inactive' },
+    { id: '1', name: 'Jane Student', email: 'jane@example.com', courseId: '1', joinDate: '2025-01-15', status: 'active' },
+    { id: '2', name: 'Bob Learner', email: 'bob@example.com', courseId: '1', joinDate: '2025-01-16', status: 'active' },
+    { id: '3', name: 'Alice Wonder', email: 'alice@example.com', courseId: '2', joinDate: '2025-02-01', status: 'active' },
+    { id: '4', name: 'Charlie Brown', email: 'charlie@example.com', courseId: '1', joinDate: '2025-01-20', status: 'inactive' },
   ];
 
   const getStatusColor = (status: string) => {
@@ -67,34 +67,34 @@ const ClassManagement = () => {
   );
 
   return (
-    <DashboardLayout title="Class Management">
+    <DashboardLayout title="Course Management">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Classes</h2>
-            <p className="text-gray-600">Manage your classes and students</p>
+            <h2 className="text-2xl font-bold text-gray-900">Courses</h2>
+            <p className="text-gray-600">Manage your courses and students</p>
           </div>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Create Class
+            Create Course
           </Button>
         </div>
 
-        {/* Classes Overview */}
+        {/* Courses Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {classes.map((classItem) => (
-            <Card key={classItem.id} className="hover:shadow-md transition-shadow">
+          {courses.map((course) => (
+            <Card key={course.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-lg">{classItem.name}</CardTitle>
+                    <CardTitle className="text-lg">{course.name}</CardTitle>
                     <CardDescription>
-                      Instructor: {classItem.instructor}
+                      Instructor: {course.instructor}
                     </CardDescription>
                   </div>
-                  <Badge className={getStatusColor(classItem.status)}>
-                    {classItem.status}
+                  <Badge className={getStatusColor(course.status)}>
+                    {course.status}
                   </Badge>
                 </div>
               </CardHeader>
@@ -102,19 +102,19 @@ const ClassManagement = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Students:</span>
-                    <span className="font-medium">{classItem.students}</span>
+                    <span className="font-medium">{course.students}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Exercises:</span>
-                    <span className="font-medium">{classItem.exercises}</span>
+                    <span className="font-medium">{course.exercises}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Avg Score:</span>
-                    <span className="font-medium">{classItem.averageScore}%</span>
+                    <span className="font-medium">{course.averageScore}%</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Start Date:</span>
-                    <span className="font-medium">{classItem.startDate}</span>
+                    <span className="font-medium">{course.startDate}</span>
                   </div>
                   
                   <div className="flex space-x-2 pt-2">
@@ -164,7 +164,7 @@ const ClassManagement = () => {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Class</TableHead>
+                  <TableHead>Course</TableHead>
                   <TableHead>Join Date</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
@@ -172,12 +172,12 @@ const ClassManagement = () => {
               </TableHeader>
               <TableBody>
                 {filteredStudents.map((student) => {
-                  const studentClass = classes.find(c => c.id === student.classId);
+                  const studentCourse = courses.find(c => c.id === student.courseId);
                   return (
                     <TableRow key={student.id}>
                       <TableCell className="font-medium">{student.name}</TableCell>
                       <TableCell>{student.email}</TableCell>
-                      <TableCell>{studentClass?.name || 'No Class'}</TableCell>
+                      <TableCell>{studentCourse?.name || 'No Course'}</TableCell>
                       <TableCell>{student.joinDate}</TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(student.status)}>
@@ -201,4 +201,4 @@ const ClassManagement = () => {
   );
 };
 
-export default ClassManagement;
+export default CourseManagement;

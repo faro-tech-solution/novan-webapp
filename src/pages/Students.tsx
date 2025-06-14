@@ -9,7 +9,7 @@ import StudentsTable from '@/components/StudentsTable';
 
 const Students = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [classFilter, setClassFilter] = useState('all');
+  const [courseFilter, setCourseFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
   // Mock students data
@@ -18,7 +18,7 @@ const Students = () => {
       id: 1,
       name: 'سارا احمدی',
       email: 'sara.ahmadi@example.com',
-      className: 'توسعه وب مقدماتی',
+      courseName: 'توسعه وب مقدماتی',
       joinDate: '۱۴۰۳/۰۵/۱۵',
       status: 'active',
       completedExercises: 12,
@@ -31,7 +31,7 @@ const Students = () => {
       id: 2,
       name: 'علی محمدی',
       email: 'ali.mohammadi@example.com',
-      className: 'توسعه وب مقدماتی',
+      courseName: 'توسعه وب مقدماتی',
       joinDate: '۱۴۰۳/۰۵/۲۰',
       status: 'active',
       completedExercises: 10,
@@ -44,7 +44,7 @@ const Students = () => {
       id: 3,
       name: 'فاطمه رضایی',
       email: 'fatemeh.rezaei@example.com',
-      className: 'توسعه وب پیشرفته',
+      courseName: 'توسعه وب پیشرفته',
       joinDate: '۱۴۰۳/۰۴/۱۰',
       status: 'active',
       completedExercises: 18,
@@ -57,7 +57,7 @@ const Students = () => {
       id: 4,
       name: 'محمد حسینی',
       email: 'mohammad.hosseini@example.com',
-      className: 'توسعه وب مقدماتی',
+      courseName: 'توسعه وب مقدماتی',
       joinDate: '۱۴۰۳/۰۶/۰۱',
       status: 'inactive',
       completedExercises: 5,
@@ -70,7 +70,7 @@ const Students = () => {
       id: 5,
       name: 'زهرا کریمی',
       email: 'zahra.karimi@example.com',
-      className: 'موبایل اپلیکیشن',
+      courseName: 'موبایل اپلیکیشن',
       joinDate: '۱۴۰۳/۰۵/۰۸',
       status: 'active',
       completedExercises: 14,
@@ -81,16 +81,16 @@ const Students = () => {
     }
   ];
 
-  const classes = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
+  const courses = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
 
   // Filter students
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesClass = classFilter === 'all' || student.className === classFilter;
+    const matchesCourse = courseFilter === 'all' || student.courseName === courseFilter;
     const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
     
-    return matchesSearch && matchesClass && matchesStatus;
+    return matchesSearch && matchesCourse && matchesStatus;
   });
 
   return (
@@ -100,7 +100,7 @@ const Students = () => {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 font-peyda">مدیریت دانشجویان</h2>
-            <p className="text-gray-600">مشاهده و مدیریت دانشجویان کلاس‌های شما</p>
+            <p className="text-gray-600">مشاهده و مدیریت دانشجویان دوره‌های شما</p>
           </div>
           <Button>
             <UserPlus className="h-4 w-4 ml-2" />
@@ -115,11 +115,11 @@ const Students = () => {
         <StudentsFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          classFilter={classFilter}
-          setClassFilter={setClassFilter}
+          courseFilter={courseFilter}
+          setCourseFilter={setCourseFilter}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-          classes={classes}
+          courses={courses}
         />
 
         {/* Students Table */}

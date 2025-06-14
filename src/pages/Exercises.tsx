@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +25,7 @@ const Exercises = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
-  const [classFilter, setClassFilter] = useState('all');
+  const [courseFilter, setCourseFilter] = useState('all');
 
   // Mock exercises data
   const exercises = [
@@ -34,7 +33,7 @@ const Exercises = () => {
       id: 1,
       title: 'مبانی React Hooks',
       description: 'یادگیری مفاهیم اساسی React Hooks شامل useState و useEffect',
-      className: 'توسعه وب مقدماتی',
+      courseName: 'توسعه وب مقدماتی',
       difficulty: 'متوسط',
       dueDate: '۱۴۰۳/۰۶/۱۶',
       points: 100,
@@ -49,7 +48,7 @@ const Exercises = () => {
       id: 2,
       title: 'طراحی CSS Grid',
       description: 'ایجاد لایوت‌های پیشرفته با استفاده از CSS Grid',
-      className: 'توسعه وب مقدماتی',
+      courseName: 'توسعه وب مقدماتی',
       difficulty: 'آسان',
       dueDate: '۱۴۰۳/۰۶/۱۸',
       points: 80,
@@ -64,7 +63,7 @@ const Exercises = () => {
       id: 3,
       title: 'JavaScript Promises',
       description: 'کار با Promises و async/await در JavaScript',
-      className: 'توسعه وب پیشرفته',
+      courseName: 'توسعه وب پیشرفته',
       difficulty: 'سخت',
       dueDate: '۱۴۰۳/۰۶/۱۰',
       points: 120,
@@ -79,7 +78,7 @@ const Exercises = () => {
       id: 4,
       title: 'فرم‌های HTML',
       description: 'ایجاد و اعتبارسنجی فرم‌های HTML',
-      className: 'توسعه وب مقدماتی',
+      courseName: 'توسعه وب مقدماتی',
       difficulty: 'آسان',
       dueDate: '۱۴۰۳/۰۶/۲۲',
       points: 60,
@@ -92,7 +91,7 @@ const Exercises = () => {
     }
   ];
 
-  const classes = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
+  const courses = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -126,9 +125,9 @@ const Exercises = () => {
                          exercise.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || exercise.status === statusFilter;
     const matchesDifficulty = difficultyFilter === 'all' || exercise.difficulty === difficultyFilter;
-    const matchesClass = classFilter === 'all' || exercise.className === classFilter;
+    const matchesCourse = courseFilter === 'all' || exercise.courseName === courseFilter;
     
-    return matchesSearch && matchesStatus && matchesDifficulty && matchesClass;
+    return matchesSearch && matchesStatus && matchesDifficulty && matchesCourse;
   });
 
   // Calculate stats
@@ -256,14 +255,14 @@ const Exercises = () => {
                 </SelectContent>
               </Select>
 
-              <Select value={classFilter} onValueChange={setClassFilter}>
+              <Select value={courseFilter} onValueChange={setCourseFilter}>
                 <SelectTrigger className="w-full md:w-48">
-                  <SelectValue placeholder="کلاس" />
+                  <SelectValue placeholder="دوره" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">همه کلاس‌ها</SelectItem>
-                  {classes.map((className) => (
-                    <SelectItem key={className} value={className}>{className}</SelectItem>
+                  <SelectItem value="all">همه دوره‌ها</SelectItem>
+                  {courses.map((courseName) => (
+                    <SelectItem key={courseName} value={courseName}>{courseName}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -284,7 +283,7 @@ const Exercises = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>عنوان</TableHead>
-                  <TableHead>کلاس</TableHead>
+                  <TableHead>دوره</TableHead>
                   <TableHead>سطح</TableHead>
                   <TableHead>وضعیت</TableHead>
                   <TableHead>موعد تحویل</TableHead>
@@ -309,7 +308,7 @@ const Exercises = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{exercise.className}</Badge>
+                      <Badge variant="outline">{exercise.courseName}</Badge>
                     </TableCell>
                     <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
                     <TableCell>{getStatusBadge(exercise.status)}</TableCell>

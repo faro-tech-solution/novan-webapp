@@ -7,21 +7,21 @@ import { Search, Filter } from 'lucide-react';
 interface StudentsFiltersProps {
   searchTerm: string;
   setSearchTerm: (value: string) => void;
-  classFilter: string;
-  setClassFilter: (value: string) => void;
+  courseFilter: string;
+  setCourseFilter: (value: string) => void;
   statusFilter: string;
   setStatusFilter: (value: string) => void;
-  classes: string[];
+  courses: string[];
 }
 
 const StudentsFilters = ({
   searchTerm,
   setSearchTerm,
-  classFilter,
-  setClassFilter,
+  courseFilter,
+  setCourseFilter,
   statusFilter,
   setStatusFilter,
-  classes
+  courses
 }: StudentsFiltersProps) => {
   return (
     <Card>
@@ -45,14 +45,14 @@ const StudentsFilters = ({
             </div>
           </div>
           
-          <Select value={classFilter} onValueChange={setClassFilter}>
+          <Select value={courseFilter} onValueChange={setCourseFilter}>
             <SelectTrigger className="w-full md:w-48">
-              <SelectValue placeholder="کلاس" />
+              <SelectValue placeholder="دوره" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">همه کلاس‌ها</SelectItem>
-              {classes.map((className) => (
-                <SelectItem key={className} value={className}>{className}</SelectItem>
+              <SelectItem value="all">همه دوره‌ها</SelectItem>
+              {courses.map((courseName) => (
+                <SelectItem key={courseName} value={courseName}>{courseName}</SelectItem>
               ))}
             </SelectContent>
           </Select>
