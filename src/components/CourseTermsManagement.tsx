@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Plus, Calendar, Users, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import CreateTermDialog from '@/components/CreateTermDialog';
+import EditTermDialog from '@/components/EditTermDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -30,6 +31,7 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
   const [terms, setTerms] = useState<CourseTerm[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedTerm, setSelectedTerm] = useState<CourseTerm | null>(null);
   const { toast } = useToast();
@@ -76,6 +78,11 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
   useEffect(() => {
     fetchTerms();
   }, [courseId]);
+
+  const handleEditTerm = (term: CourseTerm) => {
+    setSelectedTerm(term);
+    setShowEditDialog(true);
+  };
 
   const handleDeleteTerm = (term: CourseTerm) => {
     setSelectedTerm(term);
@@ -195,6 +202,13 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-white border shadow-md">
                         <DropdownMenuItem 
+                          onClick={() => handleEditTerm(term)}
+                          className="cursor-pointer"
+                        >
+                          <Pencil className="h-4 w-4 mr-2" />
+                          ویرایش
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
                           onClick={() => handleDeleteTerm(term)}
                           className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
@@ -216,6 +230,13 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
         onOpenChange={setShowCreateDialog}
         courseId={courseId}
         onTermCreated={fetchTerms}
+      />
+
+      <EditTermDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        term={selectedTerm}
+        onTermUpdated={fetchTerms}
       />
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -241,7 +262,7 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
               حذف
             </AlertDialogAction>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialog>
       </AlertDialog>
     </Card>
   );
