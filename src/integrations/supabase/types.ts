@@ -18,6 +18,7 @@ export type Database = {
           student_email: string
           student_id: string
           student_name: string
+          term_id: string | null
         }
         Insert: {
           course_id: string
@@ -27,6 +28,7 @@ export type Database = {
           student_email: string
           student_id: string
           student_name: string
+          term_id?: string | null
         }
         Update: {
           course_id?: string
@@ -36,10 +38,59 @@ export type Database = {
           student_email?: string
           student_id?: string
           student_name?: string
+          term_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "course_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_enrollments_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "course_terms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_terms: {
+        Row: {
+          course_id: string
+          created_at: string
+          end_date: string | null
+          id: string
+          max_students: number | null
+          name: string
+          start_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          max_students?: number | null
+          name: string
+          start_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          max_students?: number | null
+          name?: string
+          start_date?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_terms_course_id_fkey"
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"

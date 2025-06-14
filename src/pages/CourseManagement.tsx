@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,10 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Plus, Users, Search, MoreHorizontal, UserPlus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Users, Search, MoreHorizontal, UserPlus, Pencil, Trash2, Calendar } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import CreateCourseDialog from '@/components/CreateCourseDialog';
 import EditCourseDialog from '@/components/EditCourseDialog';
+import CourseTermsManagement from '@/components/CourseTermsManagement';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -46,6 +46,7 @@ const CourseManagement = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const { profile } = useAuth();
   const { toast } = useToast();
@@ -140,6 +141,11 @@ const CourseManagement = () => {
   const handleDeleteCourse = (course: Course) => {
     setSelectedCourse(course);
     setShowDeleteDialog(true);
+  };
+
+  const handleManageTerms = (course: Course) => {
+    setSelectedCourse(course);
+    setShowTermsDialog(true);
   };
 
   const confirmDeleteCourse = async () => {
@@ -266,6 +272,13 @@ const CourseManagement = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-white border shadow-md">
                         <DropdownMenuItem 
+                          onClick={() => handleManageTerms(course)}
+                          className="cursor-pointer"
+                        >
+                          <Calendar className="h-4 w-4 mr-2" />
+                          مدیریت ترم‌ها
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
                           onClick={() => handleEditCourse(course)}
                           className="cursor-pointer"
                         >
@@ -326,6 +339,29 @@ const CourseManagement = () => {
             </div>
           )}
         </div>
+
+        {/* Terms Management Dialog */}
+        {selectedCourse && showTermsDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">مدیریت ترم‌های {selectedCourse.name}</h2>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowTermsDialog(false)}
+                  >
+                    بستن
+                  </Button>
+                </div>
+                <CourseTermsManagement 
+                  courseId={selectedCourse.id}
+                  courseName={selectedCourse.name}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Students Management */}
         <Card>
@@ -438,7 +474,7 @@ const CourseManagement = () => {
               حذف
             </AlertDialogAction>
           </AlertDialogFooter>
-        </AlertDialogContent>
+        </AlertDialog>
       </AlertDialog>
     </DashboardLayout>
   );
