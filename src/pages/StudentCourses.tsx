@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,10 +15,10 @@ import {
   Filter
 } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const StudentCourses = () => {
-  const { user } = useUser();
+  const { profile } = useAuth();
   const [filter, setFilter] = useState('all');
 
   // Mock data for student's enrolled courses
