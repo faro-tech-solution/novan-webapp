@@ -9,7 +9,7 @@ interface Student {
   id: number;
   name: string;
   email: string;
-  className: string;
+  courseName: string;
   joinDate: string;
   status: string;
   completedExercises: number;
@@ -49,7 +49,7 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
           <TableHeader>
             <TableRow>
               <TableHead>دانشجو</TableHead>
-              <TableHead>کلاس</TableHead>
+              <TableHead>دوره</TableHead>
               <TableHead>وضعیت</TableHead>
               <TableHead>پیشرفت</TableHead>
               <TableHead>میانگین نمره</TableHead>
@@ -75,7 +75,7 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">{student.className}</Badge>
+                  <Badge variant="outline">{student.courseName}</Badge>
                 </TableCell>
                 <TableCell>{getStatusBadge(student.status)}</TableCell>
                 <TableCell>

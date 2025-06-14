@@ -12,7 +12,7 @@ interface Student {
   id: number;
   name: string;
   email: string;
-  className: string;
+  courseName: string;
   joinDate: string;
   status: string;
   completedExercises: number;
