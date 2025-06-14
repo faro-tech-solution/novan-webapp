@@ -79,7 +79,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 bg-white shadow-sm min-h-screen">
+        <aside className="w-[200px] bg-white shadow-sm min-h-screen">
           <nav className="p-4">
             <div className="space-y-2">
               {navItems.map((item) => (
