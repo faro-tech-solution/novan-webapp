@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,9 +14,20 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, profile } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (profile) {
+      if (profile.role === 'trainer') {
+        navigate('/dashboard/trainer');
+      } else if (profile.role === 'trainee') {
+        navigate('/dashboard/trainee');
+      }
+    }
+  }, [profile, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +46,8 @@ const Login = () => {
           title: "ورود موفق",
           description: "به داشبورد منتقل می‌شوید...",
         });
-        navigate('/dashboard');
+        // Note: The redirect will happen automatically via the useEffect above
+        // once the profile is loaded from the AuthContext
       }
     } catch (err) {
       toast({
