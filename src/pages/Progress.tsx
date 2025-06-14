@@ -19,10 +19,10 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, BarChart, Bar } from 'recharts';
 import DashboardLayout from '@/components/DashboardLayout';
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Progress = () => {
-  const { user } = useUser();
+  const { profile } = useAuth();
   const [timeFilter, setTimeFilter] = useState('month');
 
   // Mock progress data
