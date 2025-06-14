@@ -7,12 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Clock, Award, FileText, Send } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ExerciseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { profile } = useAuth();
   const [solution, setSolution] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
@@ -55,13 +55,13 @@ const ExerciseDetail = () => {
   };
 
   return (
-    <DashboardLayout title="Exercise Detail">
+    <DashboardLayout title="جزئیات تمرین">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            بازگشت
           </Button>
           <div className="flex items-center space-x-2">
             <Badge className="bg-yellow-100 text-yellow-800">{exercise.difficulty}</Badge>
@@ -71,7 +71,7 @@ const ExerciseDetail = () => {
             </Badge>
             <Badge variant="outline">
               <Award className="h-3 w-3 mr-1" />
-              {exercise.points} pts
+              {exercise.points} امتیاز
             </Badge>
           </div>
         </div>
@@ -81,14 +81,14 @@ const ExerciseDetail = () => {
           <CardHeader>
             <CardTitle className="text-2xl">{exercise.title}</CardTitle>
             <CardDescription className="text-base">
-              Due: {exercise.dueDate}
+              موعد تحویل: {exercise.dueDate}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-gray-700 mb-4">{exercise.description}</p>
             
             <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="font-semibold mb-2">Instructions:</h4>
+              <h4 className="font-semibold mb-2">دستورالعمل‌ها:</h4>
               <pre className="whitespace-pre-wrap text-sm text-gray-700">
                 {exercise.instructions}
               </pre>
@@ -101,7 +101,7 @@ const ExerciseDetail = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <FileText className="h-5 w-5 mr-2" />
-              Resources
+              منابع
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -117,19 +117,19 @@ const ExerciseDetail = () => {
         </Card>
 
         {/* Solution Submission */}
-        {user?.role === 'trainee' && (
+        {profile?.role === 'trainee' && (
           <Card>
             <CardHeader>
-              <CardTitle>Submit Your Solution</CardTitle>
+              <CardTitle>ارسال پاسخ شما</CardTitle>
               <CardDescription>
-                Write your code solution below and submit for review
+                کد راه‌حل خود را در زیر بنویسید و برای بررسی ارسال کنید
               </CardDescription>
             </CardHeader>
             <CardContent>
               {!submitted ? (
                 <div className="space-y-4">
                   <Textarea
-                    placeholder="Paste your code solution here..."
+                    placeholder="کد راه‌حل خود را اینجا قرار دهید..."
                     value={solution}
                     onChange={(e) => setSolution(e.target.value)}
                     rows={12}
@@ -137,11 +137,11 @@ const ExerciseDetail = () => {
                   />
                   <div className="flex justify-between items-center">
                     <p className="text-sm text-gray-600">
-                      Make sure your code is well-commented and follows best practices
+                      مطمئن شوید که کد شما توضیحات مناسب داشته و بهترین روش‌ها را دنبال کند
                     </p>
                     <Button onClick={handleSubmit} disabled={!solution.trim()}>
                       <Send className="h-4 w-4 mr-2" />
-                      Submit Solution
+                      ارسال پاسخ
                     </Button>
                   </div>
                 </div>
@@ -150,9 +150,9 @@ const ExerciseDetail = () => {
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Award className="h-8 w-8 text-green-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-green-800 mb-2">Solution Submitted!</h3>
+                  <h3 className="text-lg font-semibold text-green-800 mb-2">پاسخ ارسال شد!</h3>
                   <p className="text-gray-600">
-                    Your solution has been submitted for review. You'll receive feedback within 24-48 hours.
+                    پاسخ شما برای بررسی ارسال شده است. ظرف ۲۴-۴۸ ساعت بازخورد دریافت خواهید کرد.
                   </p>
                 </div>
               )}

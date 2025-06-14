@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -173,7 +174,7 @@ const TrainerDashboard = () => {
                 onClick={handleManageCourses}
               >
                 <Users className="h-6 w-6" />
-                <span>مدیریت دوره‌ها</span>
+                <span>مدیریت درس‌ها</span>
               </Button>
               <Button 
                 variant="outline" 

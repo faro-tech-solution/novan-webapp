@@ -72,12 +72,12 @@ const CourseManagement = () => {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Courses</h2>
-            <p className="text-gray-600">Manage your courses and students</p>
+            <h2 className="text-2xl font-bold text-gray-900">درس‌ها</h2>
+            <p className="text-gray-600">مدیریت درس‌ها و دانشجویان شما</p>
           </div>
           <Button>
             <Plus className="h-4 w-4 mr-2" />
-            Create Course
+            ایجاد درس
           </Button>
         </div>
 
@@ -90,7 +90,7 @@ const CourseManagement = () => {
                   <div>
                     <CardTitle className="text-lg">{course.name}</CardTitle>
                     <CardDescription>
-                      Instructor: {course.instructor}
+                      مربی: {course.instructor}
                     </CardDescription>
                   </div>
                   <Badge className={getStatusColor(course.status)}>
@@ -101,26 +101,26 @@ const CourseManagement = () => {
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Students:</span>
+                    <span className="text-gray-600">دانشجویان:</span>
                     <span className="font-medium">{course.students}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Exercises:</span>
+                    <span className="text-gray-600">تمرین‌ها:</span>
                     <span className="font-medium">{course.exercises}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Avg Score:</span>
+                    <span className="text-gray-600">میانگین نمره:</span>
                     <span className="font-medium">{course.averageScore}%</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Start Date:</span>
+                    <span className="text-gray-600">تاریخ شروع:</span>
                     <span className="font-medium">{course.startDate}</span>
                   </div>
                   
                   <div className="flex space-x-2 pt-2">
                     <Button size="sm" variant="outline" className="flex-1">
                       <Users className="h-4 w-4 mr-1" />
-                      View Students
+                      مشاهده دانشجویان
                     </Button>
                     <Button size="sm" variant="outline">
                       <MoreHorizontal className="h-4 w-4" />
@@ -137,12 +137,12 @@ const CourseManagement = () => {
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
-                <CardTitle>Students</CardTitle>
-                <CardDescription>Manage student enrollments and status</CardDescription>
+                <CardTitle>دانشجویان</CardTitle>
+                <CardDescription>مدیریت ثبت‌نام دانشجویان و وضعیت آن‌ها</CardDescription>
               </div>
               <Button variant="outline">
                 <UserPlus className="h-4 w-4 mr-2" />
-                Enroll Student
+                ثبت‌نام دانشجو
               </Button>
             </div>
             
@@ -150,7 +150,7 @@ const CourseManagement = () => {
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input
-                  placeholder="Search students..."
+                  placeholder="جستجوی دانشجویان..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -162,12 +162,12 @@ const CourseManagement = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Course</TableHead>
-                  <TableHead>Join Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>نام</TableHead>
+                  <TableHead>ایمیل</TableHead>
+                  <TableHead>درس</TableHead>
+                  <TableHead>تاریخ پیوستن</TableHead>
+                  <TableHead>وضعیت</TableHead>
+                  <TableHead>عملیات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -177,7 +177,7 @@ const CourseManagement = () => {
                     <TableRow key={student.id}>
                       <TableCell className="font-medium">{student.name}</TableCell>
                       <TableCell>{student.email}</TableCell>
-                      <TableCell>{studentCourse?.name || 'No Course'}</TableCell>
+                      <TableCell>{studentCourse?.name || 'بدون درس'}</TableCell>
                       <TableCell>{student.joinDate}</TableCell>
                       <TableCell>
                         <Badge className={getStatusColor(student.status)}>
@@ -186,7 +186,7 @@ const CourseManagement = () => {
                       </TableCell>
                       <TableCell>
                         <Button size="sm" variant="outline">
-                          View Profile
+                          مشاهده پروفایل
                         </Button>
                       </TableCell>
                     </TableRow>

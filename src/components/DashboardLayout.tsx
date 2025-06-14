@@ -30,7 +30,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const trainerNavItems = [
     { href: '/dashboard/trainer', icon: LayoutDashboard, label: 'داشبورد' },
-    { href: '/courses-management', icon: Users, label: 'کلاس‌ها' },
+    { href: '/courses-management', icon: Users, label: 'درس‌ها' },
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
     { href: '/students', icon: Award, label: 'دانشجویان' },
   ];
