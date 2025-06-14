@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Progress as ProgressBar } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   TrendingUp, 
@@ -106,7 +106,7 @@ const Progress = () => {
                 <TrendingUp className="h-3 w-3 text-green-500" />
                 <span className="text-green-600">+۱۲% از ماه قبل</span>
               </div>
-              <Progress value={completionRate} className="mt-2" />
+              <ProgressBar value={completionRate} className="mt-2" />
             </CardContent>
           </Card>
 
@@ -221,7 +221,7 @@ const Progress = () => {
                       <span className="font-medium">{skill.name}</span>
                       <span className="text-sm text-gray-600">{skill.value}%</span>
                     </div>
-                    <Progress value={skill.value} className="h-2" />
+                    <ProgressBar value={skill.value} className="h-2" />
                   </div>
                 ))}
               </div>
