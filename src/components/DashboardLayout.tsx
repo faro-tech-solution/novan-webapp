@@ -29,17 +29,17 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   };
 
   const trainerNavItems = [
-    { href: '/dashboard/trainer', icon: LayoutDashboard, label: 'Dashboard' },
-    { href: '/classes', icon: Users, label: 'Classes' },
-    { href: '/exercises', icon: FileText, label: 'Exercises' },
-    { href: '/students', icon: Award, label: 'Students' },
+    { href: '/dashboard/trainer', icon: LayoutDashboard, label: 'داشبورد' },
+    { href: '/classes', icon: Users, label: 'کلاس‌ها' },
+    { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
+    { href: '/students', icon: Award, label: 'دانشجویان' },
   ];
 
   const traineeNavItems = [
-    { href: '/dashboard/trainee', icon: LayoutDashboard, label: 'Dashboard' },
-    { href: '/my-exercises', icon: FileText, label: 'My Exercises' },
-    { href: '/progress', icon: Award, label: 'Progress' },
-    { href: '/courses', icon: BookOpen, label: 'Courses' },
+    { href: '/dashboard/trainee', icon: LayoutDashboard, label: 'داشبورد' },
+    { href: '/my-exercises', icon: FileText, label: 'تمرین‌های من' },
+    { href: '/progress', icon: Award, label: 'پیشرفت' },
+    { href: '/courses', icon: BookOpen, label: 'دوره‌ها' },
   ];
 
   const navItems = user?.role === 'trainer' ? trainerNavItems : traineeNavItems;
@@ -49,28 +49,28 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center space-x-4">
-            <Link to="/" className="flex items-center space-x-2">
+          <div className="flex items-center space-x-4 space-x-reverse">
+            <Link to="/" className="flex items-center space-x-2 space-x-reverse">
               <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">T</span>
+                <span className="text-white font-bold text-sm">آ</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">TutorialHub</span>
+              <span className="text-xl font-bold text-gray-900 font-peyda">آموزش‌هاب</span>
             </Link>
             <span className="text-gray-400">|</span>
-            <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
+            <h1 className="text-lg font-semibold text-gray-900 font-peyda">{title}</h1>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 space-x-reverse">
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
             </Button>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 space-x-reverse">
               <span className="text-sm text-gray-700">
-                {user?.name} ({user?.role})
+                {user?.name} ({user?.role === 'trainer' ? 'مربی' : 'دانشجو'})
               </span>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
+                <LogOut className="h-4 w-4 ml-2" />
+                خروج
               </Button>
             </div>
           </div>
@@ -86,7 +86,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
                 <Link
                   key={item.href}
                   to={item.href}
-                  className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                  className="flex items-center space-x-3 space-x-reverse px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
                 >
                   <item.icon className="h-5 w-5" />
                   <span>{item.label}</span>

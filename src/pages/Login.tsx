@@ -27,10 +27,10 @@ const Login = () => {
       if (success) {
         navigate('/dashboard');
       } else {
-        setError('Invalid credentials. Try trainer@example.com or student@example.com');
+        setError('اطلاعات نادرست. trainer@example.com یا student@example.com را امتحان کنید');
       }
     } catch (err) {
-      setError('Login failed. Please try again.');
+      setError('ورود ناموفق. لطفا دوباره تلاش کنید.');
     } finally {
       setLoading(false);
     }
@@ -43,15 +43,15 @@ const Login = () => {
       <div className="flex items-center justify-center py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Sign In</CardTitle>
+            <CardTitle className="font-peyda">ورود</CardTitle>
             <CardDescription>
-              Enter your credentials to access your dashboard
+              اطلاعات خود را وارد کنید تا به داشبورد دسترسی پیدا کنید
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">ایمیل</Label>
                 <Input
                   id="email"
                   type="email"
@@ -62,7 +62,7 @@ const Login = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">رمز عبور</Label>
                 <Input
                   id="password"
                   type="password"
@@ -77,22 +77,22 @@ const Login = () => {
               )}
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Signing In...' : 'Sign In'}
+                {loading ? 'در حال ورود...' : 'ورود'}
               </Button>
             </form>
 
             <div className="mt-4 text-center text-sm">
-              <span className="text-gray-600">Don't have an account? </span>
+              <span className="text-gray-600">حساب ندارید؟ </span>
               <Link to="/register" className="text-teal-600 hover:text-teal-700 font-medium">
-                Sign up
+                ثبت نام
               </Link>
             </div>
 
             <div className="mt-4 p-3 bg-gray-100 rounded-md text-xs">
-              <p className="font-medium">Demo accounts:</p>
-              <p>Trainer: trainer@example.com</p>
-              <p>Student: student@example.com</p>
-              <p>Password: any</p>
+              <p className="font-medium">حساب‌های آزمایشی:</p>
+              <p>مربی: trainer@example.com</p>
+              <p>دانشجو: student@example.com</p>
+              <p>رمز عبور: هر چیزی</p>
             </div>
           </CardContent>
         </Card>

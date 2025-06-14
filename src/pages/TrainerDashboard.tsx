@@ -16,63 +16,63 @@ const TrainerDashboard = () => {
   };
 
   const recentSubmissions = [
-    { id: 1, student: 'Jane Student', exercise: 'HTML Basics', submitted: '2 hours ago', score: null },
-    { id: 2, student: 'Bob Learner', exercise: 'CSS Flexbox', submitted: '4 hours ago', score: 92 },
-    { id: 3, student: 'Alice Wonder', exercise: 'JavaScript Functions', submitted: '1 day ago', score: null },
+    { id: 1, student: 'جین دانشجو', exercise: 'مبانی HTML', submitted: '۲ ساعت پیش', score: null },
+    { id: 2, student: 'باب یادگیرنده', exercise: 'CSS Flexbox', submitted: '۴ ساعت پیش', score: 92 },
+    { id: 3, student: 'آلیس عجیب', exercise: 'توابع JavaScript', submitted: '۱ روز پیش', score: null },
   ];
 
   const topPerformers = [
-    { name: 'Sarah Johnson', score: 96, exercises: 15 },
-    { name: 'Mike Chen', score: 94, exercises: 12 },
-    { name: 'Emma Davis', score: 92, exercises: 18 },
+    { name: 'سارا جانسون', score: 96, exercises: 15 },
+    { name: 'مایک چن', score: 94, exercises: 12 },
+    { name: 'اما دیویس', score: 92, exercises: 18 },
   ];
 
   return (
-    <DashboardLayout title="Trainer Dashboard">
+    <DashboardLayout title="داشبورد مربی">
       <div className="space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+              <CardTitle className="text-sm font-medium">مجموع دانشجویان</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalStudents}</div>
-              <p className="text-xs text-muted-foreground">+2 new this week</p>
+              <p className="text-xs text-muted-foreground">+۲ جدید این هفته</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Exercises</CardTitle>
+              <CardTitle className="text-sm font-medium">تمرین‌های فعال</CardTitle>
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.activeExercises}</div>
-              <p className="text-xs text-muted-foreground">3 created this week</p>
+              <p className="text-xs text-muted-foreground">۳ ایجاد شده این هفته</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Pending Reviews</CardTitle>
+              <CardTitle className="text-sm font-medium">بررسی‌های در انتظار</CardTitle>
               <Award className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.pendingReviews}</div>
-              <p className="text-xs text-muted-foreground">Need your attention</p>
+              <p className="text-xs text-muted-foreground">نیاز به توجه شما</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+              <CardTitle className="text-sm font-medium">میانگین نمره</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.averageScore}%</div>
-              <p className="text-xs text-muted-foreground">+2% from last month</p>
+              <p className="text-xs text-muted-foreground">+۲% از ماه گذشته</p>
             </CardContent>
           </Card>
         </div>
@@ -81,8 +81,8 @@ const TrainerDashboard = () => {
           {/* Recent Submissions */}
           <Card>
             <CardHeader>
-              <CardTitle>Recent Submissions</CardTitle>
-              <CardDescription>Latest exercise submissions requiring review</CardDescription>
+              <CardTitle>ارسال‌های اخیر</CardTitle>
+              <CardDescription>آخرین ارسال‌های تمرین که نیاز به بررسی دارند</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -93,11 +93,11 @@ const TrainerDashboard = () => {
                       <p className="text-sm text-gray-600">{submission.exercise}</p>
                       <p className="text-xs text-gray-500">{submission.submitted}</p>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 space-x-reverse">
                       {submission.score ? (
                         <Badge variant="secondary">{submission.score}%</Badge>
                       ) : (
-                        <Badge variant="outline">Pending</Badge>
+                        <Badge variant="outline">در انتظار</Badge>
                       )}
                       <Button size="sm" variant="outline">
                         <Eye className="h-4 w-4" />
@@ -112,20 +112,20 @@ const TrainerDashboard = () => {
           {/* Top Performers */}
           <Card>
             <CardHeader>
-              <CardTitle>Top Performers</CardTitle>
-              <CardDescription>Students with highest average scores</CardDescription>
+              <CardTitle>بهترین عملکردها</CardTitle>
+              <CardDescription>دانشجویان با بالاترین میانگین نمرات</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {topPerformers.map((student, index) => (
                   <div key={student.name} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 space-x-reverse">
                       <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
                         <span className="text-teal-600 font-bold">#{index + 1}</span>
                       </div>
                       <div>
                         <p className="font-medium">{student.name}</p>
-                        <p className="text-sm text-gray-600">{student.exercises} exercises completed</p>
+                        <p className="text-sm text-gray-600">{student.exercises} تمرین تکمیل شده</p>
                       </div>
                     </div>
                     <Badge className="bg-green-100 text-green-800">{student.score}%</Badge>
@@ -139,22 +139,22 @@ const TrainerDashboard = () => {
         {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common tasks to manage your training program</CardDescription>
+            <CardTitle>اقدامات سریع</CardTitle>
+            <CardDescription>وظایف رایج برای مدیریت برنامه آموزشی شما</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Button className="h-20 flex flex-col items-center justify-center space-y-2">
                 <Plus className="h-6 w-6" />
-                <span>Create Exercise</span>
+                <span>ایجاد تمرین</span>
               </Button>
               <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
                 <Users className="h-6 w-6" />
-                <span>Manage Classes</span>
+                <span>مدیریت کلاس‌ها</span>
               </Button>
               <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
                 <Award className="h-6 w-6" />
-                <span>Review Submissions</span>
+                <span>بررسی ارسال‌ها</span>
               </Button>
             </div>
           </CardContent>

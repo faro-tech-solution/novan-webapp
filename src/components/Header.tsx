@@ -14,33 +14,33 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2 space-x-reverse">
             <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">T</span>
+              <span className="text-white font-bold text-sm">آ</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">TutorialHub</span>
+            <span className="text-xl font-bold text-gray-900 font-peyda">آموزش‌هاب</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
             <Link to="/" className="text-gray-700 hover:text-teal-600 transition-colors">
-              Home
+              خانه
             </Link>
             <Link to="/courses" className="text-gray-700 hover:text-teal-600 transition-colors">
-              Courses
+              دوره‌ها
             </Link>
             <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
-              Instructors
+              مربیان
             </Link>
             {user && (
               <Link to="/dashboard" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Dashboard
+                داشبورد
               </Link>
             )}
           </nav>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 space-x-reverse">
             <Button variant="ghost" size="icon" className="hidden md:flex">
               <Search className="h-5 w-5" />
             </Button>
@@ -54,21 +54,21 @@ const Header = () => {
             {user ? (
               <Link to="/dashboard">
                 <Button variant="outline">
-                  <User className="h-4 w-4 mr-2" />
+                  <User className="h-4 w-4 ml-2" />
                   {user.name}
                 </Button>
               </Link>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 space-x-reverse">
                 <Link to="/login">
                   <Button variant="outline">
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Sign In
+                    <LogIn className="h-4 w-4 ml-2" />
+                    ورود
                   </Button>
                 </Link>
                 <Link to="/register">
                   <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-                    Try for free
+                    رایگان امتحان کنید
                   </Button>
                 </Link>
               </div>
@@ -91,26 +91,26 @@ const Header = () => {
           <div className="md:hidden py-4 border-t">
             <nav className="flex flex-col space-y-4">
               <Link to="/" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Home
+                خانه
               </Link>
               <Link to="/courses" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Courses
+                دوره‌ها
               </Link>
               <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
-                Instructors
+                مربیان
               </Link>
               {user && (
                 <Link to="/dashboard" className="text-gray-700 hover:text-teal-600 transition-colors">
-                  Dashboard
+                  داشبورد
                 </Link>
               )}
               {!user && (
                 <>
                   <Link to="/login" className="text-gray-700 hover:text-teal-600 transition-colors">
-                    Sign In
+                    ورود
                   </Link>
                   <Link to="/register" className="text-gray-700 hover:text-teal-600 transition-colors">
-                    Register
+                    ثبت نام
                   </Link>
                 </>
               )}

@@ -11,89 +11,89 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 space-x-reverse">
               <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">T</span>
+                <span className="text-white font-bold text-sm">آ</span>
               </div>
-              <span className="text-xl font-bold">TutorialHub</span>
+              <span className="text-xl font-bold font-peyda">آموزش‌هاب</span>
             </div>
             <p className="text-gray-400 text-sm">
-              Learn new skills from industry experts and advance your career with our comprehensive online courses.
+              مهارت‌های جدید را از متخصصان صنعت یاد بگیرید و با دوره‌های آنلاین جامع ما، حرفه خود را پیش ببرید.
             </p>
             <div className="space-y-2 text-sm text-gray-400">
-              <p>Add: 70-80 Upper St Norwich NR2</p>
-              <p>Call: +01 123 5641 231</p>
-              <p>Email: info@tutorialhub.co</p>
+              <p>آدرس: تهران، خیابان ولیعصر، پلاک ۷۰</p>
+              <p>تماس: ۰۲۱-۱۲۳۴۵۶۷۸</p>
+              <p>ایمیل: info@tutorialhub.ir</p>
             </div>
           </div>
 
           {/* Online Platform */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Online Platform</h3>
+            <h3 className="text-lg font-semibold mb-4 font-peyda">پلتفرم آنلاین</h3>
             <div className="space-y-2">
               <Link to="/about" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                About
+                درباره ما
               </Link>
               <Link to="/courses" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Course
+                دوره‌ها
               </Link>
               <Link to="/instructors" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Instructor
+                مربیان
               </Link>
               <Link to="/events" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Events
+                رویدادها
               </Link>
               <Link to="/instructor-details" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Instructor Details
+                جزئیات مربیان
               </Link>
               <Link to="/purchase-guide" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Purchase Guide
+                راهنمای خرید
               </Link>
             </div>
           </div>
 
           {/* Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Links</h3>
+            <h3 className="text-lg font-semibold mb-4 font-peyda">لینک‌ها</h3>
             <div className="space-y-2">
               <Link to="/contact" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Contact Us
+                تماس با ما
               </Link>
               <Link to="/gallery" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Gallery
+                گالری
               </Link>
               <Link to="/news" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                News & Articles
+                اخبار و مقالات
               </Link>
               <Link to="/faq" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                FAQ's
+                سوالات متداول
               </Link>
               <Link to="/coming-soon" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Coming Soon
+                به زودی
               </Link>
               <Link to="/signin" className="block text-gray-400 hover:text-white transition-colors text-sm">
-                Sign In/Registration
+                ورود/ثبت نام
               </Link>
             </div>
           </div>
 
           {/* Newsletter */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contacts</h3>
+            <h3 className="text-lg font-semibold mb-4 font-peyda">تماس</h3>
             <p className="text-gray-400 text-sm mb-4">
-              Enter your email address to register to our newsletter subscription
+              آدرس ایمیل خود را وارد کنید تا در خبرنامه ما ثبت نام شوید
             </p>
-            <div className="flex space-x-2 mb-4">
+            <div className="flex space-x-2 space-x-reverse mb-4">
               <Input
                 type="email"
-                placeholder="Your email"
+                placeholder="ایمیل شما"
                 className="bg-gray-800 border-gray-700 text-white placeholder-gray-400"
               />
               <Button className="bg-teal-500 hover:bg-teal-600">
-                Subscribe
+                عضویت
               </Button>
             </div>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 space-x-reverse">
               <Link to="#" className="text-gray-400 hover:text-white transition-colors">
                 <Facebook className="h-5 w-5" />
               </Link>
@@ -114,7 +114,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-          <p>Copyright 2025 TutorialHub | Developed By DevBlink. All Rights Reserved</p>
+          <p>کپی‌رایت ۱۴۰۳ آموزش‌هاب | توسعه یافته توسط DevBlink. تمام حقوق محفوظ است</p>
         </div>
       </div>
     </footer>
