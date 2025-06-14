@@ -6,10 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, Clock, FileText, Award, TrendingUp, Play } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
-import { useUser } from '@/contexts/UserContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const TraineeDashboard = () => {
-  const { user } = useUser();
+  const { profile } = useAuth();
   
   // Mock data
   const stats = {
@@ -84,8 +84,8 @@ const TraineeDashboard = () => {
       <div className="space-y-6">
         {/* Welcome Message */}
         <div className="bg-gradient-to-r from-teal-500 to-blue-600 text-white p-6 rounded-lg">
-          <h2 className="text-2xl font-bold mb-2 font-peyda">خوش آمدید، {user?.name}!</h2>
-          <p className="opacity-90">کلاس: {user?.className}</p>
+          <h2 className="text-2xl font-bold mb-2 font-peyda">خوش آمدید، {profile?.name}!</h2>
+          <p className="opacity-90">کلاس: {profile?.className}</p>
           <p className="opacity-90">شما {stats.pendingExercises} تمرین برای تکمیل دارید</p>
         </div>
 
