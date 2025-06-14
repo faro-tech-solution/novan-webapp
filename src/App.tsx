@@ -4,6 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Courses from "./pages/Courses";
 import Instructors from "./pages/Instructors";
@@ -30,26 +32,68 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/instructors" element={<Instructors />} />
-          <Route path="/course/:id" element={<CourseDetail />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/trainer" element={<TrainerDashboard />} />
-          <Route path="/dashboard/trainee" element={<TraineeDashboard />} />
-          <Route path="/exercise/:id" element={<ExerciseDetail />} />
-          <Route path="/exercises" element={<Exercises />} />
-          <Route path="/courses-management" element={<CourseManagement />} />
-          <Route path="/my-exercises" element={<MyExercises />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/student-courses" element={<StudentCourses />} />
-          <Route path="/students" element={<Students />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/instructors" element={<Instructors />} />
+            <Route path="/course/:id" element={<CourseDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard/trainer" element={
+              <ProtectedRoute requiredRole="trainer">
+                <TrainerDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard/trainee" element={
+              <ProtectedRoute requiredRole="trainee">
+                <TraineeDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/exercise/:id" element={
+              <ProtectedRoute>
+                <ExerciseDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/exercises" element={
+              <ProtectedRoute requiredRole="trainer">
+                <Exercises />
+              </ProtectedRoute>
+            } />
+            <Route path="/courses-management" element={
+              <ProtectedRoute requiredRole="trainer">
+                <CourseManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/my-exercises" element={
+              <ProtectedRoute requiredRole="trainee">
+                <MyExercises />
+              </ProtectedRoute>
+            } />
+            <Route path="/progress" element={
+              <ProtectedRoute requiredRole="trainee">
+                <Progress />
+              </ProtectedRoute>
+            } />
+            <Route path="/student-courses" element={
+              <ProtectedRoute requiredRole="trainee">
+                <StudentCourses />
+              </ProtectedRoute>
+            } />
+            <Route path="/students" element={
+              <ProtectedRoute requiredRole="trainer">
+                <Students />
+              </ProtectedRoute>
+            } />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
