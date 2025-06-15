@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -86,8 +85,7 @@ const Progress = () => {
               <div className="text-2xl font-bold">{stats.totalPoints}</div>
               <div className="flex items-center space-x-2 space-x-reverse text-sm">
                 <span className="text-gray-600">
-                  تمرین: {stats.totalPoints - studentAwards.reduce((sum, award) => sum + award.bonus_points, 0)} | 
-                  جوایز: {studentAwards.reduce((sum, award) => sum + award.bonus_points, 0)}
+                  بر اساس لاگ فعالیت‌ها
                 </span>
               </div>
             </CardContent>

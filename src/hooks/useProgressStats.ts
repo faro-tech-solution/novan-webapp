@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMyExercises } from '@/hooks/useMyExercises';
 import { useStudentAwards } from '@/hooks/useStudentAwards';
-import { getWeeklyActivityStats, calculateActivityStreak } from '@/services/activityLogService';
+import { getWeeklyActivityStats, calculateActivityStreak, fetchStudentActivityLogs } from '@/services/activityLogService';
 
 interface ProgressStats {
   totalExercises: number;
@@ -89,6 +89,28 @@ export const useProgressStats = () => {
     return weeklyActivity;
   };
 
+  // Calculate total points from activity logs
+  const calculateTotalPointsFromActivityLogs = async (): Promise<number> => {
+    if (!user) return 0;
+
+    try {
+      console.log('Calculating total points from activity logs...');
+      const activityLogs = await fetchStudentActivityLogs(user.id);
+      
+      const totalPoints = activityLogs.reduce((sum, activity) => {
+        return sum + (activity.points_earned || 0);
+      }, 0);
+
+      console.log('Total points from activity logs:', totalPoints);
+      console.log('Activity logs count:', activityLogs.length);
+      
+      return totalPoints;
+    } catch (err) {
+      console.error('Error calculating points from activity logs:', err);
+      return 0;
+    }
+  };
+
   const calculateStats = async () => {
     if (exercisesLoading || awardsLoading || !myExercises) return;
 
@@ -107,17 +129,11 @@ export const useProgressStats = () => {
         return sum + hours;
       }, 0);
 
-      // Calculate total points including bonus points from awards
-      const exercisePoints = completedExercises.reduce((sum, ex) => sum + (ex.points || 0), 0);
-      const bonusPoints = studentAwards.reduce((sum, award) => sum + award.bonus_points, 0);
-      const totalPoints = exercisePoints + bonusPoints;
+      // Calculate total points from activity logs instead of submissions and awards
+      const totalPoints = await calculateTotalPointsFromActivityLogs();
 
-      console.log('Points calculation:');
-      console.log('Exercise points:', exercisePoints);
-      console.log('Bonus points from awards:', bonusPoints);
+      console.log('Points calculation from activity logs:');
       console.log('Total points:', totalPoints);
-      console.log('Completed exercises:', completedExercises);
-      console.log('Student awards:', studentAwards);
 
       // Use new activity-based streak calculation
       const currentStreak = user ? await calculateActivityStreak(user.id) : 0;
