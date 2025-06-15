@@ -13,6 +13,23 @@ const getSessionId = (): string => {
   return sessionId;
 };
 
+// Check if user has already logged activity today
+const hasLoggedTodayActivity = async (userId: string, activityType: string): Promise<boolean> => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  
+  const todayKey = `activity_${activityType}_${today.toISOString().split('T')[0]}_${userId}`;
+  return localStorage.getItem(todayKey) === 'true';
+};
+
+const markTodayActivityLogged = (userId: string, activityType: string) => {
+  const today = new Date();
+  const todayKey = `activity_${activityType}_${today.toISOString().split('T')[0]}_${userId}`;
+  localStorage.setItem(todayKey, 'true');
+};
+
 export const useActivityLogger = () => {
   const { user } = useAuth();
 
@@ -36,11 +53,21 @@ export const useActivityLogger = () => {
     });
   }, [user]);
 
-  // Convenience methods for common activities
-  const logLogin = useCallback(() => {
+  // Enhanced login that ensures one daily login log per day
+  const logLogin = useCallback(async () => {
+    if (!user) return;
+    
+    const hasLoggedToday = await hasLoggedTodayActivity(user.id, 'daily_login');
+    if (!hasLoggedToday) {
+      await logActivity('daily_login', { timestamp: new Date().toISOString() }, 5);
+      markTodayActivityLogged(user.id, 'daily_login');
+    }
+    
+    // Also log the regular login activity
     logActivity(ACTIVITY_TYPES.LOGIN, { timestamp: new Date().toISOString() }, 5);
-  }, [logActivity]);
+  }, [logActivity, user]);
 
+  // Convenience methods for common activities
   const logExerciseView = useCallback((exerciseId: string, exerciseTitle: string) => {
     logActivity(ACTIVITY_TYPES.EXERCISE_VIEW, { 
       exercise_id: exerciseId, 

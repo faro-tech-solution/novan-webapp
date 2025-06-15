@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMyExercises } from '@/hooks/useMyExercises';
 import { useStudentAwards } from '@/hooks/useStudentAwards';
-import { getWeeklyActivityStats } from '@/services/activityLogService';
+import { getWeeklyActivityStats, calculateActivityStreak } from '@/services/activityLogService';
 
 interface ProgressStats {
   totalExercises: number;
@@ -24,42 +24,6 @@ export const useProgressStats = () => {
   const { user } = useAuth();
   const { myExercises, loading: exercisesLoading } = useMyExercises();
   const { studentAwards, loading: awardsLoading } = useStudentAwards();
-
-  const calculateCurrentStreak = () => {
-    const submissions = myExercises
-      .filter(ex => ex.submission_status === 'completed' && ex.submitted_at)
-      .sort((a, b) => new Date(b.submitted_at!).getTime() - new Date(a.submitted_at!).getTime());
-
-    if (submissions.length === 0) return 0;
-
-    let streak = 0;
-    let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    // Check if there's a submission today or yesterday
-    const latestSubmission = new Date(submissions[0].submitted_at!);
-    latestSubmission.setHours(0, 0, 0, 0);
-    
-    const daysDiff = Math.floor((currentDate.getTime() - latestSubmission.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (daysDiff > 1) return 0; // Streak broken if more than 1 day gap
-    
-    // Count consecutive days backwards
-    const submissionDates = new Set(
-      submissions.map(sub => {
-        const date = new Date(sub.submitted_at!);
-        return date.toISOString().split('T')[0];
-      })
-    );
-
-    let checkDate = new Date(latestSubmission);
-    while (submissionDates.has(checkDate.toISOString().split('T')[0])) {
-      streak++;
-      checkDate.setDate(checkDate.getDate() - 1);
-    }
-
-    return streak;
-  };
 
   const calculateWeeklyPointsActivity = async () => {
     if (!user) return [];
@@ -150,7 +114,8 @@ export const useProgressStats = () => {
       const bonusPoints = studentAwards.reduce((sum, award) => sum + award.bonus_points, 0);
       const totalPoints = exercisePoints + bonusPoints;
 
-      const currentStreak = calculateCurrentStreak();
+      // Use new activity-based streak calculation
+      const currentStreak = user ? await calculateActivityStreak(user.id) : 0;
       const weeklyPointsActivity = await calculateWeeklyPointsActivity();
 
       setStats({

@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ActivityLog {
@@ -20,9 +21,10 @@ export interface ActivityLogInsert {
   duration_minutes?: number;
 }
 
-// Activity types constants (removed PAGE_VISIT)
+// Activity types constants (removed PAGE_VISIT, added daily_login)
 export const ACTIVITY_TYPES = {
   LOGIN: 'login',
+  DAILY_LOGIN: 'daily_login', // Once per day login tracking for streak
   EXERCISE_VIEW: 'exercise_view',
   EXERCISE_START: 'exercise_start',
   EXERCISE_COMPLETE: 'exercise_complete',
@@ -133,6 +135,74 @@ export const getWeeklyActivityStats = async (studentId: string): Promise<Array<{
   } catch (err) {
     console.error('Error calculating weekly activity stats:', err);
     return [];
+  }
+};
+
+// New function to calculate streak based on activity logs
+export const calculateActivityStreak = async (studentId: string): Promise<number> => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Get activities from the last 100 days to check for streak
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - 100);
+    
+    const activities = await fetchStudentActivityLogs(studentId, startDate, today);
+    
+    if (activities.length === 0) return 0;
+    
+    // Group activities by date
+    const activitiesByDate = new Map<string, boolean>();
+    
+    activities.forEach(activity => {
+      const activityDate = new Date(activity.created_at);
+      activityDate.setHours(0, 0, 0, 0);
+      const dateKey = activityDate.toISOString().split('T')[0];
+      
+      // Count any meaningful activity (not just logout)
+      if (activity.activity_type !== 'logout') {
+        activitiesByDate.set(dateKey, true);
+      }
+    });
+    
+    let streak = 0;
+    let checkDate = new Date(today);
+    
+    // Check if there was activity today or yesterday (grace period)
+    const todayKey = today.toISOString().split('T')[0];
+    const yesterdayDate = new Date(today);
+    yesterdayDate.setDate(today.getDate() - 1);
+    const yesterdayKey = yesterdayDate.toISOString().split('T')[0];
+    
+    let startFromToday = activitiesByDate.has(todayKey);
+    let startFromYesterday = activitiesByDate.has(yesterdayKey);
+    
+    if (!startFromToday && !startFromYesterday) {
+      return 0; // No recent activity, streak is broken
+    }
+    
+    // Start checking from yesterday if no activity today
+    if (!startFromToday && startFromYesterday) {
+      checkDate = yesterdayDate;
+    }
+    
+    // Count consecutive days backwards
+    while (true) {
+      const dateKey = checkDate.toISOString().split('T')[0];
+      
+      if (activitiesByDate.has(dateKey)) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
+  } catch (err) {
+    console.error('Error calculating activity streak:', err);
+    return 0;
   }
 };
 
