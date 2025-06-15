@@ -35,23 +35,34 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [enrollments, setEnrollments] = useState<StudentEnrollment[]>([]);
   const [loading, setLoading] = useState(false);
+  const [profileNotFound, setProfileNotFound] = useState(false);
   const { toast } = useToast();
 
   const fetchStudentProfile = async () => {
     if (!studentId) return;
 
     setLoading(true);
+    setProfileNotFound(false);
     try {
-      // Fetch student profile
+      // Fetch student profile using maybeSingle() to handle cases where profile doesn't exist
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', studentId)
-        .single();
+        .maybeSingle();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Profile error:', profileError);
+        throw profileError;
+      }
 
-      setProfile(profileData);
+      if (!profileData) {
+        console.log('No profile found for student ID:', studentId);
+        setProfileNotFound(true);
+        setProfile(null);
+      } else {
+        setProfile(profileData);
+      }
 
       // Fetch student enrollments
       const { data: enrollmentData, error: enrollmentError } = await supabase
@@ -120,6 +131,50 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
         {loading ? (
           <div className="flex items-center justify-center h-32">
             <div className="text-lg">در حال بارگذاری...</div>
+          </div>
+        ) : profileNotFound ? (
+          <div className="space-y-6">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center py-8">
+                  <p className="text-gray-500 mb-4">پروفایل کاملی برای این دانشجو یافت نشد</p>
+                  <p className="text-sm text-gray-400">نام: {studentName}</p>
+                  <p className="text-sm text-gray-400">شناسه: {studentId}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Course Enrollments */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <BookOpen className="h-5 w-5 mr-2" />
+                  دوره‌های ثبت‌نام شده ({enrollments.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {enrollments.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">در هیچ دوره‌ای ثبت‌نام نکرده</p>
+                ) : (
+                  <div className="space-y-3">
+                    {enrollments.map((enrollment, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex-1">
+                          <h4 className="font-medium">{enrollment.course_name}</h4>
+                          <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-500 mt-1">
+                            <span>ترم: {enrollment.term_name || 'عمومی'}</span>
+                            <span>تاریخ ثبت‌نام: {new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR')}</span>
+                          </div>
+                        </div>
+                        <Badge className={getStatusColor(enrollment.status)}>
+                          {getStatusText(enrollment.status)}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         ) : profile ? (
           <div className="space-y-6">
@@ -218,11 +273,7 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
               </CardContent>
             </Card>
           </div>
-        ) : (
-          <div className="text-center py-8 text-gray-500">
-            پروفایل دانشجو یافت نشد
-          </div>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   );
