@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import CourseCard from '@/components/CourseCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -163,7 +162,22 @@ const Courses = () => {
           {filteredCourses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredCourses.map((course) => (
-                <CourseCard key={course.id} {...course} />
+                <div key={course.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  <img src={course.image} alt={course.title} className="w-full h-48 object-cover" />
+                  <div className="p-6">
+                    <h3 className="text-lg font-semibold mb-2">{course.title}</h3>
+                    <p className="text-gray-600 mb-4">by {course.instructor}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-2xl font-bold text-teal-600">${course.price}</span>
+                      <div className="text-yellow-500">
+                        {'★'.repeat(Math.floor(course.rating))} ({course.reviews})
+                      </div>
+                    </div>
+                    <div className="mt-4 text-sm text-gray-500">
+                      <span>{course.duration} • {course.lessons} lessons • {course.students} students</span>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           ) : (
