@@ -312,6 +312,39 @@ export type Database = {
         }
         Relationships: []
       }
+      student_activity_logs: {
+        Row: {
+          activity_data: Json | null
+          activity_type: string
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          points_earned: number | null
+          session_id: string | null
+          student_id: string
+        }
+        Insert: {
+          activity_data?: Json | null
+          activity_type: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          points_earned?: number | null
+          session_id?: string | null
+          student_id: string
+        }
+        Update: {
+          activity_data?: Json | null
+          activity_type?: string
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          points_earned?: number | null
+          session_id?: string | null
+          student_id?: string
+        }
+        Relationships: []
+      }
       student_awards: {
         Row: {
           award_id: string
@@ -452,6 +485,17 @@ export type Database = {
       is_student_enrolled_in_course: {
         Args: { course_id: string; student_id: string }
         Returns: boolean
+      }
+      log_student_activity: {
+        Args: {
+          p_student_id: string
+          p_activity_type: string
+          p_activity_data?: Json
+          p_points_earned?: number
+          p_session_id?: string
+          p_duration_minutes?: number
+        }
+        Returns: string
       }
     }
     Enums: {

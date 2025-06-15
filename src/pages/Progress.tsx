@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,13 +22,20 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgressStats } from '@/hooks/useProgressStats';
 import { useStudentAwards } from '@/hooks/useStudentAwards';
+import { useActivityLogger } from '@/hooks/useActivityLogger';
 import { AchievementsDisplay } from '@/components/awards/AchievementsDisplay';
 
 const Progress = () => {
   const { profile } = useAuth();
   const { stats, loading, error } = useProgressStats();
   const { studentAwards, allAwards } = useStudentAwards();
+  const { logPageVisit } = useActivityLogger();
   const [timeFilter, setTimeFilter] = useState('month');
+
+  // Log page visit when component mounts
+  useEffect(() => {
+    logPageVisit('progress');
+  }, [logPageVisit]);
 
   if (loading) {
     return (
@@ -112,7 +119,7 @@ const Progress = () => {
                 <Activity className="h-5 w-5 ml-2" />
                 فعالیت هفتگی
               </CardTitle>
-              <CardDescription>امتیازات کسب شده در هفته گذشته</CardDescription>
+              <CardDescription>امتیازات کسب شده در هفته گذشته (بر اساس لاگ فعالیت)</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>

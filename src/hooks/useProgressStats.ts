@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMyExercises } from '@/hooks/useMyExercises';
 import { useStudentAwards } from '@/hooks/useStudentAwards';
+import { getWeeklyActivityStats } from '@/services/activityLogService';
 
 interface ProgressStats {
   totalExercises: number;
@@ -60,12 +61,34 @@ export const useProgressStats = () => {
     return streak;
   };
 
-  const calculateWeeklyPointsActivity = () => {
+  const calculateWeeklyPointsActivity = async () => {
+    if (!user) return [];
+
+    try {
+      // Use the new activity logging system for weekly activity
+      console.log('Fetching weekly activity stats from activity logs...');
+      const activityStats = await getWeeklyActivityStats(user.id);
+      
+      if (activityStats.length > 0) {
+        console.log('Using activity logs for weekly stats:', activityStats);
+        return activityStats;
+      }
+
+      // Fallback to old calculation if no activity logs found
+      console.log('No activity logs found, falling back to submission-based calculation...');
+      return calculateLegacyWeeklyActivity();
+    } catch (err) {
+      console.error('Error fetching activity stats, using fallback:', err);
+      return calculateLegacyWeeklyActivity();
+    }
+  };
+
+  const calculateLegacyWeeklyActivity = () => {
     const today = new Date();
     const weeklyActivity = [];
     const dayNames = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه', 'شنبه'];
     
-    // Calculate for the past 7 days
+    // Calculate for the past 7 days using old method
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
@@ -104,7 +127,7 @@ export const useProgressStats = () => {
     return weeklyActivity;
   };
 
-  const calculateStats = () => {
+  const calculateStats = async () => {
     if (exercisesLoading || awardsLoading || !myExercises) return;
 
     try {
@@ -128,7 +151,7 @@ export const useProgressStats = () => {
       const totalPoints = exercisePoints + bonusPoints;
 
       const currentStreak = calculateCurrentStreak();
-      const weeklyPointsActivity = calculateWeeklyPointsActivity();
+      const weeklyPointsActivity = await calculateWeeklyPointsActivity();
 
       setStats({
         totalExercises,
@@ -153,7 +176,7 @@ export const useProgressStats = () => {
     if (!exercisesLoading && !awardsLoading) {
       calculateStats();
     }
-  }, [myExercises, studentAwards, exercisesLoading, awardsLoading]);
+  }, [myExercises, studentAwards, exercisesLoading, awardsLoading, user]);
 
   return {
     stats,

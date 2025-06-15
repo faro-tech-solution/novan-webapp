@@ -1,10 +1,12 @@
 
+import { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMyExercises } from '@/hooks/useMyExercises';
 import { useStudentAwards } from '@/hooks/useStudentAwards';
+import { useActivityLogger } from '@/hooks/useActivityLogger';
 import { DailyTasksCard } from '@/components/dashboard/DailyTasksCard';
 import { TraineeStatsCards } from '@/components/dashboard/TraineeStatsCards';
 import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesCard';
@@ -15,6 +17,12 @@ const TraineeDashboard = () => {
   const { profile } = useAuth();
   const { myExercises, loading, error, refetch } = useMyExercises();
   const { studentAwards, loading: awardsLoading } = useStudentAwards();
+  const { logPageVisit } = useActivityLogger();
+
+  // Log page visit when component mounts
+  useEffect(() => {
+    logPageVisit('trainee_dashboard');
+  }, [logPageVisit]);
 
   // Filter out exercises that will start in the future (same logic as MyExercises)
   const currentExercises = myExercises.filter(exercise => {
