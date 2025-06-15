@@ -23,6 +23,7 @@ import ExerciseDetail from "@/pages/ExerciseDetail";
 import Students from "@/pages/Students";
 import Progress from "@/pages/Progress";
 import CourseManagement from "@/pages/CourseManagement";
+import ReviewSubmissions from "@/pages/ReviewSubmissions";
 import NotFound from "@/pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -161,6 +162,20 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <ExerciseDetail />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Review Submissions - Trainers and Admins only */}
+      <Route 
+        path="/review-submissions" 
+        element={
+          <ProtectedRoute>
+            {(profile?.role === 'trainer' || profile?.role === 'admin') ? (
+              <ReviewSubmissions />
+            ) : (
+              <NotFound />
+            )}
           </ProtectedRoute>
         } 
       />
