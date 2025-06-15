@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,80 +13,19 @@ import {
   Play,
   Calendar,
   Award,
-  Filter
+  Filter,
+  Loader2
 } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStudentCourses } from '@/hooks/useStudentCourses';
 
 const StudentCourses = () => {
   const { profile } = useAuth();
   const [filter, setFilter] = useState('all');
+  const { courses, loading, error } = useStudentCourses();
 
-  // Mock data for student's enrolled courses
-  const enrolledCourses = [
-    {
-      id: 1,
-      title: 'مبانی برنامه‌نویسی جاوااسکریپت',
-      instructor: 'احمد محمدی',
-      progress: 75,
-      totalLessons: 24,
-      completedLessons: 18,
-      duration: '۸ ساعت',
-      difficulty: 'مبتدی',
-      category: 'برنامه‌نویسی',
-      thumbnail: '/placeholder.svg',
-      enrollDate: '۱۴۰۳/۰۵/۱۵',
-      nextLesson: 'توابع در جاوااسکریپت',
-      status: 'active'
-    },
-    {
-      id: 2,
-      title: 'طراحی رابط کاربری با React',
-      instructor: 'مریم حسینی',
-      progress: 45,
-      totalLessons: 32,
-      completedLessons: 14,
-      duration: '۱۲ ساعت',
-      difficulty: 'متوسط',
-      category: 'فرانت‌اند',
-      thumbnail: '/placeholder.svg',
-      enrollDate: '۱۴۰۳/۰۶/۰۱',
-      nextLesson: 'State Management',
-      status: 'active'
-    },
-    {
-      id: 3,
-      title: 'CSS پیشرفته و انیمیشن',
-      instructor: 'علی رضایی',
-      progress: 100,
-      totalLessons: 18,
-      completedLessons: 18,
-      duration: '۶ ساعت',
-      difficulty: 'متوسط',
-      category: 'طراحی',
-      thumbnail: '/placeholder.svg',
-      enrollDate: '۱۴۰۳/۰۴/۲۰',
-      nextLesson: null,
-      status: 'completed'
-    },
-    {
-      id: 4,
-      title: 'Node.js و توسعه بک‌اند',
-      instructor: 'سارا احمدی',
-      progress: 25,
-      totalLessons: 28,
-      completedLessons: 7,
-      duration: '۱۵ ساعت',
-      difficulty: 'پیشرفته',
-      category: 'بک‌اند',
-      thumbnail: '/placeholder.svg',
-      enrollDate: '۱۴۰۳/۰۶/۱۰',
-      nextLesson: 'Express.js مقدمات',
-      status: 'active'
-    }
-  ];
-
-  const filteredCourses = enrolledCourses.filter(course => {
+  const filteredCourses = courses.filter(course => {
     if (filter === 'all') return true;
     if (filter === 'active') return course.status === 'active';
     if (filter === 'completed') return course.status === 'completed';
@@ -108,6 +48,30 @@ const StudentCourses = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout title="دوره‌های من">
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="mr-2">در حال بارگذاری...</span>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout title="دوره‌های من">
+        <div className="text-center py-12">
+          <div className="text-red-600 mb-4">{error}</div>
+          <Button onClick={() => window.location.reload()}>
+            تلاش مجدد
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="دوره‌های من">
@@ -141,7 +105,7 @@ const StudentCourses = () => {
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{enrolledCourses.length}</div>
+              <div className="text-2xl font-bold">{courses.length}</div>
             </CardContent>
           </Card>
 
@@ -152,7 +116,7 @@ const StudentCourses = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {enrolledCourses.filter(c => c.status === 'active').length}
+                {courses.filter(c => c.status === 'active').length}
               </div>
             </CardContent>
           </Card>
@@ -164,7 +128,7 @@ const StudentCourses = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {enrolledCourses.filter(c => c.status === 'completed').length}
+                {courses.filter(c => c.status === 'completed').length}
               </div>
             </CardContent>
           </Card>
@@ -176,7 +140,7 @@ const StudentCourses = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {Math.round(enrolledCourses.reduce((acc, c) => acc + c.progress, 0) / enrolledCourses.length)}%
+                {courses.length > 0 ? Math.round(courses.reduce((acc, c) => acc + c.progress, 0) / courses.length) : 0}%
               </div>
             </CardContent>
           </Card>
@@ -242,7 +206,7 @@ const StudentCourses = () => {
 
                   {/* Actions */}
                   <div className="flex space-x-2 space-x-reverse">
-                    <Link to={`/course/${course.id}`} className="flex-1">
+                    <Link to={`/courses/${course.id}`} className="flex-1">
                       <Button className="w-full">
                         {course.status === 'completed' ? 'مرور دوره' : 'ادامه مطالعه'}
                       </Button>
