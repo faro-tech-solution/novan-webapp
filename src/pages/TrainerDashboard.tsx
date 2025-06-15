@@ -7,24 +7,20 @@ import { Badge } from '@/components/ui/badge';
 import { Users, FileText, Award, TrendingUp, Plus, Eye } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import CreateExerciseDialog from '@/components/CreateExerciseDialog';
+import { useRecentSubmissions } from '@/hooks/useRecentSubmissions';
 
 const TrainerDashboard = () => {
   const navigate = useNavigate();
   const [showCreateExercise, setShowCreateExercise] = useState(false);
+  const { submissions, loading: submissionsLoading } = useRecentSubmissions();
 
-  // Mock data
+  // Mock data for other sections (can be replaced with real data later)
   const stats = {
     totalStudents: 24,
     activeExercises: 8,
-    pendingReviews: 12,
+    pendingReviews: submissions.filter(s => s.score === null).length,
     averageScore: 85
   };
-
-  const recentSubmissions = [
-    { id: 1, student: 'جین دانشجو', exercise: 'مبانی HTML', submitted: '۲ ساعت پیش', score: null },
-    { id: 2, student: 'باب یادگیرنده', exercise: 'CSS Flexbox', submitted: '۴ ساعت پیش', score: 92 },
-    { id: 3, student: 'آلیس عجیب', exercise: 'توابع JavaScript', submitted: '۱ روز پیش', score: null },
-  ];
 
   const topPerformers = [
     { name: 'سارا جانسون', score: 96, exercises: 15 },
@@ -41,7 +37,11 @@ const TrainerDashboard = () => {
   };
 
   const handleReviewSubmissions = () => {
-    navigate('/exercises');
+    navigate('/review-submissions');
+  };
+
+  const handleViewSubmission = (submissionId: string) => {
+    navigate(`/review-submissions?submission=${submissionId}`);
   };
 
   return (
@@ -102,27 +102,41 @@ const TrainerDashboard = () => {
               <CardDescription>آخرین ارسال‌های تمرین که نیاز به بررسی دارند</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {recentSubmissions.map((submission) => (
-                  <div key={submission.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{submission.student}</p>
-                      <p className="text-sm text-gray-600">{submission.exercise}</p>
-                      <p className="text-xs text-gray-500">{submission.submitted}</p>
+              {submissionsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="text-sm text-gray-500">در حال بارگذاری...</div>
+                </div>
+              ) : submissions.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">هیچ ارسالی یافت نشد</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {submissions.slice(0, 5).map((submission) => (
+                    <div key={submission.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <p className="font-medium">{submission.student}</p>
+                        <p className="text-sm text-gray-600">{submission.exercise}</p>
+                        <p className="text-xs text-gray-500">{submission.submitted}</p>
+                      </div>
+                      <div className="flex items-center space-x-2 space-x-reverse">
+                        {submission.score ? (
+                          <Badge variant="secondary">{submission.score}%</Badge>
+                        ) : (
+                          <Badge variant="outline">در انتظار</Badge>
+                        )}
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleViewSubmission(submission.id)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      {submission.score ? (
-                        <Badge variant="secondary">{submission.score}%</Badge>
-                      ) : (
-                        <Badge variant="outline">در انتظار</Badge>
-                      )}
-                      <Button size="sm" variant="outline">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
