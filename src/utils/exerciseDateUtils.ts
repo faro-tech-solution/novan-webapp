@@ -22,8 +22,9 @@ export const calculateAdjustedDates = (
   const adjustedOpenDate = new Date(referenceStartDate);
   adjustedOpenDate.setDate(adjustedOpenDate.getDate() + Math.max(0, exercise.days_to_open));
   
+  // Fix: Due date should be calculated as referenceStartDate + days_to_open + days_to_due
   const adjustedDueDate = new Date(referenceStartDate);
-  adjustedDueDate.setDate(adjustedDueDate.getDate() + Math.max(0, exercise.days_to_due));
+  adjustedDueDate.setDate(adjustedDueDate.getDate() + Math.max(0, exercise.days_to_open + exercise.days_to_due));
   
   const adjustedCloseDate = new Date(referenceStartDate);
   adjustedCloseDate.setDate(adjustedCloseDate.getDate() + Math.max(0, exercise.days_to_close));
