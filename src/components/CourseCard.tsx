@@ -47,8 +47,8 @@ const CourseCard = ({
           </Badge>
           <Badge 
             className={`absolute top-4 right-4 ${
-              level === 'Beginner' ? 'bg-green-500' : 
-              level === 'Intermediate' ? 'bg-blue-500' : 'bg-purple-500'
+              level === 'مبتدی' || level === 'Beginner' ? 'bg-green-500' : 
+              level === 'متوسط' || level === 'Intermediate' ? 'bg-blue-500' : 'bg-purple-500'
             }`}
           >
             {level}
@@ -67,7 +67,7 @@ const CourseCard = ({
           </h3>
         </Link>
         
-        <p className="text-gray-600 text-sm mb-4">By {instructor}</p>
+        <p className="text-gray-600 text-sm mb-4">توسط {instructor}</p>
         
         <div className="flex items-center mb-4 space-x-4">
           <div className="flex items-center">
@@ -90,21 +90,21 @@ const CourseCard = ({
         <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
           <div className="flex items-center">
             <BookOpen className="h-4 w-4 mr-1" />
-            <span>{lessons} Lessons</span>
+            <span>{lessons} درس</span>
           </div>
           <div className="flex items-center">
             <Users className="h-4 w-4 mr-1" />
-            <span>{students} Students</span>
+            <span>{students} دانشجو</span>
           </div>
         </div>
         
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-teal-600">${price}</span>
+          <span className="text-2xl font-bold text-teal-600">{price} تومان</span>
           <Link
             to={`/course/${id}`}
             className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors text-sm font-medium"
           >
-            Enroll Now
+            ثبت نام
           </Link>
         </div>
       </CardContent>

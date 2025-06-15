@@ -11,8 +11,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
-  // Fetch courses from database
-  const { data: courses = [], isLoading: coursesLoading } = useQuery({
+  // Fetch courses from database for featured section
+  const { data: featuredCourses = [], isLoading: coursesLoading } = useQuery({
     queryKey: ['featured-courses'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -74,6 +74,39 @@ const Index = () => {
     }
   });
 
+  // Fetch statistics from database
+  const { data: stats } = useQuery({
+    queryKey: ['platform-stats'],
+    queryFn: async () => {
+      // Get total courses count
+      const { count: coursesCount } = await supabase
+        .from('courses')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'active');
+      
+      // Get total students count
+      const { count: studentsCount } = await supabase
+        .from('course_enrollments')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'active');
+      
+      // Get unique instructors count
+      const { data: instructorsData } = await supabase
+        .from('courses')
+        .select('instructor_id')
+        .eq('status', 'active');
+      
+      const uniqueInstructorsCount = new Set(instructorsData?.map(course => course.instructor_id)).size;
+      
+      return {
+        totalCourses: coursesCount || 0,
+        totalStudents: studentsCount || 0,
+        totalInstructors: uniqueInstructorsCount || 0,
+        satisfactionRate: 99.9
+      };
+    }
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -84,7 +117,7 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-5xl font-bold mb-6">
-                دریافت <span className="text-yellow-300">2500+</span><br />
+                دریافت <span className="text-yellow-300">{stats?.totalCourses || '2500+'}+</span><br />
                 بهترین دوره‌های آنلاین<br />
                 از پلتفرم آموزشی
               </h1>
@@ -95,23 +128,25 @@ const Index = () => {
                 <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
                   همین امروز شروع کنید
                 </Button>
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-                  دوره‌ها را کاوش کنید
-                </Button>
+                <Link to="/all-courses">
+                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600 w-full">
+                    دوره‌ها را کاوش کنید
+                  </Button>
+                </Link>
               </div>
               
               {/* Stats */}
               <div className="flex items-center gap-8 mt-12">
                 <div className="text-center">
-                  <div className="text-2xl font-bold">2500+</div>
+                  <div className="text-2xl font-bold">{stats?.totalCourses || '2500+'}+</div>
                   <div className="text-sm text-teal-100">دوره آنلاین</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold">متخصص</div>
+                  <div className="text-2xl font-bold">{stats?.totalInstructors || 'متخصص'}</div>
                   <div className="text-sm text-teal-100">مربیان</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold">20k+</div>
+                  <div className="text-2xl font-bold">{stats?.totalStudents || '20k+'}+</div>
                   <div className="text-sm text-teal-100">دانشجوی آنلاین</div>
                 </div>
                 <div className="text-center">
@@ -130,7 +165,7 @@ const Index = () => {
               <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-gray-800 font-medium">به بیش از 20000 دانشجوی آنلاین بپیوندید</span>
+                  <span className="text-gray-800 font-medium">به بیش از {stats?.totalStudents || '20000'} دانشجوی آنلاین بپیوندید</span>
                 </div>
               </div>
             </div>
@@ -176,9 +211,11 @@ const Index = () => {
                 </div>
               </div>
               
-              <Button size="lg" className="bg-teal-500 hover:bg-teal-600">
-                شروع یادگیری
-              </Button>
+              <Link to="/all-courses">
+                <Button size="lg" className="bg-teal-500 hover:bg-teal-600">
+                  شروع یادگیری
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -198,16 +235,18 @@ const Index = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {courses.map((course) => (
+              {featuredCourses.map((course) => (
                 <CourseCard key={course.id} {...course} />
               ))}
             </div>
           )}
           
           <div className="text-center mt-12">
-            <Button size="lg" variant="outline" className="border-teal-500 text-teal-600 hover:bg-teal-50">
-              مشاهده تمام دوره‌ها
-            </Button>
+            <Link to="/all-courses">
+              <Button size="lg" variant="outline" className="border-teal-500 text-teal-600 hover:bg-teal-50">
+                مشاهده تمام دوره‌ها
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -217,7 +256,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-teal-600 mb-2">45.2K</div>
+              <div className="text-4xl font-bold text-teal-600 mb-2">{stats?.totalStudents || '45.2K'}</div>
               <div className="text-gray-600">دانشجوی ثبت‌نام شده</div>
             </div>
             <div>
@@ -225,11 +264,11 @@ const Index = () => {
               <div className="text-gray-600">کلاس تکمیل شده</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-teal-600 mb-2">354+</div>
+              <div className="text-4xl font-bold text-teal-600 mb-2">{stats?.totalInstructors || '354'}+</div>
               <div className="text-gray-600">مربی برتر</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-teal-600 mb-2">99.9%</div>
+              <div className="text-4xl font-bold text-teal-600 mb-2">{stats?.satisfactionRate || '99.9'}%</div>
               <div className="text-gray-600">نرخ رضایت</div>
             </div>
           </div>
@@ -268,9 +307,11 @@ const Index = () => {
           <p className="text-xl mb-8 text-teal-100">
             گواهی‌نامه‌های شناخته شده در صنعت کسب کنید و دستاوردهای خود را به کارفرمایان در سراسر جهان نشان دهید.
           </p>
-          <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
-            شروع کنید
-          </Button>
+          <Link to="/all-courses">
+            <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
+              شروع کنید
+            </Button>
+          </Link>
         </div>
       </section>
 
