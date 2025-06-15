@@ -58,45 +58,45 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>دانشجو</TableHead>
-                <TableHead>دوره</TableHead>
-                <TableHead>ترم</TableHead>
-                <TableHead>وضعیت</TableHead>
-                <TableHead>پیشرفت</TableHead>
-                <TableHead>میانگین نمره</TableHead>
-                <TableHead>امتیاز کل</TableHead>
-                <TableHead>آخرین فعالیت</TableHead>
-                <TableHead>عملیات</TableHead>
+                <TableHead className="text-right">دانشجو</TableHead>
+                <TableHead className="text-right">دوره</TableHead>
+                <TableHead className="text-right">ترم</TableHead>
+                <TableHead className="text-right">وضعیت</TableHead>
+                <TableHead className="text-right">پیشرفت</TableHead>
+                <TableHead className="text-right">میانگین نمره</TableHead>
+                <TableHead className="text-right">امتیاز کل</TableHead>
+                <TableHead className="text-right">آخرین فعالیت</TableHead>
+                <TableHead className="text-right">عملیات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredStudents.map((student) => (
                 <TableRow key={student.id}>
-                  <TableCell>
+                  <TableCell className="text-right">
                     <div>
                       <div className="font-medium">{student.name}</div>
-                      <div className="text-sm text-gray-600 flex items-center">
-                        <Mail className="h-3 w-3 ml-1" />
-                        {student.email}
+                      <div className="text-sm text-gray-600 flex items-center justify-end">
+                        <span>{student.email}</span>
+                        <Mail className="h-3 w-3 mr-1" />
                       </div>
-                      <div className="text-xs text-gray-500 flex items-center mt-1">
-                        <Calendar className="h-3 w-3 ml-1" />
-                        عضو از {student.joinDate}
+                      <div className="text-xs text-gray-500 flex items-center justify-end mt-1">
+                        <span>عضو از {student.joinDate}</span>
+                        <Calendar className="h-3 w-3 mr-1" />
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     <Badge variant="outline">{student.courseName}</Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     <Badge variant="secondary">{student.termName || 'عمومی'}</Badge>
                   </TableCell>
-                  <TableCell>{getStatusBadge(student.status)}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">{getStatusBadge(student.status)}</TableCell>
+                  <TableCell className="text-right">
                     <div className="space-y-1">
                       <div className="flex justify-between text-sm">
-                        <span>{student.completedExercises}/{student.totalExercises}</span>
                         <span>{Math.round((student.completedExercises / student.totalExercises) * 100)}%</span>
+                        <span>{student.completedExercises}/{student.totalExercises}</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
@@ -106,19 +106,19 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Award className="h-4 w-4 text-yellow-500 ml-1" />
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end">
                       <span className="font-medium">{student.averageScore}%</span>
+                      <Award className="h-4 w-4 text-yellow-500 mr-1" />
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     <span className="font-medium text-purple-600">{student.totalPoints}</span>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     <span className="text-sm text-gray-600">{student.lastActivity}</span>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <Button size="sm" variant="outline">
                         <Eye className="h-3 w-3" />

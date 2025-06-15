@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Search, Plus, Trash2, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import StudentProfileModal from './StudentProfileModal';
 
 interface CourseEnrollment {
@@ -52,6 +52,10 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
   const [selectedStudentName, setSelectedStudentName] = useState<string>('');
   const { toast } = useToast();
+  const { profile } = useAuth();
+
+  // Only admins can delete students from courses
+  const canDeleteStudents = profile?.role === 'admin';
 
   const fetchEnrollments = async () => {
     if (!courseId) return;
@@ -336,27 +340,27 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>نام</TableHead>
-                    <TableHead>ایمیل</TableHead>
-                    <TableHead>ترم</TableHead>
-                    <TableHead>تاریخ ثبت‌نام</TableHead>
-                    <TableHead>وضعیت</TableHead>
-                    <TableHead>عملیات</TableHead>
+                    <TableHead className="text-right">نام</TableHead>
+                    <TableHead className="text-right">ایمیل</TableHead>
+                    <TableHead className="text-right">ترم</TableHead>
+                    <TableHead className="text-right">تاریخ ثبت‌نام</TableHead>
+                    <TableHead className="text-right">وضعیت</TableHead>
+                    <TableHead className="text-right">عملیات</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredEnrollments.map((enrollment) => (
                     <TableRow key={enrollment.id}>
-                      <TableCell className="font-medium">{enrollment.student_name}</TableCell>
-                      <TableCell>{enrollment.student_email}</TableCell>
-                      <TableCell>{getTermName(enrollment.term_id)}</TableCell>
-                      <TableCell>{new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR')}</TableCell>
-                      <TableCell>
+                      <TableCell className="font-medium text-right">{enrollment.student_name}</TableCell>
+                      <TableCell className="text-right">{enrollment.student_email}</TableCell>
+                      <TableCell className="text-right">{getTermName(enrollment.term_id)}</TableCell>
+                      <TableCell className="text-right">{new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR')}</TableCell>
+                      <TableCell className="text-right">
                         <Badge className={getStatusColor(enrollment.status)}>
                           {getStatusText(enrollment.status)}
                         </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-right">
                         <div className="flex items-center space-x-2 space-x-reverse">
                           <Button 
                             size="sm" 
@@ -366,31 +370,33 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
                             <Eye className="h-3 w-3 mr-1" />
                             مشاهده پروفایل
                           </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>حذف دانشجو</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  آیا مطمئن هستید که می‌خواهید {enrollment.student_name} را از این درس حذف کنید؟
-                                  این عمل قابل برگشت نیست.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>لغو</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleRemoveStudent(enrollment.id, enrollment.student_name)}
-                                  className="bg-red-600 hover:bg-red-700"
-                                >
-                                  حذف
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          {canDeleteStudents && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>حذف دانشجو</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    آیا مطمئن هستید که می‌خواهید {enrollment.student_name} را از این درس حذف کنید؟
+                                    این عمل قابل برگشت نیست.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>لغو</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleRemoveStudent(enrollment.id, enrollment.student_name)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    حذف
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>

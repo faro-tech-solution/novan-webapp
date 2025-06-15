@@ -186,32 +186,32 @@ const CourseTermsManagement = ({ courseId, courseName, userRole }: CourseTermsMa
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-center">نام ترم</TableHead>
-                <TableHead className="text-center">تاریخ شروع</TableHead>
-                <TableHead className="text-center">تاریخ پایان</TableHead>
-                <TableHead className="text-center">حداکثر دانشجو</TableHead>
-                {canViewStudentCounts && <TableHead className="text-center">دانشجویان فعلی</TableHead>}
-                {canManageTerms && <TableHead className="text-center">عملیات</TableHead>}
+                <TableHead className="text-right">نام ترم</TableHead>
+                <TableHead className="text-right">تاریخ شروع</TableHead>
+                <TableHead className="text-right">تاریخ پایان</TableHead>
+                <TableHead className="text-right">حداکثر دانشجو</TableHead>
+                {canViewStudentCounts && <TableHead className="text-right">دانشجویان فعلی</TableHead>}
+                {canManageTerms && <TableHead className="text-right">عملیات</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {terms.map((term) => (
                 <TableRow key={term.id}>
-                  <TableCell className="font-medium text-center">{term.name}</TableCell>
-                  <TableCell className="text-center">{formatDate(term.start_date)}</TableCell>
-                  <TableCell className="text-center">{formatDate(term.end_date)}</TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="font-medium text-right">{term.name}</TableCell>
+                  <TableCell className="text-right">{formatDate(term.start_date)}</TableCell>
+                  <TableCell className="text-right">{formatDate(term.end_date)}</TableCell>
+                  <TableCell className="text-right">
                     {term.max_students === 0 ? 'نامحدود' : term.max_students}
                   </TableCell>
                   {canViewStudentCounts && (
-                    <TableCell className="text-center">
+                    <TableCell className="text-right">
                       <Badge variant="outline">
                         {term.student_count || 0}
                       </Badge>
                     </TableCell>
                   )}
                   {canManageTerms && (
-                    <TableCell className="text-center">
+                    <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
