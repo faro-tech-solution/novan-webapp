@@ -1,9 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress as ProgressBar } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -27,7 +27,6 @@ const Progress = () => {
   const { profile } = useAuth();
   const { stats, loading, error } = useProgressStats();
   const { studentAwards, allAwards } = useStudentAwards();
-  const [timeFilter, setTimeFilter] = useState('month');
 
   if (loading) {
     return (
@@ -55,23 +54,12 @@ const Progress = () => {
   return (
     <DashboardLayout title="پیشرفت تحصیلی">
       <div className="space-y-6">
-        {/* Header with filters */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 font-peyda">گزارش پیشرفت</h2>
-            <p className="text-gray-600">تحلیل عملکرد و پیشرفت یادگیری شما</p>
+            <p className="text-gray-600">تحلیل عملکرد و پیشرفت یادگیری شما (مادام‌العمر)</p>
           </div>
-          <Select value={timeFilter} onValueChange={setTimeFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="بازه زمانی" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="week">هفته اخیر</SelectItem>
-              <SelectItem value="month">ماه اخیر</SelectItem>
-              <SelectItem value="semester">ترم جاری</SelectItem>
-              <SelectItem value="all">کل دوره</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Overview Stats - Only Total Points */}
