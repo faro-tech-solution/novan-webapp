@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,8 +31,6 @@ const Exercises = () => {
   
   const { exercises, courses, loading, error, fetchExercises, deleteExercise } = useExercises();
   const { toast } = useToast();
-
-  const courses = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
