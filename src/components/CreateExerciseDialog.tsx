@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -39,6 +40,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
   const setOpen = isControlled ? onOpenChange! : setInternalOpen;
   
   const form = useForm<CreateExerciseFormData>({
+    mode: 'onChange',
     defaultValues: {
       title: '',
       description: '',
@@ -52,7 +54,12 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
     },
   });
 
-  const onSubmit = async (data: CreateExerciseFormData) => {
+  const onSubmit = async (data: CreateExerciseFormData, event?: React.BaseSyntheticEvent) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
     try {
       setIsSubmitting(true);
       console.log('Creating new exercise:', data);
@@ -70,9 +77,9 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
         description: data.description,
         course_name: data.course_name,
         difficulty: data.difficulty,
-        due_date: closeDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-        open_date: openDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-        close_date: closeDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        due_date: closeDate.toISOString().split('T')[0],
+        open_date: openDate.toISOString().split('T')[0],
+        close_date: closeDate.toISOString().split('T')[0],
         points: data.points,
         estimated_time: data.estimated_time,
         status: data.status,
@@ -112,6 +119,12 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+    }
+  };
+
   const DialogComponent = () => (
     <DialogContent className="max-w-2xl">
       <DialogHeader>
@@ -122,16 +135,22 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
       </DialogHeader>
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" onKeyDown={handleKeyDown}>
           <FormField
             control={form.control}
             name="title"
-            rules={{ required: 'عنوان الزامی است' }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>عنوان تمرین</FormLabel>
                 <FormControl>
-                  <Input placeholder="مثال: مبانی React Hooks" {...field} />
+                  <Input 
+                    placeholder="مثال: مبانی React Hooks" 
+                    {...field}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      field.onChange(e.target.value);
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -141,7 +160,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
           <FormField
             control={form.control}
             name="description"
-            rules={{ required: 'توضیحات الزامی است' }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>توضیحات</FormLabel>
@@ -149,7 +167,11 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                   <Textarea 
                     placeholder="توضیحات کاملی از تمرین ارائه دهید..."
                     className="min-h-[100px]"
-                    {...field} 
+                    {...field}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      field.onChange(e.target.value);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -161,7 +183,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             <FormField
               control={form.control}
               name="course_name"
-              rules={{ required: 'انتخاب دوره الزامی است' }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>دوره</FormLabel>
@@ -193,7 +214,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             <FormField
               control={form.control}
               name="difficulty"
-              rules={{ required: 'انتخاب سطح دشواری الزامی است' }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>سطح دشواری</FormLabel>
@@ -219,10 +239,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             <FormField
               control={form.control}
               name="days_to_open"
-              rules={{ 
-                required: 'روز باز شدن الزامی است',
-                min: { value: 1, message: 'حداقل ۱ روز' }
-              }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center">
@@ -234,7 +250,12 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                       type="number" 
                       placeholder="5"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        const value = parseInt(e.target.value) || 0;
+                        field.onChange(value);
+                      }}
+                      value={field.value || ''}
                     />
                   </FormControl>
                   <FormMessage />
@@ -245,10 +266,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             <FormField
               control={form.control}
               name="days_duration"
-              rules={{ 
-                required: 'مدت زمان الزامی است',
-                min: { value: 1, message: 'حداقل ۱ روز' }
-              }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center">
@@ -260,7 +277,12 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                       type="number" 
                       placeholder="7"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        const value = parseInt(e.target.value) || 0;
+                        field.onChange(value);
+                      }}
+                      value={field.value || ''}
                     />
                   </FormControl>
                   <FormMessage />
@@ -271,10 +293,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             <FormField
               control={form.control}
               name="points"
-              rules={{ 
-                required: 'امتیاز الزامی است',
-                min: { value: 1, message: 'امتیاز باید حداقل ۱ باشد' }
-              }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center">
@@ -286,7 +304,12 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                       type="number" 
                       placeholder="100"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        const value = parseInt(e.target.value) || 0;
+                        field.onChange(value);
+                      }}
+                      value={field.value || ''}
                     />
                   </FormControl>
                   <FormMessage />
@@ -297,7 +320,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             <FormField
               control={form.control}
               name="estimated_time"
-              rules={{ required: 'زمان تخمینی الزامی است' }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center">
@@ -305,7 +327,14 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                     زمان تخمینی
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="۲ ساعت" {...field} />
+                    <Input 
+                      placeholder="۲ ساعت" 
+                      {...field}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        field.onChange(e.target.value);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -315,7 +344,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             <FormField
               control={form.control}
               name="status"
-              rules={{ required: 'انتخاب وضعیت الزامی است' }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>وضعیت</FormLabel>
@@ -338,7 +366,15 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
           </div>
 
           <div className="flex justify-end space-x-2 space-x-reverse pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={(e) => {
+                e.preventDefault();
+                setOpen(false);
+              }} 
+              disabled={isSubmitting}
+            >
               انصراف
             </Button>
             <Button type="submit" disabled={isSubmitting}>
