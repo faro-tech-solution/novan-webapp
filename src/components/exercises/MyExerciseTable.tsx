@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -92,7 +91,7 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                 <TableHead>عنوان</TableHead>
                 <TableHead>درس</TableHead>
                 <TableHead>سطح</TableHead>
-                <TableHead>تاریخ شروع</TableHead>
+                <TableHead>انجام تمرین</TableHead>
                 <TableHead>موعد تحویل</TableHead>
                 <TableHead>امتیاز</TableHead>
                 <TableHead>نمره</TableHead>
