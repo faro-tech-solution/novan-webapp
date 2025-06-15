@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Eye, Mail, Award, Calendar } from 'lucide-react';
+import { Eye, Mail, Calendar } from 'lucide-react';
+import { useState } from 'react';
 
 interface Student {
   id: string;
@@ -26,6 +27,8 @@ interface StudentsTableProps {
 }
 
 const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
@@ -37,6 +40,16 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
+  };
+
+  const handleViewStudent = (student: Student) => {
+    setSelectedStudent(student);
+    // Here you can implement a modal or navigate to a detailed view
+    console.log('View student details:', student);
+  };
+
+  const handleSendEmail = (studentEmail: string) => {
+    window.open(`mailto:${studentEmail}`, '_blank');
   };
 
   return (
@@ -59,11 +72,7 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
             <TableHeader>
               <TableRow>
                 <TableHead className="text-right">دانشجو</TableHead>
-                <TableHead className="text-right">دوره</TableHead>
-                <TableHead className="text-right">ترم</TableHead>
                 <TableHead className="text-right">وضعیت</TableHead>
-                <TableHead className="text-right">پیشرفت</TableHead>
-                <TableHead className="text-right">میانگین نمره</TableHead>
                 <TableHead className="text-right">امتیاز کل</TableHead>
                 <TableHead className="text-right">آخرین فعالیت</TableHead>
                 <TableHead className="text-right">عملیات</TableHead>
@@ -85,33 +94,7 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant="outline">{student.courseName}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant="secondary">{student.termName || 'عمومی'}</Badge>
-                  </TableCell>
                   <TableCell className="text-right">{getStatusBadge(student.status)}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span>{Math.round((student.completedExercises / student.totalExercises) * 100)}%</span>
-                        <span>{student.completedExercises}/{student.totalExercises}</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-teal-600 h-2 rounded-full" 
-                          style={{ width: `${(student.completedExercises / student.totalExercises) * 100}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end">
-                      <span className="font-medium">{student.averageScore}%</span>
-                      <Award className="h-4 w-4 text-yellow-500 mr-1" />
-                    </div>
-                  </TableCell>
                   <TableCell className="text-right">
                     <span className="font-medium text-purple-600">{student.totalPoints}</span>
                   </TableCell>
@@ -120,10 +103,20 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center space-x-2 space-x-reverse">
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleViewStudent(student)}
+                        title="مشاهده جزئیات"
+                      >
                         <Eye className="h-3 w-3" />
                       </Button>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleSendEmail(student.email)}
+                        title="ارسال ایمیل"
+                      >
                         <Mail className="h-3 w-3" />
                       </Button>
                     </div>

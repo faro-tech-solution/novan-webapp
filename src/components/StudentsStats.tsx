@@ -4,7 +4,6 @@ import {
   Users, 
   TrendingUp,
   Clock,
-  Award,
   BookOpen
 } from 'lucide-react';
 
@@ -32,16 +31,13 @@ const StudentsStats = ({ students }: StudentsStatsProps) => {
     total: students.length,
     active: students.filter(s => s.status === 'active').length,
     inactive: students.filter(s => s.status === 'inactive').length,
-    averageScore: students.length > 0 ? Math.round(
-      students.reduce((sum, s) => sum + s.averageScore, 0) / students.length
-    ) : 0,
     averageCompletion: students.length > 0 ? Math.round(
       students.reduce((sum, s) => sum + (s.completedExercises / s.totalExercises) * 100, 0) / students.length
     ) : 0
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">کل دانشجویان</CardTitle>
@@ -69,16 +65,6 @@ const StudentsStats = ({ students }: StudentsStatsProps) => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-gray-600">{stats.inactive}</div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">میانگین نمره</CardTitle>
-          <Award className="h-4 w-4 text-purple-600" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-purple-600">{stats.averageScore}%</div>
         </CardContent>
       </Card>
 

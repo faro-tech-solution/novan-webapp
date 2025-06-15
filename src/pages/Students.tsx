@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import StudentsStats from '@/components/StudentsStats';
@@ -31,6 +32,26 @@ const Students = () => {
   const [courses, setCourses] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  const fetchStudentPoints = async (studentId: string): Promise<number> => {
+    try {
+      const { data: activityLogs, error } = await supabase
+        .from('student_activity_logs')
+        .select('points_earned')
+        .eq('student_id', studentId);
+
+      if (error) {
+        console.error('Error fetching student points:', error);
+        return 0;
+      }
+
+      const totalPoints = activityLogs?.reduce((sum, log) => sum + (log.points_earned || 0), 0) || 0;
+      return totalPoints;
+    } catch (error) {
+      console.error('Error calculating student points:', error);
+      return 0;
+    }
+  };
 
   const fetchStudents = async () => {
     try {
@@ -82,22 +103,28 @@ const Students = () => {
 
       console.log('Fetched enrollments:', enrollments);
 
-      // Transform the data to match the expected format
-      const transformedStudents: StudentData[] = (enrollments || []).map((enrollment) => ({
-        id: enrollment.id,
-        name: enrollment.student_name,
-        email: enrollment.student_email,
-        courseName: enrollment.courses?.name || 'نامشخص',
-        joinDate: new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR'),
-        status: enrollment.status,
-        // Mock data for exercise-related fields since we don't have exercises table yet
-        completedExercises: Math.floor(Math.random() * 15) + 5,
-        totalExercises: 20,
-        averageScore: Math.floor(Math.random() * 30) + 70,
-        lastActivity: `${Math.floor(Math.random() * 7) + 1} روز پیش`,
-        totalPoints: Math.floor(Math.random() * 1000) + 500,
-        termName: enrollment.course_terms?.name || 'عمومی'
-      }));
+      // Transform the data and fetch real points for each student
+      const transformedStudents: StudentData[] = [];
+      
+      for (const enrollment of enrollments || []) {
+        const totalPoints = await fetchStudentPoints(enrollment.student_id);
+        
+        transformedStudents.push({
+          id: enrollment.id,
+          name: enrollment.student_name,
+          email: enrollment.student_email,
+          courseName: enrollment.courses?.name || 'نامشخص',
+          joinDate: new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR'),
+          status: enrollment.status,
+          // Mock data for exercise-related fields since we don't have exercises table yet
+          completedExercises: Math.floor(Math.random() * 15) + 5,
+          totalExercises: 20,
+          averageScore: Math.floor(Math.random() * 30) + 70,
+          lastActivity: `${Math.floor(Math.random() * 7) + 1} روز پیش`,
+          totalPoints: totalPoints,
+          termName: enrollment.course_terms?.name || 'عمومی'
+        });
+      }
 
       setStudents(transformedStudents);
 
