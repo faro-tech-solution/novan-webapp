@@ -192,6 +192,7 @@ export type Database = {
       }
       exercises: {
         Row: {
+          close_date: string
           course_name: string
           created_at: string
           created_by: string
@@ -200,12 +201,14 @@ export type Database = {
           due_date: string
           estimated_time: string
           id: string
+          open_date: string
           points: number
           status: string
           title: string
           updated_at: string
         }
         Insert: {
+          close_date: string
           course_name: string
           created_at?: string
           created_by: string
@@ -214,12 +217,14 @@ export type Database = {
           due_date: string
           estimated_time: string
           id?: string
+          open_date: string
           points?: number
           status?: string
           title: string
           updated_at?: string
         }
         Update: {
+          close_date?: string
           course_name?: string
           created_at?: string
           created_by?: string
@@ -228,6 +233,7 @@ export type Database = {
           due_date?: string
           estimated_time?: string
           id?: string
+          open_date?: string
           points?: number
           status?: string
           title?: string

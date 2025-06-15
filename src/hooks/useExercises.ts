@@ -10,6 +10,8 @@ export interface Exercise {
   course_name: string;
   difficulty: string;
   due_date: string;
+  open_date: string;
+  close_date: string;
   points: number;
   estimated_time: string;
   status: string;
@@ -19,6 +21,7 @@ export interface Exercise {
   submissions?: number;
   total_students?: number;
   average_score?: number;
+  exercise_status?: 'upcoming' | 'active' | 'overdue' | 'closed';
 }
 
 export interface Course {
@@ -34,6 +37,20 @@ export const useExercises = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+
+  const calculateExerciseStatus = (exercise: Exercise): 'upcoming' | 'active' | 'overdue' | 'closed' => {
+    const today = new Date();
+    const openDate = new Date(exercise.open_date);
+    const closeDate = new Date(exercise.close_date);
+    
+    if (today < openDate) {
+      return 'upcoming';
+    } else if (today >= openDate && today <= closeDate) {
+      return 'active';
+    } else {
+      return 'overdue';
+    }
+  };
 
   const fetchCourses = async () => {
     try {
@@ -77,7 +94,7 @@ export const useExercises = () => {
 
       console.log('Fetched exercises:', data);
 
-      // For each exercise, get submission stats
+      // For each exercise, get submission stats and calculate status
       const exercisesWithStats = await Promise.all(
         (data || []).map(async (exercise) => {
           const { data: submissions } = await supabase
@@ -90,12 +107,17 @@ export const useExercises = () => {
             ? Math.round(submissions.reduce((sum, sub) => sum + (sub.score || 0), 0) / submissions.length)
             : 0;
 
-          return {
+          const exerciseWithStats = {
             ...exercise,
             submissions: submissionCount,
             total_students: 20, // This should ideally come from course enrollment data
             average_score: averageScore,
           };
+
+          // Calculate exercise status based on dates
+          exerciseWithStats.exercise_status = calculateExerciseStatus(exerciseWithStats);
+
+          return exerciseWithStats;
         })
       );
 

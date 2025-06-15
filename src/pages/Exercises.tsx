@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +16,8 @@ import {
   Award,
   Calendar,
   Users,
-  FileText
+  FileText,
+  AlertTriangle
 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -28,6 +30,7 @@ const Exercises = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [courseFilter, setCourseFilter] = useState('all');
+  const [exerciseStatusFilter, setExerciseStatusFilter] = useState('all');
   
   const { exercises, courses, loading, error, fetchExercises, deleteExercise } = useExercises();
   const { toast } = useToast();
@@ -42,6 +45,26 @@ const Exercises = () => {
         return <Badge className="bg-gray-100 text-gray-800">پیش‌نویس</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const getExerciseStatusBadge = (exerciseStatus: string) => {
+    switch (exerciseStatus) {
+      case 'upcoming':
+        return <Badge className="bg-blue-100 text-blue-800">آینده</Badge>;
+      case 'active':
+        return <Badge className="bg-green-100 text-green-800">در حال انجام</Badge>;
+      case 'overdue':
+        return (
+          <Badge className="bg-red-100 text-red-800">
+            <AlertTriangle className="h-3 w-3 mr-1" />
+            عقب‌افتاده
+          </Badge>
+        );
+      case 'closed':
+        return <Badge className="bg-gray-100 text-gray-800">بسته</Badge>;
+      default:
+        return <Badge variant="outline">{exerciseStatus}</Badge>;
     }
   };
 
@@ -83,8 +106,9 @@ const Exercises = () => {
     const matchesStatus = statusFilter === 'all' || exercise.status === statusFilter;
     const matchesDifficulty = difficultyFilter === 'all' || exercise.difficulty === difficultyFilter;
     const matchesCourse = courseFilter === 'all' || exercise.course_name === courseFilter;
+    const matchesExerciseStatus = exerciseStatusFilter === 'all' || exercise.exercise_status === exerciseStatusFilter;
     
-    return matchesSearch && matchesStatus && matchesDifficulty && matchesCourse;
+    return matchesSearch && matchesStatus && matchesDifficulty && matchesCourse && matchesExerciseStatus;
   });
 
   // Calculate stats
@@ -93,6 +117,7 @@ const Exercises = () => {
     active: exercises.filter(e => e.status === 'active').length,
     completed: exercises.filter(e => e.status === 'completed').length,
     draft: exercises.filter(e => e.status === 'draft').length,
+    overdue: exercises.filter(e => e.exercise_status === 'overdue').length,
     averageSubmissionRate: exercises.length > 0 ? Math.round(
       exercises.reduce((sum, e) => sum + ((e.submissions || 0) / (e.total_students || 1)) * 100, 0) / exercises.length
     ) : 0
@@ -131,7 +156,7 @@ const Exercises = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">کل تمرین‌ها</CardTitle>
@@ -169,6 +194,16 @@ const Exercises = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-gray-600">{stats.draft}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">عقب‌افتاده</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
             </CardContent>
           </Card>
 
@@ -217,6 +252,19 @@ const Exercises = () => {
                 </SelectContent>
               </Select>
 
+              <Select value={exerciseStatusFilter} onValueChange={setExerciseStatusFilter}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="وضعیت تمرین" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">همه وضعیت‌ها</SelectItem>
+                  <SelectItem value="upcoming">آینده</SelectItem>
+                  <SelectItem value="active">در حال انجام</SelectItem>
+                  <SelectItem value="overdue">عقب‌افتاده</SelectItem>
+                  <SelectItem value="closed">بسته</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
                 <SelectTrigger className="w-full md:w-48">
                   <SelectValue placeholder="سطح دشواری" />
@@ -260,6 +308,7 @@ const Exercises = () => {
                   <TableHead>دوره</TableHead>
                   <TableHead>سطح</TableHead>
                   <TableHead>وضعیت</TableHead>
+                  <TableHead>وضعیت تمرین</TableHead>
                   <TableHead>موعد تحویل</TableHead>
                   <TableHead>ارسال‌ها</TableHead>
                   <TableHead>میانگین نمره</TableHead>
@@ -268,7 +317,7 @@ const Exercises = () => {
               </TableHeader>
               <TableBody>
                 {filteredExercises.map((exercise) => (
-                  <TableRow key={exercise.id}>
+                  <TableRow key={exercise.id} className={exercise.exercise_status === 'overdue' ? 'bg-red-50' : ''}>
                     <TableCell>
                       <div>
                         <div className="font-medium">{exercise.title}</div>
@@ -286,6 +335,7 @@ const Exercises = () => {
                     </TableCell>
                     <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
                     <TableCell>{getStatusBadge(exercise.status)}</TableCell>
+                    <TableCell>{getExerciseStatusBadge(exercise.exercise_status || 'active')}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2 space-x-reverse">
                         <Calendar className="h-4 w-4 text-gray-400" />
