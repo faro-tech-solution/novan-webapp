@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -72,11 +71,8 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="text-right">
         <CardTitle>لیست تمرین‌ها</CardTitle>
-        <CardDescription>
-          {filteredExercises.length} تمرین از {exercises.length} تمرین
-        </CardDescription>
       </CardHeader>
       <CardContent>
         {filteredExercises.length === 0 ? (
