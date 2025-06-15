@@ -87,13 +87,13 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>وضعیت</TableHead>
-                <TableHead>عنوان</TableHead>
-                <TableHead>سطح</TableHead>
-                <TableHead>موعد تحویل</TableHead>
-                <TableHead>امتیاز</TableHead>
-                <TableHead>زمان تخمینی</TableHead>
-                <TableHead>عملیات</TableHead>
+                <TableHead className="text-right">وضعیت</TableHead>
+                <TableHead className="text-right">عنوان</TableHead>
+                <TableHead className="text-right">سطح</TableHead>
+                <TableHead className="text-right">موعد تحویل</TableHead>
+                <TableHead className="text-right">امتیاز</TableHead>
+                <TableHead className="text-right">زمان تخمینی</TableHead>
+                <TableHead className="text-right">عملیات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
