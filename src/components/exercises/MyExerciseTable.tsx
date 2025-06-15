@@ -13,6 +13,7 @@ interface ExerciseWithSubmission {
   course_name?: string;
   difficulty: string;
   due_date: string;
+  open_date: string;
   points: number;
   estimated_time: string;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
@@ -91,6 +92,7 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                 <TableHead>عنوان</TableHead>
                 <TableHead>درس</TableHead>
                 <TableHead>سطح</TableHead>
+                <TableHead>تاریخ شروع</TableHead>
                 <TableHead>موعد تحویل</TableHead>
                 <TableHead>امتیاز</TableHead>
                 <TableHead>نمره</TableHead>
@@ -121,6 +123,12 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                     <span className="text-sm text-gray-600">{exercise.course_name || 'نامشخص'}</span>
                   </TableCell>
                   <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <span>{formatDate(exercise.open_date)}</span>
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <Calendar className="h-4 w-4 text-gray-400" />
