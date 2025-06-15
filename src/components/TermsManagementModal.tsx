@@ -1,0 +1,49 @@
+
+import { Button } from '@/components/ui/button';
+import CourseTermsManagement from './CourseTermsManagement';
+
+interface Course {
+  id: string;
+  name: string;
+  description: string | null;
+  instructor_id: string;
+  instructor_name: string;
+  status: string;
+  max_students: number | null;
+  created_at: string;
+  student_count?: number;
+}
+
+interface TermsManagementModalProps {
+  open: boolean;
+  onClose: () => void;
+  course: Course | null;
+}
+
+const TermsManagementModal = ({ open, onClose, course }: TermsManagementModalProps) => {
+  if (!open || !course) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">مدیریت ترم‌های {course.name}</h2>
+            <Button 
+              variant="outline" 
+              onClick={onClose}
+            >
+              بستن
+            </Button>
+          </div>
+          <CourseTermsManagement 
+            courseId={course.id}
+            courseName={course.name}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TermsManagementModal;
