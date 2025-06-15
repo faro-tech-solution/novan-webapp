@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,11 +21,12 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgressStats } from '@/hooks/useProgressStats';
 import { useStudentAwards } from '@/hooks/useStudentAwards';
+import { AchievementsDisplay } from '@/components/awards/AchievementsDisplay';
 
 const Progress = () => {
   const { profile } = useAuth();
   const { stats, loading, error } = useProgressStats();
-  const { studentAwards } = useStudentAwards();
+  const { studentAwards, allAwards } = useStudentAwards();
   const [timeFilter, setTimeFilter] = useState('month');
 
   // Mock progress data for charts (would need historical data to make this real)
@@ -56,7 +56,7 @@ const Progress = () => {
     { day: 'جمعه', hours: 1 },
   ];
 
-  // Convert student awards to achievements format
+  // Convert student awards to achievements format for the old display
   const achievements = studentAwards.slice(0, 8).map(award => ({
     id: award.id,
     title: award.awards.name,
@@ -280,42 +280,21 @@ const Progress = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Award className="h-5 w-5 ml-2" />
-              دستاوردها ({studentAwards.length})
+              دستاوردها ({studentAwards.length} از {allAwards.length})
             </CardTitle>
-            <CardDescription>جوایز و مدال‌های کسب شده</CardDescription>
+            <CardDescription>جوایز و مدال‌های موجود و کسب شده</CardDescription>
           </CardHeader>
           <CardContent>
-            {achievements.length === 0 ? (
+            {allAwards.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <Award className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>هنوز جایزه‌ای کسب نکرده‌اید</p>
-                <p className="text-sm">با تکمیل تمرین‌ها جوایز کسب کنید!</p>
+                <p>در حال بارگذاری جوایز...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {achievements.map((achievement) => (
-                  <div 
-                    key={achievement.id}
-                    className="p-4 border rounded-lg bg-yellow-50 border-yellow-200"
-                  >
-                    <div className="flex items-center space-x-3 space-x-reverse mb-2">
-                      <Award className="h-6 w-6 text-yellow-500" />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-yellow-800">
-                          {achievement.title}
-                        </h4>
-                      </div>
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {achievement.description}
-                    </p>
-                    <Badge variant="outline" className="text-xs">
-                      {achievement.date}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
+              <AchievementsDisplay 
+                allAwards={allAwards} 
+                studentAwards={studentAwards} 
+              />
             )}
           </CardContent>
         </Card>

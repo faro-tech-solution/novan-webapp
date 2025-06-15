@@ -1,29 +1,34 @@
 
 import { useState, useEffect } from 'react';
-import { fetchStudentAwards, checkAndAwardAchievements, StudentAward } from '@/services/awardsService';
+import { fetchStudentAwards, fetchAllAwards, checkAndAwardAchievements, StudentAward, Award } from '@/services/awardsService';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const useStudentAwards = () => {
   const [studentAwards, setStudentAwards] = useState<StudentAward[]>([]);
+  const [allAwards, setAllAwards] = useState<Award[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
   const loadAwards = async () => {
-    if (!user) return;
-
     try {
       setLoading(true);
       setError(null);
       
-      // First check for new achievements
-      await checkAndAwardAchievements(user.id);
+      // Fetch all available awards
+      const awards = await fetchAllAwards();
+      setAllAwards(awards);
       
-      // Then fetch the awards
-      const awards = await fetchStudentAwards(user.id);
-      setStudentAwards(awards);
+      if (user) {
+        // First check for new achievements
+        await checkAndAwardAchievements(user.id);
+        
+        // Then fetch the user's awards
+        const userAwards = await fetchStudentAwards(user.id);
+        setStudentAwards(userAwards);
+      }
     } catch (err) {
-      console.error('Error loading student awards:', err);
+      console.error('Error loading awards:', err);
       setError(err instanceof Error ? err.message : 'خطا در بارگذاری جوایز');
     } finally {
       setLoading(false);
@@ -40,6 +45,7 @@ export const useStudentAwards = () => {
 
   return {
     studentAwards,
+    allAwards,
     loading,
     error,
     refetch
