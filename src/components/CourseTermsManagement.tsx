@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,6 +38,8 @@ const CourseTermsManagement = ({ courseId, courseName, userRole }: CourseTermsMa
 
   // Only admins can create/edit/delete terms
   const canManageTerms = userRole === 'admin';
+  // Only admins can see student counts
+  const canViewStudentCounts = userRole === 'admin';
 
   const fetchTerms = async () => {
     try {
@@ -50,23 +51,27 @@ const CourseTermsManagement = ({ courseId, courseName, userRole }: CourseTermsMa
 
       if (error) throw error;
 
-      // Get enrollment counts for each term
-      const termsWithCounts = await Promise.all(
-        (termsData || []).map(async (term) => {
-          const { count } = await supabase
-            .from('course_enrollments')
-            .select('*', { count: 'exact', head: true })
-            .eq('term_id', term.id)
-            .eq('status', 'active');
+      // Get enrollment counts for each term only for admins
+      if (canViewStudentCounts) {
+        const termsWithCounts = await Promise.all(
+          (termsData || []).map(async (term) => {
+            const { count } = await supabase
+              .from('course_enrollments')
+              .select('*', { count: 'exact', head: true })
+              .eq('term_id', term.id)
+              .eq('status', 'active');
 
-          return {
-            ...term,
-            student_count: count || 0,
-          };
-        })
-      );
-
-      setTerms(termsWithCounts);
+            return {
+              ...term,
+              student_count: count || 0,
+            };
+          })
+        );
+        setTerms(termsWithCounts);
+      } else {
+        // For trainers, don't fetch student counts
+        setTerms(termsData || []);
+      }
     } catch (error) {
       console.error('Error fetching terms:', error);
       toast({
@@ -96,8 +101,8 @@ const CourseTermsManagement = ({ courseId, courseName, userRole }: CourseTermsMa
   const confirmDeleteTerm = async () => {
     if (!selectedTerm) return;
 
-    // Check if term has students
-    if (selectedTerm.student_count && selectedTerm.student_count > 0) {
+    // Check if term has students (only for admins)
+    if (canViewStudentCounts && selectedTerm.student_count && selectedTerm.student_count > 0) {
       toast({
         title: 'خطا',
         description: 'نمی‌توانید ترمی را که دانشجو دارد حذف کنید',
@@ -185,7 +190,7 @@ const CourseTermsManagement = ({ courseId, courseName, userRole }: CourseTermsMa
                 <TableHead>تاریخ شروع</TableHead>
                 <TableHead>تاریخ پایان</TableHead>
                 <TableHead>حداکثر دانشجو</TableHead>
-                <TableHead>دانشجویان فعلی</TableHead>
+                {canViewStudentCounts && <TableHead>دانشجویان فعلی</TableHead>}
                 {canManageTerms && <TableHead>عملیات</TableHead>}
               </TableRow>
             </TableHeader>
@@ -198,11 +203,13 @@ const CourseTermsManagement = ({ courseId, courseName, userRole }: CourseTermsMa
                   <TableCell>
                     {term.max_students === 0 ? 'نامحدود' : term.max_students}
                   </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">
-                      {term.student_count || 0}
-                    </Badge>
-                  </TableCell>
+                  {canViewStudentCounts && (
+                    <TableCell>
+                      <Badge variant="outline">
+                        {term.student_count || 0}
+                      </Badge>
+                    </TableCell>
+                  )}
                   {canManageTerms && (
                     <TableCell>
                       <DropdownMenu>
@@ -259,7 +266,7 @@ const CourseTermsManagement = ({ courseId, courseName, userRole }: CourseTermsMa
                 <AlertDialogTitle>تأیید حذف ترم</AlertDialogTitle>
                 <AlertDialogDescription>
                   آیا مطمئن هستید که می‌خواهید ترم "{selectedTerm?.name}" را حذف کنید؟
-                  {selectedTerm?.student_count && selectedTerm.student_count > 0 && (
+                  {canViewStudentCounts && selectedTerm?.student_count && selectedTerm.student_count > 0 && (
                     <span className="block mt-2 text-red-600 font-medium">
                       این ترم {selectedTerm.student_count} دانشجو دارد و قابل حذف نیست.
                     </span>
@@ -270,7 +277,7 @@ const CourseTermsManagement = ({ courseId, courseName, userRole }: CourseTermsMa
                 <AlertDialogCancel>لغو</AlertDialogCancel>
                 <AlertDialogAction 
                   onClick={confirmDeleteTerm}
-                  disabled={selectedTerm?.student_count ? selectedTerm.student_count > 0 : false}
+                  disabled={canViewStudentCounts && selectedTerm?.student_count ? selectedTerm.student_count > 0 : false}
                   className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300"
                 >
                   حذف
