@@ -75,30 +75,20 @@ const Progress = () => {
           </Select>
         </div>
 
-        {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Overview Stats - Only Total Points */}
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">مجموع امتیازات</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <Award className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalPoints}</div>
               <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                <span className="text-gray-600">شامل امتیاز جوایز</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">رتبه کلاسی</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">#{stats.rank}</div>
-              <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                <span className="text-gray-600">از {stats.totalStudents} نفر</span>
+                <span className="text-gray-600">
+                  تمرین: {stats.totalPoints - studentAwards.reduce((sum, award) => sum + award.bonus_points, 0)} | 
+                  جوایز: {studentAwards.reduce((sum, award) => sum + award.bonus_points, 0)}
+                </span>
               </div>
             </CardContent>
           </Card>

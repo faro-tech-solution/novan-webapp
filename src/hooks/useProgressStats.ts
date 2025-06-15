@@ -11,8 +11,6 @@ interface ProgressStats {
   averageScore: number;
   totalHours: number;
   currentStreak: number;
-  rank: number;
-  totalStudents: number;
   totalPoints: number;
   weeklyPointsActivity: Array<{ day: string; points: number }>;
 }
@@ -114,6 +112,13 @@ export const useProgressStats = () => {
       const bonusPoints = studentAwards.reduce((sum, award) => sum + award.bonus_points, 0);
       const totalPoints = exercisePoints + bonusPoints;
 
+      console.log('Points calculation:');
+      console.log('Exercise points:', exercisePoints);
+      console.log('Bonus points from awards:', bonusPoints);
+      console.log('Total points:', totalPoints);
+      console.log('Completed exercises:', completedExercises);
+      console.log('Student awards:', studentAwards);
+
       // Use new activity-based streak calculation
       const currentStreak = user ? await calculateActivityStreak(user.id) : 0;
       const weeklyPointsActivity = await calculateWeeklyPointsActivity();
@@ -124,8 +129,6 @@ export const useProgressStats = () => {
         averageScore,
         totalHours: Math.round(totalHours),
         currentStreak,
-        rank: 3, // This would need class-wide data to calculate properly
-        totalStudents: 25, // This would need class-wide data
         totalPoints,
         weeklyPointsActivity
       });
