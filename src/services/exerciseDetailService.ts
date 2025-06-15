@@ -24,94 +24,98 @@ export interface ExerciseDetail {
 export const fetchExerciseDetail = async (exerciseId: string, userId: string): Promise<ExerciseDetail | null> => {
   console.log('Fetching exercise detail for:', exerciseId, 'user:', userId);
 
-  // First get the exercise details
-  const { data: exercise, error: exerciseError } = await supabase
-    .from('exercises')
-    .select(`
-      id,
-      title,
-      description,
-      course_id,
-      difficulty,
-      points,
-      estimated_time,
-      days_to_open,
-      days_to_due,
-      created_at,
-      form_structure,
-      courses (
-        name
-      )
-    `)
-    .eq('id', exerciseId)
-    .single();
+  try {
+    // First get the exercise details
+    const { data: exercise, error: exerciseError } = await supabase
+      .from('exercises')
+      .select(`
+        id,
+        title,
+        description,
+        course_id,
+        difficulty,
+        points,
+        estimated_time,
+        days_to_open,
+        days_to_due,
+        created_at,
+        courses (
+          name
+        )
+      `)
+      .eq('id', exerciseId)
+      .single();
 
-  if (exerciseError) {
-    console.error('Error fetching exercise:', exerciseError);
-    throw new Error('تمرین یافت نشد');
-  }
-
-  if (!exercise) {
-    return null;
-  }
-
-  // Calculate dates
-  const createdDate = new Date(exercise.created_at);
-  const openDate = new Date(createdDate);
-  openDate.setDate(openDate.getDate() + exercise.days_to_open);
-  
-  const dueDate = new Date(createdDate);
-  dueDate.setDate(dueDate.getDate() + exercise.days_to_due);
-
-  // Get submission if exists
-  const { data: submission } = await supabase
-    .from('exercise_submissions')
-    .select('solution, feedback, score, submitted_at')
-    .eq('exercise_id', exerciseId)
-    .eq('student_id', userId)
-    .single();
-
-  // Determine submission status
-  const now = new Date();
-  let submissionStatus: 'not_started' | 'pending' | 'completed' | 'overdue' = 'not_started';
-  
-  if (submission) {
-    if (submission.score !== null) {
-      submissionStatus = 'completed';
-    } else {
-      submissionStatus = 'pending';
+    if (exerciseError) {
+      console.error('Error fetching exercise:', exerciseError);
+      throw new Error('تمرین یافت نشد');
     }
-  } else if (now > dueDate) {
-    submissionStatus = 'overdue';
-  }
 
-  // Parse submission answers if they exist
-  let submissionAnswers: FormAnswer[] = [];
-  if (submission?.solution) {
-    try {
-      submissionAnswers = JSON.parse(submission.solution);
-    } catch (error) {
-      console.error('Error parsing submission answers:', error);
+    if (!exercise) {
+      return null;
     }
-  }
 
-  return {
-    id: exercise.id,
-    title: exercise.title,
-    description: exercise.description,
-    course_id: exercise.course_id,
-    course_name: exercise.courses?.name || 'نامشخص',
-    difficulty: exercise.difficulty,
-    points: exercise.points,
-    estimated_time: exercise.estimated_time,
-    open_date: openDate.toISOString(),
-    due_date: dueDate.toISOString(),
-    submission_status: submissionStatus,
-    form_structure: exercise.form_structure,
-    submission_answers: submissionAnswers,
-    feedback: submission?.feedback,
-    score: submission?.score
-  };
+    // Calculate dates
+    const createdDate = new Date(exercise.created_at);
+    const openDate = new Date(createdDate);
+    openDate.setDate(openDate.getDate() + exercise.days_to_open);
+    
+    const dueDate = new Date(createdDate);
+    dueDate.setDate(dueDate.getDate() + exercise.days_to_due);
+
+    // Get submission if exists
+    const { data: submission } = await supabase
+      .from('exercise_submissions')
+      .select('solution, feedback, score, submitted_at')
+      .eq('exercise_id', exerciseId)
+      .eq('student_id', userId)
+      .single();
+
+    // Determine submission status
+    const now = new Date();
+    let submissionStatus: 'not_started' | 'pending' | 'completed' | 'overdue' = 'not_started';
+    
+    if (submission) {
+      if (submission.score !== null) {
+        submissionStatus = 'completed';
+      } else {
+        submissionStatus = 'pending';
+      }
+    } else if (now > dueDate) {
+      submissionStatus = 'overdue';
+    }
+
+    // Parse submission answers if they exist
+    let submissionAnswers: FormAnswer[] = [];
+    if (submission?.solution) {
+      try {
+        submissionAnswers = JSON.parse(submission.solution);
+      } catch (error) {
+        console.error('Error parsing submission answers:', error);
+      }
+    }
+
+    return {
+      id: exercise.id,
+      title: exercise.title,
+      description: exercise.description,
+      course_id: exercise.course_id,
+      course_name: exercise.courses?.name || 'نامشخص',
+      difficulty: exercise.difficulty,
+      points: exercise.points,
+      estimated_time: exercise.estimated_time,
+      open_date: openDate.toISOString(),
+      due_date: dueDate.toISOString(),
+      submission_status: submissionStatus,
+      form_structure: { questions: [] }, // Default empty form structure
+      submission_answers: submissionAnswers,
+      feedback: submission?.feedback,
+      score: submission?.score
+    };
+  } catch (error) {
+    console.error('Error in fetchExerciseDetail:', error);
+    throw error;
+  }
 };
 
 export const submitExerciseSolution = async (

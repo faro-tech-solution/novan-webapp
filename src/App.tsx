@@ -203,7 +203,7 @@ const App = () => {
       <AuthProvider>
         <TooltipProvider>
           <BrowserRouter>
-            <div className="min-h-screen bg-background font-sans antialiased">
+            <div className="min-h-screen bg-background font-sans antialiased w-full">
               <Suspense fallback={<div>Loading...</div>}>
                 <AppRoutes />
               </Suspense>

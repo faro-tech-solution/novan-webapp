@@ -6,222 +6,298 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Trash2, Plus, GripVertical } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { FormQuestion, ExerciseForm } from '@/types/formBuilder';
 
 interface FormBuilderProps {
   value: ExerciseForm;
-  onChange: (form: ExerciseForm) => void;
+  onChange: (value: ExerciseForm) => void;
 }
 
 export const FormBuilder: React.FC<FormBuilderProps> = ({ value, onChange }) => {
-  const [draggedQuestion, setDraggedQuestion] = useState<string | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const addQuestion = () => {
     const newQuestion: FormQuestion = {
-      id: `q_${Date.now()}`,
-      type: 'input',
+      id: `question_${Date.now()}`,
+      type: 'textbox',
       title: 'سوال جدید',
       required: false,
     };
 
-    onChange({
-      ...value,
-      questions: [...value.questions, newQuestion],
-    });
+    const updatedForm: ExerciseForm = {
+      questions: [...value.questions, newQuestion]
+    };
+    
+    onChange(updatedForm);
   };
 
-  const updateQuestion = (questionId: string, updates: Partial<FormQuestion>) => {
-    const updatedQuestions = value.questions.map(q =>
-      q.id === questionId ? { ...q, ...updates } : q
-    );
-
-    onChange({
-      ...value,
-      questions: updatedQuestions,
-    });
+  const updateQuestion = (index: number, updatedQuestion: FormQuestion) => {
+    const updatedQuestions = [...value.questions];
+    updatedQuestions[index] = updatedQuestion;
+    
+    const updatedForm: ExerciseForm = {
+      questions: updatedQuestions
+    };
+    
+    onChange(updatedForm);
   };
 
-  const deleteQuestion = (questionId: string) => {
-    const filteredQuestions = value.questions.filter(q => q.id !== questionId);
-    onChange({
-      ...value,
-      questions: filteredQuestions,
-    });
+  const deleteQuestion = (index: number) => {
+    const updatedQuestions = value.questions.filter((_, i) => i !== index);
+    
+    const updatedForm: ExerciseForm = {
+      questions: updatedQuestions
+    };
+    
+    onChange(updatedForm);
   };
 
-  const addOption = (questionId: string) => {
-    const question = value.questions.find(q => q.id === questionId);
-    if (question) {
-      const newOptions = [...(question.options || []), 'گزینه جدید'];
-      updateQuestion(questionId, { options: newOptions });
-    }
+  const moveQuestion = (fromIndex: number, toIndex: number) => {
+    const updatedQuestions = [...value.questions];
+    const [removed] = updatedQuestions.splice(fromIndex, 1);
+    updatedQuestions.splice(toIndex, 0, removed);
+    
+    const updatedForm: ExerciseForm = {
+      questions: updatedQuestions
+    };
+    
+    onChange(updatedForm);
   };
 
-  const updateOption = (questionId: string, optionIndex: number, value: string) => {
-    const question = value.questions.find(q => q.id === questionId);
-    if (question && question.options) {
-      const newOptions = [...question.options];
-      newOptions[optionIndex] = value;
-      updateQuestion(questionId, { options: newOptions });
-    }
-  };
-
-  const deleteOption = (questionId: string, optionIndex: number) => {
-    const question = value.questions.find(q => q.id === questionId);
-    if (question && question.options) {
-      const newOptions = question.options.filter((_, index) => index !== optionIndex);
-      updateQuestion(questionId, { options: newOptions });
-    }
-  };
-
-  const needsOptions = (type: string) => {
-    return ['dropdown', 'checkbox', 'radio'].includes(type);
-  };
+  // Ensure we have a valid questions array
+  const questions = Array.isArray(value?.questions) ? value.questions : [];
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">ساخت فرم تمرین</h3>
-        <Button onClick={addQuestion} variant="outline">
-          <Plus className="h-4 w-4 mr-2" />
+        <h3 className="text-lg font-semibold">سوالات تمرین</h3>
+        <Button onClick={addQuestion} size="sm">
+          <Plus className="h-4 w-4 ml-2" />
           افزودن سوال
         </Button>
       </div>
 
-      {value.questions.map((question, index) => (
-        <Card key={question.id} className="relative">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 space-x-reverse">
-                <GripVertical className="h-4 w-4 text-gray-400 cursor-move" />
-                <span className="text-sm text-gray-500">سوال {index + 1}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => deleteQuestion(question.id)}
-                className="text-red-600 hover:text-red-800"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardHeader>
-          
-          <CardContent className="space-y-4">
-            {/* Question Title */}
-            <div>
-              <Label htmlFor={`title-${question.id}`}>عنوان سوال</Label>
-              <Input
-                id={`title-${question.id}`}
-                value={question.title}
-                onChange={(e) => updateQuestion(question.id, { title: e.target.value })}
-                placeholder="عنوان سوال را وارد کنید"
-              />
-            </div>
-
-            {/* Question Description */}
-            <div>
-              <Label htmlFor={`desc-${question.id}`}>توضیحات (اختیاری)</Label>
-              <Textarea
-                id={`desc-${question.id}`}
-                value={question.description || ''}
-                onChange={(e) => updateQuestion(question.id, { description: e.target.value })}
-                placeholder="توضیحات سوال"
-                rows={2}
-              />
-            </div>
-
-            {/* Question Type */}
-            <div>
-              <Label>نوع سوال</Label>
-              <Select
-                value={question.type}
-                onValueChange={(value: any) => updateQuestion(question.id, { type: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="input">فیلد ورودی</SelectItem>
-                  <SelectItem value="textbox">جعبه متن</SelectItem>
-                  <SelectItem value="dropdown">منوی کشویی</SelectItem>
-                  <SelectItem value="radio">گزینه‌های تکی</SelectItem>
-                  <SelectItem value="checkbox">چندین انتخاب</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Placeholder for input/textbox */}
-            {(question.type === 'input' || question.type === 'textbox') && (
-              <div>
-                <Label htmlFor={`placeholder-${question.id}`}>متن راهنما</Label>
-                <Input
-                  id={`placeholder-${question.id}`}
-                  value={question.placeholder || ''}
-                  onChange={(e) => updateQuestion(question.id, { placeholder: e.target.value })}
-                  placeholder="متن راهنما برای کاربر"
-                />
-              </div>
-            )}
-
-            {/* Options for dropdown/radio/checkbox */}
-            {needsOptions(question.type) && (
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <Label>گزینه‌ها</Label>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => addOption(question.id)}
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    افزودن گزینه
-                  </Button>
-                </div>
-                
-                {question.options?.map((option, optionIndex) => (
-                  <div key={optionIndex} className="flex items-center space-x-2 space-x-reverse mb-2">
-                    <Input
-                      value={option}
-                      onChange={(e) => updateOption(question.id, optionIndex, e.target.value)}
-                      placeholder={`گزینه ${optionIndex + 1}`}
-                    />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => deleteOption(question.id, optionIndex)}
-                      className="text-red-600"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Required Toggle */}
-            <div className="flex items-center space-x-2 space-x-reverse">
-              <Switch
-                id={`required-${question.id}`}
-                checked={question.required}
-                onCheckedChange={(checked) => updateQuestion(question.id, { required: checked })}
-              />
-              <Label htmlFor={`required-${question.id}`}>
-                {question.required ? 'اجباری' : 'اختیاری'}
-              </Label>
-            </div>
+      {questions.length === 0 ? (
+        <Card>
+          <CardContent className="p-6 text-center text-gray-500">
+            هنوز سوالی اضافه نشده است. با کلیک روی "افزودن سوال" شروع کنید.
           </CardContent>
         </Card>
-      ))}
-
-      {value.questions.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <p>هیچ سوالی اضافه نشده است</p>
-          <p className="text-sm">برای شروع، یک سوال اضافه کنید</p>
-        </div>
+      ) : (
+        questions.map((question, index) => (
+          <QuestionEditor
+            key={question.id}
+            question={question}
+            index={index}
+            onUpdate={(updatedQuestion) => updateQuestion(index, updatedQuestion)}
+            onDelete={() => deleteQuestion(index)}
+            onMove={moveQuestion}
+            draggedIndex={draggedIndex}
+            setDraggedIndex={setDraggedIndex}
+          />
+        ))
       )}
+    </div>
+  );
+};
+
+interface QuestionEditorProps {
+  question: FormQuestion;
+  index: number;
+  onUpdate: (question: FormQuestion) => void;
+  onDelete: () => void;
+  onMove: (fromIndex: number, toIndex: number) => void;
+  draggedIndex: number | null;
+  setDraggedIndex: (index: number | null) => void;
+}
+
+const QuestionEditor: React.FC<QuestionEditorProps> = ({
+  question,
+  index,
+  onUpdate,
+  onDelete,
+  onMove,
+  draggedIndex,
+  setDraggedIndex,
+}) => {
+  const handleDragStart = (e: React.DragEvent) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== index) {
+      onMove(draggedIndex, index);
+    }
+    setDraggedIndex(null);
+  };
+
+  const updateField = (field: keyof FormQuestion, value: any) => {
+    onUpdate({ ...question, [field]: value });
+  };
+
+  const needsOptions = question.type === 'dropdown' || question.type === 'checkbox' || question.type === 'radio';
+
+  return (
+    <Card 
+      className={`transition-all ${draggedIndex === index ? 'opacity-50' : ''}`}
+      draggable
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2 space-x-reverse">
+            <GripVertical className="h-4 w-4 text-gray-400 cursor-move" />
+            <span className="font-medium">سوال {index + 1}</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDelete}
+            className="text-red-600 hover:text-red-700"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>عنوان سوال</Label>
+            <Input
+              value={question.title}
+              onChange={(e) => updateField('title', e.target.value)}
+              placeholder="عنوان سوال را وارد کنید"
+            />
+          </div>
+          
+          <div>
+            <Label>نوع سوال</Label>
+            <Select
+              value={question.type}
+              onValueChange={(value) => updateField('type', value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="input">فیلد ورودی</SelectItem>
+                <SelectItem value="textbox">متن چندخطی</SelectItem>
+                <SelectItem value="dropdown">لیست کشویی</SelectItem>
+                <SelectItem value="radio">انتخاب تکی</SelectItem>
+                <SelectItem value="checkbox">انتخاب چندگانه</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div>
+          <Label>توضیحات (اختیاری)</Label>
+          <Textarea
+            value={question.description || ''}
+            onChange={(e) => updateField('description', e.target.value)}
+            placeholder="توضیحات اضافی برای سوال"
+            rows={2}
+          />
+        </div>
+
+        {(question.type === 'input' || question.type === 'textbox') && (
+          <div>
+            <Label>متن راهنما (placeholder)</Label>
+            <Input
+              value={question.placeholder || ''}
+              onChange={(e) => updateField('placeholder', e.target.value)}
+              placeholder="متن راهنما برای کاربر"
+            />
+          </div>
+        )}
+
+        {needsOptions && (
+          <div>
+            <Label>گزینه‌ها</Label>
+            <OptionsList
+              options={question.options || []}
+              onChange={(options) => updateField('options', options)}
+            />
+          </div>
+        )}
+
+        <div className="flex items-center space-x-2 space-x-reverse">
+          <Checkbox
+            id={`required-${question.id}`}
+            checked={question.required}
+            onCheckedChange={(checked) => updateField('required', checked)}
+          />
+          <Label htmlFor={`required-${question.id}`}>
+            این سوال اجباری است
+          </Label>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+interface OptionsListProps {
+  options: string[];
+  onChange: (options: string[]) => void;
+}
+
+const OptionsList: React.FC<OptionsListProps> = ({ options, onChange }) => {
+  const addOption = () => {
+    onChange([...options, `گزینه ${options.length + 1}`]);
+  };
+
+  const updateOption = (index: number, value: string) => {
+    const updatedOptions = [...options];
+    updatedOptions[index] = value;
+    onChange(updatedOptions);
+  };
+
+  const deleteOption = (index: number) => {
+    const updatedOptions = options.filter((_, i) => i !== index);
+    onChange(updatedOptions);
+  };
+
+  return (
+    <div className="space-y-2">
+      {options.map((option, index) => (
+        <div key={index} className="flex items-center space-x-2 space-x-reverse">
+          <Input
+            value={option}
+            onChange={(e) => updateOption(index, e.target.value)}
+            placeholder={`گزینه ${index + 1}`}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => deleteOption(index)}
+            className="text-red-600 hover:text-red-700"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
+      
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={addOption}
+        className="w-full"
+      >
+        <Plus className="h-4 w-4 ml-2" />
+        افزودن گزینه
+      </Button>
     </div>
   );
 };

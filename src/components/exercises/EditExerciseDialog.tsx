@@ -68,6 +68,7 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
       days_duration: daysDuration,
       points: exercise.points,
       estimated_time: exercise.estimated_time,
+      form_structure: exercise.form_structure || { questions: [] },
     };
   }, [exercise]);
 
