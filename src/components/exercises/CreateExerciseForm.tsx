@@ -1,5 +1,5 @@
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -24,12 +24,13 @@ interface CreateExerciseFormProps {
   isSubmitting: boolean;
   onSubmit: (data: CreateExerciseFormData) => Promise<void>;
   onCancel: () => void;
+  defaultValues?: CreateExerciseFormData;
 }
 
-export const CreateExerciseForm = ({ courses, isSubmitting, onSubmit, onCancel }: CreateExerciseFormProps) => {
+export const CreateExerciseForm = ({ courses, isSubmitting, onSubmit, onCancel, defaultValues }: CreateExerciseFormProps) => {
   const form = useForm<CreateExerciseFormData>({
     mode: 'onChange',
-    defaultValues: {
+    defaultValues: defaultValues || {
       title: '',
       description: '',
       course_id: '',
@@ -40,6 +41,13 @@ export const CreateExerciseForm = ({ courses, isSubmitting, onSubmit, onCancel }
       estimated_time: '',
     },
   });
+
+  // Reset form when defaultValues change (for edit mode)
+  useEffect(() => {
+    if (defaultValues) {
+      form.reset(defaultValues);
+    }
+  }, [defaultValues, form]);
 
   const handleFormSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +81,7 @@ export const CreateExerciseForm = ({ courses, isSubmitting, onSubmit, onCancel }
             type="submit" 
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'در حال ایجاد...' : 'ایجاد تمرین'}
+            {isSubmitting ? 'در حال ذخیره...' : (defaultValues ? 'ذخیره تغییرات' : 'ایجاد تمرین')}
           </Button>
         </div>
       </form>

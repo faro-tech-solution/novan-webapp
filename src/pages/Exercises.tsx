@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import CreateExerciseDialog from '@/components/CreateExerciseDialog';
-import { useExercises } from '@/hooks/useExercises';
+import { EditExerciseDialog } from '@/components/exercises/EditExerciseDialog';
+import { useExercises, Exercise } from '@/hooks/useExercises';
 import { useToast } from '@/hooks/use-toast';
 import { ExerciseStatsCards } from '@/components/exercises/ExerciseStatsCards';
 import { ExerciseFilters } from '@/components/exercises/ExerciseFilters';
@@ -13,6 +14,7 @@ const Exercises = () => {
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [courseFilter, setCourseFilter] = useState('all');
   const [exerciseStatusFilter, setExerciseStatusFilter] = useState('all');
+  const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
   
   const { exercises, courses, loading, error, fetchExercises, deleteExercise } = useExercises();
   const { toast } = useToast();
@@ -33,6 +35,14 @@ const Exercises = () => {
         });
       }
     }
+  };
+
+  const handleEditExercise = (exercise: Exercise) => {
+    setEditingExercise(exercise);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditingExercise(null);
   };
 
   // Filter exercises
@@ -99,6 +109,15 @@ const Exercises = () => {
           exercises={exercises}
           filteredExercises={filteredExercises}
           onDeleteExercise={handleDeleteExercise}
+          onEditExercise={handleEditExercise}
+        />
+
+        {/* Edit Exercise Dialog */}
+        <EditExerciseDialog
+          exercise={editingExercise}
+          open={!!editingExercise}
+          onOpenChange={handleEditDialogClose}
+          onExerciseUpdated={fetchExercises}
         />
       </div>
     </DashboardLayout>

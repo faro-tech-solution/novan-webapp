@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { 
   Edit, 
   Trash2, 
-  Eye, 
   Clock, 
   Award,
   Calendar
@@ -19,9 +18,16 @@ interface ExerciseTableProps {
   exercises: Exercise[];
   filteredExercises: Exercise[];
   onDeleteExercise: (id: string) => void;
+  onEditExercise?: (exercise: Exercise) => void;
 }
 
-export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise }: ExerciseTableProps) => {
+export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, onEditExercise }: ExerciseTableProps) => {
+  const handleEditClick = (exercise: Exercise) => {
+    if (onEditExercise) {
+      onEditExercise(exercise);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -87,12 +93,11 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise }
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-2 space-x-reverse">
-                    <Link to={`/exercise/${exercise.id}`}>
-                      <Button size="sm" variant="outline">
-                        <Eye className="h-3 w-3" />
-                      </Button>
-                    </Link>
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleEditClick(exercise)}
+                    >
                       <Edit className="h-3 w-3" />
                     </Button>
                     <Button 
