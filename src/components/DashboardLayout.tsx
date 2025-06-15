@@ -1,4 +1,3 @@
-
 import { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,8 @@ import {
   LogOut,
   Bell,
   Award,
-  UserCog
+  UserCog,
+  CheckCircle
 } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -33,6 +33,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/dashboard/trainer', icon: LayoutDashboard, label: 'داشبورد' },
     { href: '/courses-management', icon: Users, label: 'درس‌ها' },
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
+    { href: '/review-submissions', icon: CheckCircle, label: 'بررسی تمرین‌ها' },
     { href: '/students', icon: Award, label: 'دانشجویان' },
   ];
 
@@ -49,6 +50,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/courses-management', icon: Users, label: 'مدیریت درس‌ها' },
     { href: '/students', icon: Award, label: 'دانشجویان' },
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
+    { href: '/review-submissions', icon: CheckCircle, label: 'بررسی تمرین‌ها' },
   ];
 
   const getNavItems = () => {
