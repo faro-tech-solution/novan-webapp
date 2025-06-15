@@ -7,17 +7,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
-import Index from "@/pages/Index";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
 import TrainerDashboard from "@/pages/TrainerDashboard";
 import TraineeDashboard from "@/pages/TraineeDashboard";
 import Courses from "@/pages/Courses";
-import AllCourses from "@/pages/AllCourses";
 import StudentCourses from "@/pages/StudentCourses";
-import CourseDetail from "@/pages/CourseDetail";
-import CourseDetailPage from "@/pages/CourseDetailPage";
 import Instructors from "@/pages/Instructors";
 import Exercises from "@/pages/Exercises";
 import MyExercises from "@/pages/MyExercises";
@@ -38,13 +34,9 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
+      <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      
-      {/* Public course pages */}
-      <Route path="/all-courses" element={<AllCourses />} />
-      <Route path="/course/:id" element={<CourseDetailPage />} />
       
       {/* Protected Routes */}
       <Route 
@@ -109,15 +101,6 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute requiredRole="trainee">
             <StudentCourses />
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/courses/:id" 
-        element={
-          <ProtectedRoute>
-            <CourseDetail />
           </ProtectedRoute>
         } 
       />
