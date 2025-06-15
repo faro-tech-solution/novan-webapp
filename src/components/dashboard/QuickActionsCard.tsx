@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Award, Calendar } from 'lucide-react';
+import { FileText, Award, Calendar, Trophy } from 'lucide-react';
 
 export const QuickActionsCard = () => {
   return (
@@ -32,8 +32,8 @@ export const QuickActionsCard = () => {
             </Button>
           </Link>
           <Button variant="outline" className="w-full h-20 flex flex-col items-center space-y-2" disabled>
-            <Calendar className="h-6 w-6" />
-            <span>تقویم</span>
+            <Trophy className="h-6 w-6" />
+            <span>جوایز من</span>
           </Button>
         </div>
       </CardContent>

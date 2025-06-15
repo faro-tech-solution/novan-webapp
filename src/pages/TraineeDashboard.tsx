@@ -4,14 +4,17 @@ import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMyExercises } from '@/hooks/useMyExercises';
+import { useStudentAwards } from '@/hooks/useStudentAwards';
 import { DailyTasksCard } from '@/components/dashboard/DailyTasksCard';
 import { TraineeStatsCards } from '@/components/dashboard/TraineeStatsCards';
 import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesCard';
 import { QuickActionsCard } from '@/components/dashboard/QuickActionsCard';
+import { AwardsSummaryCard } from '@/components/dashboard/AwardsSummaryCard';
 
 const TraineeDashboard = () => {
   const { profile } = useAuth();
   const { myExercises, loading, error, refetch } = useMyExercises();
+  const { studentAwards, loading: awardsLoading } = useStudentAwards();
 
   // Filter out exercises that will start in the future (same logic as MyExercises)
   const currentExercises = myExercises.filter(exercise => {
@@ -67,16 +70,23 @@ const TraineeDashboard = () => {
         {/* Stats Cards */}
         <TraineeStatsCards exercises={currentExercises} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Upcoming Exercises */}
-          <UpcomingExercisesCard exercises={upcomingExercises} />
+          <div className="lg:col-span-2">
+            <UpcomingExercisesCard exercises={upcomingExercises} />
+          </div>
 
-          {/* Daily Tasks */}
-          <DailyTasksCard />
+          {/* Awards Summary */}
+          <AwardsSummaryCard studentAwards={studentAwards} loading={awardsLoading} />
         </div>
 
-        {/* Quick Actions */}
-        <QuickActionsCard />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Daily Tasks */}
+          <DailyTasksCard />
+
+          {/* Quick Actions */}
+          <QuickActionsCard />
+        </div>
       </div>
     </DashboardLayout>
   );

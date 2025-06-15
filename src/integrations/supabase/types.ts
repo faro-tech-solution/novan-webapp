@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      awards: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          points_value: number
+          rarity: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          icon: string
+          id?: string
+          name: string
+          points_value?: number
+          rarity: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          points_value?: number
+          rarity?: string
+        }
+        Relationships: []
+      }
       course_enrollments: {
         Row: {
           course_id: string
@@ -279,6 +312,38 @@ export type Database = {
         }
         Relationships: []
       }
+      student_awards: {
+        Row: {
+          award_id: string
+          bonus_points: number
+          earned_at: string
+          id: string
+          student_id: string
+        }
+        Insert: {
+          award_id: string
+          bonus_points?: number
+          earned_at?: string
+          id?: string
+          student_id: string
+        }
+        Update: {
+          award_id?: string
+          bonus_points?: number
+          earned_at?: string
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_awards_award_id_fkey"
+            columns: ["award_id"]
+            isOneToOne: false
+            referencedRelation: "awards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teacher_course_assignments: {
         Row: {
           assigned_at: string
@@ -376,6 +441,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_and_award_achievements: {
+        Args: { student_id_param: string }
+        Returns: undefined
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string

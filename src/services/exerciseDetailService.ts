@@ -1,7 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { calculateAdjustedDates } from '@/utils/exerciseDateUtils';
-import { calculateSubmissionStatus } from '@/utils/exerciseSubmissionUtils';
+import { checkAndAwardAchievements } from '@/services/awardsService';
 
 export interface ExerciseDetail {
   id: string;
@@ -10,34 +9,34 @@ export interface ExerciseDetail {
   course_id: string;
   course_name: string;
   difficulty: string;
-  days_to_due: number;
-  days_to_open: number;
-  days_to_close: number;
   points: number;
   estimated_time: string;
-  created_at: string;
-  updated_at: string;
-  created_by: string;
   open_date: string;
   due_date: string;
-  close_date: string;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
-  submitted_at: string | null;
-  score: number | null;
-  feedback: string | null;
-  solution: string | null;
+  solution?: string;
+  feedback?: string;
+  score?: number;
 }
 
 export const fetchExerciseDetail = async (exerciseId: string, userId: string): Promise<ExerciseDetail | null> => {
   console.log('Fetching exercise detail for:', exerciseId, 'user:', userId);
 
-  // Fetch exercise data
+  // First get the exercise details
   const { data: exercise, error: exerciseError } = await supabase
     .from('exercises')
     .select(`
-      *,
+      id,
+      title,
+      description,
+      course_id,
+      difficulty,
+      points,
+      estimated_time,
+      days_to_open,
+      days_to_due,
+      created_at,
       courses (
-        id,
         name
       )
     `)
@@ -46,59 +45,42 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
 
   if (exerciseError) {
     console.error('Error fetching exercise:', exerciseError);
-    throw new Error('خطا در دریافت اطلاعات تمرین: ' + exerciseError.message);
+    throw new Error('تمرین یافت نشد');
   }
 
   if (!exercise) {
     return null;
   }
 
-  // Fetch user's enrollment for this course to get term information
-  const { data: enrollment, error: enrollmentError } = await supabase
-    .from('course_enrollments')
-    .select(`
-      course_id,
-      enrolled_at,
-      term_id,
-      course_terms (
-        id,
-        start_date,
-        end_date
-      )
-    `)
-    .eq('student_id', userId)
-    .eq('course_id', exercise.course_id)
-    .eq('status', 'active')
-    .single();
+  // Calculate dates
+  const createdDate = new Date(exercise.created_at);
+  const openDate = new Date(createdDate);
+  openDate.setDate(openDate.getDate() + exercise.days_to_open);
+  
+  const dueDate = new Date(createdDate);
+  dueDate.setDate(dueDate.getDate() + exercise.days_to_due);
 
-  if (enrollmentError) {
-    console.error('Error fetching enrollment:', enrollmentError);
-    // Don't throw error, user might not be enrolled but still viewing exercise
-  }
-
-  // Create a minimal enrollment object for calculateAdjustedDates
-  const enrollmentForCalculation = enrollment ? {
-    ...enrollment,
-    courses: null // This property is not used in date calculations
-  } : undefined;
-
-  // Calculate adjusted dates
-  const { adjustedOpenDate, adjustedDueDate, adjustedCloseDate } = calculateAdjustedDates(exercise, enrollmentForCalculation);
-
-  // Fetch user's submission for this exercise
-  const { data: submission, error: submissionError } = await supabase
+  // Get submission if exists
+  const { data: submission } = await supabase
     .from('exercise_submissions')
-    .select('*')
+    .select('solution, feedback, score, submitted_at')
     .eq('exercise_id', exerciseId)
     .eq('student_id', userId)
     .single();
 
-  if (submissionError && submissionError.code !== 'PGRST116') {
-    console.error('Error fetching submission:', submissionError);
+  // Determine submission status
+  const now = new Date();
+  let submissionStatus: 'not_started' | 'pending' | 'completed' | 'overdue' = 'not_started';
+  
+  if (submission) {
+    if (submission.score !== null) {
+      submissionStatus = 'completed';
+    } else {
+      submissionStatus = 'pending';
+    }
+  } else if (now > dueDate) {
+    submissionStatus = 'overdue';
   }
-
-  // Calculate submission status
-  const submissionStatus = calculateSubmissionStatus(submission, adjustedOpenDate, adjustedCloseDate);
 
   return {
     id: exercise.id,
@@ -107,30 +89,22 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     course_id: exercise.course_id,
     course_name: exercise.courses?.name || 'نامشخص',
     difficulty: exercise.difficulty,
-    days_to_due: exercise.days_to_due,
-    days_to_open: exercise.days_to_open,
-    days_to_close: exercise.days_to_close,
     points: exercise.points,
     estimated_time: exercise.estimated_time,
-    created_at: exercise.created_at,
-    updated_at: exercise.updated_at,
-    created_by: exercise.created_by,
-    open_date: adjustedOpenDate.toISOString().split('T')[0],
-    due_date: adjustedDueDate.toISOString().split('T')[0],
-    close_date: adjustedCloseDate.toISOString().split('T')[0],
+    open_date: openDate.toISOString(),
+    due_date: dueDate.toISOString(),
     submission_status: submissionStatus,
-    submitted_at: submission?.submitted_at || null,
-    score: submission?.score || null,
-    feedback: submission?.feedback || null,
-    solution: submission?.solution || null,
+    solution: submission?.solution,
+    feedback: submission?.feedback,
+    score: submission?.score
   };
 };
 
 export const submitExerciseSolution = async (
   exerciseId: string,
-  userId: string,
-  userEmail: string,
-  userName: string,
+  studentId: string,
+  studentEmail: string,
+  studentName: string,
   solution: string
 ): Promise<{ error: string | null }> => {
   console.log('Submitting solution for exercise:', exerciseId);
@@ -139,16 +113,26 @@ export const submitExerciseSolution = async (
     .from('exercise_submissions')
     .upsert({
       exercise_id: exerciseId,
-      student_id: userId,
-      student_email: userEmail,
-      student_name: userName,
+      student_id: studentId,
+      student_email: studentEmail,
+      student_name: studentName,
       solution: solution,
-      submitted_at: new Date().toISOString(),
+      submitted_at: new Date().toISOString()
+    }, {
+      onConflict: 'exercise_id,student_id'
     });
 
   if (error) {
     console.error('Error submitting solution:', error);
     return { error: error.message };
+  }
+
+  // Trigger achievement checking after successful submission
+  try {
+    await checkAndAwardAchievements(studentId);
+  } catch (achievementError) {
+    console.error('Error checking achievements:', achievementError);
+    // Don't fail the submission if achievement checking fails
   }
 
   console.log('Solution submitted successfully');
