@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,28 +28,28 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
-        return <Badge className="bg-green-100 text-green-800">تکمیل شده</Badge>;
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-800 hover:text-green-100 transition-colors">تکمیل شده</Badge>;
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">در انتظار بررسی</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-800 hover:text-yellow-100 transition-colors">در انتظار بررسی</Badge>;
       case 'overdue':
-        return <Badge className="bg-red-100 text-red-800">دیرکرد</Badge>;
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-800 hover:text-red-100 transition-colors">دیرکرد</Badge>;
       case 'not_started':
-        return <Badge className="bg-gray-100 text-gray-800">انجام نشده</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-800 hover:text-gray-100 transition-colors">انجام نشده</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{status}</Badge>;
     }
   };
 
   const getDifficultyBadge = (difficulty: string) => {
     switch (difficulty) {
       case 'آسان':
-        return <Badge className="bg-green-100 text-green-800">{difficulty}</Badge>;
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-800 hover:text-green-100 transition-colors">{difficulty}</Badge>;
       case 'متوسط':
-        return <Badge className="bg-yellow-100 text-yellow-800">{difficulty}</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-800 hover:text-yellow-100 transition-colors">{difficulty}</Badge>;
       case 'سخت':
-        return <Badge className="bg-red-100 text-red-800">{difficulty}</Badge>;
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-800 hover:text-red-100 transition-colors">{difficulty}</Badge>;
       default:
-        return <Badge variant="outline">{difficulty}</Badge>;
+        return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{difficulty}</Badge>;
     }
   };
 
