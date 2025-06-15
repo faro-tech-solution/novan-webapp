@@ -39,9 +39,9 @@ export const fetchCourseExercises = async (courseIds: string[]): Promise<Exercis
       description,
       course_id,
       difficulty,
-      due_date,
-      open_date,
-      close_date,
+      days_to_due,
+      days_to_open,
+      days_to_close,
       points,
       estimated_time,
       created_at,
@@ -53,7 +53,7 @@ export const fetchCourseExercises = async (courseIds: string[]): Promise<Exercis
       )
     `)
     .in('course_id', courseIds)
-    .order('due_date', { ascending: true });
+    .order('days_to_due', { ascending: true });
 
   if (exercisesError) {
     console.error('Error fetching exercises:', exercisesError);

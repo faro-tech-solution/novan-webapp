@@ -38,9 +38,9 @@ export interface ExerciseData {
   description: string | null;
   course_id: string;
   difficulty: string;
-  due_date: string;
-  open_date: string;
-  close_date: string;
+  days_to_due: number;
+  days_to_open: number;
+  days_to_close: number;
   points: number;
   estimated_time: string;
   created_at: string;

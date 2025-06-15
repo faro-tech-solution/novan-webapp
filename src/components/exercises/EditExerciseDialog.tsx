@@ -57,20 +57,14 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
   const getFormDefaultValues = useCallback((): CreateExerciseFormData | undefined => {
     if (!exercise) return undefined;
 
-    // Calculate days_to_open and days_duration from dates
-    const today = new Date();
-    const openDate = new Date(exercise.open_date);
-    const closeDate = new Date(exercise.close_date);
-    
-    const daysToOpen = Math.max(1, Math.ceil((openDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
-    const daysDuration = Math.max(1, Math.ceil((closeDate.getTime() - openDate.getTime()) / (1000 * 60 * 60 * 24)));
+    const daysDuration = Math.max(1, exercise.days_to_close - exercise.days_to_open);
 
     return {
       title: exercise.title,
       description: exercise.description || '',
       course_id: exercise.course_name || '',
       difficulty: exercise.difficulty,
-      days_to_open: daysToOpen,
+      days_to_open: exercise.days_to_open,
       days_duration: daysDuration,
       points: exercise.points,
       estimated_time: exercise.estimated_time,

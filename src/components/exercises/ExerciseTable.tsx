@@ -28,6 +28,13 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
     }
   };
 
+  const formatRelativeDays = (days: number) => {
+    if (days === 0) return 'امروز';
+    if (days === 1) return 'فردا';
+    if (days > 0) return `${days} روز بعد`;
+    return `${Math.abs(days)} روز قبل`;
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -44,7 +51,8 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
               <TableHead>دوره</TableHead>
               <TableHead>سطح</TableHead>
               <TableHead>وضعیت تمرین</TableHead>
-              <TableHead>موعد تحویل</TableHead>
+              <TableHead>تاریخ باز شدن</TableHead>
+              <TableHead>مهلت تحویل</TableHead>
               <TableHead>ارسال‌ها</TableHead>
               <TableHead>میانگین نمره</TableHead>
               <TableHead>عملیات</TableHead>
@@ -73,7 +81,13 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
                 <TableCell>
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <Calendar className="h-4 w-4 text-gray-400" />
-                    <span>{exercise.due_date}</span>
+                    <span>{formatRelativeDays(exercise.days_to_open)}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <Calendar className="h-4 w-4 text-gray-400" />
+                    <span>{formatRelativeDays(exercise.days_to_due)}</span>
                   </div>
                 </TableCell>
                 <TableCell>

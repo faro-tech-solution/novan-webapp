@@ -192,46 +192,46 @@ export type Database = {
       }
       exercises: {
         Row: {
-          close_date: string
           course_id: string
           created_at: string
           created_by: string
+          days_to_close: number
+          days_to_due: number
+          days_to_open: number
           description: string | null
           difficulty: string
-          due_date: string
           estimated_time: string
           id: string
-          open_date: string
           points: number
           title: string
           updated_at: string
         }
         Insert: {
-          close_date: string
           course_id: string
           created_at?: string
           created_by: string
+          days_to_close: number
+          days_to_due: number
+          days_to_open: number
           description?: string | null
           difficulty: string
-          due_date: string
           estimated_time: string
           id?: string
-          open_date: string
           points?: number
           title: string
           updated_at?: string
         }
         Update: {
-          close_date?: string
           course_id?: string
           created_at?: string
           created_by?: string
+          days_to_close?: number
+          days_to_due?: number
+          days_to_open?: number
           description?: string | null
           difficulty?: string
-          due_date?: string
           estimated_time?: string
           id?: string
-          open_date?: string
           points?: number
           title?: string
           updated_at?: string

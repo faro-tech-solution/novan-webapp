@@ -29,21 +29,14 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
       console.log('Creating new exercise:', data);
       console.log('Available courses:', courses);
       
-      // Calculate open date and close date based on days_to_open and days_duration
-      const openDate = new Date();
-      openDate.setDate(openDate.getDate() + data.days_to_open);
-      
-      const closeDate = new Date(openDate);
-      closeDate.setDate(closeDate.getDate() + data.days_duration);
-      
       const exerciseData = {
         title: data.title,
         description: data.description,
         course_id: data.course_id,
         difficulty: data.difficulty,
-        due_date: closeDate.toISOString().split('T')[0],
-        open_date: openDate.toISOString().split('T')[0],
-        close_date: closeDate.toISOString().split('T')[0],
+        days_to_due: data.days_to_open + data.days_duration,
+        days_to_open: data.days_to_open,
+        days_to_close: data.days_to_open + data.days_duration,
         points: data.points,
         estimated_time: data.estimated_time,
       };
