@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Exercise } from '@/types/exercise';
 import { getExerciseStatusBadge, getDifficultyBadge } from './ExerciseStatusBadges';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ExerciseTableProps {
   exercises: Exercise[];
@@ -22,6 +23,9 @@ interface ExerciseTableProps {
 }
 
 export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, onEditExercise }: ExerciseTableProps) => {
+  const { profile } = useAuth();
+  const isStudent = profile?.role === 'trainee';
+
   const handleEditClick = (exercise: Exercise) => {
     if (onEditExercise) {
       onEditExercise(exercise);
@@ -50,9 +54,9 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
               <TableHead>عنوان</TableHead>
               <TableHead>دوره</TableHead>
               <TableHead>سطح</TableHead>
-              <TableHead>وضعیت تمرین</TableHead>
-              <TableHead>تاریخ باز شدن</TableHead>
-              <TableHead>مهلت تحویل</TableHead>
+              {isStudent && <TableHead>وضعیت تمرین</TableHead>}
+              {isStudent && <TableHead>تاریخ باز شدن</TableHead>}
+              {isStudent && <TableHead>مهلت تحویل</TableHead>}
               <TableHead>ارسال‌ها</TableHead>
               <TableHead>میانگین نمره</TableHead>
               <TableHead>عملیات</TableHead>
@@ -60,7 +64,7 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
           </TableHeader>
           <TableBody>
             {filteredExercises.map((exercise) => (
-              <TableRow key={exercise.id} className={exercise.exercise_status === 'overdue' ? 'bg-red-50' : ''}>
+              <TableRow key={exercise.id}>
                 <TableCell>
                   <div>
                     <div className="font-medium">{exercise.title}</div>
@@ -77,19 +81,25 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
                   <Badge variant="outline">{exercise.course_name}</Badge>
                 </TableCell>
                 <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
-                <TableCell>{getExerciseStatusBadge(exercise.exercise_status || 'active')}</TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span>{formatRelativeDays(exercise.days_to_open)}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span>{formatRelativeDays(exercise.days_to_due)}</span>
-                  </div>
-                </TableCell>
+                {isStudent && (
+                  <TableCell>{getExerciseStatusBadge(exercise.exercise_status || 'active')}</TableCell>
+                )}
+                {isStudent && (
+                  <TableCell>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <span>{formatRelativeDays(exercise.days_to_open)}</span>
+                    </div>
+                  </TableCell>
+                )}
+                {isStudent && (
+                  <TableCell>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <Calendar className="h-4 w-4 text-gray-400" />
+                      <span>{formatRelativeDays(exercise.days_to_due)}</span>
+                    </div>
+                  </TableCell>
+                )}
                 <TableCell>
                   <div className="text-center">
                     <div className="font-medium">{exercise.submissions || 0}/{exercise.total_students || 0}</div>
