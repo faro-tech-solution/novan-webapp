@@ -54,12 +54,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
     },
   });
 
-  const onSubmit = async (data: CreateExerciseFormData, event?: React.BaseSyntheticEvent) => {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    
+  const onSubmit = async (data: CreateExerciseFormData) => {
     try {
       setIsSubmitting(true);
       console.log('Creating new exercise:', data);
@@ -119,10 +114,14 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-    }
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    form.handleSubmit(onSubmit)(e);
+  };
+
+  const handleInputChange = (field: any, value: string | number) => {
+    field.onChange(value);
   };
 
   const DialogComponent = () => (
@@ -135,7 +134,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
       </DialogHeader>
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" onKeyDown={handleKeyDown}>
+        <form onSubmit={handleFormSubmit} className="space-y-4">
           <FormField
             control={form.control}
             name="title"
@@ -145,11 +144,8 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                 <FormControl>
                   <Input 
                     placeholder="مثال: مبانی React Hooks" 
-                    {...field}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      field.onChange(e.target.value);
-                    }}
+                    value={field.value}
+                    onChange={(e) => handleInputChange(field, e.target.value)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -167,11 +163,8 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                   <Textarea 
                     placeholder="توضیحات کاملی از تمرین ارائه دهید..."
                     className="min-h-[100px]"
-                    {...field}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      field.onChange(e.target.value);
-                    }}
+                    value={field.value}
+                    onChange={(e) => handleInputChange(field, e.target.value)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -186,7 +179,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>دوره</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={(value) => handleInputChange(field, value)} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="انتخاب دوره" />
@@ -217,7 +210,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>سطح دشواری</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={(value) => handleInputChange(field, value)} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="انتخاب سطح" />
@@ -249,13 +242,8 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                     <Input 
                       type="number" 
                       placeholder="5"
-                      {...field}
-                      onChange={(e) => {
-                        e.preventDefault();
-                        const value = parseInt(e.target.value) || 0;
-                        field.onChange(value);
-                      }}
                       value={field.value || ''}
+                      onChange={(e) => handleInputChange(field, parseInt(e.target.value) || 0)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -276,13 +264,8 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                     <Input 
                       type="number" 
                       placeholder="7"
-                      {...field}
-                      onChange={(e) => {
-                        e.preventDefault();
-                        const value = parseInt(e.target.value) || 0;
-                        field.onChange(value);
-                      }}
                       value={field.value || ''}
+                      onChange={(e) => handleInputChange(field, parseInt(e.target.value) || 0)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -303,13 +286,8 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                     <Input 
                       type="number" 
                       placeholder="100"
-                      {...field}
-                      onChange={(e) => {
-                        e.preventDefault();
-                        const value = parseInt(e.target.value) || 0;
-                        field.onChange(value);
-                      }}
                       value={field.value || ''}
+                      onChange={(e) => handleInputChange(field, parseInt(e.target.value) || 0)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -329,11 +307,8 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                   <FormControl>
                     <Input 
                       placeholder="۲ ساعت" 
-                      {...field}
-                      onChange={(e) => {
-                        e.preventDefault();
-                        field.onChange(e.target.value);
-                      }}
+                      value={field.value}
+                      onChange={(e) => handleInputChange(field, e.target.value)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -347,7 +322,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>وضعیت</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select onValueChange={(value) => handleInputChange(field, value)} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="انتخاب وضعیت" />
@@ -371,13 +346,22 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
               variant="outline" 
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 setOpen(false);
               }} 
               disabled={isSubmitting}
             >
               انصراف
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleFormSubmit(e);
+              }}
+            >
               {isSubmitting ? 'در حال ایجاد...' : 'ایجاد تمرین'}
             </Button>
           </div>
