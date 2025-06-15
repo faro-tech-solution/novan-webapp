@@ -20,22 +20,16 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, BarChart, Bar } from 'recharts';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProgressStats } from '@/hooks/useProgressStats';
+import { useStudentAwards } from '@/hooks/useStudentAwards';
 
 const Progress = () => {
   const { profile } = useAuth();
+  const { stats, loading, error } = useProgressStats();
+  const { studentAwards } = useStudentAwards();
   const [timeFilter, setTimeFilter] = useState('month');
 
-  // Mock progress data
-  const overallStats = {
-    totalExercises: 15,
-    completedExercises: 12,
-    averageScore: 88,
-    totalHours: 45,
-    currentStreak: 7,
-    rank: 3,
-    totalStudents: 25
-  };
-
+  // Mock progress data for charts (would need historical data to make this real)
   const progressData = [
     { name: 'هفته ۱', score: 65, exercises: 2 },
     { name: 'هفته ۲', score: 78, exercises: 3 },
@@ -62,14 +56,41 @@ const Progress = () => {
     { day: 'جمعه', hours: 1 },
   ];
 
-  const achievements = [
-    { id: 1, title: 'اولین تمرین', description: 'اولین تمرین خود را تکمیل کنید', earned: true, date: '۱۴۰۳/۰۶/۰۵' },
-    { id: 2, title: 'دنباله ۷ روزه', description: '۷ روز متوالی تمرین کنید', earned: true, date: '۱۴۰۳/۰۶/۱۲' },
-    { id: 3, title: 'استاد JavaScript', description: 'نمره بالای ۹۰ در تمرین‌های JS', earned: false, date: null },
-    { id: 4, title: 'سریع‌تر از باد', description: 'تمرین را زیر زمان تخمینی تکمیل کنید', earned: true, date: '۱۴۰۳/۰۶/۱۰' },
-  ];
+  // Convert student awards to achievements format
+  const achievements = studentAwards.slice(0, 8).map(award => ({
+    id: award.id,
+    title: award.awards.name,
+    description: award.awards.description,
+    earned: true,
+    date: new Date(award.earned_at).toLocaleDateString('fa-IR')
+  }));
 
-  const completionRate = Math.round((overallStats.completedExercises / overallStats.totalExercises) * 100);
+  if (loading) {
+    return (
+      <DashboardLayout title="پیشرفت تحصیلی">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">در حال بارگذاری اطلاعات...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error || !stats) {
+    return (
+      <DashboardLayout title="پیشرفت تحصیلی">
+        <div className="text-center py-8">
+          <p className="text-red-600">{error || 'خطا در بارگذاری اطلاعات'}</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const completionRate = stats.totalExercises > 0 
+    ? Math.round((stats.completedExercises / stats.totalExercises) * 100)
+    : 0;
 
   return (
     <DashboardLayout title="پیشرفت تحصیلی">
@@ -103,8 +124,7 @@ const Progress = () => {
             <CardContent>
               <div className="text-2xl font-bold">{completionRate}%</div>
               <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                <TrendingUp className="h-3 w-3 text-green-500" />
-                <span className="text-green-600">+۱۲% از ماه قبل</span>
+                <span className="text-gray-600">{stats.completedExercises} از {stats.totalExercises}</span>
               </div>
               <ProgressBar value={completionRate} className="mt-2" />
             </CardContent>
@@ -116,23 +136,22 @@ const Progress = () => {
               <Award className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{overallStats.averageScore}%</div>
+              <div className="text-2xl font-bold">{stats.averageScore}%</div>
               <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                <TrendingUp className="h-3 w-3 text-green-500" />
-                <span className="text-green-600">+۵% از ماه قبل</span>
+                <span className="text-gray-600">از {stats.completedExercises} تمرین</span>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">ساعات مطالعه</CardTitle>
+              <CardTitle className="text-sm font-medium">مجموع امتیازات</CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{overallStats.totalHours}</div>
+              <div className="text-2xl font-bold">{stats.totalPoints}</div>
               <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                <span className="text-gray-600">این ماه</span>
+                <span className="text-gray-600">شامل امتیاز جوایز</span>
               </div>
             </CardContent>
           </Card>
@@ -143,9 +162,9 @@ const Progress = () => {
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">#{overallStats.rank}</div>
+              <div className="text-2xl font-bold">#{stats.rank}</div>
               <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                <span className="text-gray-600">از {overallStats.totalStudents} نفر</span>
+                <span className="text-gray-600">از {stats.totalStudents} نفر</span>
               </div>
             </CardContent>
           </Card>
@@ -240,12 +259,15 @@ const Progress = () => {
             <CardContent>
               <div className="text-center">
                 <div className="text-4xl font-bold text-teal-600 mb-2">
-                  {overallStats.currentStreak}
+                  {stats.currentStreak}
                 </div>
                 <p className="text-gray-600">روز متوالی</p>
                 <div className="mt-4 p-3 bg-teal-50 rounded-lg">
                   <p className="text-sm text-teal-700">
-                    عالی! شما {overallStats.currentStreak} روز متوالی مطالعه کرده‌اید
+                    {stats.currentStreak > 0 
+                      ? `عالی! شما ${stats.currentStreak} روز متوالی مطالعه کرده‌اید`
+                      : 'شروع کنید و دنباله خود را بسازید!'
+                    }
                   </p>
                 </div>
               </div>
@@ -258,49 +280,43 @@ const Progress = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Award className="h-5 w-5 ml-2" />
-              دستاوردها
+              دستاوردها ({studentAwards.length})
             </CardTitle>
             <CardDescription>جوایز و مدال‌های کسب شده</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {achievements.map((achievement) => (
-                <div 
-                  key={achievement.id}
-                  className={`p-4 border rounded-lg ${
-                    achievement.earned 
-                      ? 'bg-yellow-50 border-yellow-200' 
-                      : 'bg-gray-50 border-gray-200'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3 space-x-reverse mb-2">
-                    {achievement.earned ? (
+            {achievements.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Award className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <p>هنوز جایزه‌ای کسب نکرده‌اید</p>
+                <p className="text-sm">با تکمیل تمرین‌ها جوایز کسب کنید!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {achievements.map((achievement) => (
+                  <div 
+                    key={achievement.id}
+                    className="p-4 border rounded-lg bg-yellow-50 border-yellow-200"
+                  >
+                    <div className="flex items-center space-x-3 space-x-reverse mb-2">
                       <Award className="h-6 w-6 text-yellow-500" />
-                    ) : (
-                      <Award className="h-6 w-6 text-gray-400" />
-                    )}
-                    <div className="flex-1">
-                      <h4 className={`font-medium ${
-                        achievement.earned ? 'text-yellow-800' : 'text-gray-600'
-                      }`}>
-                        {achievement.title}
-                      </h4>
-                    </div>
-                    {achievement.earned && (
+                      <div className="flex-1">
+                        <h4 className="font-medium text-yellow-800">
+                          {achievement.title}
+                        </h4>
+                      </div>
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {achievement.description}
-                  </p>
-                  {achievement.earned && achievement.date && (
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {achievement.description}
+                    </p>
                     <Badge variant="outline" className="text-xs">
                       {achievement.date}
                     </Badge>
-                  )}
-                </div>
-              ))}
-            </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

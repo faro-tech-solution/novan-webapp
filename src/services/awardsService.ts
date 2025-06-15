@@ -49,7 +49,7 @@ export const fetchStudentAwards = async (studentId: string): Promise<StudentAwar
     throw new Error('خطا در دریافت جوایز: ' + error.message);
   }
 
-  return data || [];
+  return (data || []) as StudentAward[];
 };
 
 export const fetchAllAwards = async (): Promise<Award[]> => {
@@ -63,7 +63,7 @@ export const fetchAllAwards = async (): Promise<Award[]> => {
     throw new Error('خطا در دریافت لیست جوایز: ' + error.message);
   }
 
-  return data || [];
+  return (data || []) as Award[];
 };
 
 export const checkAndAwardAchievements = async (studentId: string): Promise<void> => {
