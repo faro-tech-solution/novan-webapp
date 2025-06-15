@@ -8,8 +8,6 @@ import { Course } from '@/hooks/useExercises';
 interface ExerciseFiltersProps {
   searchTerm: string;
   setSearchTerm: (value: string) => void;
-  statusFilter: string;
-  setStatusFilter: (value: string) => void;
   exerciseStatusFilter: string;
   setExerciseStatusFilter: (value: string) => void;
   difficultyFilter: string;
@@ -22,8 +20,6 @@ interface ExerciseFiltersProps {
 export const ExerciseFilters = ({
   searchTerm,
   setSearchTerm,
-  statusFilter,
-  setStatusFilter,
   exerciseStatusFilter,
   setExerciseStatusFilter,
   difficultyFilter,
@@ -53,18 +49,6 @@ export const ExerciseFilters = ({
               />
             </div>
           </div>
-          
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full md:w-48">
-              <SelectValue placeholder="وضعیت" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">همه وضعیت‌ها</SelectItem>
-              <SelectItem value="active">فعال</SelectItem>
-              <SelectItem value="completed">تکمیل شده</SelectItem>
-              <SelectItem value="draft">پیش‌نویس</SelectItem>
-            </SelectContent>
-          </Select>
 
           <Select value={exerciseStatusFilter} onValueChange={setExerciseStatusFilter}>
             <SelectTrigger className="w-full md:w-48">

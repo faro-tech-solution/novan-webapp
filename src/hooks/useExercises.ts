@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Exercise, Course } from '@/types/exercise';
 import { fetchCourses, fetchExercises, createExercise, deleteExercise } from '@/services/exerciseService';
 
-export { Exercise, Course } from '@/types/exercise';
+export type { Exercise, Course } from '@/types/exercise';
 
 export const useExercises = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
