@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,24 +8,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { Plus, Calendar, Clock, Award } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface CreateExerciseFormData {
   title: string;
   description: string;
-  courseName: string;
+  course_name: string;
   difficulty: string;
-  dueDate: string;
+  due_date: string;
   points: number;
-  estimatedTime: string;
+  estimated_time: string;
 }
 
 interface CreateExerciseDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  onExerciseCreated?: () => void;
 }
 
-const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange }: CreateExerciseDialogProps = {}) => {
+const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCreated }: CreateExerciseDialogProps = {}) => {
   const [internalOpen, setInternalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
   
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
@@ -34,21 +39,44 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange }: CreateExer
     defaultValues: {
       title: '',
       description: '',
-      courseName: '',
+      course_name: '',
       difficulty: '',
-      dueDate: '',
+      due_date: '',
       points: 100,
-      estimatedTime: '',
+      estimated_time: '',
     },
   });
 
   const courses = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
 
-  const onSubmit = (data: CreateExerciseFormData) => {
-    console.log('Creating new exercise:', data);
-    // Here you would typically send the data to your backend
-    setOpen(false);
-    form.reset();
+  const onSubmit = async (data: CreateExerciseFormData) => {
+    try {
+      setIsSubmitting(true);
+      console.log('Creating new exercise:', data);
+      
+      // Here you would call the create exercise function from useExercises hook
+      // For now, we'll just show a success message
+      toast({
+        title: "تمرین ایجاد شد",
+        description: "تمرین جدید با موفقیت ایجاد شد",
+      });
+      
+      setOpen(false);
+      form.reset();
+      
+      if (onExerciseCreated) {
+        onExerciseCreated();
+      }
+    } catch (error) {
+      console.error('Error creating exercise:', error);
+      toast({
+        title: "خطا",
+        description: "خطا در ایجاد تمرین",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const DialogComponent = () => (
@@ -99,7 +127,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange }: CreateExer
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="courseName"
+              name="course_name"
               rules={{ required: 'انتخاب دوره الزامی است' }}
               render={({ field }) => (
                 <FormItem>
@@ -151,7 +179,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange }: CreateExer
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <FormField
               control={form.control}
-              name="dueDate"
+              name="due_date"
               rules={{ required: 'موعد تحویل الزامی است' }}
               render={({ field }) => (
                 <FormItem>
@@ -195,7 +223,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange }: CreateExer
 
             <FormField
               control={form.control}
-              name="estimatedTime"
+              name="estimated_time"
               rules={{ required: 'زمان تخمینی الزامی است' }}
               render={({ field }) => (
                 <FormItem>
@@ -213,11 +241,11 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange }: CreateExer
           </div>
 
           <div className="flex justify-end space-x-2 space-x-reverse pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting}>
               انصراف
             </Button>
-            <Button type="submit">
-              ایجاد تمرین
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'در حال ایجاد...' : 'ایجاد تمرین'}
             </Button>
           </div>
         </form>

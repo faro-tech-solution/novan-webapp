@@ -140,6 +140,101 @@ export type Database = {
         }
         Relationships: []
       }
+      exercise_submissions: {
+        Row: {
+          exercise_id: string
+          feedback: string | null
+          graded_at: string | null
+          graded_by: string | null
+          id: string
+          score: number | null
+          solution: string
+          student_email: string
+          student_id: string
+          student_name: string
+          submitted_at: string
+        }
+        Insert: {
+          exercise_id: string
+          feedback?: string | null
+          graded_at?: string | null
+          graded_by?: string | null
+          id?: string
+          score?: number | null
+          solution: string
+          student_email: string
+          student_id: string
+          student_name: string
+          submitted_at?: string
+        }
+        Update: {
+          exercise_id?: string
+          feedback?: string | null
+          graded_at?: string | null
+          graded_by?: string | null
+          id?: string
+          score?: number | null
+          solution?: string
+          student_email?: string
+          student_id?: string
+          student_name?: string
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_submissions_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exercises: {
+        Row: {
+          course_name: string
+          created_at: string
+          created_by: string
+          description: string | null
+          difficulty: string
+          due_date: string
+          estimated_time: string
+          id: string
+          points: number
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_name: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          difficulty: string
+          due_date: string
+          estimated_time: string
+          id?: string
+          points?: number
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_name?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          difficulty?: string
+          due_date?: string
+          estimated_time?: string
+          id?: string
+          points?: number
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           class_id: string | null

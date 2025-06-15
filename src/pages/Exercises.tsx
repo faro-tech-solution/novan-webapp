@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
-  Plus, 
   Search, 
   Filter, 
   Edit, 
@@ -21,76 +21,17 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import DashboardLayout from '@/components/DashboardLayout';
 import CreateExerciseDialog from '@/components/CreateExerciseDialog';
+import { useExercises } from '@/hooks/useExercises';
+import { useToast } from '@/hooks/use-toast';
 
 const Exercises = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [courseFilter, setCourseFilter] = useState('all');
-
-  // Mock exercises data
-  const exercises = [
-    {
-      id: 1,
-      title: 'مبانی React Hooks',
-      description: 'یادگیری مفاهیم اساسی React Hooks شامل useState و useEffect',
-      courseName: 'توسعه وب مقدماتی',
-      difficulty: 'متوسط',
-      dueDate: '۱۴۰۳/۰۶/۱۶',
-      points: 100,
-      estimatedTime: '۲ ساعت',
-      submissions: 15,
-      totalStudents: 20,
-      averageScore: 85,
-      status: 'active',
-      createdDate: '۱۴۰۳/۰۶/۰۱'
-    },
-    {
-      id: 2,
-      title: 'طراحی CSS Grid',
-      description: 'ایجاد لایوت‌های پیشرفته با استفاده از CSS Grid',
-      courseName: 'توسعه وب مقدماتی',
-      difficulty: 'آسان',
-      dueDate: '۱۴۰۳/۰۶/۱۸',
-      points: 80,
-      estimatedTime: '۱ ساعت',
-      submissions: 18,
-      totalStudents: 20,
-      averageScore: 92,
-      status: 'active',
-      createdDate: '۱۴۰۳/۰۶/۰۳'
-    },
-    {
-      id: 3,
-      title: 'JavaScript Promises',
-      description: 'کار با Promises و async/await در JavaScript',
-      courseName: 'توسعه وب پیشرفته',
-      difficulty: 'سخت',
-      dueDate: '۱۴۰۳/۰۶/۱۰',
-      points: 120,
-      estimatedTime: '۳ ساعت',
-      submissions: 12,
-      totalStudents: 15,
-      averageScore: 78,
-      status: 'completed',
-      createdDate: '۱۴۰۳/۰۵/۲۵'
-    },
-    {
-      id: 4,
-      title: 'فرم‌های HTML',
-      description: 'ایجاد و اعتبارسنجی فرم‌های HTML',
-      courseName: 'توسعه وب مقدماتی',
-      difficulty: 'آسان',
-      dueDate: '۱۴۰۳/۰۶/۲۲',
-      points: 60,
-      estimatedTime: '۱ ساعت',
-      submissions: 0,
-      totalStudents: 20,
-      averageScore: 0,
-      status: 'draft',
-      createdDate: '۱۴۰۳/۰۶/۱۰'
-    }
-  ];
+  
+  const { exercises, loading, error, fetchExercises, deleteExercise } = useExercises();
+  const { toast } = useToast();
 
   const courses = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
 
@@ -120,13 +61,31 @@ const Exercises = () => {
     }
   };
 
+  const handleDeleteExercise = async (id: string) => {
+    if (window.confirm('آیا از حذف این تمرین مطمئن هستید؟')) {
+      const { error } = await deleteExercise(id);
+      if (error) {
+        toast({
+          title: "خطا",
+          description: error,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "حذف شد",
+          description: "تمرین با موفقیت حذف شد",
+        });
+      }
+    }
+  };
+
   // Filter exercises
   const filteredExercises = exercises.filter(exercise => {
     const matchesSearch = exercise.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exercise.description.toLowerCase().includes(searchTerm.toLowerCase());
+                         (exercise.description && exercise.description.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = statusFilter === 'all' || exercise.status === statusFilter;
     const matchesDifficulty = difficultyFilter === 'all' || exercise.difficulty === difficultyFilter;
-    const matchesCourse = courseFilter === 'all' || exercise.courseName === courseFilter;
+    const matchesCourse = courseFilter === 'all' || exercise.course_name === courseFilter;
     
     return matchesSearch && matchesStatus && matchesDifficulty && matchesCourse;
   });
@@ -137,10 +96,30 @@ const Exercises = () => {
     active: exercises.filter(e => e.status === 'active').length,
     completed: exercises.filter(e => e.status === 'completed').length,
     draft: exercises.filter(e => e.status === 'draft').length,
-    averageSubmissionRate: Math.round(
-      exercises.reduce((sum, e) => sum + (e.submissions / e.totalStudents) * 100, 0) / exercises.length
-    )
+    averageSubmissionRate: exercises.length > 0 ? Math.round(
+      exercises.reduce((sum, e) => sum + ((e.submissions || 0) / (e.total_students || 1)) * 100, 0) / exercises.length
+    ) : 0
   };
+
+  if (loading) {
+    return (
+      <DashboardLayout title="مدیریت تمرین‌ها">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">در حال بارگذاری...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout title="مدیریت تمرین‌ها">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-red-600">خطا: {error}</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="مدیریت تمرین‌ها">
@@ -151,7 +130,7 @@ const Exercises = () => {
             <h2 className="text-2xl font-bold text-gray-900 font-peyda">مدیریت تمرین‌ها</h2>
             <p className="text-gray-600">ایجاد و مدیریت تمرین‌های دانشجویان</p>
           </div>
-          <CreateExerciseDialog />
+          <CreateExerciseDialog onExerciseCreated={fetchExercises} />
         </div>
 
         {/* Stats Cards */}
@@ -299,34 +278,34 @@ const Exercises = () => {
                         <div className="text-sm text-gray-600">{exercise.description}</div>
                         <div className="flex items-center space-x-2 space-x-reverse text-xs text-gray-500 mt-1">
                           <Clock className="h-3 w-3" />
-                          <span>{exercise.estimatedTime}</span>
+                          <span>{exercise.estimated_time}</span>
                           <Award className="h-3 w-3" />
                           <span>{exercise.points} امتیاز</span>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{exercise.courseName}</Badge>
+                      <Badge variant="outline">{exercise.course_name}</Badge>
                     </TableCell>
                     <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
                     <TableCell>{getStatusBadge(exercise.status)}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2 space-x-reverse">
                         <Calendar className="h-4 w-4 text-gray-400" />
-                        <span>{exercise.dueDate}</span>
+                        <span>{exercise.due_date}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="text-center">
-                        <div className="font-medium">{exercise.submissions}/{exercise.totalStudents}</div>
+                        <div className="font-medium">{exercise.submissions || 0}/{exercise.total_students || 0}</div>
                         <div className="text-xs text-gray-500">
-                          {Math.round((exercise.submissions / exercise.totalStudents) * 100)}%
+                          {exercise.total_students ? Math.round(((exercise.submissions || 0) / exercise.total_students) * 100) : 0}%
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      {exercise.averageScore > 0 ? (
-                        <span className="font-medium">{exercise.averageScore}%</span>
+                      {(exercise.average_score || 0) > 0 ? (
+                        <span className="font-medium">{exercise.average_score}%</span>
                       ) : (
                         <span className="text-gray-400">-</span>
                       )}
@@ -341,7 +320,12 @@ const Exercises = () => {
                         <Button size="sm" variant="outline">
                           <Edit className="h-3 w-3" />
                         </Button>
-                        <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-red-600 hover:text-red-700"
+                          onClick={() => handleDeleteExercise(exercise.id)}
+                        >
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
