@@ -30,7 +30,7 @@ const Exercises = () => {
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [courseFilter, setCourseFilter] = useState('all');
   
-  const { exercises, loading, error, fetchExercises, deleteExercise } = useExercises();
+  const { exercises, courses, loading, error, fetchExercises, deleteExercise } = useExercises();
   const { toast } = useToast();
 
   const courses = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
@@ -238,8 +238,8 @@ const Exercises = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">همه دوره‌ها</SelectItem>
-                  {courses.map((courseName) => (
-                    <SelectItem key={courseName} value={courseName}>{courseName}</SelectItem>
+                  {courses.map((course) => (
+                    <SelectItem key={course.id} value={course.name}>{course.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

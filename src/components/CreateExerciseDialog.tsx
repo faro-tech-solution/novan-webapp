@@ -16,7 +16,8 @@ interface CreateExerciseFormData {
   description: string;
   course_name: string;
   difficulty: string;
-  due_date: string;
+  days_to_open: number;
+  days_duration: number;
   points: number;
   estimated_time: string;
   status: string;
@@ -32,7 +33,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
   const [internalOpen, setInternalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { createExercise } = useExercises();
+  const { courses, createExercise } = useExercises();
   
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
@@ -44,21 +45,36 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
       description: '',
       course_name: '',
       difficulty: '',
-      due_date: '',
+      days_to_open: 1,
+      days_duration: 7,
       points: 100,
       estimated_time: '',
       status: 'active',
     },
   });
 
-  const courses = ['توسعه وب مقدماتی', 'توسعه وب پیشرفته', 'موبایل اپلیکیشن'];
-
   const onSubmit = async (data: CreateExerciseFormData) => {
     try {
       setIsSubmitting(true);
       console.log('Creating new exercise:', data);
       
-      const { error } = await createExercise(data);
+      // Calculate due date based on days_to_open + days_duration
+      const totalDays = data.days_to_open + data.days_duration;
+      const dueDate = new Date();
+      dueDate.setDate(dueDate.getDate() + totalDays);
+      
+      const exerciseData = {
+        title: data.title,
+        description: data.description,
+        course_name: data.course_name,
+        difficulty: data.difficulty,
+        due_date: dueDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        points: data.points,
+        estimated_time: data.estimated_time,
+        status: data.status,
+      };
+      
+      const { error } = await createExercise(exerciseData);
       
       if (error) {
         toast({
@@ -152,9 +168,9 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {courses.map((courseName) => (
-                        <SelectItem key={courseName} value={courseName}>
-                          {courseName}
+                      {courses.map((course) => (
+                        <SelectItem key={course.id} value={course.name}>
+                          {course.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -189,19 +205,53 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <FormField
               control={form.control}
-              name="due_date"
-              rules={{ required: 'موعد تحویل الزامی است' }}
+              name="days_to_open"
+              rules={{ 
+                required: 'روز باز شدن الزامی است',
+                min: { value: 1, message: 'حداقل ۱ روز' }
+              }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center">
                     <Calendar className="h-4 w-4 ml-1" />
-                    موعد تحویل
+                    روز باز شدن
                   </FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input 
+                      type="number" 
+                      placeholder="5"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="days_duration"
+              rules={{ 
+                required: 'مدت زمان الزامی است',
+                min: { value: 1, message: 'حداقل ۱ روز' }
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex items-center">
+                    <Clock className="h-4 w-4 ml-1" />
+                    مدت زمان (روز)
+                  </FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="7"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

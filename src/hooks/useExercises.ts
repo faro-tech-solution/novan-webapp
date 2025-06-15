@@ -21,11 +21,41 @@ export interface Exercise {
   average_score?: number;
 }
 
+export interface Course {
+  id: string;
+  name: string;
+  instructor_name: string;
+  status: string;
+}
+
 export const useExercises = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+
+  const fetchCourses = async () => {
+    try {
+      console.log('Fetching courses...');
+
+      const { data, error } = await supabase
+        .from('courses')
+        .select('id, name, instructor_name, status')
+        .eq('status', 'active')
+        .order('name');
+
+      if (error) {
+        console.error('Error fetching courses:', error);
+        return;
+      }
+
+      console.log('Fetched courses:', data);
+      setCourses(data || []);
+    } catch (err) {
+      console.error('Error in fetchCourses:', err);
+    }
+  };
 
   const fetchExercises = async () => {
     if (!user) return;
@@ -136,15 +166,18 @@ export const useExercises = () => {
 
   useEffect(() => {
     if (user) {
+      fetchCourses();
       fetchExercises();
     }
   }, [user]);
 
   return {
     exercises,
+    courses,
     loading,
     error,
     fetchExercises,
+    fetchCourses,
     createExercise,
     deleteExercise,
   };
