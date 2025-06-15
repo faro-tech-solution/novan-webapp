@@ -16,7 +16,7 @@ interface EditExerciseDialogProps {
 export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpdated }: EditExerciseDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { courses } = useExercises();
+  const { courses, updateExercise } = useExercises();
 
   const onSubmit = useCallback(async (data: CreateExerciseFormData) => {
     if (!exercise) return;
@@ -25,11 +25,33 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
       setIsSubmitting(true);
       console.log('Updating exercise:', data);
       
-      // For now, we'll show a toast that the feature is coming soon
-      // In a real implementation, you would call an updateExercise function
+      const exerciseData = {
+        title: data.title,
+        description: data.description,
+        course_id: data.course_id,
+        difficulty: data.difficulty,
+        days_to_due: data.days_to_open + data.days_duration,
+        days_to_open: data.days_to_open,
+        days_to_close: data.days_to_open + data.days_duration,
+        points: data.points,
+        estimated_time: data.estimated_time,
+        form_structure: data.form_structure,
+      };
+      
+      const { error } = await updateExercise(exercise.id, exerciseData);
+      
+      if (error) {
+        toast({
+          title: "خطا",
+          description: error,
+          variant: "destructive",
+        });
+        return;
+      }
+      
       toast({
         title: "به‌روزرسانی تمرین",
-        description: "این قابلیت به زودی اضافه خواهد شد",
+        description: "تمرین با موفقیت به‌روزرسانی شد",
       });
       
       onOpenChange(false);
@@ -47,7 +69,7 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
     } finally {
       setIsSubmitting(false);
     }
-  }, [exercise, toast, onOpenChange, onExerciseUpdated]);
+  }, [exercise, toast, onOpenChange, onExerciseUpdated, updateExercise]);
 
   const handleCancel = useCallback(() => {
     onOpenChange(false);
@@ -76,21 +98,23 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>ویرایش تمرین</DialogTitle>
           <DialogDescription>
             اطلاعات تمرین را ویرایش کنید
           </DialogDescription>
         </DialogHeader>
         
-        <CreateExerciseForm
-          courses={courses}
-          isSubmitting={isSubmitting}
-          onSubmit={onSubmit}
-          onCancel={handleCancel}
-          defaultValues={getFormDefaultValues()}
-        />
+        <div className="overflow-y-auto flex-1 pr-2">
+          <CreateExerciseForm
+            courses={courses}
+            isSubmitting={isSubmitting}
+            onSubmit={onSubmit}
+            onCancel={handleCancel}
+            defaultValues={getFormDefaultValues()}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

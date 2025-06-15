@@ -119,6 +119,38 @@ export const createExercise = async (
   return { data, error: null };
 };
 
+export const updateExercise = async (
+  exerciseId: string,
+  exerciseData: Partial<Exercise>,
+  courses: Course[]
+): Promise<{ data?: Exercise; error: string | null }> => {
+  console.log('Updating exercise:', exerciseId, exerciseData);
+
+  // If course_id is provided as a course name, convert it to course ID
+  let updateData = { ...exerciseData };
+  if (exerciseData.course_id && courses.length > 0) {
+    const selectedCourse = courses.find(course => course.name === exerciseData.course_id);
+    if (selectedCourse) {
+      updateData.course_id = selectedCourse.id;
+    }
+  }
+
+  const { data, error } = await supabase
+    .from('exercises')
+    .update(updateData)
+    .eq('id', exerciseId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating exercise:', error);
+    return { error: error.message };
+  }
+
+  console.log('Exercise updated successfully:', data);
+  return { data, error: null };
+};
+
 export const deleteExercise = async (id: string): Promise<{ error: string | null }> => {
   console.log('Deleting exercise:', id);
 

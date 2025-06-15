@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Exercise, Course } from '@/types/exercise';
-import { fetchCourses, fetchExercises, createExercise, deleteExercise } from '@/services/exerciseService';
+import { fetchCourses, fetchExercises, createExercise, updateExercise, deleteExercise } from '@/services/exerciseService';
 
 export type { Exercise, Course } from '@/types/exercise';
 
@@ -52,6 +52,21 @@ export const useExercises = () => {
     }
   };
 
+  const handleUpdateExercise = async (exerciseId: string, exerciseData: Partial<Exercise>) => {
+    if (!user) return { error: 'کاربر وارد نشده است' };
+
+    try {
+      const result = await updateExercise(exerciseId, exerciseData, courses);
+      if (!result.error) {
+        await handleFetchExercises(); // Refresh the list
+      }
+      return result;
+    } catch (err) {
+      console.error('Error in updateExercise:', err);
+      return { error: 'خطا در به‌روزرسانی تمرین' };
+    }
+  };
+
   const handleDeleteExercise = async (id: string) => {
     if (!user) return { error: 'کاربر وارد نشده است' };
 
@@ -82,6 +97,7 @@ export const useExercises = () => {
     fetchExercises: handleFetchExercises,
     fetchCourses: handleFetchCourses,
     createExercise: handleCreateExercise,
+    updateExercise: handleUpdateExercise,
     deleteExercise: handleDeleteExercise,
   };
 };

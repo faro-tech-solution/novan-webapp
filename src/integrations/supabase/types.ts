@@ -234,6 +234,7 @@ export type Database = {
           description: string | null
           difficulty: string
           estimated_time: string
+          form_structure: Json | null
           id: string
           points: number
           title: string
@@ -249,6 +250,7 @@ export type Database = {
           description?: string | null
           difficulty: string
           estimated_time: string
+          form_structure?: Json | null
           id?: string
           points?: number
           title: string
@@ -264,6 +266,7 @@ export type Database = {
           description?: string | null
           difficulty?: string
           estimated_time?: string
+          form_structure?: Json | null
           id?: string
           points?: number
           title?: string

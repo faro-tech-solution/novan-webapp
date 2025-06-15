@@ -39,6 +39,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
         days_to_close: data.days_to_open + data.days_duration,
         points: data.points,
         estimated_time: data.estimated_time,
+        form_structure: data.form_structure,
       };
       
       const { error } = await createExercise(exerciseData);
@@ -79,20 +80,22 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
   }, [setOpen]);
 
   const DialogComponent = useCallback(() => (
-    <DialogContent className="max-w-2xl">
-      <DialogHeader>
+    <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogHeader className="flex-shrink-0">
         <DialogTitle>ایجاد تمرین جدید</DialogTitle>
         <DialogDescription>
           اطلاعات تمرین جدید را وارد کنید
         </DialogDescription>
       </DialogHeader>
       
-      <CreateExerciseForm
-        courses={courses}
-        isSubmitting={isSubmitting}
-        onSubmit={onSubmit}
-        onCancel={handleCancel}
-      />
+      <div className="overflow-y-auto flex-1 pr-2">
+        <CreateExerciseForm
+          courses={courses}
+          isSubmitting={isSubmitting}
+          onSubmit={onSubmit}
+          onCancel={handleCancel}
+        />
+      </div>
     </DialogContent>
   ), [courses, isSubmitting, onSubmit, handleCancel]);
 
