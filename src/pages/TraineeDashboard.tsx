@@ -5,13 +5,36 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, Clock, FileText, Award, Play, Calendar, AlertTriangle } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTraineeDashboard } from '@/hooks/useTraineeDashboard';
+import { useMyExercises } from '@/hooks/useMyExercises';
 import { DailyTasksCard } from '@/components/dashboard/DailyTasksCard';
 import { getDifficultyBadge, getExerciseStatusBadge } from '@/components/exercises/ExerciseStatusBadges';
 
 const TraineeDashboard = () => {
   const { profile } = useAuth();
-  const { stats, upcomingExercises, loading, error, refetch } = useTraineeDashboard();
+  const { myExercises, loading, error, refetch } = useMyExercises();
+
+  // Filter out exercises that will start in the future (same logic as MyExercises)
+  const currentExercises = myExercises.filter(exercise => {
+    const today = new Date();
+    const openDate = new Date(exercise.open_date);
+    return openDate <= today;
+  });
+
+  // Calculate stats from current exercises
+  const stats = {
+    completedExercises: currentExercises.filter(e => e.submission_status === 'completed').length,
+    pendingExercises: currentExercises.filter(e => e.submission_status === 'pending').length,
+    overdueExercises: currentExercises.filter(e => e.submission_status === 'overdue').length,
+    totalPoints: currentExercises
+      .filter(e => e.submission_status === 'completed')
+      .reduce((sum, e) => sum + e.points, 0)
+  };
+
+  // Get upcoming exercises (not started, due soon) - limit to 3
+  const upcomingExercises = currentExercises
+    .filter(ex => ex.submission_status === 'not_started')
+    .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
+    .slice(0, 3);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
