@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,6 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMyExercises } from '@/hooks/useMyExercises';
 import { DailyTasksCard } from '@/components/dashboard/DailyTasksCard';
-import { getDifficultyBadge, getExerciseStatusBadge } from '@/components/exercises/ExerciseStatusBadges';
 
 const TraineeDashboard = () => {
   const { profile } = useAuth();
@@ -155,22 +153,14 @@ const TraineeDashboard = () => {
                   {upcomingExercises.map((exercise) => (
                     <div key={exercise.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-2 space-x-reverse mb-2">
-                          {getStatusIcon(exercise.submission_status)}
-                          <h4 className="font-medium">{exercise.title}</h4>
-                        </div>
-                        <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600 mb-2">
+                        <h4 className="font-medium mb-2">{exercise.title}</h4>
+                        <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600">
                           <span className="flex items-center space-x-1 space-x-reverse">
                             <Calendar className="h-3 w-3" />
                             <span>موعد: {formatDate(exercise.due_date)}</span>
                           </span>
                           <span>{exercise.estimated_time}</span>
                           <span className="text-purple-600">{exercise.points} امتیاز</span>
-                        </div>
-                        <div className="flex items-center space-x-2 space-x-reverse">
-                          {getDifficultyBadge(exercise.difficulty)}
-                          {getExerciseStatusBadge(exercise.submission_status)}
-                          <span className="text-xs text-gray-500">{exercise.course_name}</span>
                         </div>
                       </div>
                       <Link to={`/exercises/${exercise.id}`}>
