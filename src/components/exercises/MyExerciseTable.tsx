@@ -89,9 +89,7 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
               <TableRow>
                 <TableHead>وضعیت</TableHead>
                 <TableHead>عنوان</TableHead>
-                <TableHead>درس</TableHead>
                 <TableHead>سطح</TableHead>
-                <TableHead>انجام تمرین</TableHead>
                 <TableHead>موعد تحویل</TableHead>
                 <TableHead>امتیاز</TableHead>
                 <TableHead>زمان تخمینی</TableHead>
@@ -108,25 +106,9 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div>
-                      <div className="font-medium">{exercise.title}</div>
-                      {exercise.description && (
-                        <div className="text-sm text-gray-600 truncate max-w-xs">
-                          {exercise.description}
-                        </div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-gray-600">{exercise.course_name || 'نامشخص'}</span>
+                    <div className="font-medium">{exercise.title}</div>
                   </TableCell>
                   <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span>{formatDate(exercise.open_date)}</span>
-                    </div>
-                  </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <Calendar className="h-4 w-4 text-gray-400" />
