@@ -30,23 +30,6 @@ const Progress = () => {
   const { studentAwards, allAwards } = useStudentAwards();
   const [timeFilter, setTimeFilter] = useState('month');
 
-  // Mock progress data for charts (would need historical data to make this real)
-  const progressData = [
-    { name: 'هفته ۱', score: 65, exercises: 2 },
-    { name: 'هفته ۲', score: 78, exercises: 3 },
-    { name: 'هفته ۳', score: 82, exercises: 2 },
-    { name: 'هفته ۴', score: 88, exercises: 4 },
-    { name: 'هفته ۵', score: 92, exercises: 3 },
-    { name: 'هفته ۶', score: 85, exercises: 2 },
-  ];
-
-  const skillsData = [
-    { name: 'HTML/CSS', value: 95, color: '#10B981' },
-    { name: 'JavaScript', value: 82, color: '#F59E0B' },
-    { name: 'React', value: 75, color: '#3B82F6' },
-    { name: 'Node.js', value: 60, color: '#8B5CF6' },
-  ];
-
   if (loading) {
     return (
       <DashboardLayout title="پیشرفت تحصیلی">
@@ -69,10 +52,6 @@ const Progress = () => {
       </DashboardLayout>
     );
   }
-
-  const completionRate = stats.totalExercises > 0 
-    ? Math.round((stats.completedExercises / stats.totalExercises) * 100)
-    : 0;
 
   return (
     <DashboardLayout title="پیشرفت تحصیلی">
@@ -97,34 +76,7 @@ const Progress = () => {
         </div>
 
         {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">نرخ تکمیل</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{completionRate}%</div>
-              <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                <span className="text-gray-600">{stats.completedExercises} از {stats.totalExercises}</span>
-              </div>
-              <ProgressBar value={completionRate} className="mt-2" />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">میانگین نمره</CardTitle>
-              <Award className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.averageScore}%</div>
-              <div className="flex items-center space-x-2 space-x-reverse text-sm">
-                <span className="text-gray-600">از {stats.completedExercises} تمرین</span>
-              </div>
-            </CardContent>
-          </Card>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">مجموع امتیازات</CardTitle>
@@ -153,34 +105,6 @@ const Progress = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Progress Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <TrendingUp className="h-5 w-5 ml-2" />
-                روند پیشرفت
-              </CardTitle>
-              <CardDescription>نمرات شما در طول زمان</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={progressData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="score" 
-                    stroke="#059669" 
-                    strokeWidth={2}
-                    dot={{ fill: '#059669', strokeWidth: 2, r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
           {/* Weekly Points Activity */}
           <Card>
             <CardHeader>
@@ -203,32 +127,6 @@ const Progress = () => {
                   <Bar dataKey="points" fill="#3B82F6" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Skills Progress */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <PieChart className="h-5 w-5 ml-2" />
-                پیشرفت مهارت‌ها
-              </CardTitle>
-              <CardDescription>سطح مهارت شما در موضوعات مختلف</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {skillsData.map((skill) => (
-                  <div key={skill.name} className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="font-medium">{skill.name}</span>
-                      <span className="text-sm text-gray-600">{skill.value}%</span>
-                    </div>
-                    <ProgressBar value={skill.value} className="h-2" />
-                  </div>
-                ))}
-              </div>
             </CardContent>
           </Card>
 
