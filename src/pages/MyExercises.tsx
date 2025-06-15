@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CheckCircle, Clock, FileText, Award, Search, Calendar, Filter } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import DashboardLayout from '@/components/DashboardLayout';
-import { useExercises } from '@/hooks/useExercises';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -47,24 +45,54 @@ const MyExercises = () => {
     try {
       setLoading(true);
       console.log('Fetching exercises for student:', user.id);
+      console.log('User role from auth context:', user);
 
-      // Fetch exercises with submission data
+      // First, let's check the user's profile and role
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching user profile:', profileError);
+      } else {
+        console.log('User profile:', profile);
+      }
+
+      // Let's try to fetch all exercises first to see what's available
+      const { data: allExercises, error: allExercisesError } = await supabase
+        .from('exercises')
+        .select('*');
+
+      if (allExercisesError) {
+        console.error('Error fetching all exercises (for debugging):', allExercisesError);
+      } else {
+        console.log('All exercises in database:', allExercises);
+      }
+
+      // Now fetch exercises that the student should be able to see
       const { data: exercises, error: exercisesError } = await supabase
         .from('exercises')
         .select('*')
         .eq('status', 'active')
         .order('due_date', { ascending: true });
 
+      console.log('Query result for active exercises:', { exercises, exercisesError });
+
       if (exercisesError) {
         console.error('Error fetching exercises:', exercisesError);
-        setError('خطا در دریافت تمرین‌ها');
+        setError('خطا در دریافت تمرین‌ها: ' + exercisesError.message);
         return;
       }
 
-      if (!exercises) {
+      if (!exercises || exercises.length === 0) {
+        console.log('No exercises found for user');
         setMyExercises([]);
         return;
       }
+
+      console.log('Found exercises:', exercises);
 
       // Fetch submissions for the current user
       const { data: submissions, error: submissionsError } = await supabase
@@ -74,6 +102,8 @@ const MyExercises = () => {
 
       if (submissionsError) {
         console.error('Error fetching submissions:', submissionsError);
+      } else {
+        console.log('User submissions:', submissions);
       }
 
       // Combine exercises with submission data
@@ -120,6 +150,7 @@ const MyExercises = () => {
         };
       });
 
+      console.log('Final exercises with submissions:', exercisesWithSubmissions);
       setMyExercises(exercisesWithSubmissions);
     } catch (err) {
       console.error('Error in fetchMyExercises:', err);
