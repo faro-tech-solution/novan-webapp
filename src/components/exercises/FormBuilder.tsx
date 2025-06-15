@@ -73,7 +73,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ value, onChange }) => 
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">سوالات تمرین</h3>
-        <Button onClick={addQuestion} size="sm">
+        <Button type="button" onClick={addQuestion} size="sm">
           <Plus className="h-4 w-4 ml-2" />
           افزودن سوال
         </Button>
@@ -161,6 +161,7 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({
             <span className="font-medium">سوال {index + 1}</span>
           </div>
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={onDelete}
@@ -279,6 +280,7 @@ const OptionsList: React.FC<OptionsListProps> = ({ options, onChange }) => {
             placeholder={`گزینه ${index + 1}`}
           />
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => deleteOption(index)}
@@ -290,6 +292,7 @@ const OptionsList: React.FC<OptionsListProps> = ({ options, onChange }) => {
       ))}
       
       <Button
+        type="button"
         variant="outline"
         size="sm"
         onClick={addOption}
