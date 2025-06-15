@@ -47,7 +47,7 @@ export const fetchExercises = async (): Promise<Exercise[]> => {
       // Get submissions for this exercise
       const { data: submissions, error: submissionsError } = await supabase
         .from('exercise_submissions')
-        .select('score, student_id')
+        .select('student_id')
         .eq('exercise_id', exercise.id);
 
       if (submissionsError) {
@@ -67,21 +67,14 @@ export const fetchExercises = async (): Promise<Exercise[]> => {
 
       const submissionCount = submissions?.length || 0;
       const totalStudents = enrollments?.length || 0;
-      
-      // Calculate average score from submissions that have scores
-      const scoredSubmissions = submissions?.filter(sub => sub.score !== null && sub.score !== undefined) || [];
-      const averageScore = scoredSubmissions.length > 0
-        ? Math.round(scoredSubmissions.reduce((sum, sub) => sum + (sub.score || 0), 0) / scoredSubmissions.length)
-        : 0;
 
-      console.log(`Exercise ${exercise.title}: ${submissionCount} submissions, ${totalStudents} total students, ${averageScore}% average`);
+      console.log(`Exercise ${exercise.title}: ${submissionCount} submissions, ${totalStudents} total students`);
 
       const exerciseWithStats: Exercise = {
         ...exercise,
         course_name: exercise.courses?.name || 'نامشخص',
         submissions: submissionCount,
         total_students: totalStudents,
-        average_score: averageScore,
         exercise_status: calculateExerciseStatus(exercise),
       };
 
@@ -93,7 +86,7 @@ export const fetchExercises = async (): Promise<Exercise[]> => {
 };
 
 export const createExercise = async (
-  exerciseData: Omit<Exercise, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'submissions' | 'total_students' | 'average_score' | 'exercise_status' | 'course_name'>,
+  exerciseData: Omit<Exercise, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'submissions' | 'total_students' | 'exercise_status' | 'course_name'>,
   userId: string,
   courses: Course[]
 ): Promise<{ data?: Exercise; error: string | null }> => {

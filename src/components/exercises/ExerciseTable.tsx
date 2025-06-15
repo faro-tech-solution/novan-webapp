@@ -58,7 +58,6 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
               {isStudent && <TableHead>تاریخ باز شدن</TableHead>}
               {isStudent && <TableHead>مهلت تحویل</TableHead>}
               <TableHead>ارسال‌ها</TableHead>
-              <TableHead>میانگین نمره</TableHead>
               <TableHead>عملیات</TableHead>
             </TableRow>
           </TableHeader>
@@ -107,13 +106,6 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
                       {exercise.total_students ? Math.round(((exercise.submissions || 0) / exercise.total_students) * 100) : 0}%
                     </div>
                   </div>
-                </TableCell>
-                <TableCell>
-                  {(exercise.average_score || 0) > 0 ? (
-                    <span className="font-medium">{exercise.average_score}%</span>
-                  ) : (
-                    <span className="text-gray-400">-</span>
-                  )}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-2 space-x-reverse">

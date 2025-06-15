@@ -5,7 +5,7 @@ import { CheckCircle, Clock, FileText, Award } from 'lucide-react';
 interface ExerciseWithSubmission {
   id: string;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
-  score: number | null;
+  points: number;
 }
 
 interface MyExerciseStatsCardsProps {
@@ -18,12 +18,9 @@ export const MyExerciseStatsCards = ({ exercises }: MyExerciseStatsCardsProps) =
     completed: exercises.filter(e => e.submission_status === 'completed').length,
     pending: exercises.filter(e => e.submission_status === 'pending').length,
     overdue: exercises.filter(e => e.submission_status === 'overdue').length,
-    averageScore: exercises.filter(e => e.score !== null).length > 0 
-      ? Math.round(
-          exercises.filter(e => e.score !== null).reduce((sum, e) => sum + (e.score || 0), 0) /
-          exercises.filter(e => e.score !== null).length
-        )
-      : 0
+    totalPoints: exercises
+      .filter(e => e.submission_status === 'completed')
+      .reduce((sum, e) => sum + e.points, 0)
   };
 
   return (
@@ -70,13 +67,11 @@ export const MyExerciseStatsCards = ({ exercises }: MyExerciseStatsCardsProps) =
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">میانگین نمره</CardTitle>
-          <Award className="h-4 w-4 text-blue-600" />
+          <CardTitle className="text-sm font-medium">مجموع امتیاز</CardTitle>
+          <Award className="h-4 w-4 text-purple-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-blue-600">
-            {stats.averageScore > 0 ? `${stats.averageScore}%` : '-'}
-          </div>
+          <div className="text-2xl font-bold text-purple-600">{stats.totalPoints}</div>
         </CardContent>
       </Card>
     </div>

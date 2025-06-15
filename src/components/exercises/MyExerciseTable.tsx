@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,6 @@ interface ExerciseWithSubmission {
   points: number;
   estimated_time: string;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
-  score: number | null;
 }
 
 interface MyExerciseTableProps {
@@ -94,7 +94,6 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                 <TableHead>انجام تمرین</TableHead>
                 <TableHead>موعد تحویل</TableHead>
                 <TableHead>امتیاز</TableHead>
-                <TableHead>نمره</TableHead>
                 <TableHead>زمان تخمینی</TableHead>
                 <TableHead>عملیات</TableHead>
               </TableRow>
@@ -139,13 +138,6 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                       <Award className="h-4 w-4 text-yellow-500" />
                       <span>{exercise.points}</span>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    {exercise.score !== null ? (
-                      <span className="font-medium text-green-600">{exercise.score}%</span>
-                    ) : (
-                      <span className="text-gray-400">-</span>
-                    )}
                   </TableCell>
                   <TableCell>{exercise.estimated_time}</TableCell>
                   <TableCell>

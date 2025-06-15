@@ -15,7 +15,6 @@ export interface Exercise {
   updated_at: string;
   submissions?: number;
   total_students?: number;
-  average_score?: number;
   exercise_status?: 'upcoming' | 'active' | 'overdue' | 'closed';
   course_name?: string;
 }

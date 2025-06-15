@@ -7,7 +7,6 @@ interface DashboardStats {
   completedExercises: number;
   pendingExercises: number;
   overdueExercises: number;
-  averageScore: number;
   totalPoints: number;
 }
 
@@ -24,22 +23,14 @@ interface UpcomingExercise {
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
 }
 
-interface RecentScore {
-  exercise: string;
-  score: number;
-  date: string;
-}
-
 export const useTraineeDashboard = () => {
   const [stats, setStats] = useState<DashboardStats>({
     completedExercises: 0,
     pendingExercises: 0,
     overdueExercises: 0,
-    averageScore: 0,
     totalPoints: 0
   });
   const [upcomingExercises, setUpcomingExercises] = useState<UpcomingExercise[]>([]);
-  const [recentScores, setRecentScores] = useState<RecentScore[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
@@ -82,11 +73,9 @@ export const useTraineeDashboard = () => {
           completedExercises: 0,
           pendingExercises: 0,
           overdueExercises: 0,
-          averageScore: 0,
           totalPoints: 0
         });
         setUpcomingExercises([]);
-        setRecentScores([]);
         return;
       }
 
@@ -138,8 +127,6 @@ export const useTraineeDashboard = () => {
       let completedCount = 0;
       let pendingCount = 0;
       let overdueCount = 0;
-      let totalScore = 0;
-      let scoredExercises = 0;
       let totalPoints = 0;
 
       exercises?.forEach(exercise => {
@@ -158,16 +145,9 @@ export const useTraineeDashboard = () => {
         
         let submissionStatus: 'not_started' | 'pending' | 'completed' | 'overdue';
         if (submission) {
-          if (submission.score !== null) {
-            submissionStatus = 'completed';
-            completedCount++;
-            totalScore += submission.score;
-            scoredExercises++;
-            totalPoints += submission.score * exercise.points / 100;
-          } else {
-            submissionStatus = 'pending';
-            pendingCount++;
-          }
+          submissionStatus = 'completed';
+          completedCount++;
+          totalPoints += exercise.points;
         } else {
           if (closeDate < now) {
             submissionStatus = 'overdue';
@@ -191,35 +171,19 @@ export const useTraineeDashboard = () => {
         });
       });
 
-      // Get upcoming exercises (not started or pending, due soon)
+      // Get upcoming exercises (not started, due soon)
       const upcoming = processedExercises
-        .filter(ex => ex.submission_status === 'not_started' || ex.submission_status === 'pending')
+        .filter(ex => ex.submission_status === 'not_started')
         .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
         .slice(0, 3);
-
-      // Get recent scores
-      const recent = submissions
-        ?.filter(sub => sub.score !== null)
-        ?.sort((a, b) => new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime())
-        ?.slice(0, 3)
-        ?.map(sub => {
-          const exercise = exercises?.find(ex => ex.id === sub.exercise_id);
-          return {
-            exercise: exercise?.title || 'تمرین نامشخص',
-            score: sub.score!,
-            date: new Date(sub.submitted_at).toLocaleDateString('fa-IR')
-          };
-        }) || [];
 
       setStats({
         completedExercises: completedCount,
         pendingExercises: pendingCount,
         overdueExercises: overdueCount,
-        averageScore: scoredExercises > 0 ? Math.round(totalScore / scoredExercises) : 0,
-        totalPoints: Math.round(totalPoints)
+        totalPoints: totalPoints
       });
       setUpcomingExercises(upcoming);
-      setRecentScores(recent);
 
     } catch (err) {
       console.error('Error in fetchDashboardData:', err);
@@ -238,7 +202,6 @@ export const useTraineeDashboard = () => {
   return {
     stats,
     upcomingExercises,
-    recentScores,
     loading,
     error,
     refetch: fetchDashboardData

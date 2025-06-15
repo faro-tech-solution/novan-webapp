@@ -2,8 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Clock, FileText, Award, TrendingUp, Play, Calendar, AlertTriangle } from 'lucide-react';
+import { CheckCircle, Clock, FileText, Award, Play, Calendar, AlertTriangle } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTraineeDashboard } from '@/hooks/useTraineeDashboard';
@@ -12,7 +11,7 @@ import { getDifficultyBadge, getExerciseStatusBadge } from '@/components/exercis
 
 const TraineeDashboard = () => {
   const { profile } = useAuth();
-  const { stats, upcomingExercises, recentScores, loading, error, refetch } = useTraineeDashboard();
+  const { stats, upcomingExercises, loading, error, refetch } = useTraineeDashboard();
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -65,12 +64,12 @@ const TraineeDashboard = () => {
           <h2 className="text-2xl font-bold mb-2 font-peyda">خوش آمدید، {profile?.name}!</h2>
           <p className="opacity-90">کلاس: {profile?.className || 'نامشخص'}</p>
           <p className="opacity-90">
-            شما {stats.pendingExercises + (upcomingExercises.filter(ex => ex.submission_status === 'not_started').length)} تمرین برای تکمیل دارید
+            شما {upcomingExercises.length} تمرین برای تکمیل دارید
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">تکمیل شده</CardTitle>
@@ -101,17 +100,6 @@ const TraineeDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold text-red-600">{stats.overdueExercises}</div>
               <p className="text-xs text-muted-foreground">تمرین دیرکرد</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">میانگین نمره</CardTitle>
-              <TrendingUp className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{stats.averageScore}%</div>
-              <p className="text-xs text-muted-foreground">در همه تمرین‌ها</p>
             </CardContent>
           </Card>
 
@@ -165,8 +153,7 @@ const TraineeDashboard = () => {
                       <Link to={`/exercises/${exercise.id}`}>
                         <Button size="sm" className="mr-4">
                           <Play className="h-4 w-4 ml-2" />
-                          {exercise.submission_status === 'completed' ? 'مشاهده' : 
-                           exercise.submission_status === 'pending' ? 'مشاهده' : 'شروع'}
+                          شروع
                         </Button>
                       </Link>
                     </div>
@@ -179,36 +166,6 @@ const TraineeDashboard = () => {
           {/* Daily Tasks */}
           <DailyTasksCard />
         </div>
-
-        {/* Recent Scores */}
-        <Card>
-          <CardHeader>
-            <CardTitle>نمرات اخیر</CardTitle>
-            <CardDescription>عملکرد تمرین‌های اخیر شما</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {recentScores.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                هنوز نمره‌ای دریافت نکرده‌اید
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {recentScores.map((score, index) => (
-                  <div key={index} className="p-4 border rounded-lg text-center hover:bg-gray-50 transition-colors">
-                    <h4 className="font-medium mb-2 truncate" title={score.exercise}>{score.exercise}</h4>
-                    <div className={`text-2xl font-bold mb-1 ${
-                      score.score >= 90 ? 'text-green-600' :
-                      score.score >= 70 ? 'text-yellow-600' : 'text-red-600'
-                    }`}>
-                      {score.score}%
-                    </div>
-                    <p className="text-sm text-gray-600">{score.date}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
         {/* Quick Actions */}
         <Card>
@@ -226,7 +183,7 @@ const TraineeDashboard = () => {
               </Link>
               <Link to="/progress">
                 <Button variant="outline" className="w-full h-20 flex flex-col items-center space-y-2">
-                  <TrendingUp className="h-6 w-6" />
+                  <Award className="h-6 w-6" />
                   <span>پیشرفت تحصیلی</span>
                 </Button>
               </Link>
