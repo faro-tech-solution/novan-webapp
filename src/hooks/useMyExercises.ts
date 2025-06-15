@@ -21,6 +21,26 @@ interface ExerciseWithSubmission {
   feedback: string | null;
 }
 
+interface ExerciseWithCourse {
+  id: string;
+  title: string;
+  description: string | null;
+  course_id: string;
+  difficulty: string;
+  due_date: string;
+  open_date: string;
+  close_date: string;
+  points: number;
+  estimated_time: string;
+  created_at: string;
+  updated_at: string;
+  created_by: string;
+  courses: {
+    id: string;
+    name: string;
+  } | null;
+}
+
 export const useMyExercises = () => {
   const [myExercises, setMyExercises] = useState<ExerciseWithSubmission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,7 +98,19 @@ export const useMyExercises = () => {
       const { data: exercises, error: exercisesError } = await supabase
         .from('exercises')
         .select(`
-          *,
+          id,
+          title,
+          description,
+          course_id,
+          difficulty,
+          due_date,
+          open_date,
+          close_date,
+          points,
+          estimated_time,
+          created_at,
+          updated_at,
+          created_by,
           courses (
             id,
             name
@@ -116,7 +148,7 @@ export const useMyExercises = () => {
       }
 
       // Combine exercises with submission data
-      const exercisesWithSubmissions: ExerciseWithSubmission[] = exercises.map(exercise => {
+      const exercisesWithSubmissions: ExerciseWithSubmission[] = (exercises as ExerciseWithCourse[]).map(exercise => {
         const submission = submissions?.find(sub => sub.exercise_id === exercise.id);
         
         // Calculate submission status

@@ -193,7 +193,7 @@ export type Database = {
       exercises: {
         Row: {
           close_date: string
-          course_name: string
+          course_id: string
           created_at: string
           created_by: string
           description: string | null
@@ -203,13 +203,12 @@ export type Database = {
           id: string
           open_date: string
           points: number
-          status: string
           title: string
           updated_at: string
         }
         Insert: {
           close_date: string
-          course_name: string
+          course_id: string
           created_at?: string
           created_by: string
           description?: string | null
@@ -219,13 +218,12 @@ export type Database = {
           id?: string
           open_date: string
           points?: number
-          status?: string
           title: string
           updated_at?: string
         }
         Update: {
           close_date?: string
-          course_name?: string
+          course_id?: string
           created_at?: string
           created_by?: string
           description?: string | null
@@ -235,11 +233,18 @@ export type Database = {
           id?: string
           open_date?: string
           points?: number
-          status?: string
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "exercises_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
