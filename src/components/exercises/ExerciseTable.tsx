@@ -12,8 +12,8 @@ import {
   Award,
   Calendar
 } from 'lucide-react';
-import { Exercise } from '@/hooks/useExercises';
-import { getStatusBadge, getExerciseStatusBadge, getDifficultyBadge } from './ExerciseStatusBadges';
+import { Exercise } from '@/types/exercise';
+import { getExerciseStatusBadge, getDifficultyBadge } from './ExerciseStatusBadges';
 
 interface ExerciseTableProps {
   exercises: Exercise[];
@@ -37,7 +37,6 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise }
               <TableHead>عنوان</TableHead>
               <TableHead>دوره</TableHead>
               <TableHead>سطح</TableHead>
-              <TableHead>وضعیت</TableHead>
               <TableHead>وضعیت تمرین</TableHead>
               <TableHead>موعد تحویل</TableHead>
               <TableHead>ارسال‌ها</TableHead>
@@ -64,7 +63,6 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise }
                   <Badge variant="outline">{exercise.course_name}</Badge>
                 </TableCell>
                 <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
-                <TableCell>{getStatusBadge(exercise.status)}</TableCell>
                 <TableCell>{getExerciseStatusBadge(exercise.exercise_status || 'active')}</TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-2 space-x-reverse">
