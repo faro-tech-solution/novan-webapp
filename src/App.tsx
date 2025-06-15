@@ -96,6 +96,16 @@ const AppRoutes = () => {
         } 
       />
       
+      {/* Add the student-courses route */}
+      <Route 
+        path="/student-courses" 
+        element={
+          <ProtectedRoute requiredRole="trainee">
+            <StudentCourses />
+          </ProtectedRoute>
+        } 
+      />
+      
       <Route 
         path="/courses/:id" 
         element={
