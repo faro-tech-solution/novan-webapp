@@ -1,3 +1,4 @@
+
 import { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,8 @@ import {
   Settings, 
   LogOut,
   Bell,
-  Award
+  Award,
+  UserCog
 } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -43,6 +45,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const adminNavItems = [
     { href: '/dashboard/admin', icon: LayoutDashboard, label: 'داشبورد' },
+    { href: '/user-management', icon: UserCog, label: 'مدیریت کاربران' },
     { href: '/courses-management', icon: Users, label: 'مدیریت درس‌ها' },
     { href: '/students', icon: Award, label: 'دانشجویان' },
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },

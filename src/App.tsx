@@ -26,6 +26,7 @@ import CourseManagement from "@/pages/CourseManagement";
 import NotFound from "@/pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminDashboard from "@/pages/AdminDashboard";
+import UserManagement from "@/pages/UserManagement";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,16 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute requiredRole="admin">
             <AdminDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* User Management - Admin only */}
+      <Route 
+        path="/user-management" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <UserManagement />
           </ProtectedRoute>
         } 
       />
