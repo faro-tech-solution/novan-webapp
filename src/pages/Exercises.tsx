@@ -10,7 +10,6 @@ import { ExerciseTable } from '@/components/exercises/ExerciseTable';
 
 const Exercises = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [courseFilter, setCourseFilter] = useState('all');
   const [exerciseStatusFilter, setExerciseStatusFilter] = useState('all');
@@ -40,12 +39,11 @@ const Exercises = () => {
   const filteredExercises = exercises.filter(exercise => {
     const matchesSearch = exercise.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (exercise.description && exercise.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus = statusFilter === 'all' || exercise.status === statusFilter;
     const matchesDifficulty = difficultyFilter === 'all' || exercise.difficulty === difficultyFilter;
     const matchesCourse = courseFilter === 'all' || exercise.course_name === courseFilter;
     const matchesExerciseStatus = exerciseStatusFilter === 'all' || exercise.exercise_status === exerciseStatusFilter;
     
-    return matchesSearch && matchesStatus && matchesDifficulty && matchesCourse && matchesExerciseStatus;
+    return matchesSearch && matchesDifficulty && matchesCourse && matchesExerciseStatus;
   });
 
   if (loading) {
@@ -87,8 +85,6 @@ const Exercises = () => {
         <ExerciseFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
           exerciseStatusFilter={exerciseStatusFilter}
           setExerciseStatusFilter={setExerciseStatusFilter}
           difficultyFilter={difficultyFilter}

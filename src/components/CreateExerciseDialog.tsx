@@ -14,13 +14,12 @@ import { useExercises } from '@/hooks/useExercises';
 interface CreateExerciseFormData {
   title: string;
   description: string;
-  course_name: string;
+  course_id: string;
   difficulty: string;
   days_to_open: number;
   days_duration: number;
   points: number;
   estimated_time: string;
-  status: string;
 }
 
 interface CreateExerciseDialogProps {
@@ -44,13 +43,12 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
     defaultValues: {
       title: '',
       description: '',
-      course_name: '',
+      course_id: '',
       difficulty: '',
       days_to_open: 1,
       days_duration: 7,
       points: 100,
       estimated_time: '',
-      status: 'active',
     },
   });
 
@@ -70,14 +68,13 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
       const exerciseData = {
         title: data.title,
         description: data.description,
-        course_name: data.course_name,
+        course_id: data.course_id,
         difficulty: data.difficulty,
         due_date: closeDate.toISOString().split('T')[0],
         open_date: openDate.toISOString().split('T')[0],
         close_date: closeDate.toISOString().split('T')[0],
         points: data.points,
         estimated_time: data.estimated_time,
-        status: data.status,
       };
       
       const { error } = await createExercise(exerciseData);
@@ -175,7 +172,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="course_name"
+              name="course_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>دوره</FormLabel>
@@ -228,7 +225,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <FormField
               control={form.control}
               name="days_to_open"
@@ -311,29 +308,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                       onChange={(e) => handleInputChange(field, e.target.value)}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>وضعیت</FormLabel>
-                  <Select onValueChange={(value) => handleInputChange(field, value)} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="انتخاب وضعیت" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="active">فعال</SelectItem>
-                      <SelectItem value="draft">پیش‌نویس</SelectItem>
-                      <SelectItem value="completed">تکمیل شده</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

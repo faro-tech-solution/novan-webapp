@@ -7,14 +7,13 @@ export interface Exercise {
   id: string;
   title: string;
   description: string | null;
-  course_name: string;
+  course_id: string;
   difficulty: string;
   due_date: string;
   open_date: string;
   close_date: string;
   points: number;
   estimated_time: string;
-  status: string;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -22,6 +21,7 @@ export interface Exercise {
   total_students?: number;
   average_score?: number;
   exercise_status?: 'upcoming' | 'active' | 'overdue' | 'closed';
+  course_name?: string;
 }
 
 export interface Course {
@@ -82,7 +82,13 @@ export const useExercises = () => {
 
       const { data, error } = await supabase
         .from('exercises')
-        .select('*')
+        .select(`
+          *,
+          courses (
+            id,
+            name
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -108,6 +114,7 @@ export const useExercises = () => {
 
           const exerciseWithStats: Exercise = {
             ...exercise,
+            course_name: exercise.courses?.name || 'نامشخص',
             submissions: submissionCount,
             total_students: 20, // This should ideally come from course enrollment data
             average_score: averageScore,
@@ -127,17 +134,24 @@ export const useExercises = () => {
     }
   };
 
-  const createExercise = async (exerciseData: Omit<Exercise, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'submissions' | 'total_students' | 'average_score' | 'exercise_status'>) => {
+  const createExercise = async (exerciseData: Omit<Exercise, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'submissions' | 'total_students' | 'average_score' | 'exercise_status' | 'course_name'>) => {
     if (!user) return { error: 'کاربر وارد نشده است' };
 
     try {
       console.log('Creating exercise:', exerciseData);
+
+      // Find the course by name to get the course_id
+      const selectedCourse = courses.find(course => course.name === exerciseData.course_id);
+      if (!selectedCourse) {
+        return { error: 'دوره انتخاب شده یافت نشد' };
+      }
 
       const { data, error } = await supabase
         .from('exercises')
         .insert([
           {
             ...exerciseData,
+            course_id: selectedCourse.id,
             created_by: user.id,
           }
         ])

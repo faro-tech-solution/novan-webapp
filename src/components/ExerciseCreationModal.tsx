@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -13,13 +14,12 @@ import { useExercises } from '@/hooks/useExercises';
 interface ExerciseFormData {
   title: string;
   description: string;
-  course_name: string;
+  course_id: string;
   difficulty: string;
   days_to_open: number;
   days_duration: number;
   points: number;
   estimated_time: string;
-  status: string;
 }
 
 interface ExerciseCreationModalProps {
@@ -36,13 +36,12 @@ const ExerciseCreationModal = ({ open, onOpenChange }: ExerciseCreationModalProp
     defaultValues: {
       title: '',
       description: '',
-      course_name: '',
+      course_id: '',
       difficulty: '',
       days_to_open: 1,
       days_duration: 7,
       points: 100,
       estimated_time: '',
-      status: 'active',
     },
   });
 
@@ -62,14 +61,13 @@ const ExerciseCreationModal = ({ open, onOpenChange }: ExerciseCreationModalProp
       const exerciseData = {
         title: data.title,
         description: data.description,
-        course_name: data.course_name,
+        course_id: data.course_id,
         difficulty: data.difficulty,
         due_date: closeDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
         open_date: openDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
         close_date: closeDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
         points: data.points,
         estimated_time: data.estimated_time,
-        status: data.status,
       };
       
       const { error } = await createExercise(exerciseData);
@@ -150,7 +148,7 @@ const ExerciseCreationModal = ({ open, onOpenChange }: ExerciseCreationModalProp
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="course_name"
+                name="course_id"
                 rules={{ required: 'انتخاب دوره الزامی است' }}
                 render={({ field }) => (
                   <FormItem>
@@ -205,7 +203,7 @@ const ExerciseCreationModal = ({ open, onOpenChange }: ExerciseCreationModalProp
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <FormField
                 control={form.control}
                 name="days_to_open"
@@ -297,30 +295,6 @@ const ExerciseCreationModal = ({ open, onOpenChange }: ExerciseCreationModalProp
                     <FormControl>
                       <Input placeholder="۲ ساعت" {...field} />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="status"
-                rules={{ required: 'انتخاب وضعیت الزامی است' }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>وضعیت</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="انتخاب وضعیت" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="active">فعال</SelectItem>
-                        <SelectItem value="draft">پیش‌نویس</SelectItem>
-                        <SelectItem value="completed">تکمیل شده</SelectItem>
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
