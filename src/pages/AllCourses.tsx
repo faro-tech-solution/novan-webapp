@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Search, Filter } from 'lucide-react';
 import Header from '@/components/Header';
@@ -17,13 +16,18 @@ const AllCourses = () => {
   const { data: courses = [], isLoading: coursesLoading } = useQuery({
     queryKey: ['all-courses'],
     queryFn: async () => {
+      console.log('Fetching all courses...');
       const { data, error } = await supabase
         .from('courses')
         .select('*')
-        .eq('status', 'active')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching courses:', error);
+        throw error;
+      }
+      
+      console.log('Fetched courses from DB:', data);
       
       // Transform database courses to match CourseCard interface
       return data?.map((course, index) => ({
@@ -51,6 +55,8 @@ const AllCourses = () => {
     const matchesCategory = selectedCategory === 'همه' || course.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  console.log('Filtered courses:', filteredCourses);
 
   return (
     <div className="min-h-screen bg-gray-50">
