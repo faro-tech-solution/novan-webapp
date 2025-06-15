@@ -32,7 +32,8 @@ const CourseActions = ({
   onEditCourse, 
   onDeleteCourse 
 }: CourseActionsProps) => {
-  const canEdit = (userRole === 'trainer' && course.instructor_id === userId) || userRole === 'admin';
+  // Only admins can edit/delete courses
+  const canEdit = userRole === 'admin';
 
   return (
     <DropdownMenu>
@@ -47,7 +48,7 @@ const CourseActions = ({
           className="cursor-pointer"
         >
           <Calendar className="h-4 w-4 mr-2" />
-          مدیریت ترم‌ها
+          مشاهده ترم‌ها
         </DropdownMenuItem>
         {canEdit && (
           <>

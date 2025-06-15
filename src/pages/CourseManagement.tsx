@@ -164,8 +164,8 @@ const CourseManagement = () => {
     fetchCourses();
   };
 
-  // Determine if user can create courses (trainers can, admins cannot unless they're also trainers)
-  const canCreateCourses = profile?.role === 'trainer';
+  // Only admins can create courses
+  const canCreateCourses = profile?.role === 'admin';
   const isAdmin = profile?.role === 'admin';
 
   if (loading) {
@@ -207,6 +207,7 @@ const CourseManagement = () => {
           open={showTermsDialog}
           onClose={() => setShowTermsDialog(false)}
           course={selectedCourse}
+          userRole={profile?.role}
         />
       </div>
 
@@ -220,7 +221,7 @@ const CourseManagement = () => {
       )}
 
       {/* Edit Course Dialog */}
-      {selectedCourse && (
+      {selectedCourse && isAdmin && (
         <EditCourseDialog 
           open={showEditDialog}
           onOpenChange={setShowEditDialog}
@@ -240,12 +241,14 @@ const CourseManagement = () => {
       )}
 
       {/* Delete Confirmation Dialog */}
-      <ConfirmDeleteDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        course={selectedCourse}
-        onConfirmDelete={confirmDeleteCourse}
-      />
+      {isAdmin && (
+        <ConfirmDeleteDialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+          course={selectedCourse}
+          onConfirmDelete={confirmDeleteCourse}
+        />
+      )}
     </DashboardLayout>
   );
 };

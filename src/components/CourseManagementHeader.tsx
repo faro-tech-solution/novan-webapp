@@ -22,7 +22,7 @@ const CourseManagementHeader = ({
         <p className="text-gray-600">
           {isAdmin 
             ? 'مدیریت تمام درس‌های سیستم' 
-            : 'مدیریت درس‌ها و دانشجویان شما'
+            : 'مشاهده درس‌ها و دانشجویان'
           }
         </p>
       </div>

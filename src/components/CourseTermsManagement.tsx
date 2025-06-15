@@ -25,9 +25,10 @@ interface CourseTerm {
 interface CourseTermsManagementProps {
   courseId: string;
   courseName: string;
+  userRole?: string;
 }
 
-const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementProps) => {
+const CourseTermsManagement = ({ courseId, courseName, userRole }: CourseTermsManagementProps) => {
   const [terms, setTerms] = useState<CourseTerm[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -35,6 +36,9 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedTerm, setSelectedTerm] = useState<CourseTerm | null>(null);
   const { toast } = useToast();
+
+  // Only admins can create/edit/delete terms
+  const canManageTerms = userRole === 'admin';
 
   const fetchTerms = async () => {
     try {
@@ -150,22 +154,28 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
         <div className="flex justify-between items-center">
           <div>
             <CardTitle>ترم‌های درس {courseName}</CardTitle>
-            <CardDescription>مدیریت ترم‌های این درس</CardDescription>
+            <CardDescription>
+              {canManageTerms ? 'مدیریت ترم‌های این درس' : 'مشاهده ترم‌های این درس'}
+            </CardDescription>
           </div>
-          <Button onClick={() => setShowCreateDialog(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            ایجاد ترم
-          </Button>
+          {canManageTerms && (
+            <Button onClick={() => setShowCreateDialog(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              ایجاد ترم
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent>
         {terms.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-500 mb-4">هنوز ترمی ایجاد نشده</p>
-            <Button onClick={() => setShowCreateDialog(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              ایجاد اولین ترم
-            </Button>
+            {canManageTerms && (
+              <Button onClick={() => setShowCreateDialog(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                ایجاد اولین ترم
+              </Button>
+            )}
           </div>
         ) : (
           <Table>
@@ -176,7 +186,7 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
                 <TableHead>تاریخ پایان</TableHead>
                 <TableHead>حداکثر دانشجو</TableHead>
                 <TableHead>دانشجویان فعلی</TableHead>
-                <TableHead>عملیات</TableHead>
+                {canManageTerms && <TableHead>عملیات</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -193,31 +203,33 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
                       {term.student_count || 0}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-white border shadow-md">
-                        <DropdownMenuItem 
-                          onClick={() => handleEditTerm(term)}
-                          className="cursor-pointer"
-                        >
-                          <Pencil className="h-4 w-4 mr-2" />
-                          ویرایش
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleDeleteTerm(term)}
-                          className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          حذف
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+                  {canManageTerms && (
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-white border shadow-md">
+                          <DropdownMenuItem 
+                            onClick={() => handleEditTerm(term)}
+                            className="cursor-pointer"
+                          >
+                            <Pencil className="h-4 w-4 mr-2" />
+                            ویرایش
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteTerm(term)}
+                            className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            حذف
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
@@ -225,45 +237,49 @@ const CourseTermsManagement = ({ courseId, courseName }: CourseTermsManagementPr
         )}
       </CardContent>
 
-      <CreateTermDialog 
-        open={showCreateDialog}
-        onOpenChange={setShowCreateDialog}
-        courseId={courseId}
-        onTermCreated={fetchTerms}
-      />
+      {canManageTerms && (
+        <>
+          <CreateTermDialog 
+            open={showCreateDialog}
+            onOpenChange={setShowCreateDialog}
+            courseId={courseId}
+            onTermCreated={fetchTerms}
+          />
 
-      <EditTermDialog
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
-        term={selectedTerm}
-        onTermUpdated={fetchTerms}
-      />
+          <EditTermDialog
+            open={showEditDialog}
+            onOpenChange={setShowEditDialog}
+            term={selectedTerm}
+            onTermUpdated={fetchTerms}
+          />
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>تأیید حذف ترم</AlertDialogTitle>
-            <AlertDialogDescription>
-              آیا مطمئن هستید که می‌خواهید ترم "{selectedTerm?.name}" را حذف کنید؟
-              {selectedTerm?.student_count && selectedTerm.student_count > 0 && (
-                <span className="block mt-2 text-red-600 font-medium">
-                  این ترم {selectedTerm.student_count} دانشجو دارد و قابل حذف نیست.
-                </span>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>لغو</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={confirmDeleteTerm}
-              disabled={selectedTerm?.student_count ? selectedTerm.student_count > 0 : false}
-              className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300"
-            >
-              حذف
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>تأیید حذف ترم</AlertDialogTitle>
+                <AlertDialogDescription>
+                  آیا مطمئن هستید که می‌خواهید ترم "{selectedTerm?.name}" را حذف کنید؟
+                  {selectedTerm?.student_count && selectedTerm.student_count > 0 && (
+                    <span className="block mt-2 text-red-600 font-medium">
+                      این ترم {selectedTerm.student_count} دانشجو دارد و قابل حذف نیست.
+                    </span>
+                  )}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>لغو</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={confirmDeleteTerm}
+                  disabled={selectedTerm?.student_count ? selectedTerm.student_count > 0 : false}
+                  className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300"
+                >
+                  حذف
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
+      )}
     </Card>
   );
 };
