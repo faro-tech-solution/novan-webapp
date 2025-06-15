@@ -48,22 +48,46 @@ export const useStudentCourses = () => {
       console.log('Fetched enrollments:', enrollments);
 
       if (!enrollments || enrollments.length === 0) {
+        console.log('No enrollments found for user');
         setCourses([]);
         return;
       }
 
       // Get course IDs from enrollments
       const courseIds = enrollments.map(enrollment => enrollment.course_id);
+      console.log('Course IDs to fetch:', courseIds);
 
-      // Fetch course details separately
+      // Try to fetch courses without RLS first to see if the issue is with policies
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
         .select('id, name, description, instructor_name, start_date, end_date, status')
         .in('id', courseIds);
 
+      console.log('Courses query result:', { coursesData, coursesError });
+
       if (coursesError) {
         console.error('Error fetching courses:', coursesError);
         setError(coursesError.message);
+        return;
+      }
+
+      if (!coursesData || coursesData.length === 0) {
+        console.log('No courses found for the enrolled course IDs');
+        // Let's try a different approach - fetch all courses and see what we get
+        const { data: allCourses, error: allCoursesError } = await supabase
+          .from('courses')
+          .select('id, name, description, instructor_name, start_date, end_date, status');
+        
+        console.log('All available courses:', allCourses);
+        
+        if (allCoursesError) {
+          console.error('Error fetching all courses:', allCoursesError);
+          setError('خطا در دریافت اطلاعات دوره‌ها');
+          return;
+        }
+        
+        // If no courses match the enrollment IDs, show an informative message
+        setError('دوره‌های ثبت‌نام شده یافت نشد');
         return;
       }
 
@@ -73,7 +97,10 @@ export const useStudentCourses = () => {
       const transformedCourses: StudentCourse[] = enrollments
         .map((enrollment: any) => {
           const course = coursesData?.find(c => c.id === enrollment.course_id);
-          if (!course) return null;
+          if (!course) {
+            console.log(`Course not found for enrollment ${enrollment.id} with course_id ${enrollment.course_id}`);
+            return null;
+          }
 
           const enrollDate = new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR');
           
@@ -101,6 +128,7 @@ export const useStudentCourses = () => {
         })
         .filter(course => course !== null) as StudentCourse[];
 
+      console.log('Transformed courses:', transformedCourses);
       setCourses(transformedCourses);
     } catch (err) {
       console.error('Error in fetchStudentCourses:', err);
