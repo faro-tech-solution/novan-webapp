@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -45,25 +46,6 @@ const Progress = () => {
     { name: 'React', value: 75, color: '#3B82F6' },
     { name: 'Node.js', value: 60, color: '#8B5CF6' },
   ];
-
-  const weeklyActivity = [
-    { day: 'شنبه', hours: 2 },
-    { day: 'یکشنبه', hours: 3 },
-    { day: 'دوشنبه', hours: 1 },
-    { day: 'سه‌شنبه', hours: 4 },
-    { day: 'چهارشنبه', hours: 2 },
-    { day: 'پنج‌شنبه', hours: 3 },
-    { day: 'جمعه', hours: 1 },
-  ];
-
-  // Convert student awards to achievements format for the old display
-  const achievements = studentAwards.slice(0, 8).map(award => ({
-    id: award.id,
-    title: award.awards.name,
-    description: award.awards.description,
-    earned: true,
-    date: new Date(award.earned_at).toLocaleDateString('fa-IR')
-  }));
 
   if (loading) {
     return (
@@ -199,23 +181,26 @@ const Progress = () => {
             </CardContent>
           </Card>
 
-          {/* Weekly Activity */}
+          {/* Weekly Points Activity */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Activity className="h-5 w-5 ml-2" />
                 فعالیت هفتگی
               </CardTitle>
-              <CardDescription>ساعات مطالعه در هفته</CardDescription>
+              <CardDescription>امتیازات کسب شده در هفته گذشته</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={weeklyActivity}>
+                <BarChart data={stats.weeklyPointsActivity}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="day" />
                   <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="hours" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                  <Tooltip 
+                    formatter={(value) => [`${value} امتیاز`, 'امتیاز کسب شده']}
+                    labelStyle={{ color: '#374151' }}
+                  />
+                  <Bar dataKey="points" fill="#3B82F6" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

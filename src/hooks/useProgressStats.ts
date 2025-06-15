@@ -13,6 +13,7 @@ interface ProgressStats {
   rank: number;
   totalStudents: number;
   totalPoints: number;
+  weeklyPointsActivity: Array<{ day: string; points: number }>;
 }
 
 export const useProgressStats = () => {
@@ -59,6 +60,50 @@ export const useProgressStats = () => {
     return streak;
   };
 
+  const calculateWeeklyPointsActivity = () => {
+    const today = new Date();
+    const weeklyActivity = [];
+    const dayNames = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه', 'شنبه'];
+    
+    // Calculate for the past 7 days
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      date.setHours(0, 0, 0, 0);
+      
+      const nextDay = new Date(date);
+      nextDay.setDate(date.getDate() + 1);
+      
+      // Get points from completed exercises on this day
+      const exercisePoints = myExercises
+        .filter(ex => {
+          if (ex.submission_status !== 'completed' || !ex.submitted_at) return false;
+          const submissionDate = new Date(ex.submitted_at);
+          return submissionDate >= date && submissionDate < nextDay;
+        })
+        .reduce((sum, ex) => sum + (ex.points || 0), 0);
+      
+      // Get bonus points from awards earned on this day
+      const awardPoints = studentAwards
+        .filter(award => {
+          const earnedDate = new Date(award.earned_at);
+          earnedDate.setHours(0, 0, 0, 0);
+          return earnedDate.getTime() === date.getTime();
+        })
+        .reduce((sum, award) => sum + award.bonus_points, 0);
+      
+      const totalDayPoints = exercisePoints + awardPoints;
+      const dayName = dayNames[date.getDay()];
+      
+      weeklyActivity.push({
+        day: dayName,
+        points: totalDayPoints
+      });
+    }
+    
+    return weeklyActivity;
+  };
+
   const calculateStats = () => {
     if (exercisesLoading || awardsLoading || !myExercises) return;
 
@@ -83,6 +128,7 @@ export const useProgressStats = () => {
       const totalPoints = exercisePoints + bonusPoints;
 
       const currentStreak = calculateCurrentStreak();
+      const weeklyPointsActivity = calculateWeeklyPointsActivity();
 
       setStats({
         totalExercises,
@@ -92,7 +138,8 @@ export const useProgressStats = () => {
         currentStreak,
         rank: 3, // This would need class-wide data to calculate properly
         totalStudents: 25, // This would need class-wide data
-        totalPoints
+        totalPoints,
+        weeklyPointsActivity
       });
     } catch (err) {
       console.error('Error calculating progress stats:', err);
