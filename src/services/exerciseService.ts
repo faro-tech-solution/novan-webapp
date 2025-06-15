@@ -44,21 +44,43 @@ export const fetchExercises = async (): Promise<Exercise[]> => {
   // For each exercise, get submission stats and calculate status
   const exercisesWithStats = await Promise.all(
     (data || []).map(async (exercise) => {
-      const { data: submissions } = await supabase
+      // Get submissions for this exercise
+      const { data: submissions, error: submissionsError } = await supabase
         .from('exercise_submissions')
-        .select('score')
+        .select('score, student_id')
         .eq('exercise_id', exercise.id);
 
+      if (submissionsError) {
+        console.error('Error fetching submissions for exercise:', exercise.id, submissionsError);
+      }
+
+      // Get total enrolled students for this course
+      const { data: enrollments, error: enrollmentsError } = await supabase
+        .from('course_enrollments')
+        .select('student_id')
+        .eq('course_id', exercise.course_id)
+        .eq('status', 'active');
+
+      if (enrollmentsError) {
+        console.error('Error fetching enrollments for course:', exercise.course_id, enrollmentsError);
+      }
+
       const submissionCount = submissions?.length || 0;
-      const averageScore = submissions && submissions.length > 0
-        ? Math.round(submissions.reduce((sum, sub) => sum + (sub.score || 0), 0) / submissions.length)
+      const totalStudents = enrollments?.length || 0;
+      
+      // Calculate average score from submissions that have scores
+      const scoredSubmissions = submissions?.filter(sub => sub.score !== null && sub.score !== undefined) || [];
+      const averageScore = scoredSubmissions.length > 0
+        ? Math.round(scoredSubmissions.reduce((sum, sub) => sum + (sub.score || 0), 0) / scoredSubmissions.length)
         : 0;
+
+      console.log(`Exercise ${exercise.title}: ${submissionCount} submissions, ${totalStudents} total students, ${averageScore}% average`);
 
       const exerciseWithStats: Exercise = {
         ...exercise,
         course_name: exercise.courses?.name || 'نامشخص',
         submissions: submissionCount,
-        total_students: 20, // This should ideally come from course enrollment data
+        total_students: totalStudents,
         average_score: averageScore,
         exercise_status: calculateExerciseStatus(exercise),
       };
