@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ActivityLog {
@@ -21,13 +20,12 @@ export interface ActivityLogInsert {
   duration_minutes?: number;
 }
 
-// Activity types constants
+// Activity types constants (removed PAGE_VISIT)
 export const ACTIVITY_TYPES = {
   LOGIN: 'login',
   EXERCISE_VIEW: 'exercise_view',
   EXERCISE_START: 'exercise_start',
   EXERCISE_COMPLETE: 'exercise_complete',
-  PAGE_VISIT: 'page_visit',
   STUDY_SESSION: 'study_session',
   LOGOUT: 'logout'
 } as const;

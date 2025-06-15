@@ -22,20 +22,13 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgressStats } from '@/hooks/useProgressStats';
 import { useStudentAwards } from '@/hooks/useStudentAwards';
-import { useActivityLogger } from '@/hooks/useActivityLogger';
 import { AchievementsDisplay } from '@/components/awards/AchievementsDisplay';
 
 const Progress = () => {
   const { profile } = useAuth();
   const { stats, loading, error } = useProgressStats();
   const { studentAwards, allAwards } = useStudentAwards();
-  const { logPageVisit } = useActivityLogger();
   const [timeFilter, setTimeFilter] = useState('month');
-
-  // Log page visit when component mounts
-  useEffect(() => {
-    logPageVisit('progress');
-  }, [logPageVisit]);
 
   if (loading) {
     return (

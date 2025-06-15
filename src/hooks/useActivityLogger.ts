@@ -41,10 +41,6 @@ export const useActivityLogger = () => {
     logActivity(ACTIVITY_TYPES.LOGIN, { timestamp: new Date().toISOString() }, 5);
   }, [logActivity]);
 
-  const logPageVisit = useCallback((pageName: string) => {
-    logActivity(ACTIVITY_TYPES.PAGE_VISIT, { page: pageName }, 1);
-  }, [logActivity]);
-
   const logExerciseView = useCallback((exerciseId: string, exerciseTitle: string) => {
     logActivity(ACTIVITY_TYPES.EXERCISE_VIEW, { 
       exercise_id: exerciseId, 
@@ -81,7 +77,6 @@ export const useActivityLogger = () => {
   return {
     logActivity,
     logLogin,
-    logPageVisit,
     logExerciseView,
     logExerciseStart,
     logExerciseComplete,
