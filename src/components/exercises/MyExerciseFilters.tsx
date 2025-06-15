@@ -1,0 +1,74 @@
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Search, Filter } from 'lucide-react';
+
+interface MyExerciseFiltersProps {
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  statusFilter: string;
+  setStatusFilter: (status: string) => void;
+  difficultyFilter: string;
+  setDifficultyFilter: (difficulty: string) => void;
+}
+
+export const MyExerciseFilters = ({
+  searchTerm,
+  setSearchTerm,
+  statusFilter,
+  setStatusFilter,
+  difficultyFilter,
+  setDifficultyFilter
+}: MyExerciseFiltersProps) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Filter className="h-5 w-5 ml-2" />
+          فیلتر و جستجو
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="جستجو در تمرین‌ها..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pr-10"
+              />
+            </div>
+          </div>
+          
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue placeholder="وضعیت" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">همه وضعیت‌ها</SelectItem>
+              <SelectItem value="completed">تکمیل شده</SelectItem>
+              <SelectItem value="pending">در انتظار بررسی</SelectItem>
+              <SelectItem value="overdue">دیرکرد</SelectItem>
+              <SelectItem value="not_started">شروع نشده</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue placeholder="سطح دشواری" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">همه سطوح</SelectItem>
+              <SelectItem value="آسان">آسان</SelectItem>
+              <SelectItem value="متوسط">متوسط</SelectItem>
+              <SelectItem value="سخت">سخت</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
