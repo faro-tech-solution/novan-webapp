@@ -19,6 +19,7 @@ interface ExerciseFormData {
   due_date: string;
   points: number;
   estimated_time: string;
+  status: string;
 }
 
 interface ExerciseCreationModalProps {
@@ -40,6 +41,7 @@ const ExerciseCreationModal = ({ open, onOpenChange }: ExerciseCreationModalProp
       due_date: '',
       points: 100,
       estimated_time: '',
+      status: 'active',
     },
   });
 
@@ -177,7 +179,7 @@ const ExerciseCreationModal = ({ open, onOpenChange }: ExerciseCreationModalProp
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <FormField
                 control={form.control}
                 name="due_date"
@@ -235,6 +237,30 @@ const ExerciseCreationModal = ({ open, onOpenChange }: ExerciseCreationModalProp
                     <FormControl>
                       <Input placeholder="۲ ساعت" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                rules={{ required: 'انتخاب وضعیت الزامی است' }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>وضعیت</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="انتخاب وضعیت" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="active">فعال</SelectItem>
+                        <SelectItem value="draft">پیش‌نویس</SelectItem>
+                        <SelectItem value="completed">تکمیل شده</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

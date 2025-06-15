@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { Plus, Calendar, Clock, Award } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useExercises } from '@/hooks/useExercises';
 
 interface CreateExerciseFormData {
   title: string;
@@ -18,6 +19,7 @@ interface CreateExerciseFormData {
   due_date: string;
   points: number;
   estimated_time: string;
+  status: string;
 }
 
 interface CreateExerciseDialogProps {
@@ -30,6 +32,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
   const [internalOpen, setInternalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { createExercise } = useExercises();
   
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
@@ -44,6 +47,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
       due_date: '',
       points: 100,
       estimated_time: '',
+      status: 'active',
     },
   });
 
@@ -54,8 +58,17 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
       setIsSubmitting(true);
       console.log('Creating new exercise:', data);
       
-      // Here you would call the create exercise function from useExercises hook
-      // For now, we'll just show a success message
+      const { error } = await createExercise(data);
+      
+      if (error) {
+        toast({
+          title: "خطا",
+          description: error,
+          variant: "destructive",
+        });
+        return;
+      }
+      
       toast({
         title: "تمرین ایجاد شد",
         description: "تمرین جدید با موفقیت ایجاد شد",
@@ -176,7 +189,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <FormField
               control={form.control}
               name="due_date"
@@ -234,6 +247,30 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                   <FormControl>
                     <Input placeholder="۲ ساعت" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              rules={{ required: 'انتخاب وضعیت الزامی است' }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>وضعیت</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="انتخاب وضعیت" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="active">فعال</SelectItem>
+                      <SelectItem value="draft">پیش‌نویس</SelectItem>
+                      <SelectItem value="completed">تکمیل شده</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
