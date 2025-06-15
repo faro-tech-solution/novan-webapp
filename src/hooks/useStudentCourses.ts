@@ -31,77 +31,44 @@ export const useStudentCourses = () => {
 
     try {
       setLoading(true);
-      console.log('Fetching student courses for user:', user.id);
+      setError(null);
 
-      // First, get the user's enrollments
-      const { data: enrollments, error: enrollmentError } = await supabase
+      // Fetch enrollments with course data using a join
+      const { data: enrollmentsWithCourses, error: fetchError } = await supabase
         .from('course_enrollments')
-        .select('id, status, enrolled_at, course_id')
+        .select(`
+          id,
+          status,
+          enrolled_at,
+          course_id,
+          courses (
+            id,
+            name,
+            description,
+            instructor_name,
+            start_date,
+            end_date,
+            status
+          )
+        `)
         .eq('student_id', user.id);
 
-      if (enrollmentError) {
-        console.error('Error fetching enrollments:', enrollmentError);
-        setError(enrollmentError.message);
+      if (fetchError) {
+        console.error('Error fetching enrollments with courses:', fetchError);
+        setError('خطا در دریافت دوره‌ها');
         return;
       }
 
-      console.log('Fetched enrollments:', enrollments);
-
-      if (!enrollments || enrollments.length === 0) {
-        console.log('No enrollments found for user');
+      if (!enrollmentsWithCourses || enrollmentsWithCourses.length === 0) {
         setCourses([]);
         return;
       }
 
-      // Get course IDs from enrollments
-      const courseIds = enrollments.map(enrollment => enrollment.course_id);
-      console.log('Course IDs to fetch:', courseIds);
-
-      // Try to fetch courses without RLS first to see if the issue is with policies
-      const { data: coursesData, error: coursesError } = await supabase
-        .from('courses')
-        .select('id, name, description, instructor_name, start_date, end_date, status')
-        .in('id', courseIds);
-
-      console.log('Courses query result:', { coursesData, coursesError });
-
-      if (coursesError) {
-        console.error('Error fetching courses:', coursesError);
-        setError(coursesError.message);
-        return;
-      }
-
-      if (!coursesData || coursesData.length === 0) {
-        console.log('No courses found for the enrolled course IDs');
-        // Let's try a different approach - fetch all courses and see what we get
-        const { data: allCourses, error: allCoursesError } = await supabase
-          .from('courses')
-          .select('id, name, description, instructor_name, start_date, end_date, status');
-        
-        console.log('All available courses:', allCourses);
-        
-        if (allCoursesError) {
-          console.error('Error fetching all courses:', allCoursesError);
-          setError('خطا در دریافت اطلاعات دوره‌ها');
-          return;
-        }
-        
-        // If no courses match the enrollment IDs, show an informative message
-        setError('دوره‌های ثبت‌نام شده یافت نشد');
-        return;
-      }
-
-      console.log('Fetched courses:', coursesData);
-
       // Transform the data to match the StudentCourse interface
-      const transformedCourses: StudentCourse[] = enrollments
+      const transformedCourses: StudentCourse[] = enrollmentsWithCourses
+        .filter(enrollment => enrollment.courses) // Only include enrollments with valid course data
         .map((enrollment: any) => {
-          const course = coursesData?.find(c => c.id === enrollment.course_id);
-          if (!course) {
-            console.log(`Course not found for enrollment ${enrollment.id} with course_id ${enrollment.course_id}`);
-            return null;
-          }
-
+          const course = enrollment.courses;
           const enrollDate = new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR');
           
           // Mock progress data (in a real app, this would come from course progress tracking)
@@ -125,10 +92,8 @@ export const useStudentCourses = () => {
             status: mockProgress >= 100 ? 'completed' : 'active',
             description: course.description
           };
-        })
-        .filter(course => course !== null) as StudentCourse[];
+        });
 
-      console.log('Transformed courses:', transformedCourses);
       setCourses(transformedCourses);
     } catch (err) {
       console.error('Error in fetchStudentCourses:', err);
