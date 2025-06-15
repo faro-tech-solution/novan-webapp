@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -107,15 +106,13 @@ export const useExercises = () => {
             ? Math.round(submissions.reduce((sum, sub) => sum + (sub.score || 0), 0) / submissions.length)
             : 0;
 
-          const exerciseWithStats = {
+          const exerciseWithStats: Exercise = {
             ...exercise,
             submissions: submissionCount,
             total_students: 20, // This should ideally come from course enrollment data
             average_score: averageScore,
+            exercise_status: calculateExerciseStatus(exercise),
           };
-
-          // Calculate exercise status based on dates
-          exerciseWithStats.exercise_status = calculateExerciseStatus(exerciseWithStats);
 
           return exerciseWithStats;
         })
@@ -130,7 +127,7 @@ export const useExercises = () => {
     }
   };
 
-  const createExercise = async (exerciseData: Omit<Exercise, 'id' | 'created_at' | 'updated_at' | 'created_by'>) => {
+  const createExercise = async (exerciseData: Omit<Exercise, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'submissions' | 'total_students' | 'average_score' | 'exercise_status'>) => {
     if (!user) return { error: 'کاربر وارد نشده است' };
 
     try {
