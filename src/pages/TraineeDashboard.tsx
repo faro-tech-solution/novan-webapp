@@ -1,83 +1,61 @@
 
-import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Clock, FileText, Award, TrendingUp, Play } from 'lucide-react';
+import { CheckCircle, Clock, FileText, Award, TrendingUp, Play, Calendar, AlertTriangle } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTraineeDashboard } from '@/hooks/useTraineeDashboard';
+import { DailyTasksCard } from '@/components/dashboard/DailyTasksCard';
+import { getDifficultyBadge, getExerciseStatusBadge } from '@/components/exercises/ExerciseStatusBadges';
 
 const TraineeDashboard = () => {
   const { profile } = useAuth();
-  
-  // Mock data
-  const stats = {
-    completedExercises: 12,
-    pendingExercises: 3,
-    averageScore: 88,
-    totalPoints: 1250
-  };
-
-  const assignedExercises = [
-    { 
-      id: 1, 
-      title: 'مبانی React Hooks', 
-      dueDate: '۱۳۹۶/۰۶/۱۶', 
-      status: 'pending', 
-      difficulty: 'متوسط',
-      estimatedTime: '۲ ساعت'
-    },
-    { 
-      id: 2, 
-      title: 'طراحی CSS Grid', 
-      dueDate: '۱۳۹۶/۰۶/۱۸', 
-      status: 'pending', 
-      difficulty: 'آسان',
-      estimatedTime: '۱ ساعت'
-    },
-    { 
-      id: 3, 
-      title: 'JavaScript Promises', 
-      dueDate: '۱۳۹۶/۰۶/۲۰', 
-      status: 'not_started', 
-      difficulty: 'سخت',
-      estimatedTime: '۳ ساعت'
-    },
-  ];
-
-  const recentScores = [
-    { exercise: 'فرم‌های HTML', score: 95, date: '۱۳۹۶/۰۶/۱۰' },
-    { exercise: 'انیمیشن‌های CSS', score: 82, date: '۱۳۹۶/۰۶/۰۸' },
-    { exercise: 'دستکاری DOM', score: 90, date: '۱۳۹۶/۰۶/۰۵' },
-  ];
-
-  const dailyTasks = [
-    { id: 1, task: 'تکمیل تمرین React Hooks', completed: false },
-    { id: 2, task: 'مرور مفاهیم CSS Grid', completed: true },
-    { id: 3, task: 'تمرین توابع JavaScript', completed: true },
-    { id: 4, task: 'ارسال تکلیف فرم‌های HTML', completed: false },
-  ];
-
-  const completedTasks = dailyTasks.filter(task => task.completed).length;
-  const progressPercentage = (completedTasks / dailyTasks.length) * 100;
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'آسان': return 'bg-green-100 text-green-800';
-      case 'متوسط': return 'bg-yellow-100 text-yellow-800';
-      case 'سخت': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const { stats, upcomingExercises, recentScores, loading, error, refetch } = useTraineeDashboard();
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'pending': return <Clock className="h-4 w-4 text-yellow-600" />;
-      default: return <FileText className="h-4 w-4 text-gray-600" />;
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'pending':
+        return <Clock className="h-4 w-4 text-yellow-600" />;
+      case 'overdue':
+        return <AlertTriangle className="h-4 w-4 text-red-600" />;
+      default:
+        return <FileText className="h-4 w-4 text-gray-600" />;
     }
   };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('fa-IR');
+  };
+
+  if (loading) {
+    return (
+      <DashboardLayout title="داشبورد دانشجو">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">در حال بارگذاری اطلاعات...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout title="داشبورد دانشجو">
+        <div className="text-center py-8">
+          <p className="text-red-600">{error}</p>
+          <Button onClick={refetch} className="mt-4">
+            تلاش مجدد
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout title="داشبورد دانشجو">
@@ -85,41 +63,54 @@ const TraineeDashboard = () => {
         {/* Welcome Message */}
         <div className="bg-gradient-to-r from-teal-500 to-blue-600 text-white p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-2 font-peyda">خوش آمدید، {profile?.name}!</h2>
-          <p className="opacity-90">کلاس: {profile?.className}</p>
-          <p className="opacity-90">شما {stats.pendingExercises} تمرین برای تکمیل دارید</p>
+          <p className="opacity-90">کلاس: {profile?.className || 'نامشخص'}</p>
+          <p className="opacity-90">
+            شما {stats.pendingExercises + (upcomingExercises.filter(ex => ex.submission_status === 'not_started').length)} تمرین برای تکمیل دارید
+          </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">تکمیل شده</CardTitle>
-              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+              <CheckCircle className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.completedExercises}</div>
+              <div className="text-2xl font-bold text-green-600">{stats.completedExercises}</div>
               <p className="text-xs text-muted-foreground">تمرین تمام شده</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">در انتظار</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">در انتظار بررسی</CardTitle>
+              <Clock className="h-4 w-4 text-yellow-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.pendingExercises}</div>
-              <p className="text-xs text-muted-foreground">تمرین باقیمانده</p>
+              <div className="text-2xl font-bold text-yellow-600">{stats.pendingExercises}</div>
+              <p className="text-xs text-muted-foreground">منتظر نمره</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">عقب‌افتاده</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-600">{stats.overdueExercises}</div>
+              <p className="text-xs text-muted-foreground">تمرین دیرکرد</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">میانگین نمره</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <TrendingUp className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.averageScore}%</div>
+              <div className="text-2xl font-bold text-blue-600">{stats.averageScore}%</div>
               <p className="text-xs text-muted-foreground">در همه تمرین‌ها</p>
             </CardContent>
           </Card>
@@ -127,82 +118,66 @@ const TraineeDashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">مجموع امتیاز</CardTitle>
-              <Award className="h-4 w-4 text-muted-foreground" />
+              <Award className="h-4 w-4 text-purple-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalPoints}</div>
+              <div className="text-2xl font-bold text-purple-600">{stats.totalPoints}</div>
               <p className="text-xs text-muted-foreground">امتیاز کسب شده</p>
             </CardContent>
           </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Assigned Exercises */}
+          {/* Upcoming Exercises */}
           <Card>
             <CardHeader>
-              <CardTitle>تمرین‌های تعیین شده</CardTitle>
-              <CardDescription>تکالیف فعلی شما</CardDescription>
+              <CardTitle>تمرین‌های پیش رو</CardTitle>
+              <CardDescription>تکالیف فعلی و آینده شما</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {assignedExercises.map((exercise) => (
-                  <div key={exercise.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 space-x-reverse mb-2">
-                        {getStatusIcon(exercise.status)}
-                        <h4 className="font-medium">{exercise.title}</h4>
-                      </div>
-                      <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600">
-                        <span>موعد: {exercise.dueDate}</span>
-                        <span>{exercise.estimatedTime}</span>
-                      </div>
-                      <Badge className={`mt-2 ${getDifficultyColor(exercise.difficulty)}`}>
-                        {exercise.difficulty}
-                      </Badge>
-                    </div>
-                    <Button size="sm" className="mr-4">
-                      <Play className="h-4 w-4 ml-2" />
-                      شروع
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Daily Progress */}
-          <Card>
-            <CardHeader>
-              <CardTitle>پیشرفت روزانه</CardTitle>
-              <CardDescription>وظایف و دستاوردهای امروز</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span>وظایف روزانه</span>
-                    <span>{completedTasks}/{dailyTasks.length} تکمیل شده</span>
-                  </div>
-                  <Progress value={progressPercentage} className="h-2" />
+              {upcomingExercises.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  تمرین جدیدی برای انجام وجود ندارد
                 </div>
-
-                <div className="space-y-2">
-                  {dailyTasks.map((task) => (
-                    <div key={task.id} className="flex items-center space-x-3 space-x-reverse">
-                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                        task.completed ? 'bg-green-500 border-green-500' : 'border-gray-300'
-                      }`}>
-                        {task.completed && <CheckCircle className="h-3 w-3 text-white" />}
+              ) : (
+                <div className="space-y-4">
+                  {upcomingExercises.map((exercise) => (
+                    <div key={exercise.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 space-x-reverse mb-2">
+                          {getStatusIcon(exercise.submission_status)}
+                          <h4 className="font-medium">{exercise.title}</h4>
+                        </div>
+                        <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600 mb-2">
+                          <span className="flex items-center space-x-1 space-x-reverse">
+                            <Calendar className="h-3 w-3" />
+                            <span>موعد: {formatDate(exercise.due_date)}</span>
+                          </span>
+                          <span>{exercise.estimated_time}</span>
+                          <span className="text-purple-600">{exercise.points} امتیاز</span>
+                        </div>
+                        <div className="flex items-center space-x-2 space-x-reverse">
+                          {getDifficultyBadge(exercise.difficulty)}
+                          {getExerciseStatusBadge(exercise.submission_status)}
+                          <span className="text-xs text-gray-500">{exercise.course_name}</span>
+                        </div>
                       </div>
-                      <span className={`text-sm ${task.completed ? 'line-through text-gray-500' : ''}`}>
-                        {task.task}
-                      </span>
+                      <Link to={`/exercises/${exercise.id}`}>
+                        <Button size="sm" className="mr-4">
+                          <Play className="h-4 w-4 ml-2" />
+                          {exercise.submission_status === 'completed' ? 'مشاهده' : 
+                           exercise.submission_status === 'pending' ? 'مشاهده' : 'شروع'}
+                        </Button>
+                      </Link>
                     </div>
                   ))}
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
+
+          {/* Daily Tasks */}
+          <DailyTasksCard />
         </div>
 
         {/* Recent Scores */}
@@ -212,14 +187,59 @@ const TraineeDashboard = () => {
             <CardDescription>عملکرد تمرین‌های اخیر شما</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {recentScores.map((score, index) => (
-                <div key={index} className="p-4 border rounded-lg text-center">
-                  <h4 className="font-medium mb-2">{score.exercise}</h4>
-                  <div className="text-2xl font-bold text-teal-600 mb-1">{score.score}%</div>
-                  <p className="text-sm text-gray-600">{score.date}</p>
-                </div>
-              ))}
+            {recentScores.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                هنوز نمره‌ای دریافت نکرده‌اید
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {recentScores.map((score, index) => (
+                  <div key={index} className="p-4 border rounded-lg text-center hover:bg-gray-50 transition-colors">
+                    <h4 className="font-medium mb-2 truncate" title={score.exercise}>{score.exercise}</h4>
+                    <div className={`text-2xl font-bold mb-1 ${
+                      score.score >= 90 ? 'text-green-600' :
+                      score.score >= 70 ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      {score.score}%
+                    </div>
+                    <p className="text-sm text-gray-600">{score.date}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>دسترسی سریع</CardTitle>
+            <CardDescription>به بخش‌های مختلف دسترسی پیدا کنید</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Link to="/my-exercises">
+                <Button variant="outline" className="w-full h-20 flex flex-col items-center space-y-2">
+                  <FileText className="h-6 w-6" />
+                  <span>تمرین‌های من</span>
+                </Button>
+              </Link>
+              <Link to="/progress">
+                <Button variant="outline" className="w-full h-20 flex flex-col items-center space-y-2">
+                  <TrendingUp className="h-6 w-6" />
+                  <span>پیشرفت تحصیلی</span>
+                </Button>
+              </Link>
+              <Link to="/student-courses">
+                <Button variant="outline" className="w-full h-20 flex flex-col items-center space-y-2">
+                  <Award className="h-6 w-6" />
+                  <span>دوره‌های من</span>
+                </Button>
+              </Link>
+              <Button variant="outline" className="w-full h-20 flex flex-col items-center space-y-2" disabled>
+                <Calendar className="h-6 w-6" />
+                <span>تقویم</span>
+              </Button>
             </div>
           </CardContent>
         </Card>
