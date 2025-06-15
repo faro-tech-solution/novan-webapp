@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Settings } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { UserRole } from '@/contexts/AuthContext';
+import TeacherAssignments from './TeacherAssignments';
 
 interface UserProfile {
   id: string;
@@ -20,6 +22,8 @@ interface UserProfile {
 const UserManagement = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAssignments, setShowAssignments] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState<UserProfile | null>(null);
   const { toast } = useToast();
 
   const fetchUsers = async () => {
@@ -80,6 +84,11 @@ const UserManagement = () => {
     }
   };
 
+  const handleManageAccess = (user: UserProfile) => {
+    setSelectedTeacher(user);
+    setShowAssignments(true);
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -106,62 +115,92 @@ const UserManagement = () => {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>مدیریت کاربران</CardTitle>
-        <CardDescription>
-          مشاهده و مدیریت نقش‌های کاربران سیستم
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {users.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500">هیچ کاربری یافت نشد</p>
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>نام</TableHead>
-                <TableHead>ایمیل</TableHead>
-                <TableHead>نقش فعلی</TableHead>
-                <TableHead>تاریخ عضویت</TableHead>
-                <TableHead>تغییر نقش</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="font-medium">{user.name || 'نامشخص'}</div>
-                  </TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{getRoleBadge(user.role)}</TableCell>
-                  <TableCell>
-                    {new Date(user.created_at).toLocaleDateString('fa-IR')}
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      value={user.role}
-                      onValueChange={(newRole: UserRole) => updateUserRole(user.id, newRole)}
-                    >
-                      <SelectTrigger className="w-32">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="trainee">دانشجو</SelectItem>
-                        <SelectItem value="trainer">مربی</SelectItem>
-                        <SelectItem value="admin">مدیر</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>مدیریت کاربران</CardTitle>
+          <CardDescription>
+            مشاهده و مدیریت نقش‌های کاربران سیستم
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {users.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500">هیچ کاربری یافت نشد</p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>نام</TableHead>
+                  <TableHead>ایمیل</TableHead>
+                  <TableHead>نقش فعلی</TableHead>
+                  <TableHead>تاریخ عضویت</TableHead>
+                  <TableHead>تغییر نقش</TableHead>
+                  <TableHead>دسترسی‌ها</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
-    </Card>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <div className="font-medium">{user.name || 'نامشخص'}</div>
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{getRoleBadge(user.role)}</TableCell>
+                    <TableCell>
+                      {new Date(user.created_at).toLocaleDateString('fa-IR')}
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={user.role}
+                        onValueChange={(newRole: UserRole) => updateUserRole(user.id, newRole)}
+                      >
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="trainee">دانشجو</SelectItem>
+                          <SelectItem value="trainer">مربی</SelectItem>
+                          <SelectItem value="admin">مدیر</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      {user.role === 'trainer' ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleManageAccess(user)}
+                        >
+                          <Settings className="h-4 w-4 mr-1" />
+                          تنظیم دسترسی
+                        </Button>
+                      ) : (
+                        <span className="text-gray-400 text-sm">
+                          {user.role === 'admin' ? 'دسترسی کامل' : 'بدون محدودیت'}
+                        </span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Teacher Assignments Modal */}
+      <TeacherAssignments
+        open={showAssignments}
+        onClose={() => {
+          setShowAssignments(false);
+          setSelectedTeacher(null);
+        }}
+        teacherId={selectedTeacher?.id || ''}
+        teacherName={selectedTeacher?.name || ''}
+      />
+    </>
   );
 };
 

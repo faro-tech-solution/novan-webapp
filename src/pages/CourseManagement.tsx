@@ -45,10 +45,24 @@ const CourseManagement = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      // If user is trainer, only show their courses
-      // If user is admin, show all courses
-      if (profile.role === 'trainer') {
-        query = query.eq('instructor_id', profile.id);
+      // Admins see all courses, trainers only see assigned courses
+      if (profile.role === 'admin') {
+        // No additional filter needed for admins
+      } else if (profile.role === 'trainer') {
+        // Filter to only show assigned courses
+        const { data: assignments } = await supabase
+          .from('teacher_course_assignments')
+          .select('course_id')
+          .eq('teacher_id', profile.id);
+
+        if (assignments && assignments.length > 0) {
+          const assignedCourseIds = assignments.map(a => a.course_id);
+          query = query.in('id', assignedCourseIds);
+        } else {
+          // No assignments, return empty array
+          setCourses([]);
+          return;
+        }
       }
 
       const { data: coursesData, error: coursesError } = await query;

@@ -55,13 +55,25 @@ const Students = () => {
           )
         `);
 
-      // If user is admin, fetch all enrollments
-      // If user is trainer, only fetch enrollments for their courses
+      // Access control based on role
       if (profile?.role === 'admin') {
         // Admins can see all enrollments - no additional filter needed
-      } else {
-        // Trainers can only see their own course enrollments
-        query = query.eq('courses.instructor_id', user.id);
+      } else if (profile?.role === 'trainer') {
+        // Trainers can only see enrollments for their assigned courses
+        const { data: assignments } = await supabase
+          .from('teacher_course_assignments')
+          .select('course_id')
+          .eq('teacher_id', user.id);
+
+        if (assignments && assignments.length > 0) {
+          const assignedCourseIds = assignments.map(a => a.course_id);
+          query = query.in('course_id', assignedCourseIds);
+        } else {
+          // No assignments, return empty array
+          setStudents([]);
+          setLoading(false);
+          return;
+        }
       }
 
       const { data: enrollments, error } = await query;
