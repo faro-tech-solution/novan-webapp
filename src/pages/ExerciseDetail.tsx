@@ -4,12 +4,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Clock, Award, FileText, Send, Calendar } from 'lucide-react';
+import { ArrowLeft, Clock, Award, Send, Calendar } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchExerciseDetail, submitExerciseSolution, ExerciseDetail as ExerciseDetailType } from '@/services/exerciseDetailService';
 import { useToast } from '@/hooks/use-toast';
+import { FormRenderer } from '@/components/exercises/FormRenderer';
+import { FormAnswer } from '@/types/formBuilder';
 
 const ExerciseDetail = () => {
   const { id } = useParams();
@@ -20,7 +21,7 @@ const ExerciseDetail = () => {
   const [exercise, setExercise] = useState<ExerciseDetailType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [solution, setSolution] = useState('');
+  const [answers, setAnswers] = useState<FormAnswer[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -38,9 +39,9 @@ const ExerciseDetail = () => {
 
         setExercise(exerciseData);
         
-        // If there's already a solution, load it
-        if (exerciseData.solution) {
-          setSolution(exerciseData.solution);
+        // If there's already a submission, load the answers
+        if (exerciseData.submission_answers) {
+          setAnswers(exerciseData.submission_answers);
         }
       } catch (err) {
         console.error('Error loading exercise:', err);
@@ -54,7 +55,23 @@ const ExerciseDetail = () => {
   }, [id, user]);
 
   const handleSubmit = async () => {
-    if (!exercise || !user || !solution.trim()) return;
+    if (!exercise || !user) return;
+
+    // Validate required questions
+    const requiredQuestions = exercise.form_structure?.questions.filter(q => q.required) || [];
+    const missingAnswers = requiredQuestions.filter(q => {
+      const answer = answers.find(a => a.questionId === q.id);
+      return !answer || (Array.isArray(answer.answer) ? answer.answer.length === 0 : !answer.answer.trim());
+    });
+
+    if (missingAnswers.length > 0) {
+      toast({
+        title: "خطا",
+        description: "لطفاً همه سوالات اجباری را پاسخ دهید",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       setSubmitting(true);
@@ -63,7 +80,7 @@ const ExerciseDetail = () => {
         user.id,
         user.email || '',
         profile?.name || '',
-        solution
+        JSON.stringify(answers)
       );
 
       if (error) {
@@ -194,28 +211,33 @@ const ExerciseDetail = () => {
           </CardContent>
         </Card>
 
-        {/* Solution Submission */}
+        {/* Exercise Form */}
         {profile?.role === 'trainee' && (
           <Card>
             <CardHeader>
-              <CardTitle>ارسال پاسخ شما</CardTitle>
+              <CardTitle>پاسخ به تمرین</CardTitle>
               <CardDescription>
                 {isSubmitted 
                   ? 'پاسخ شما قبلاً ارسال شده است. می‌توانید آن را ویرایش کنید.'
-                  : 'کد راه‌حل خود را در زیر بنویسید و برای بررسی ارسال کنید'
+                  : 'لطفاً به سوالات زیر پاسخ دهید'
                 }
               </CardDescription>
             </CardHeader>
             <CardContent>
               {canSubmit ? (
-                <div className="space-y-4">
-                  <Textarea
-                    placeholder="کد راه‌حل خود را اینجا قرار دهید..."
-                    value={solution}
-                    onChange={(e) => setSolution(e.target.value)}
-                    rows={12}
-                    className="font-mono"
-                  />
+                <div className="space-y-6">
+                  {exercise.form_structure && exercise.form_structure.questions.length > 0 ? (
+                    <FormRenderer
+                      form={exercise.form_structure}
+                      answers={answers}
+                      onChange={setAnswers}
+                      disabled={false}
+                    />
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>این تمرین هنوز محتوایی ندارد</p>
+                    </div>
+                  )}
                   
                   {exercise.feedback && (
                     <div className="bg-blue-50 p-4 rounded-lg">
@@ -227,18 +249,17 @@ const ExerciseDetail = () => {
                     </div>
                   )}
                   
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-gray-600">
-                      مطمئن شوید که کد شما توضیحات مناسب داشته و بهترین روش‌ها را دنبال کند
-                    </p>
-                    <Button 
-                      onClick={handleSubmit} 
-                      disabled={!solution.trim() || submitting}
-                    >
-                      <Send className="h-4 w-4 mr-2" />
-                      {submitting ? 'در حال ارسال...' : (isSubmitted ? 'بروزرسانی پاسخ' : 'ارسال پاسخ')}
-                    </Button>
-                  </div>
+                  {exercise.form_structure && exercise.form_structure.questions.length > 0 && (
+                    <div className="flex justify-end">
+                      <Button 
+                        onClick={handleSubmit} 
+                        disabled={submitting}
+                      >
+                        <Send className="h-4 w-4 mr-2" />
+                        {submitting ? 'در حال ارسال...' : (isSubmitted ? 'بروزرسانی پاسخ' : 'ارسال پاسخ')}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-8">

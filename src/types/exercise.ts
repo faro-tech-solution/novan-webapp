@@ -1,4 +1,6 @@
 
+import { ExerciseForm } from './formBuilder';
+
 export interface Exercise {
   id: string;
   title: string;
@@ -13,6 +15,7 @@ export interface Exercise {
   created_by: string;
   created_at: string;
   updated_at: string;
+  form_structure?: ExerciseForm;
   submissions?: number;
   total_students?: number;
   exercise_status?: 'upcoming' | 'active' | 'overdue' | 'closed';

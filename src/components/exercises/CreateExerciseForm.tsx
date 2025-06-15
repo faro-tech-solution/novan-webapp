@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { BasicInfoSection } from './BasicInfoSection';
 import { CourseAndDifficultySection } from './CourseAndDifficultySection';
 import { TimingAndPointsSection } from './TimingAndPointsSection';
+import { FormBuilder } from './FormBuilder';
 import { Course } from '@/types/exercise';
+import { ExerciseForm } from '@/types/formBuilder';
 
 export interface CreateExerciseFormData {
   title: string;
@@ -17,6 +19,7 @@ export interface CreateExerciseFormData {
   days_duration: number;
   points: number;
   estimated_time: string;
+  form_structure: ExerciseForm;
 }
 
 interface CreateExerciseFormProps {
@@ -39,6 +42,7 @@ export const CreateExerciseForm = ({ courses, isSubmitting, onSubmit, onCancel, 
       days_duration: 7,
       points: 100,
       estimated_time: '',
+      form_structure: { questions: [] },
     },
   });
 
@@ -63,10 +67,19 @@ export const CreateExerciseForm = ({ courses, isSubmitting, onSubmit, onCancel, 
 
   return (
     <Form {...form}>
-      <form onSubmit={handleFormSubmit} className="space-y-4">
+      <form onSubmit={handleFormSubmit} className="space-y-6">
         <BasicInfoSection form={form} />
         <CourseAndDifficultySection form={form} courses={courses} />
         <TimingAndPointsSection form={form} />
+
+        {/* Form Builder Section */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">محتوای تمرین</h3>
+          <FormBuilder
+            value={form.watch('form_structure')}
+            onChange={(formStructure) => form.setValue('form_structure', formStructure)}
+          />
+        </div>
 
         <div className="flex justify-end space-x-2 space-x-reverse pt-4">
           <Button 
