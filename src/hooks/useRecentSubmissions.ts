@@ -46,6 +46,7 @@ export const useRecentSubmissions = () => {
             )
           )
         `)
+        .is('score', null) // Only show submissions without scores (not completed)
         .order('submitted_at', { ascending: false })
         .limit(10);
 
