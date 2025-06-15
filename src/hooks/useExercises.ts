@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -58,7 +59,6 @@ export const useExercises = () => {
       const { data, error } = await supabase
         .from('courses')
         .select('id, name, instructor_name, status')
-        .eq('status', 'active')
         .order('name');
 
       if (error) {

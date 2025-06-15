@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -57,18 +56,23 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
     try {
       setIsSubmitting(true);
       console.log('Creating new exercise:', data);
+      console.log('Available courses:', courses);
       
-      // Calculate due date based on days_to_open + days_duration
-      const totalDays = data.days_to_open + data.days_duration;
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + totalDays);
+      // Calculate open date and close date based on days_to_open and days_duration
+      const openDate = new Date();
+      openDate.setDate(openDate.getDate() + data.days_to_open);
+      
+      const closeDate = new Date(openDate);
+      closeDate.setDate(closeDate.getDate() + data.days_duration);
       
       const exerciseData = {
         title: data.title,
         description: data.description,
         course_name: data.course_name,
         difficulty: data.difficulty,
-        due_date: dueDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        due_date: closeDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        open_date: openDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        close_date: closeDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
         points: data.points,
         estimated_time: data.estimated_time,
         status: data.status,
@@ -168,11 +172,17 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {courses.map((course) => (
-                        <SelectItem key={course.id} value={course.name}>
-                          {course.name}
+                      {courses.length === 0 ? (
+                        <SelectItem value="no-courses" disabled>
+                          هیچ دوره فعالی یافت نشد
                         </SelectItem>
-                      ))}
+                      ) : (
+                        courses.map((course) => (
+                          <SelectItem key={course.id} value={course.name}>
+                            {course.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />
