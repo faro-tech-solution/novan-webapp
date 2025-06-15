@@ -33,40 +33,56 @@ export const useMyExercises = () => {
     try {
       setLoading(true);
       console.log('Fetching exercises for student:', user.id);
-      console.log('User role from auth context:', user);
 
-      // First, let's check the user's profile and role
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      // First, fetch courses that the student is enrolled in
+      const { data: enrollments, error: enrollmentsError } = await supabase
+        .from('course_enrollments')
+        .select(`
+          course_id,
+          courses (
+            id,
+            name
+          )
+        `)
+        .eq('student_id', user.id)
+        .eq('status', 'active');
 
-      if (profileError) {
-        console.error('Error fetching user profile:', profileError);
-      } else {
-        console.log('User profile:', profile);
+      if (enrollmentsError) {
+        console.error('Error fetching enrollments:', enrollmentsError);
+        setError('خطا در دریافت دوره‌های ثبت‌نام شده: ' + enrollmentsError.message);
+        return;
       }
 
-      // Let's try to fetch all exercises first to see what's available
-      const { data: allExercises, error: allExercisesError } = await supabase
-        .from('exercises')
-        .select('*');
+      console.log('Student enrollments:', enrollments);
 
-      if (allExercisesError) {
-        console.error('Error fetching all exercises (for debugging):', allExercisesError);
-      } else {
-        console.log('All exercises in database:', allExercises);
+      if (!enrollments || enrollments.length === 0) {
+        console.log('No course enrollments found for student');
+        setMyExercises([]);
+        return;
       }
 
-      // Now fetch exercises that the student should be able to see
+      // Extract course names from enrollments
+      const enrolledCourseNames = enrollments
+        .filter(enrollment => enrollment.courses)
+        .map(enrollment => enrollment.courses!.name);
+
+      console.log('Enrolled course names:', enrolledCourseNames);
+
+      if (enrolledCourseNames.length === 0) {
+        console.log('No valid course names found');
+        setMyExercises([]);
+        return;
+      }
+
+      // Now fetch exercises for those courses
       const { data: exercises, error: exercisesError } = await supabase
         .from('exercises')
         .select('*')
+        .in('course_name', enrolledCourseNames)
         .eq('status', 'active')
         .order('due_date', { ascending: true });
 
-      console.log('Query result for active exercises:', { exercises, exercisesError });
+      console.log('Query result for course exercises:', { exercises, exercisesError });
 
       if (exercisesError) {
         console.error('Error fetching exercises:', exercisesError);
@@ -75,12 +91,12 @@ export const useMyExercises = () => {
       }
 
       if (!exercises || exercises.length === 0) {
-        console.log('No exercises found for user');
+        console.log('No exercises found for enrolled courses');
         setMyExercises([]);
         return;
       }
 
-      console.log('Found exercises:', exercises);
+      console.log('Found exercises for enrolled courses:', exercises);
 
       // Fetch submissions for the current user
       const { data: submissions, error: submissionsError } = await supabase
