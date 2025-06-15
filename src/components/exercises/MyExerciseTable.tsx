@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -34,7 +35,7 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
       case 'overdue':
         return <Badge className="bg-red-100 text-red-800">دیرکرد</Badge>;
       case 'not_started':
-        return <Badge className="bg-gray-100 text-gray-800">شروع نشده</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800">انجام نشده</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }

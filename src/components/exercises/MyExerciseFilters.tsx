@@ -11,6 +11,9 @@ interface MyExerciseFiltersProps {
   setStatusFilter: (status: string) => void;
   difficultyFilter: string;
   setDifficultyFilter: (difficulty: string) => void;
+  courseFilter: string;
+  setCourseFilter: (course: string) => void;
+  availableCourses: { id: string; name: string }[];
 }
 
 export const MyExerciseFilters = ({
@@ -19,7 +22,10 @@ export const MyExerciseFilters = ({
   statusFilter,
   setStatusFilter,
   difficultyFilter,
-  setDifficultyFilter
+  setDifficultyFilter,
+  courseFilter,
+  setCourseFilter,
+  availableCourses
 }: MyExerciseFiltersProps) => {
   return (
     <Card>
@@ -43,6 +49,20 @@ export const MyExerciseFilters = ({
             </div>
           </div>
           
+          <Select value={courseFilter} onValueChange={setCourseFilter}>
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue placeholder="درس" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">همه دروس</SelectItem>
+              {availableCourses.map((course) => (
+                <SelectItem key={course.id} value={course.id}>
+                  {course.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-full md:w-48">
               <SelectValue placeholder="وضعیت" />
@@ -52,7 +72,7 @@ export const MyExerciseFilters = ({
               <SelectItem value="completed">تکمیل شده</SelectItem>
               <SelectItem value="pending">در انتظار بررسی</SelectItem>
               <SelectItem value="overdue">دیرکرد</SelectItem>
-              <SelectItem value="not_started">شروع نشده</SelectItem>
+              <SelectItem value="not_started">انجام نشده</SelectItem>
             </SelectContent>
           </Select>
 

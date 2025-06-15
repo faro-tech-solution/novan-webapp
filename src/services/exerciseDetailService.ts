@@ -76,8 +76,14 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     // Don't throw error, user might not be enrolled but still viewing exercise
   }
 
+  // Create a minimal enrollment object for calculateAdjustedDates
+  const enrollmentForCalculation = enrollment ? {
+    ...enrollment,
+    courses: null // This property is not used in date calculations
+  } : undefined;
+
   // Calculate adjusted dates
-  const { adjustedOpenDate, adjustedDueDate, adjustedCloseDate } = calculateAdjustedDates(exercise, enrollment);
+  const { adjustedOpenDate, adjustedDueDate, adjustedCloseDate } = calculateAdjustedDates(exercise, enrollmentForCalculation);
 
   // Fetch user's submission for this exercise
   const { data: submission, error: submissionError } = await supabase
