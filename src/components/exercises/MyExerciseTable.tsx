@@ -10,7 +10,7 @@ interface ExerciseWithSubmission {
   id: string;
   title: string;
   description: string | null;
-  course_name: string;
+  course_name?: string;
   difficulty: string;
   due_date: string;
   points: number;
@@ -118,7 +118,7 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-gray-600">{exercise.course_name}</span>
+                    <span className="text-sm text-gray-600">{exercise.course_name || 'نامشخص'}</span>
                   </TableCell>
                   <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
                   <TableCell>

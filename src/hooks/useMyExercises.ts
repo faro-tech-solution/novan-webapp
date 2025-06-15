@@ -7,14 +7,14 @@ interface ExerciseWithSubmission {
   id: string;
   title: string;
   description: string | null;
-  course_name: string;
+  course_id: string;
+  course_name?: string; // This will be populated from the join
   difficulty: string;
   due_date: string;
   open_date: string;
   close_date: string;
   points: number;
   estimated_time: string;
-  status: string;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
   submitted_at: string | null;
   score: number | null;
@@ -61,25 +61,30 @@ export const useMyExercises = () => {
         return;
       }
 
-      // Extract course names from enrollments
-      const enrolledCourseNames = enrollments
+      // Extract course IDs from enrollments
+      const enrolledCourseIds = enrollments
         .filter(enrollment => enrollment.courses)
-        .map(enrollment => enrollment.courses!.name);
+        .map(enrollment => enrollment.course_id);
 
-      console.log('Enrolled course names:', enrolledCourseNames);
+      console.log('Enrolled course IDs:', enrolledCourseIds);
 
-      if (enrolledCourseNames.length === 0) {
-        console.log('No valid course names found');
+      if (enrolledCourseIds.length === 0) {
+        console.log('No valid course IDs found');
         setMyExercises([]);
         return;
       }
 
-      // Now fetch exercises for those courses
+      // Now fetch exercises for those courses with course information
       const { data: exercises, error: exercisesError } = await supabase
         .from('exercises')
-        .select('*')
-        .in('course_name', enrolledCourseNames)
-        .eq('status', 'active')
+        .select(`
+          *,
+          courses (
+            id,
+            name
+          )
+        `)
+        .in('course_id', enrolledCourseIds)
         .order('due_date', { ascending: true });
 
       console.log('Query result for course exercises:', { exercises, exercisesError });
@@ -139,14 +144,14 @@ export const useMyExercises = () => {
           id: exercise.id,
           title: exercise.title,
           description: exercise.description,
-          course_name: exercise.course_name,
+          course_id: exercise.course_id,
+          course_name: exercise.courses?.name || 'نامشخص',
           difficulty: exercise.difficulty,
           due_date: exercise.due_date,
           open_date: exercise.open_date,
           close_date: exercise.close_date,
           points: exercise.points,
           estimated_time: exercise.estimated_time,
-          status: exercise.status,
           submission_status: submissionStatus,
           submitted_at: submission?.submitted_at || null,
           score: submission?.score || null,
