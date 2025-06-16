@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Exercise, Course } from '@/types/exercise';
 import { calculateExerciseStatus } from '@/utils/exerciseUtils';
+import { ExerciseForm } from '@/types/formBuilder';
 
 export const fetchCourses = async (): Promise<Course[]> => {
   console.log('Fetching courses...');
@@ -70,12 +71,26 @@ export const fetchExercises = async (): Promise<Exercise[]> => {
 
       console.log(`Exercise ${exercise.title}: ${submissionCount} submissions, ${totalStudents} total students`);
 
+      // Parse form_structure from JSON if it exists
+      let form_structure: ExerciseForm = { questions: [] };
+      if (exercise.form_structure) {
+        try {
+          form_structure = typeof exercise.form_structure === 'string' 
+            ? JSON.parse(exercise.form_structure) 
+            : exercise.form_structure as ExerciseForm;
+        } catch (error) {
+          console.error('Error parsing form_structure:', error);
+          form_structure = { questions: [] };
+        }
+      }
+
       const exerciseWithStats: Exercise = {
         ...exercise,
         course_name: exercise.courses?.name || 'نامشخص',
         submissions: submissionCount,
         total_students: totalStudents,
         exercise_status: calculateExerciseStatus(exercise),
+        form_structure: form_structure,
       };
 
       return exerciseWithStats;
@@ -98,15 +113,17 @@ export const createExercise = async (
     return { error: 'دوره انتخاب شده یافت نشد' };
   }
 
+  // Prepare data for insertion, converting form_structure to JSON
+  const insertData = {
+    ...exerciseData,
+    course_id: selectedCourse.id,
+    created_by: userId,
+    form_structure: exerciseData.form_structure ? JSON.stringify(exerciseData.form_structure) : null,
+  };
+
   const { data, error } = await supabase
     .from('exercises')
-    .insert([
-      {
-        ...exerciseData,
-        course_id: selectedCourse.id,
-        created_by: userId,
-      }
-    ])
+    .insert([insertData])
     .select()
     .single();
 
@@ -116,7 +133,29 @@ export const createExercise = async (
   }
 
   console.log('Exercise created successfully:', data);
-  return { data, error: null };
+  
+  // Parse form_structure back for return
+  let form_structure: ExerciseForm = { questions: [] };
+  if (data.form_structure) {
+    try {
+      form_structure = typeof data.form_structure === 'string' 
+        ? JSON.parse(data.form_structure) 
+        : data.form_structure as ExerciseForm;
+    } catch (error) {
+      console.error('Error parsing form_structure:', error);
+    }
+  }
+
+  const exerciseWithParsedForm: Exercise = {
+    ...data,
+    form_structure: form_structure,
+    course_name: selectedCourse.name,
+    submissions: 0,
+    total_students: 0,
+    exercise_status: calculateExerciseStatus(data),
+  };
+
+  return { data: exerciseWithParsedForm, error: null };
 };
 
 export const updateExercise = async (
@@ -127,12 +166,17 @@ export const updateExercise = async (
   console.log('Updating exercise:', exerciseId, exerciseData);
 
   // If course_id is provided as a course name, convert it to course ID
-  let updateData = { ...exerciseData };
+  let updateData: any = { ...exerciseData };
   if (exerciseData.course_id && courses.length > 0) {
     const selectedCourse = courses.find(course => course.name === exerciseData.course_id);
     if (selectedCourse) {
       updateData.course_id = selectedCourse.id;
     }
+  }
+
+  // Convert form_structure to JSON string if it exists
+  if (updateData.form_structure) {
+    updateData.form_structure = JSON.stringify(updateData.form_structure);
   }
 
   const { data, error } = await supabase
@@ -148,7 +192,29 @@ export const updateExercise = async (
   }
 
   console.log('Exercise updated successfully:', data);
-  return { data, error: null };
+  
+  // Parse form_structure back for return
+  let form_structure: ExerciseForm = { questions: [] };
+  if (data.form_structure) {
+    try {
+      form_structure = typeof data.form_structure === 'string' 
+        ? JSON.parse(data.form_structure) 
+        : data.form_structure as ExerciseForm;
+    } catch (error) {
+      console.error('Error parsing form_structure:', error);
+    }
+  }
+
+  const exerciseWithParsedForm: Exercise = {
+    ...data,
+    form_structure: form_structure,
+    course_name: exerciseData.course_name || 'نامشخص',
+    submissions: 0,
+    total_students: 0,
+    exercise_status: calculateExerciseStatus(data),
+  };
+
+  return { data: exerciseWithParsedForm, error: null };
 };
 
 export const deleteExercise = async (id: string): Promise<{ error: string | null }> => {

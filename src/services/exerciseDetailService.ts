@@ -1,7 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { checkAndAwardAchievements } from '@/services/awardsService';
-import { FormAnswer } from '@/types/formBuilder';
+import { FormAnswer, ExerciseForm } from '@/types/formBuilder';
 
 export interface ExerciseDetail {
   id: string;
@@ -15,7 +15,7 @@ export interface ExerciseDetail {
   open_date: string;
   due_date: string;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
-  form_structure?: any;
+  form_structure?: ExerciseForm;
   submission_answers?: FormAnswer[];
   feedback?: string;
   score?: number;
@@ -39,6 +39,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         days_to_open,
         days_to_due,
         created_at,
+        form_structure,
         courses (
           name
         )
@@ -95,6 +96,19 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       }
     }
 
+    // Parse form_structure
+    let form_structure: ExerciseForm = { questions: [] };
+    if (exercise.form_structure) {
+      try {
+        form_structure = typeof exercise.form_structure === 'string' 
+          ? JSON.parse(exercise.form_structure) 
+          : exercise.form_structure as ExerciseForm;
+      } catch (error) {
+        console.error('Error parsing form_structure:', error);
+        form_structure = { questions: [] };
+      }
+    }
+
     return {
       id: exercise.id,
       title: exercise.title,
@@ -107,7 +121,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       open_date: openDate.toISOString(),
       due_date: dueDate.toISOString(),
       submission_status: submissionStatus,
-      form_structure: { questions: [] }, // Default empty form structure
+      form_structure: form_structure,
       submission_answers: submissionAnswers,
       feedback: submission?.feedback,
       score: submission?.score

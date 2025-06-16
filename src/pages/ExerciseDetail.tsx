@@ -54,22 +54,37 @@ const ExerciseDetail = () => {
     loadExercise();
   }, [id, user]);
 
-  const handleSubmit = async () => {
-    if (!exercise || !user) return;
+  const validateRequiredQuestions = (): boolean => {
+    if (!exercise?.form_structure?.questions) return true;
 
-    // Validate required questions
-    const requiredQuestions = exercise.form_structure?.questions.filter(q => q.required) || [];
+    const requiredQuestions = exercise.form_structure.questions.filter(q => q.required);
     const missingAnswers = requiredQuestions.filter(q => {
       const answer = answers.find(a => a.questionId === q.id);
-      return !answer || (Array.isArray(answer.answer) ? answer.answer.length === 0 : !answer.answer.trim());
+      if (!answer) return true;
+      
+      if (Array.isArray(answer.answer)) {
+        return answer.answer.length === 0;
+      }
+      
+      return !answer.answer || answer.answer.toString().trim() === '';
     });
 
     if (missingAnswers.length > 0) {
       toast({
         title: "خطا",
-        description: "لطفاً همه سوالات اجباری را پاسخ دهید",
+        description: `لطفاً به سوالات اجباری زیر پاسخ دهید: ${missingAnswers.map(q => q.title).join('، ')}`,
         variant: "destructive",
       });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!exercise || !user) return;
+
+    if (!validateRequiredQuestions()) {
       return;
     }
 
@@ -130,6 +145,19 @@ const ExerciseDetail = () => {
     return new Date(dateString).toLocaleDateString('fa-IR');
   };
 
+  const getSubmissionStatusBadge = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <Badge className="bg-green-100 text-green-800">تکمیل شده</Badge>;
+      case 'pending':
+        return <Badge className="bg-yellow-100 text-yellow-800">در انتظار بررسی</Badge>;
+      case 'overdue':
+        return <Badge className="bg-red-100 text-red-800">مهلت گذشته</Badge>;
+      default:
+        return <Badge variant="outline">شروع نشده</Badge>;
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout title="جزئیات تمرین">
@@ -178,6 +206,7 @@ const ExerciseDetail = () => {
               <Award className="h-3 w-3 mr-1" />
               {exercise.points} امتیاز
             </Badge>
+            {getSubmissionStatusBadge(exercise.submission_status)}
           </div>
         </div>
 
@@ -277,6 +306,26 @@ const ExerciseDetail = () => {
                   </p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* For instructors and admins - show form structure read-only */}
+        {(profile?.role === 'trainer' || profile?.role === 'admin') && exercise.form_structure && exercise.form_structure.questions.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>ساختار فرم تمرین</CardTitle>
+              <CardDescription>
+                نمایش سوالات تعریف شده برای این تمرین
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FormRenderer
+                form={exercise.form_structure}
+                answers={[]}
+                onChange={() => {}}
+                disabled={true}
+              />
             </CardContent>
           </Card>
         )}
