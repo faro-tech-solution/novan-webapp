@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { checkAndAwardAchievements } from '@/services/awardsService';
 import { FormAnswer, ExerciseForm } from '@/types/formBuilder';
@@ -20,6 +19,24 @@ export interface ExerciseDetail {
   feedback?: string;
   score?: number;
 }
+
+const parseFormStructure = (form_structure: any): ExerciseForm => {
+  if (!form_structure) {
+    return { questions: [] };
+  }
+
+  try {
+    if (typeof form_structure === 'string') {
+      return JSON.parse(form_structure) as ExerciseForm;
+    } else if (typeof form_structure === 'object' && form_structure.questions) {
+      return form_structure as ExerciseForm;
+    }
+    return { questions: [] };
+  } catch (error) {
+    console.error('Error parsing form_structure:', error);
+    return { questions: [] };
+  }
+};
 
 export const fetchExerciseDetail = async (exerciseId: string, userId: string): Promise<ExerciseDetail | null> => {
   console.log('Fetching exercise detail for:', exerciseId, 'user:', userId);
@@ -96,20 +113,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       }
     }
 
-    // Parse form_structure
-    let form_structure: ExerciseForm = { questions: [] };
-    if (exercise.form_structure) {
-      try {
-        if (typeof exercise.form_structure === 'string') {
-          form_structure = JSON.parse(exercise.form_structure);
-        } else {
-          form_structure = exercise.form_structure as ExerciseForm;
-        }
-      } catch (error) {
-        console.error('Error parsing form_structure:', error);
-        form_structure = { questions: [] };
-      }
-    }
+    const form_structure = parseFormStructure(exercise.form_structure);
 
     return {
       id: exercise.id,
