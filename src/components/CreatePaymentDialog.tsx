@@ -17,8 +17,9 @@ const paymentFormSchema = z.object({
   amount: z.number().min(1, 'مبلغ باید بیشتر از صفر باشد'),
   description: z.string().optional(),
   payment_method: z.string().optional(),
-  payment_status: z.enum(['pending', 'completed', 'failed', 'refunded']).default('completed'),
-  payment_type: z.enum(['buy_course', 'discount', 'pay_money', 'refund']).default('pay_money'),
+  payment_status: z.enum(['pending', 'completed', 'failed', 'refunded', 'waiting']).default('completed'),
+  payment_type: z.enum(['buy_course', 'discount', 'pay_money', 'refund', 'installment']).default('pay_money'),
+  transaction_date: z.string().min(1, 'تاریخ تراکنش الزامی است'),
 });
 
 type PaymentFormData = z.infer<typeof paymentFormSchema>;
@@ -41,15 +42,31 @@ const CreatePaymentDialog = ({
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<PaymentFormData>({
+  const form = useForm<z.infer<typeof paymentFormSchema>>({
     resolver: zodResolver(paymentFormSchema),
     defaultValues: {
       user_id: userId || '',
+      course_id: '',
       amount: 0,
+      description: '',
+      payment_method: '',
       payment_status: 'completed',
       payment_type: 'pay_money',
+      transaction_date: new Date().toISOString().split('T')[0],
     },
   });
+
+  // Add watch for payment_type changes
+  const paymentType = form.watch('payment_type');
+
+  // Update payment_status when payment_type changes
+  useEffect(() => {
+    if (paymentType === 'installment') {
+      form.setValue('payment_status', 'waiting');
+    } else {
+      form.setValue('payment_status', 'completed');
+    }
+  }, [paymentType, form]);
 
   // Update form when userId changes
   useEffect(() => {
@@ -60,32 +77,42 @@ const CreatePaymentDialog = ({
 
   const onSubmit = async (data: PaymentFormData) => {
     try {
-      setLoading(true);
+      if (!data.user_id) {
+        toast({
+          title: "خطا",
+          description: "لطفا کاربر را انتخاب کنید",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const paymentData: CreatePaymentData = {
         user_id: data.user_id,
-        course_id: data.course_id,
+        course_id: data.course_id || undefined,
         amount: data.amount,
-        description: data.description,
-        payment_method: data.payment_method || 'cash',
+        description: data.description || undefined,
+        payment_method: data.payment_method || undefined,
         payment_status: data.payment_status,
         payment_type: data.payment_type,
+        transaction_date: data.transaction_date,
       };
+
       await accountingService.createPayment(paymentData);
+      
       toast({
-        title: 'ثبت پرداخت',
-        description: 'پرداخت با موفقیت ثبت شد',
+        title: "موفق",
+        description: "پرداخت با موفقیت ثبت شد",
       });
-      form.reset();
+      
       onPaymentCreated();
       onOpenChange(false);
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Error creating payment:', error);
       toast({
-        title: 'خطا',
-        description: error.message || 'خطا در ثبت پرداخت',
-        variant: 'destructive',
+        title: "خطا",
+        description: "خطا در ثبت پرداخت",
+        variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -152,6 +179,24 @@ const CreatePaymentDialog = ({
 
             <FormField
               control={form.control}
+              name="transaction_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>تاریخ تراکنش</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      {...field}
+                      className="text-right"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="payment_method"
               render={({ field }) => (
                 <FormItem>
@@ -180,6 +225,7 @@ const CreatePaymentDialog = ({
                       <SelectItem value="buy_course">خرید دوره</SelectItem>
                       <SelectItem value="discount">تخفیف</SelectItem>
                       <SelectItem value="pay_money">پرداخت نقدی</SelectItem>
+                      <SelectItem value="installment">پرداخت اقساطی</SelectItem>
                       <SelectItem value="refund">مسترد کردن</SelectItem>
                     </SelectContent>
                   </Select>

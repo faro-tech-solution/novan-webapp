@@ -49,12 +49,7 @@ export function StudentAccountDetailsDialog({
   };
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('fa-IR', {
-      style: 'currency',
-      currency: 'IRR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+    return new Intl.NumberFormat('fa-IR').format(amount);
   };
 
   const getStatusBadge = (status: string) => {
@@ -74,6 +69,7 @@ export function StudentAccountDetailsDialog({
       discount: { label: 'تخفیف', variant: 'secondary' },
       pay_money: { label: 'پرداخت', variant: 'outline' },
       refund: { label: 'بازپرداخت', variant: 'destructive' },
+      installment: { label: 'اقساط', variant: 'default' },
     };
 
     const { label, variant } = typeMap[type] || { label: type, variant: 'outline' };
@@ -81,7 +77,29 @@ export function StudentAccountDetailsDialog({
   };
 
   const calculateBalance = () => {
-    return records.reduce((sum, record) => sum + record.amount, 0);
+    return records.reduce((sum, record) => {
+      if (record.payment_type === 'installment' && record.payment_status === 'waiting') {
+        return sum;
+      }
+      return sum + record.amount;
+    }, 0);
+  };
+
+  const getAmountColor = (paymentType: string) => {
+    switch (paymentType) {
+      case 'buy_course':
+        return 'text-red-500';
+      case 'discount':
+        return 'text-yellow-500';
+      case 'pay_money':
+        return 'text-green-500';
+      case 'refund':
+        return 'text-amber-700';
+      case 'installment':
+        return 'text-orange-500';
+      default:
+        return 'text-gray-900';
+    }
   };
 
   return (
@@ -129,7 +147,7 @@ export function StudentAccountDetailsDialog({
                       {record.course?.name || '-'}
                     </TableCell>
                     <TableCell className="text-right">
-                      <span className={record.amount >= 0 ? 'text-green-600' : 'text-red-600'}>
+                      <span className={getAmountColor(record.payment_type)}>
                         {formatAmount(record.amount)}
                       </span>
                     </TableCell>

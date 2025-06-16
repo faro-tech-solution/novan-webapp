@@ -7,6 +7,8 @@ import CreatePaymentDialog from '@/components/CreatePaymentDialog';
 import { accountingService } from '@/services/accountingService';
 import { useToast } from '@/hooks/use-toast';
 import DashboardLayout from '@/components/DashboardLayout';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
 interface StudentBalance {
   user: {
@@ -30,10 +32,13 @@ interface FinancialReport {
   totalIncome: number;
   totalReceived: number;
   totalReceivable: number;
+  pendingInstallments: number;
 }
 
 const Accounting = () => {
   const [records, setRecords] = useState<StudentBalance[]>([]);
+  const [filteredRecords, setFilteredRecords] = useState<StudentBalance[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<SelectedStudent | null>(null);
@@ -44,6 +49,7 @@ const Accounting = () => {
     totalIncome: 0,
     totalReceived: 0,
     totalReceivable: 0,
+    pendingInstallments: 0,
   });
   const { toast } = useToast();
 
@@ -59,6 +65,7 @@ const Accounting = () => {
         totalIncome: 0,
         totalReceived: 0,
         totalReceivable: 0,
+        pendingInstallments: 0,
       };
 
       data.forEach(record => {
@@ -69,7 +76,11 @@ const Accounting = () => {
             balance: 0
           });
         }
-        balances.get(userId)!.balance += record.amount;
+
+        // Only add to balance if it's not a pending installment
+        if (!(record.payment_type === 'installment' && record.payment_status === 'waiting')) {
+          balances.get(userId)!.balance += record.amount;
+        }
 
         // Update financial report
         if (record.payment_type === 'buy_course') {
@@ -78,9 +89,16 @@ const Accounting = () => {
           financialReport.totalDiscounts += Math.abs(record.amount);
         }
 
-        // Only count positive payments that are not discounts
-        if (record.amount > 0 && record.payment_type !== 'discount') {
+        // Only count positive payments that are not discounts and not incomplete installments
+        if (record.amount > 0 && 
+            record.payment_type !== 'discount' && 
+            !(record.payment_type === 'installment' && record.payment_status === 'waiting')) {
           financialReport.totalReceived += record.amount;
+        }
+
+        // Track pending installments
+        if (record.payment_type === 'installment' && record.payment_status === 'waiting') {
+          financialReport.pendingInstallments += record.amount;
         }
       });
 
@@ -106,18 +124,29 @@ const Accounting = () => {
     fetchRecords();
   }, []);
 
+  // Add search filter effect
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredRecords(records);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase();
+    const filtered = records.filter(record => {
+      const fullName = `${record.user.first_name} ${record.user.last_name}`.toLowerCase();
+      const email = record.user.email.toLowerCase();
+      return fullName.includes(query) || email.includes(query);
+    });
+    setFilteredRecords(filtered);
+  }, [searchQuery, records]);
+
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('fa-IR', {
-      style: 'currency',
-      currency: 'IRR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
+    return new Intl.NumberFormat('fa-IR').format(amount);
   };
 
   return (
     <DashboardLayout title="حسابداری">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">کل فروش</CardTitle>
@@ -158,19 +187,40 @@ const Accounting = () => {
             <div className="text-2xl font-bold text-red-600">{formatAmount(report.totalReceivable)}</div>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">اقساط در انتظار پرداخت</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-500">{formatAmount(report.pendingInstallments)}</div>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>لیست دانشجویان</CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle>لیست دانشجویان</CardTitle>
+            <div className="relative w-72">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="جستجو بر اساس نام یا ایمیل..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 text-right"
+              />
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="text-center py-4">در حال بارگذاری...</div>
           ) : error ? (
             <div className="text-center py-4 text-red-500">{error}</div>
-          ) : records.length === 0 ? (
-            <div className="text-center py-4">هیچ دانشجویی یافت نشد</div>
+          ) : filteredRecords.length === 0 ? (
+            <div className="text-center py-4">
+              {records.length === 0 ? 'هیچ دانشجویی یافت نشد' : 'هیچ دانشجویی با این فیلتر یافت نشد'}
+            </div>
           ) : (
             <Table>
               <TableHeader>
@@ -182,7 +232,7 @@ const Accounting = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {records.map((record) => (
+                {filteredRecords.map((record) => (
                   <TableRow key={record.user.id}>
                     <TableCell className="text-right">{record.user.first_name} {record.user.last_name}</TableCell>
                     <TableCell className="text-right">{record.user.email}</TableCell>
@@ -192,7 +242,7 @@ const Accounting = () => {
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-start gap-2">
                         <Button
                           variant="outline"
                           size="sm"

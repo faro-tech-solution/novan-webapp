@@ -51,14 +51,14 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>عنوان</TableHead>
-              <TableHead>دوره</TableHead>
-              <TableHead>سطح</TableHead>
-              {isStudent && <TableHead>وضعیت تمرین</TableHead>}
-              {isStudent && <TableHead>تاریخ باز شدن</TableHead>}
-              {isStudent && <TableHead>مهلت تحویل</TableHead>}
-              <TableHead>ارسال‌ها</TableHead>
-              <TableHead>عملیات</TableHead>
+              <TableHead className="text-right">عنوان</TableHead>
+              <TableHead className="text-right">دوره</TableHead>
+              <TableHead className="text-right">سطح</TableHead>
+              {isStudent && <TableHead className="text-right">وضعیت تمرین</TableHead>}
+              {isStudent && <TableHead className="text-right">تاریخ باز شدن</TableHead>}
+              {isStudent && <TableHead className="text-right">مهلت تحویل</TableHead>}
+              <TableHead className="text-right">ارسال‌ها</TableHead>
+              <TableHead className="text-right">عملیات</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
