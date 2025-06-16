@@ -15,8 +15,6 @@ interface Course {
   id: string;
   name: string;
   description: string | null;
-  instructor_id: string;
-  instructor_name: string;
   status: string;
   max_students: number | null;
   created_at: string;
@@ -42,7 +40,7 @@ const CourseManagement = () => {
     try {
       let query = supabase
         .from('courses')
-        .select('*')
+        .select('id, name, description, status, max_students, created_at, price')
         .order('created_at', { ascending: false });
 
       // Admins see all courses, trainers only see assigned courses
@@ -247,10 +245,9 @@ const CourseManagement = () => {
       {/* Students Dialog */}
       {selectedCourse && (
         <CourseStudentsDialog
-          open={showStudentsDialog}
-          onOpenChange={setShowStudentsDialog}
+          isOpen={showStudentsDialog}
+          onClose={() => setShowStudentsDialog(false)}
           courseId={selectedCourse.id}
-          courseName={selectedCourse.name}
         />
       )}
 

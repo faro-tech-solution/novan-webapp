@@ -48,30 +48,30 @@ export type Database = {
           enrolled_at: string
           id: string
           status: string
-          student_email: string
           student_id: string
-          student_name: string
           term_id: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           course_id: string
           enrolled_at?: string
           id?: string
           status?: string
-          student_email: string
           student_id: string
-          student_name: string
           term_id?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
           course_id?: string
           enrolled_at?: string
           id?: string
           status?: string
-          student_email?: string
           student_id?: string
-          student_name?: string
           term_id?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -88,6 +88,13 @@ export type Database = {
             referencedRelation: "course_terms"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "course_enrollments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
         ]
       }
       course_terms: {
@@ -493,6 +500,61 @@ export type Database = {
           },
         ]
       }
+      accounting: {
+        Row: {
+          id: string;
+          user_id: string;
+          course_id: string | null;
+          amount: number;
+          description: string | null;
+          payment_method: string | null;
+          payment_status: 'pending' | 'completed' | 'failed' | 'refunded';
+          payment_type: 'buy_course' | 'discount' | 'pay_money' | 'refund';
+          transaction_date: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          course_id?: string | null;
+          amount: number;
+          description?: string | null;
+          payment_method?: string | null;
+          payment_status?: 'pending' | 'completed' | 'failed' | 'refunded';
+          payment_type?: 'buy_course' | 'discount' | 'pay_money' | 'refund';
+          transaction_date?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          course_id?: string | null;
+          amount?: number;
+          description?: string | null;
+          payment_method?: string | null;
+          payment_status?: 'pending' | 'completed' | 'failed' | 'refunded';
+          payment_type?: 'buy_course' | 'discount' | 'pay_money' | 'refund';
+          transaction_date?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "accounting_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounting_course_id_fkey";
+            columns: ["course_id"];
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     }
     Views: {
       [_ in never]: never

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import DashboardLayout from '@/components/DashboardLayout';
-import { useAuth } from '@/contexts/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ReviewSubmissionsHeader } from '@/components/exercises/ReviewSubmissionsHeader';
-import { SubmissionsList } from '@/components/exercises/SubmissionsList';
-import { SubmissionDetailView } from '@/components/exercises/SubmissionDetailView';
+import DashboardLayout from '@/components/DashboardLayout';
 import { GradingSection } from '@/components/exercises/GradingSection';
 import { ExerciseForm } from '@/types/formBuilder';
 
@@ -14,86 +14,131 @@ interface Submission {
   id: string;
   exercise_id: string;
   student_id: string;
-  first_name: string;
-  last_name: string;
   student_email: string;
-  status: string;
   submitted_at: string;
-  score?: number;
-  feedback?: string;
+  score: number | null;
+  feedback: string | null;
+  graded_at: string | null;
+  graded_by: string | null;
   solution: string;
+  student_name: string;
   exercise: {
-    id: string;
     title: string;
-    points: number;
     form_structure: ExerciseForm | null;
-  };
+    course_id: string;
+  } | null;
 }
 
-const ReviewSubmissions = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const { toast } = useToast();
-  
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
-  const [score, setScore] = useState<string>('');
-  const [feedback, setFeedback] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [grading, setGrading] = useState(false);
+interface Course {
+  id: string;
+  name: string;
+  // Add other fields as needed
+}
 
+const parseFormStructure = (form_structure: any): ExerciseForm | null => {
+  if (!form_structure) {
+    return null;
+  }
+
+  try {
+    if (typeof form_structure === 'string') {
+      return JSON.parse(form_structure) as ExerciseForm;
+    } else if (typeof form_structure === 'object' && form_structure.questions) {
+      return form_structure as ExerciseForm;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error parsing form_structure:', error);
+    return null;
+  }
+};
+
+const ReviewSubmissions = () => {
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [score, setScore] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [grading, setGrading] = useState(false);
+  const { toast } = useToast();
+
+  // Fetch all courses on mount
   useEffect(() => {
-    fetchSubmissions();
-  }, [user]);
+    const fetchCourses = async () => {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('id, name');
+      if (error) {
+        toast({
+          title: 'خطا',
+          description: error.message || 'خطا در دریافت لیست دوره‌ها',
+          variant: 'destructive',
+        });
+        return;
+      }
+      setCourses(data || []);
+    };
+    fetchCourses();
+  }, []);
 
   const fetchSubmissions = async () => {
-    if (!user) return;
-
     try {
       setLoading(true);
+      setError(null);
       const { data, error } = await supabase
         .from('exercise_submissions')
         .select(`
           id,
           exercise_id,
           student_id,
-          first_name,
-          last_name,
           student_email,
-          status,
           submitted_at,
           score,
           feedback,
+          graded_at,
+          graded_by,
           solution,
+          student_name,
           exercise:exercises (
-            id,
             title,
-            points,
-            form_structure
+            form_structure,
+            course_id
           )
         `)
         .order('submitted_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching submissions:', error);
-        throw error;
-      }
+      if (error) throw error;
 
-      setSubmissions(data || []);
-    } catch (error) {
-      console.error('Error:', error);
+      // Parse form_structure for each submission
+      const parsedSubmissions = (data || []).map(submission => ({
+        ...submission,
+        exercise: submission.exercise ? {
+          ...submission.exercise,
+          form_structure: parseFormStructure(submission.exercise.form_structure)
+        } : null
+      }));
+
+      setSubmissions(parsedSubmissions as Submission[]);
+    } catch (err: any) {
+      setError('خطا در دریافت اطلاعات');
       toast({
-        title: "خطا",
-        description: "خطا در بارگذاری پاسخ‌ها",
-        variant: "destructive",
+        title: 'خطا',
+        description: err.message || 'خطا در دریافت اطلاعات',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGradeSubmission = async () => {
+  useEffect(() => {
+    fetchSubmissions();
+  }, []);
+
+  const handleGradingComplete = async () => {
     if (!selectedSubmission) return;
 
     try {
@@ -103,7 +148,6 @@ const ReviewSubmissions = () => {
         .update({
           score: score ? parseInt(score) : null,
           feedback: feedback || null,
-          graded_by: user?.id,
           graded_at: new Date().toISOString()
         })
         .eq('id', selectedSubmission.id);
@@ -119,11 +163,10 @@ const ReviewSubmissions = () => {
       setSelectedSubmission(null);
       setScore('');
       setFeedback('');
-    } catch (error) {
-      console.error('Error grading submission:', error);
+    } catch (err: any) {
       toast({
         title: "خطا",
-        description: "خطا در ثبت نمره",
+        description: err.message || "خطا در ثبت نمره",
         variant: "destructive",
       });
     } finally {
@@ -137,57 +180,102 @@ const ReviewSubmissions = () => {
     setFeedback(submission.feedback || '');
   };
 
+  // Helper to get course name by course_id
+  const getCourseName = (course_id: string | undefined) => {
+    if (!course_id) return '---';
+    const course = courses.find(c => c.id === course_id);
+    return course ? course.name : '---';
+  };
+
   const filteredSubmissions = submissions.filter(submission =>
-    `${submission.first_name} ${submission.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    submission.student_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     submission.student_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    submission.exercise.title.toLowerCase().includes(searchTerm.toLowerCase())
+    (submission.exercise?.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    getCourseName(submission.exercise?.course_id).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
-    return (
-      <DashboardLayout title="بررسی پاسخ‌ها">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-teal-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">در حال بارگذاری...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   return (
-    <DashboardLayout title="بررسی پاسخ‌ها">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <ReviewSubmissionsHeader
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          onBack={() => navigate(-1)}
-        />
-
-        {selectedSubmission ? (
-          <div className="space-y-6">
-            <SubmissionDetailView
-              submission={selectedSubmission}
-              onBack={() => setSelectedSubmission(null)}
-            />
-            
-            <GradingSection
-              score={score}
-              feedback={feedback}
-              grading={grading}
-              onScoreChange={setScore}
-              onFeedbackChange={setFeedback}
-              onSubmitGrade={handleGradeSubmission}
+    <DashboardLayout title="بررسی تمرین‌ها">
+      <Card>
+        <CardHeader>
+          <CardTitle>لیست تمرین‌های ارسالی</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4">
+            <Input
+              placeholder="جستجو بر اساس نام، ایمیل، عنوان تمرین یا دوره..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-sm"
             />
           </div>
-        ) : (
-          <SubmissionsList
-            submissions={filteredSubmissions}
-            onViewSubmission={handleViewSubmission}
-          />
-        )}
-      </div>
+
+          {loading ? (
+            <div className="text-center py-4">در حال بارگذاری...</div>
+          ) : error ? (
+            <div className="text-center py-4 text-red-500">{error}</div>
+          ) : filteredSubmissions.length === 0 ? (
+            <div className="text-center py-4">هیچ تمرینی برای بررسی وجود ندارد</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-right">نام دانشجو</TableHead>
+                  <TableHead className="text-right">عنوان تمرین</TableHead>
+                  <TableHead className="text-right">دوره</TableHead>
+                  <TableHead className="text-right">تاریخ ارسال</TableHead>
+                  <TableHead className="text-right">وضعیت</TableHead>
+                  <TableHead className="text-right">عملیات</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredSubmissions.map((submission) => (
+                  <TableRow key={submission.id}>
+                    <TableCell className="text-right">
+                      {submission.student_name}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {submission.exercise?.title || 'تمرین حذف شده'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {getCourseName(submission.exercise?.course_id)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {new Date(submission.submitted_at).toLocaleDateString('fa-IR')}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant={submission.graded_at ? 'secondary' : 'default'}>
+                        {submission.graded_at ? 'بررسی شده' : 'در انتظار بررسی'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewSubmission(submission)}
+                        disabled={!submission.exercise}
+                      >
+                        مشاهده و بررسی
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {selectedSubmission && selectedSubmission.exercise && (
+        <GradingSection
+          score={score}
+          feedback={feedback}
+          grading={grading}
+          onScoreChange={setScore}
+          onFeedbackChange={setFeedback}
+          onSubmitGrade={handleGradingComplete}
+        />
+      )}
     </DashboardLayout>
   );
 };

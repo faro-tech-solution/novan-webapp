@@ -12,7 +12,8 @@ import {
   Bell,
   Award,
   UserCog,
-  CheckCircle
+  CheckCircle,
+  Wallet
 } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -53,6 +54,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/students', icon: Award, label: 'دانشجویان' },
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
     { href: '/review-submissions', icon: CheckCircle, label: 'بررسی تمرین‌ها' },
+    { href: '/accounting', icon: Wallet, label: 'حسابداری' },
     { href: '/profile', icon: UserCog, label: 'پروفایل' },
   ];
 

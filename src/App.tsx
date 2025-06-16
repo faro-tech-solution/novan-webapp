@@ -26,6 +26,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminDashboard from "@/pages/AdminDashboard";
 import UserManagement from "@/pages/UserManagement";
 import Profile from "@/pages/Profile";
+import Accounting from "@/pages/Accounting";
 
 const queryClient = new QueryClient();
 
@@ -198,6 +199,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Progress />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/accounting" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <Accounting />
           </ProtectedRoute>
         } 
       />
