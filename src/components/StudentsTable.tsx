@@ -2,8 +2,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Eye, Mail, Calendar } from 'lucide-react';
+import { Eye, Mail, Calendar, BookOpen } from 'lucide-react';
 import { useState } from 'react';
+import { StudentDetailsDialog } from './StudentDetailsDialog';
+import { StudentCoursesDialog } from './StudentCoursesDialog';
+import { formatDate } from '@/lib/utils';
 
 export interface Student {
   id: string;
@@ -13,12 +16,19 @@ export interface Student {
   courseName: string;
   joinDate: string;
   status: string;
-  completedExercises: number;
-  totalExercises: number;
-  averageScore: number;
-  lastActivity: string;
-  totalPoints: number;
   termName?: string;
+  role?: string;
+  created_at?: string;
+  course_enrollments?: {
+    course: {
+      name: string;
+    };
+    status: string;
+    enrolled_at: string;
+    course_terms: {
+      name: string;
+    };
+  }[];
 }
 
 interface StudentsTableProps {
@@ -26,30 +36,17 @@ interface StudentsTableProps {
   filteredStudents: Student[];
 }
 
-const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
+export function StudentsTable({ students, filteredStudents }: StudentsTableProps) {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedStudentForCourses, setSelectedStudentForCourses] = useState<Student | null>(null);
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-green-100 text-green-800">فعال</Badge>;
-      case 'inactive':
-        return <Badge className="bg-gray-100 text-gray-800">غیرفعال</Badge>;
-      case 'completed':
-        return <Badge className="bg-blue-100 text-blue-800">تکمیل شده</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
+  const formatJoinDate = (dateString: string) => {
+    try {
+      return formatDate(dateString);
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString;
     }
-  };
-
-  const handleViewStudent = (student: Student) => {
-    setSelectedStudent(student);
-    // Here you can implement a modal or navigate to a detailed view
-    console.log('View student details:', student);
-  };
-
-  const handleSendEmail = (studentEmail: string) => {
-    window.open(`mailto:${studentEmail}`, '_blank');
   };
 
   return (
@@ -57,78 +54,77 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
       <CardHeader>
         <CardTitle>لیست دانشجویان</CardTitle>
         <CardDescription>
-          {filteredStudents.length} دانشجو از {students.length} دانشجو
+          {filteredStudents.length} از {students.length} دانشجو
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {filteredStudents.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500">
-              {students.length === 0 ? 'هنوز دانشجویی ثبت‌نام نکرده' : 'هیچ دانشجویی با این فیلتر یافت نشد'}
-            </p>
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">دانشجو</TableHead>
-                <TableHead className="text-right">وضعیت</TableHead>
-                <TableHead className="text-right">امتیاز کل</TableHead>
-                <TableHead className="text-right">آخرین فعالیت</TableHead>
-                <TableHead className="text-right">عملیات</TableHead>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-right">نام</TableHead>
+              <TableHead className="text-right">ایمیل</TableHead>
+              <TableHead className="text-right">دوره</TableHead>
+              <TableHead className="text-right">وضعیت</TableHead>
+              <TableHead className="text-right">تاریخ ثبت‌نام</TableHead>
+              <TableHead className="text-right">عملیات</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredStudents.map((student) => (
+              <TableRow key={student.id}>
+                <TableCell className="text-right">{student.first_name} {student.last_name}</TableCell>
+                <TableCell className="text-right">{student.email}</TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto font-normal"
+                    onClick={() => setSelectedStudentForCourses(student)}
+                  >
+                    <BookOpen className="h-4 w-4 ml-1" />
+                    {student.course_enrollments?.length || 0} دوره
+                  </Button>
+                </TableCell>
+                <TableCell className="text-right">
+                  <Badge variant={student.status === 'active' ? 'default' : 'secondary'}>
+                    {student.status === 'active' ? 'فعال' : 'غیرفعال'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <Calendar className="h-4 w-4 text-gray-400" />
+                    <span>{formatJoinDate(student.joinDate)}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-start gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedStudent(student)}
+                    >
+                      <Eye className="h-4 w-4 ml-2" />
+                      مشاهده جزئیات
+                    </Button>
+                  </div>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredStudents.map((student) => (
-                <TableRow key={student.id}>
-                  <TableCell className="text-right">
-                    <div>
-                      <div className="font-medium">{`${student.first_name} ${student.last_name}`}</div>
-                      <div className="text-sm text-gray-600 flex items-center justify-end">
-                        <span>{student.email}</span>
-                        <Mail className="h-3 w-3 mr-1" />
-                      </div>
-                      <div className="text-xs text-gray-500 flex items-center justify-end mt-1">
-                        <span>عضو از {student.joinDate}</span>
-                        <Calendar className="h-3 w-3 mr-1" />
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">{getStatusBadge(student.status)}</TableCell>
-                  <TableCell className="text-right">
-                    <span className="font-medium text-purple-600">{student.totalPoints}</span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="text-sm text-gray-600">{student.lastActivity}</span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleViewStudent(student)}
-                        title="مشاهده جزئیات"
-                      >
-                        <Eye className="h-3 w-3" />
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => handleSendEmail(student.email)}
-                        title="ارسال ایمیل"
-                      >
-                        <Mail className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
+
+      <StudentDetailsDialog
+        open={!!selectedStudent}
+        onOpenChange={(open) => !open && setSelectedStudent(null)}
+        student={selectedStudent}
+      />
+
+      <StudentCoursesDialog
+        open={!!selectedStudentForCourses}
+        onOpenChange={(open) => !open && setSelectedStudentForCourses(null)}
+        studentName={selectedStudentForCourses ? `${selectedStudentForCourses.first_name} ${selectedStudentForCourses.last_name}` : ''}
+        enrollments={selectedStudentForCourses?.course_enrollments || []}
+      />
     </Card>
   );
-};
-
-export default StudentsTable;
+}

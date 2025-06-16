@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import DashboardLayout from '@/components/DashboardLayout';
 import { PasswordStrengthMeter } from '@/components/PasswordStrengthMeter';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const profileFormSchema = z.object({
   first_name: z.string().min(1, 'نام الزامی است'),
@@ -40,6 +41,21 @@ const passwordFormSchema = z.object({
 
 type ProfileFormData = z.infer<typeof profileFormSchema>;
 type PasswordFormData = z.infer<typeof passwordFormSchema>;
+
+const educationLevels = [
+  { value: 'diploma', label: 'دیپلم' },
+  { value: 'associate', label: 'کاردانی' },
+  { value: 'bachelor', label: 'کارشناسی' },
+  { value: 'master', label: 'کارشناسی ارشد' },
+  { value: 'phd', label: 'دکترا' },
+  { value: 'other', label: 'سایر' }
+];
+
+const genders = [
+  { value: 'male', label: 'مرد' },
+  { value: 'female', label: 'زن' },
+  { value: 'other', label: 'سایر' }
+];
 
 const Profile = () => {
   const { profile, user } = useAuth();
@@ -187,21 +203,6 @@ const Profile = () => {
                       <div className="col-span-6">
                         <FormField
                           control={profileForm.control}
-                          name="last_name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>نام خانوادگی</FormLabel>
-                              <FormControl>
-                                <Input {...field} className="text-right" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      <div className="col-span-6">
-                        <FormField
-                          control={profileForm.control}
                           name="first_name"
                           render={({ field }) => (
                             <FormItem>
@@ -217,13 +218,39 @@ const Profile = () => {
                       <div className="col-span-6">
                         <FormField
                           control={profileForm.control}
+                          name="last_name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>نام خانوادگی</FormLabel>
+                              <FormControl>
+                                <Input {...field} className="text-right" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="col-span-6">
+                        <FormField
+                          control={profileForm.control}
                           name="gender"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>جنسیت</FormLabel>
-                              <FormControl>
-                                <Input {...field} className="text-right" />
-                              </FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="انتخاب کنید" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {genders.map((gender) => (
+                                    <SelectItem key={gender.value} value={gender.value}>
+                                      {gender.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -251,9 +278,20 @@ const Profile = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>تحصیلات</FormLabel>
-                              <FormControl>
-                                <Input {...field} className="text-right" />
-                              </FormControl>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="انتخاب کنید" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {educationLevels.map((level) => (
+                                    <SelectItem key={level.value} value={level.value}>
+                                      {level.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}

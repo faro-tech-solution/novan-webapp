@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
-import StudentsStats from '@/components/StudentsStats';
+import { StudentsStats } from '@/components/StudentsStats';
 import StudentsFilters from '@/components/StudentsFilters';
-import StudentsTable from '@/components/StudentsTable';
+import { StudentsTable } from '@/components/StudentsTable';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -26,6 +26,8 @@ interface Profile {
   email: string;
   role: string;
   created_at: string;
+  gender: string;
+  education_level: string;
   course_enrollments: CourseEnrollment[];
 }
 
@@ -38,26 +40,6 @@ const Students = () => {
   const [courses, setCourses] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-
-  const fetchStudentPoints = async (studentId: string): Promise<number> => {
-    try {
-      const { data: activityLogs, error } = await supabase
-        .from('student_activity_logs')
-        .select('points_earned')
-        .eq('student_id', studentId);
-
-      if (error) {
-        console.error('Error fetching student points:', error);
-        return 0;
-      }
-
-      const totalPoints = activityLogs?.reduce((sum, log) => sum + (log.points_earned || 0), 0) || 0;
-      return totalPoints;
-    } catch (error) {
-      console.error('Error calculating student points:', error);
-      return 0;
-    }
-  };
 
   const fetchStudents = async () => {
     try {
@@ -78,6 +60,8 @@ const Students = () => {
           email,
           role,
           created_at,
+          gender,
+          education_level,
           course_enrollments (
             course:courses (
               name
@@ -101,15 +85,15 @@ const Students = () => {
           first_name: student.first_name,
           last_name: student.last_name,
           email: student.email,
+          role: student.role,
+          created_at: student.created_at,
+          gender: student.gender,
+          education_level: student.education_level,
           courseName: enrollment?.course?.name || 'بدون دوره',
-          joinDate: new Date(enrollment?.enrolled_at || student.created_at).toLocaleDateString('fa-IR'),
+          joinDate: enrollment?.enrolled_at || student.created_at,
           status: enrollment?.status || 'فعال',
-          completedExercises: Math.floor(Math.random() * 15) + 5, // Mock data
-          totalExercises: 20, // Mock data
-          averageScore: Math.floor(Math.random() * 30) + 70, // Mock data
-          lastActivity: `${Math.floor(Math.random() * 7) + 1} روز پیش`, // Mock data
-          totalPoints: Math.floor(Math.random() * 1000), // Mock data
-          termName: enrollment?.course_terms?.name || 'عمومی'
+          termName: enrollment?.course_terms?.name || 'عمومی',
+          course_enrollments: student.course_enrollments
         } as Student;
       });
 
