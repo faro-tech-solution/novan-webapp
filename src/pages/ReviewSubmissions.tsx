@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,8 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { SubmissionViewer } from '@/components/exercises/SubmissionViewer';
+import { FormAnswer, ExerciseForm } from '@/types/formBuilder';
 
 interface SubmissionWithDetails {
   id: string;
@@ -32,6 +33,7 @@ interface SubmissionWithDetails {
     difficulty: string;
     points: number;
     course_name: string;
+    form_structure: ExerciseForm | null;
   };
 }
 
@@ -58,6 +60,7 @@ const ReviewSubmissions = () => {
             description,
             difficulty,
             points,
+            form_structure,
             courses (
               name
             )
@@ -84,16 +87,33 @@ const ReviewSubmissions = () => {
         return;
       }
 
-      const formattedSubmissions = data?.map(submission => ({
-        ...submission,
-        exercise: {
-          title: submission.exercises?.title || '',
-          description: submission.exercises?.description || '',
-          difficulty: submission.exercises?.difficulty || '',
-          points: submission.exercises?.points || 0,
-          course_name: submission.exercises?.courses?.name || 'نامشخص'
+      const formattedSubmissions = data?.map(submission => {
+        // Parse form_structure
+        let form_structure: ExerciseForm | null = null;
+        if (submission.exercises?.form_structure) {
+          try {
+            if (typeof submission.exercises.form_structure === 'string') {
+              form_structure = JSON.parse(submission.exercises.form_structure);
+            } else {
+              form_structure = submission.exercises.form_structure as ExerciseForm;
+            }
+          } catch (error) {
+            console.error('Error parsing form_structure:', error);
+          }
         }
-      })) || [];
+
+        return {
+          ...submission,
+          exercise: {
+            title: submission.exercises?.title || '',
+            description: submission.exercises?.description || '',
+            difficulty: submission.exercises?.difficulty || '',
+            points: submission.exercises?.points || 0,
+            course_name: submission.exercises?.courses?.name || 'نامشخص',
+            form_structure: form_structure
+          }
+        };
+      }) || [];
 
       setSubmissions(formattedSubmissions);
     } catch (error) {
@@ -268,176 +288,199 @@ const ReviewSubmissions = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {submissions.map((submission) => (
-                    <TableRow key={submission.id}>
-                      <TableCell>{getStatusBadge(submission)}</TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{submission.student_name}</div>
-                          <div className="text-sm text-gray-500">{submission.student_email}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">{submission.exercise.title}</TableCell>
-                      <TableCell>{submission.exercise.course_name}</TableCell>
-                      <TableCell>{getDifficultyBadge(submission.exercise.difficulty)}</TableCell>
-                      <TableCell>{formatDate(submission.submitted_at)}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2 space-x-reverse">
-                          <Star className="h-4 w-4 text-yellow-500" />
-                          <span>{submission.score !== null ? submission.score : '-'}</span>
-                          <span className="text-gray-500">/ {submission.exercise.points}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => {
-                                setSelectedSubmission(submission);
-                                setFeedback(submission.feedback || '');
-                                setScore(submission.score?.toString() || '');
-                              }}
-                            >
-                              {submission.graded_at ? 'مشاهده' : 'بررسی'}
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle>بررسی تمرین: {submission.exercise.title}</DialogTitle>
-                              <DialogDescription>
-                                دانشجو: {submission.student_name} | ارسال شده در: {formatDate(submission.submitted_at)}
-                              </DialogDescription>
-                            </DialogHeader>
+                  {submissions.map((submission) => {
+                    // Parse answers for count display
+                    let answers: FormAnswer[] = [];
+                    try {
+                      answers = JSON.parse(submission.solution);
+                    } catch (error) {
+                      console.error('Error parsing submission solution:', error);
+                    }
 
-                            <div className="space-y-6">
-                              {/* Exercise Info */}
-                              <Card>
-                                <CardHeader>
-                                  <CardTitle className="text-lg">اطلاعات تمرین</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                      <Label>عنوان</Label>
-                                      <p className="text-sm text-gray-600">{submission.exercise.title}</p>
-                                    </div>
-                                    <div>
-                                      <Label>درس</Label>
-                                      <p className="text-sm text-gray-600">{submission.exercise.course_name}</p>
-                                    </div>
-                                    <div>
-                                      <Label>سطح</Label>
-                                      <div>{getDifficultyBadge(submission.exercise.difficulty)}</div>
-                                    </div>
-                                    <div>
-                                      <Label>حداکثر امتیاز</Label>
-                                      <p className="text-sm text-gray-600">{submission.exercise.points}</p>
-                                    </div>
-                                  </div>
-                                  {submission.exercise.description && (
-                                    <div className="mt-4">
-                                      <Label>توضیحات</Label>
-                                      <p className="text-sm text-gray-600 mt-1">{submission.exercise.description}</p>
-                                    </div>
-                                  )}
-                                </CardContent>
-                              </Card>
+                    return (
+                      <TableRow key={submission.id}>
+                        <TableCell>{getStatusBadge(submission)}</TableCell>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{submission.student_name}</div>
+                            <div className="text-sm text-gray-500">{submission.student_email}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">{submission.exercise.title}</TableCell>
+                        <TableCell>{submission.exercise.course_name}</TableCell>
+                        <TableCell>{getDifficultyBadge(submission.exercise.difficulty)}</TableCell>
+                        <TableCell>{formatDate(submission.submitted_at)}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2 space-x-reverse">
+                            <Star className="h-4 w-4 text-yellow-500" />
+                            <span>{submission.score !== null ? submission.score : '-'}</span>
+                            <span className="text-gray-500">/ {submission.exercise.points}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedSubmission(submission);
+                                  setFeedback(submission.feedback || '');
+                                  setScore(submission.score?.toString() || '');
+                                }}
+                              >
+                                {submission.graded_at ? 'مشاهده' : 'بررسی'}
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle>بررسی تمرین: {submission.exercise.title}</DialogTitle>
+                                <DialogDescription>
+                                  دانشجو: {submission.student_name} | ارسال شده در: {formatDate(submission.submitted_at)}
+                                </DialogDescription>
+                              </DialogHeader>
 
-                              {/* Student Solution */}
-                              <Card>
-                                <CardHeader>
-                                  <CardTitle className="text-lg">پاسخ دانشجو</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                  <div className="bg-gray-50 p-4 rounded-lg">
-                                    <pre className="whitespace-pre-wrap text-sm">{submission.solution}</pre>
-                                  </div>
-                                </CardContent>
-                              </Card>
-
-                              {/* Grading Section */}
-                              <Card>
-                                <CardHeader>
-                                  <CardTitle className="text-lg">نمره‌دهی و بازخورد</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                  <div className="space-y-4">
-                                    <div>
-                                      <Label htmlFor="score">نمره (از {submission.exercise.points})</Label>
-                                      <Input
-                                        id="score"
-                                        type="number"
-                                        min="0"
-                                        max={submission.exercise.points}
-                                        value={score}
-                                        onChange={(e) => setScore(e.target.value)}
-                                        placeholder="نمره را وارد کنید"
-                                        disabled={!!submission.graded_at}
-                                      />
+                              <div className="space-y-6">
+                                {/* Exercise Info */}
+                                <Card>
+                                  <CardHeader>
+                                    <CardTitle className="text-lg">اطلاعات تمرین</CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <Label>عنوان</Label>
+                                        <p className="text-sm text-gray-600">{submission.exercise.title}</p>
+                                      </div>
+                                      <div>
+                                        <Label>درس</Label>
+                                        <p className="text-sm text-gray-600">{submission.exercise.course_name}</p>
+                                      </div>
+                                      <div>
+                                        <Label>سطح</Label>
+                                        <div>{getDifficultyBadge(submission.exercise.difficulty)}</div>
+                                      </div>
+                                      <div>
+                                        <Label>حداکثر امتیاز</Label>
+                                        <p className="text-sm text-gray-600">{submission.exercise.points}</p>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <Label htmlFor="feedback">بازخورد</Label>
-                                      <Textarea
-                                        id="feedback"
-                                        value={feedback}
-                                        onChange={(e) => setFeedback(e.target.value)}
-                                        placeholder="بازخورد خود را وارد کنید..."
-                                        rows={4}
-                                        disabled={!!submission.graded_at}
-                                      />
-                                    </div>
-
-                                    {!submission.graded_at && (
-                                      <div className="flex gap-2">
-                                        <Button
-                                          onClick={() => {
-                                            const scoreValue = parseInt(score) || 0;
-                                            if (scoreValue > 0) {
-                                              handleGradeSubmission(submission.id, scoreValue, feedback, true);
-                                            } else {
-                                              toast({
-                                                title: "خطا",
-                                                description: "لطفا نمره معتبری وارد کنید",
-                                                variant: "destructive",
-                                              });
-                                            }
-                                          }}
-                                          className="bg-green-600 hover:bg-green-700"
-                                        >
-                                          <CheckCircle className="h-4 w-4 ml-2" />
-                                          تایید
-                                        </Button>
-                                        <Button
-                                          onClick={() => handleGradeSubmission(submission.id, 0, feedback, false)}
-                                          variant="destructive"
-                                        >
-                                          <XCircle className="h-4 w-4 ml-2" />
-                                          رد
-                                        </Button>
+                                    {submission.exercise.description && (
+                                      <div className="mt-4">
+                                        <Label>توضیحات</Label>
+                                        <p className="text-sm text-gray-600 mt-1">{submission.exercise.description}</p>
                                       </div>
                                     )}
+                                  </CardContent>
+                                </Card>
 
-                                    {submission.graded_at && (
+                                {/* Student Solution - Using SubmissionViewer */}
+                                {submission.exercise.form_structure ? (
+                                  <SubmissionViewer
+                                    form={submission.exercise.form_structure}
+                                    answers={answers}
+                                    submissionInfo={{
+                                      studentName: submission.student_name,
+                                      submittedAt: submission.submitted_at,
+                                      score: submission.score || undefined,
+                                      feedback: submission.feedback || undefined,
+                                    }}
+                                  />
+                                ) : (
+                                  <Card>
+                                    <CardHeader>
+                                      <CardTitle className="text-lg">پاسخ دانشجو</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
                                       <div className="bg-gray-50 p-4 rounded-lg">
-                                        <p className="text-sm text-gray-600">
-                                          بررسی شده در: {formatDate(submission.graded_at)}
-                                        </p>
-                                        <p className="text-sm text-gray-600">
-                                          نمره نهایی: {submission.score} از {submission.exercise.points}
-                                        </p>
+                                        <pre className="whitespace-pre-wrap text-sm">{submission.solution}</pre>
                                       </div>
-                                    )}
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                                    </CardContent>
+                                  </Card>
+                                )}
+
+                                {/* Grading Section */}
+                                <Card>
+                                  <CardHeader>
+                                    <CardTitle className="text-lg">نمره‌دهی و بازخورد</CardTitle>
+                                  </CardHeader>
+                                  <CardContent>
+                                    <div className="space-y-4">
+                                      <div>
+                                        <Label htmlFor="score">نمره (از {submission.exercise.points})</Label>
+                                        <Input
+                                          id="score"
+                                          type="number"
+                                          min="0"
+                                          max={submission.exercise.points}
+                                          value={score}
+                                          onChange={(e) => setScore(e.target.value)}
+                                          placeholder="نمره را وارد کنید"
+                                          disabled={!!submission.graded_at}
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label htmlFor="feedback">بازخورد</Label>
+                                        <Textarea
+                                          id="feedback"
+                                          value={feedback}
+                                          onChange={(e) => setFeedback(e.target.value)}
+                                          placeholder="بازخورد خود را وارد کنید..."
+                                          rows={4}
+                                          disabled={!!submission.graded_at}
+                                        />
+                                      </div>
+
+                                      {!submission.graded_at && (
+                                        <div className="flex gap-2">
+                                          <Button
+                                            onClick={() => {
+                                              const scoreValue = parseInt(score) || 0;
+                                              if (scoreValue > 0) {
+                                                handleGradeSubmission(submission.id, scoreValue, feedback, true);
+                                              } else {
+                                                toast({
+                                                  title: "خطا",
+                                                  description: "لطفا نمره معتبری وارد کنید",
+                                                  variant: "destructive",
+                                                });
+                                              }
+                                            }}
+                                            className="bg-green-600 hover:bg-green-700"
+                                          >
+                                            <CheckCircle className="h-4 w-4 ml-2" />
+                                            تایید
+                                          </Button>
+                                          <Button
+                                            onClick={() => handleGradeSubmission(submission.id, 0, feedback, false)}
+                                            variant="destructive"
+                                          >
+                                            <XCircle className="h-4 w-4 ml-2" />
+                                            رد
+                                          </Button>
+                                        </div>
+                                      )}
+
+                                      {submission.graded_at && (
+                                        <div className="bg-gray-50 p-4 rounded-lg">
+                                          <p className="text-sm text-gray-600">
+                                            بررسی شده در: {formatDate(submission.graded_at)}
+                                          </p>
+                                          <p className="text-sm text-gray-600">
+                                            نمره نهایی: {submission.score} از {submission.exercise.points}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             )}

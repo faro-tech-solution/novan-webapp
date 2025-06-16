@@ -100,9 +100,11 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     let form_structure: ExerciseForm = { questions: [] };
     if (exercise.form_structure) {
       try {
-        form_structure = typeof exercise.form_structure === 'string' 
-          ? JSON.parse(exercise.form_structure) 
-          : exercise.form_structure as ExerciseForm;
+        if (typeof exercise.form_structure === 'string') {
+          form_structure = JSON.parse(exercise.form_structure);
+        } else {
+          form_structure = exercise.form_structure as ExerciseForm;
+        }
       } catch (error) {
         console.error('Error parsing form_structure:', error);
         form_structure = { questions: [] };

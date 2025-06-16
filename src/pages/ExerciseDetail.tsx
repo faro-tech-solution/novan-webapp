@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -110,11 +109,8 @@ const ExerciseDetail = () => {
           description: "پاسخ شما با موفقیت ارسال شد",
         });
         
-        // Reload exercise data to update submission status
-        const updatedExercise = await fetchExerciseDetail(exercise.id, user.id);
-        if (updatedExercise) {
-          setExercise(updatedExercise);
-        }
+        // Redirect to exercises list
+        navigate('/my-exercises');
       }
     } catch (err) {
       console.error('Error submitting solution:', err);
