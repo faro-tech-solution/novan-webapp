@@ -35,6 +35,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
     { href: '/review-submissions', icon: CheckCircle, label: 'بررسی تمرین‌ها' },
     { href: '/students', icon: Award, label: 'دانشجویان' },
+    { href: '/profile', icon: UserCog, label: 'پروفایل' },
   ];
 
   const traineeNavItems = [
@@ -42,6 +43,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/my-exercises', icon: FileText, label: 'تمرین‌های من' },
     { href: '/progress', icon: Award, label: 'پیشرفت' },
     { href: '/student-courses', icon: BookOpen, label: 'دوره‌های من' },
+    { href: '/profile', icon: UserCog, label: 'پروفایل' },
   ];
 
   const adminNavItems = [
@@ -51,6 +53,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/students', icon: Award, label: 'دانشجویان' },
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
     { href: '/review-submissions', icon: CheckCircle, label: 'بررسی تمرین‌ها' },
+    { href: '/profile', icon: UserCog, label: 'پروفایل' },
   ];
 
   const getNavItems = () => {
@@ -103,7 +106,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
             </Button>
             <div className="flex items-center space-x-2 space-x-reverse">
               <span className="text-sm text-gray-700">
-                {profile?.name} ({getRoleLabel(profile?.role)})
+                {profile?.first_name && profile?.last_name ? `${profile.first_name} ${profile.last_name}` : 'کاربر'} ({getRoleLabel(profile?.role)})
               </span>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 ml-2" />

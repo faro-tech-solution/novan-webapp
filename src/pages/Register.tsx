@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -9,22 +8,45 @@ import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useToast } from '@/hooks/use-toast';
+import { PasswordStrengthMeter } from '@/components/PasswordStrengthMeter';
 
 const Register = () => {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isPasswordStrong, setIsPasswordStrong] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isPasswordStrong) {
+      toast({
+        title: "رمز عبور ضعیف",
+        description: "لطفا یک رمز عبور قوی انتخاب کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password !== repeatPassword) {
+      toast({
+        title: "رمز عبور مطابقت ندارد",
+        description: "رمز عبور و تکرار آن باید یکسان باشند",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const { error } = await register(name, email, password, 'trainee');
+      const { error } = await register(firstName, lastName, email, password, 'trainee');
       if (error) {
         toast({
           title: "خطا در ثبت نام",
@@ -63,15 +85,27 @@ const Register = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">نام کامل</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
+              <div className="grid grid-cols-12 gap-4">
+                <div className="col-span-6 space-y-2">
+                  <Label htmlFor="firstName">نام</Label>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="col-span-6 space-y-2">
+                  <Label htmlFor="lastName">نام خانوادگی</Label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -93,11 +127,29 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  minLength={6}
+                />
+                <PasswordStrengthMeter 
+                  password={password} 
+                  onStrengthChange={setIsPasswordStrong}
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <div className="space-y-2">
+                <Label htmlFor="repeatPassword">تکرار رمز عبور</Label>
+                <Input
+                  id="repeatPassword"
+                  type="password"
+                  value={repeatPassword}
+                  onChange={(e) => setRepeatPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={loading || !isPasswordStrong}
+              >
                 {loading ? 'در حال ثبت نام...' : 'ثبت نام'}
               </Button>
             </form>

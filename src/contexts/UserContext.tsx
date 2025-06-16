@@ -1,11 +1,11 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type UserRole = 'trainer' | 'trainee';
 
 export interface User {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   role: UserRole;
   classId?: string;
@@ -15,7 +15,7 @@ export interface User {
 interface UserContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
+  register: (first_name: string, last_name: string, email: string, password: string, role: UserRole) => Promise<boolean>;
   logout: () => void;
   updateUserRole: (newRole: UserRole) => void;
 }
@@ -32,9 +32,9 @@ export const useUser = () => {
 
 // Mock users for demonstration
 const mockUsers: User[] = [
-  { id: '1', name: 'John Trainer', email: 'trainer@example.com', role: 'trainer' },
-  { id: '2', name: 'Jane Student', email: 'student@example.com', role: 'trainee', classId: '1', className: 'Web Development Basics' },
-  { id: '3', name: 'Bob Learner', email: 'bob@example.com', role: 'trainee', classId: '1', className: 'Web Development Basics' },
+  { id: '1', first_name: 'John', last_name: 'Trainer', email: 'trainer@example.com', role: 'trainer' },
+  { id: '2', first_name: 'Jane', last_name: 'Student', email: 'student@example.com', role: 'trainee', classId: '1', className: 'Web Development Basics' },
+  { id: '3', first_name: 'Bob', last_name: 'Learner', email: 'bob@example.com', role: 'trainee', classId: '1', className: 'Web Development Basics' },
 ];
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -59,11 +59,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return false;
   };
 
-  const register = async (name: string, email: string, password: string, role: UserRole): Promise<boolean> => {
+  const register = async (first_name: string, last_name: string, email: string, password: string, role: UserRole): Promise<boolean> => {
     // Mock registration logic
     const newUser: User = {
       id: Date.now().toString(),
-      name,
+      first_name,
+      last_name,
       email,
       role,
       ...(role === 'trainee' && { classId: '1', className: 'Web Development Basics' })

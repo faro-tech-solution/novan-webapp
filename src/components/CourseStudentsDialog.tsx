@@ -18,7 +18,8 @@ interface CourseEnrollment {
   id: string;
   course_id: string;
   student_id: string;
-  student_name: string;
+  first_name: string;
+  last_name: string;
   student_email: string;
   enrolled_at: string;
   status: string;
@@ -64,7 +65,17 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
     try {
       const { data, error } = await supabase
         .from('course_enrollments')
-        .select('*')
+        .select(`
+          id,
+          course_id,
+          student_id,
+          first_name,
+          last_name,
+          student_email,
+          enrolled_at,
+          status,
+          term_id
+        `)
         .eq('course_id', courseId)
         .order('enrolled_at', { ascending: false });
 
@@ -158,7 +169,8 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
       const enrollmentData = {
         course_id: courseId,
         student_id: profileData.id,
-        student_name: profileData.name || 'نام نامشخص',
+        first_name: profileData.first_name || 'نام',
+        last_name: profileData.last_name || 'نامشخص',
         student_email: profileData.email,
         status: 'active',
         ...(selectedTermId !== 'general' && { term_id: selectedTermId })
@@ -193,7 +205,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
     }
   };
 
-  const handleRemoveStudent = async (enrollmentId: string, studentName: string) => {
+  const handleRemoveStudent = async (enrollmentId: string, studentFullName: string) => {
     try {
       const { error } = await supabase
         .from('course_enrollments')
@@ -204,7 +216,7 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
 
       toast({
         title: 'موفقیت',
-        description: `${studentName} با موفقیت از درس حذف شد`,
+        description: `${studentFullName} با موفقیت از درس حذف شد`,
       });
 
       fetchEnrollments();
@@ -218,9 +230,9 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
     }
   };
 
-  const handleViewProfile = (studentId: string, studentName: string) => {
+  const handleViewProfile = (studentId: string, studentFullName: string) => {
     setSelectedStudentId(studentId);
-    setSelectedStudentName(studentName);
+    setSelectedStudentName(studentFullName);
     setShowProfileModal(true);
   };
 
@@ -247,171 +259,163 @@ const CourseStudentsDialog = ({ open, onOpenChange, courseId, courseName }: Cour
   };
 
   const filteredEnrollments = enrollments.filter(enrollment =>
-    enrollment.student_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    `${enrollment.first_name} ${enrollment.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
     enrollment.student_email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>دانشجویان درس {courseName}</DialogTitle>
+            <DialogTitle>دانشجویان {courseName}</DialogTitle>
           </DialogHeader>
-          
-          <div className="space-y-4">
-            {/* Add Student Form */}
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg">افزودن دانشجو</CardTitle>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowAddForm(!showAddForm)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {showAddForm ? 'بستن' : 'افزودن دانشجو'}
-                  </Button>
-                </div>
-              </CardHeader>
-              {showAddForm && (
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="studentEmail">ایمیل دانشجو</Label>
-                      <Input
-                        id="studentEmail"
-                        type="email"
-                        placeholder="example@email.com"
-                        value={addStudentEmail}
-                        onChange={(e) => setAddStudentEmail(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="termSelect">ترم (اختیاری)</Label>
-                      <Select value={selectedTermId} onValueChange={setSelectedTermId}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="انتخاب ترم" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="general">عمومی (بدون ترم)</SelectItem>
-                          {terms.map((term) => (
-                            <SelectItem key={term.id} value={term.id}>
-                              {term.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex items-end">
-                      <Button 
-                        onClick={handleAddStudent}
-                        disabled={addingStudent}
-                        className="w-full"
-                      >
-                        {addingStudent ? 'در حال افزودن...' : 'افزودن دانشجو'}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              )}
-            </Card>
 
-            {/* Search */}
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="جستجوی دانشجویان..."
+                  placeholder="جستجو..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-8"
                 />
               </div>
             </div>
-
-            {/* Students Table */}
-            {loading ? (
-              <div className="flex items-center justify-center h-32">
-                <div className="text-lg">در حال بارگذاری...</div>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-right">نام</TableHead>
-                    <TableHead className="text-right">ایمیل</TableHead>
-                    <TableHead className="text-right">ترم</TableHead>
-                    <TableHead className="text-right">تاریخ ثبت‌نام</TableHead>
-                    <TableHead className="text-right">وضعیت</TableHead>
-                    <TableHead className="text-right">عملیات</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredEnrollments.map((enrollment) => (
-                    <TableRow key={enrollment.id}>
-                      <TableCell className="font-medium text-right">{enrollment.student_name}</TableCell>
-                      <TableCell className="text-right">{enrollment.student_email}</TableCell>
-                      <TableCell className="text-right">{getTermName(enrollment.term_id)}</TableCell>
-                      <TableCell className="text-right">{new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR')}</TableCell>
-                      <TableCell className="text-right">
-                        <Badge className={getStatusColor(enrollment.status)}>
-                          {getStatusText(enrollment.status)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center space-x-2 space-x-reverse">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleViewProfile(enrollment.student_id, enrollment.student_name)}
-                          >
-                            <Eye className="h-3 w-3 mr-1" />
-                            مشاهده پروفایل
-                          </Button>
-                          {canDeleteStudents && (
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>حذف دانشجو</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    آیا مطمئن هستید که می‌خواهید {enrollment.student_name} را از این درس حذف کنید؟
-                                    این عمل قابل برگشت نیست.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>لغو</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleRemoveStudent(enrollment.id, enrollment.student_name)}
-                                    className="bg-red-600 hover:bg-red-700"
-                                  >
-                                    حذف
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {filteredEnrollments.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                        {searchTerm ? 'هیچ دانشجویی یافت نشد' : 'هنوز دانشجویی ثبت‌نام نکرده'}
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            )}
+            <Button onClick={() => setShowAddForm(true)}>
+              <Plus className="h-4 w-4 ml-2" />
+              افزودن دانشجو
+            </Button>
           </div>
+
+          <div className="border rounded-lg">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-right">نام</TableHead>
+                  <TableHead className="text-right">ایمیل</TableHead>
+                  <TableHead className="text-right">ترم</TableHead>
+                  <TableHead className="text-right">وضعیت</TableHead>
+                  <TableHead className="text-right">عملیات</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredEnrollments.map((enrollment) => (
+                  <TableRow key={enrollment.id}>
+                    <TableCell className="font-medium text-right">
+                      {`${enrollment.first_name} ${enrollment.last_name}`}
+                    </TableCell>
+                    <TableCell className="text-right">{enrollment.student_email}</TableCell>
+                    <TableCell className="text-right">{getTermName(enrollment.term_id)}</TableCell>
+                    <TableCell className="text-right">
+                      <Badge className={getStatusColor(enrollment.status)}>
+                        {getStatusText(enrollment.status)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleViewProfile(enrollment.student_id, `${enrollment.first_name} ${enrollment.last_name}`)}
+                        >
+                          <Eye className="h-3 w-3 ml-2" />
+                          مشاهده
+                        </Button>
+                        {canDeleteStudents && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                                <Trash2 className="h-3 w-3 ml-2" />
+                                حذف
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>حذف دانشجو</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  آیا مطمئن هستید که می‌خواهید {`${enrollment.first_name} ${enrollment.last_name}`} را از این درس حذف کنید؟
+                                  این عمل قابل برگشت نیست.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>لغو</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleRemoveStudent(enrollment.id, `${enrollment.first_name} ${enrollment.last_name}`)}
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  حذف
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Add Student Form */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-lg">افزودن دانشجو</CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAddForm(!showAddForm)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {showAddForm ? 'بستن' : 'افزودن دانشجو'}
+                </Button>
+              </div>
+            </CardHeader>
+            {showAddForm && (
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="studentEmail">ایمیل دانشجو</Label>
+                    <Input
+                      id="studentEmail"
+                      type="email"
+                      placeholder="example@email.com"
+                      value={addStudentEmail}
+                      onChange={(e) => setAddStudentEmail(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="termSelect">ترم (اختیاری)</Label>
+                    <Select value={selectedTermId} onValueChange={setSelectedTermId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="انتخاب ترم" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="general">عمومی (بدون ترم)</SelectItem>
+                        {terms.map((term) => (
+                          <SelectItem key={term.id} value={term.id}>
+                            {term.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-end">
+                    <Button 
+                      onClick={handleAddStudent}
+                      disabled={addingStudent}
+                      className="w-full"
+                    >
+                      {addingStudent ? 'در حال افزودن...' : 'افزودن دانشجو'}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            )}
+          </Card>
         </DialogContent>
       </Dialog>
 

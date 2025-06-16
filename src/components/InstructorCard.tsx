@@ -1,11 +1,11 @@
-
 import { Link } from 'react-router-dom';
 import { Star, Users, BookOpen } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface InstructorCardProps {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   title: string;
   image: string;
   rating: number;
@@ -16,7 +16,8 @@ interface InstructorCardProps {
 
 const InstructorCard = ({
   id,
-  name,
+  first_name,
+  last_name,
   title,
   image,
   rating,
@@ -30,14 +31,14 @@ const InstructorCard = ({
         <div className="relative mb-4">
           <img
             src={image}
-            alt={name}
+            alt={`${first_name} ${last_name}`}
             className="w-24 h-24 rounded-full mx-auto object-cover"
           />
         </div>
         
         <Link to={`/instructor/${id}`} className="group">
           <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-teal-600 transition-colors">
-            {name}
+            {first_name} {last_name}
           </h3>
         </Link>
         

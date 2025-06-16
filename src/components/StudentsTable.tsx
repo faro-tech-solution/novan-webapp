@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -6,9 +5,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Eye, Mail, Calendar } from 'lucide-react';
 import { useState } from 'react';
 
-interface Student {
+export interface Student {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   courseName: string;
   joinDate: string;
@@ -83,7 +83,7 @@ const StudentsTable = ({ students, filteredStudents }: StudentsTableProps) => {
                 <TableRow key={student.id}>
                   <TableCell className="text-right">
                     <div>
-                      <div className="font-medium">{student.name}</div>
+                      <div className="font-medium">{`${student.first_name} ${student.last_name}`}</div>
                       <div className="text-sm text-gray-600 flex items-center justify-end">
                         <span>{student.email}</span>
                         <Mail className="h-3 w-3 mr-1" />

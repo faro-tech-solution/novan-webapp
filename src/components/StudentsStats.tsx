@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Users, 
@@ -6,24 +5,10 @@ import {
   Clock,
   BookOpen
 } from 'lucide-react';
-
-interface StudentData {
-  id: string;
-  name: string;
-  email: string;
-  courseName: string;
-  joinDate: string;
-  status: string;
-  completedExercises: number;
-  totalExercises: number;
-  averageScore: number;
-  lastActivity: string;
-  totalPoints: number;
-  termName?: string;
-}
+import type { Student } from './StudentsTable';
 
 interface StudentsStatsProps {
-  students: StudentData[];
+  students: Student[];
 }
 
 const StudentsStats = ({ students }: StudentsStatsProps) => {

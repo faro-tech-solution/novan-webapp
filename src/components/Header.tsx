@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Search, ShoppingCart, User, LogIn } from 'lucide-react';
@@ -61,7 +60,7 @@ const Header = () => {
                 <Link to="/dashboard">
                   <Button variant="outline">
                     <User className="h-4 w-4 ml-2" />
-                    {profile.name}
+                    {profile.first_name && profile.last_name ? `${profile.first_name} ${profile.last_name}` : 'کاربر'}
                   </Button>
                 </Link>
               ) : (
@@ -74,7 +73,7 @@ const Header = () => {
                   </Link>
                   <Link to="/register">
                     <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-                      رایگان امتحان کنید
+                      ثبت نام
                     </Button>
                   </Link>
                 </div>

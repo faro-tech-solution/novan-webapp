@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +8,8 @@ import { useToast } from '@/hooks/use-toast';
 
 interface StudentProfile {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   role: string;
   class_id: string | null;
@@ -190,7 +190,7 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500">نام</label>
-                    <p className="text-lg font-medium">{profile.name || 'نامشخص'}</p>
+                    <p className="text-lg font-medium">{profile.first_name && profile.last_name ? `${profile.first_name} ${profile.last_name}` : 'نامشخص'}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">ایمیل</label>

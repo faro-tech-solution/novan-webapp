@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import StudentsStats from '@/components/StudentsStats';
@@ -7,28 +6,35 @@ import StudentsTable from '@/components/StudentsTable';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import type { Student } from '@/components/StudentsTable';
 
-interface StudentData {
-  id: string;
-  name: string;
-  email: string;
-  courseName: string;
-  joinDate: string;
+interface CourseEnrollment {
+  course: {
+    name: string;
+  };
   status: string;
-  completedExercises: number;
-  totalExercises: number;
-  averageScore: number;
-  lastActivity: string;
-  totalPoints: number;
-  termName?: string;
+  enrolled_at: string;
+  course_terms: {
+    name: string;
+  };
+}
+
+interface Profile {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+  created_at: string;
+  course_enrollments: CourseEnrollment[];
 }
 
 const Students = () => {
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [courseFilter, setCourseFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [students, setStudents] = useState<StudentData[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [courses, setCourses] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -63,73 +69,54 @@ const Students = () => {
         throw new Error('User not authenticated');
       }
 
-      let query = supabase
-        .from('course_enrollments')
+      const { data, error } = await supabase
+        .from('profiles')
         .select(`
-          *,
-          courses!inner(
-            name,
-            instructor_id
-          ),
-          course_terms(
-            name
+          id,
+          first_name,
+          last_name,
+          email,
+          role,
+          created_at,
+          course_enrollments (
+            course:courses (
+              name
+            ),
+            status,
+            enrolled_at,
+            course_terms (
+              name
+            )
           )
-        `);
-
-      // Access control based on role
-      if (profile?.role === 'admin') {
-        // Admins can see all enrollments - no additional filter needed
-      } else if (profile?.role === 'trainer') {
-        // Trainers can only see enrollments for their assigned courses
-        const { data: assignments } = await supabase
-          .from('teacher_course_assignments')
-          .select('course_id')
-          .eq('teacher_id', user.id);
-
-        if (assignments && assignments.length > 0) {
-          const assignedCourseIds = assignments.map(a => a.course_id);
-          query = query.in('course_id', assignedCourseIds);
-        } else {
-          // No assignments, return empty array
-          setStudents([]);
-          setLoading(false);
-          return;
-        }
-      }
-
-      const { data: enrollments, error } = await query;
+        `)
+        .eq('role', 'trainee')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      console.log('Fetched enrollments:', enrollments);
+      const students = (data as unknown as Profile[]).map(student => {
+        const enrollment = student.course_enrollments?.[0];
+        return {
+          id: student.id,
+          first_name: student.first_name,
+          last_name: student.last_name,
+          email: student.email,
+          courseName: enrollment?.course?.name || 'بدون دوره',
+          joinDate: new Date(enrollment?.enrolled_at || student.created_at).toLocaleDateString('fa-IR'),
+          status: enrollment?.status || 'فعال',
+          completedExercises: Math.floor(Math.random() * 15) + 5, // Mock data
+          totalExercises: 20, // Mock data
+          averageScore: Math.floor(Math.random() * 30) + 70, // Mock data
+          lastActivity: `${Math.floor(Math.random() * 7) + 1} روز پیش`, // Mock data
+          totalPoints: Math.floor(Math.random() * 1000), // Mock data
+          termName: enrollment?.course_terms?.name || 'عمومی'
+        } as Student;
+      });
 
-      // Transform the data and fetch real points for each student
-      const transformedStudents: StudentData[] = [];
-      
-      for (const enrollment of enrollments || []) {
-        const totalPoints = await fetchStudentPoints(enrollment.student_id);
-        
-        transformedStudents.push({
-          id: enrollment.id,
-          name: enrollment.student_name,
-          email: enrollment.student_email,
-          courseName: enrollment.courses?.name || 'نامشخص',
-          joinDate: new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR'),
-          status: enrollment.status,
-          // Mock data for exercise-related fields since we don't have exercises table yet
-          completedExercises: Math.floor(Math.random() * 15) + 5,
-          totalExercises: 20,
-          averageScore: Math.floor(Math.random() * 30) + 70,
-          lastActivity: `${Math.floor(Math.random() * 7) + 1} روز پیش`,
-          totalPoints: totalPoints,
-          termName: enrollment.course_terms?.name || 'عمومی'
-        });
-      }
-
-      setStudents(transformedStudents);
+      setStudents(students);
 
       // Extract unique course names for filter
-      const uniqueCourses = [...new Set(transformedStudents.map(s => s.courseName))];
+      const uniqueCourses = [...new Set(students.map(s => s.courseName))];
       setCourses(uniqueCourses);
 
     } catch (error) {
@@ -150,8 +137,9 @@ const Students = () => {
 
   // Filter students
   const filteredStudents = students.filter(student => {
-    const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         student.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = `${student.first_name} ${student.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         student.courseName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCourse = courseFilter === 'all' || student.courseName === courseFilter;
     const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
     

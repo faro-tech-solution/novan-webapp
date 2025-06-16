@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import CreateCourseDialog from '@/components/CreateCourseDialog';
@@ -22,6 +21,7 @@ interface Course {
   max_students: number | null;
   created_at: string;
   student_count?: number;
+  price: number;
 }
 
 const CourseManagement = () => {

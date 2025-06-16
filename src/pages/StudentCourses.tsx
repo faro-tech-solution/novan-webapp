@@ -1,21 +1,19 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress as ProgressBar } from '@/components/ui/progress';
 import { 
   BookOpen, 
   Clock, 
   Users, 
-  Star, 
   Play,
   Calendar,
   Award,
   Filter,
   Loader2
 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStudentCourses } from '@/hooks/useStudentCourses';
@@ -24,6 +22,7 @@ const StudentCourses = () => {
   const { profile } = useAuth();
   const [filter, setFilter] = useState('all');
   const { courses, loading, error } = useStudentCourses();
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
   const filteredCourses = courses.filter(course => {
     if (filter === 'all') return true;
@@ -98,7 +97,7 @@ const StudentCourses = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">کل دوره‌ها</CardTitle>
@@ -132,18 +131,6 @@ const StudentCourses = () => {
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">میانگین پیشرفت</CardTitle>
-              <Star className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {courses.length > 0 ? Math.round(courses.reduce((acc, c) => acc + c.progress, 0) / courses.length) : 0}%
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Courses Grid */}
@@ -172,46 +159,14 @@ const StudentCourses = () => {
               
               <CardContent>
                 <div className="space-y-4">
-                  {/* Progress */}
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span>پیشرفت</span>
-                      <span>{course.progress}%</span>
-                    </div>
-                    <ProgressBar value={course.progress} className="h-2" />
-                    <div className="text-xs text-gray-600 mt-1">
-                      {course.completedLessons} از {course.totalLessons} درس
-                    </div>
-                  </div>
-
-                  {/* Course Info */}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <span>{course.duration}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                      <span>{course.enrollDate}</span>
-                    </div>
-                  </div>
-
-                  {/* Next Lesson */}
-                  {course.nextLesson && (
-                    <div className="bg-blue-50 p-3 rounded-md">
-                      <div className="text-sm font-medium text-blue-900">درس بعدی:</div>
-                      <div className="text-sm text-blue-700">{course.nextLesson}</div>
-                    </div>
-                  )}
-
                   {/* Actions */}
                   <div className="flex space-x-2 space-x-reverse">
-                    <Link to={`/courses/${course.id}`} className="flex-1">
-                      <Button className="w-full">
-                        {course.status === 'completed' ? 'مرور دوره' : 'ادامه مطالعه'}
-                      </Button>
-                    </Link>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      className="w-full" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setSelectedCourse(course)}
+                    >
                       جزئیات
                     </Button>
                   </div>
@@ -237,6 +192,61 @@ const StudentCourses = () => {
             </Link>
           </div>
         )}
+
+        {/* Course Details Dialog */}
+        <Dialog open={!!selectedCourse} onOpenChange={(open) => !open && setSelectedCourse(null)}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>{selectedCourse?.title}</DialogTitle>
+            </DialogHeader>
+            
+            {selectedCourse && (
+              <div className="space-y-6">
+                {/* Course Info */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <Users className="h-4 w-4 text-gray-500" />
+                      <span>مدرس: {selectedCourse.instructor}</span>
+                    </div>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <span>تاریخ شروع: {new Date(selectedCourse.startDate).toLocaleDateString('fa-IR')}</span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <Clock className="h-4 w-4 text-gray-500" />
+                      <span>مدت زمان: {selectedCourse.duration} ساعت</span>
+                    </div>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <BookOpen className="h-4 w-4 text-gray-500" />
+                      <span>تعداد درس‌ها: {selectedCourse.lessonsCount}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status and Difficulty */}
+                <div className="flex space-x-4 space-x-reverse">
+                  <Badge className={getDifficultyColor(selectedCourse.difficulty)}>
+                    {selectedCourse.difficulty}
+                  </Badge>
+                  <Badge className={getStatusColor(selectedCourse.status)}>
+                    {selectedCourse.status === 'active' ? 'در حال مطالعه' : 'تکمیل شده'}
+                  </Badge>
+                </div>
+
+                {/* Description */}
+                {selectedCourse.description && (
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">توضیحات دوره</h3>
+                    <p className="text-gray-600">{selectedCourse.description}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

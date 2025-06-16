@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,6 +17,7 @@ const formSchema = z.object({
   maxStudents: z.number().min(0, 'حداکثر تعداد دانشجویان نمی‌تواند منفی باشد').default(0),
   instructorId: z.string().min(1, 'انتخاب مربی الزامی است'),
   status: z.string().min(1, 'انتخاب وضعیت الزامی است'),
+  price: z.number().min(0, 'قیمت نمی‌تواند منفی باشد').default(0),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -29,6 +29,7 @@ interface Course {
   max_students: number | null;
   instructor_id: string;
   status: string;
+  price?: number;
 }
 
 interface EditCourseDialogProps {
@@ -40,7 +41,8 @@ interface EditCourseDialogProps {
 
 interface Instructor {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
 }
 
@@ -52,11 +54,12 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      maxStudents: 0,
-      instructorId: '',
-      status: '',
+      name: course.name,
+      description: course.description || '',
+      maxStudents: course.max_students || 0,
+      instructorId: course.instructor_id,
+      status: course.status,
+      price: course.price || 0,
     },
   });
 
@@ -75,6 +78,7 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
         maxStudents: course.max_students || 0,
         instructorId: course.instructor_id,
         status: course.status,
+        price: course.price || 0,
       });
     }
   }, [course, open, form]);
@@ -83,7 +87,7 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, name, email')
+        .select('id, first_name, last_name, email')
         .eq('role', 'trainer');
 
       if (error) throw error;
@@ -110,10 +114,11 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
         .update({
           name: data.name,
           description: data.description,
-          max_students: data.maxStudents,
           instructor_id: data.instructorId,
-          instructor_name: selectedInstructor?.name || 'Unknown',
+          instructor_name: selectedInstructor ? `${selectedInstructor.first_name} ${selectedInstructor.last_name}` : 'Unknown',
+          max_students: data.maxStudents,
           status: data.status,
+          price: data.price,
         })
         .eq('id', course.id);
 
@@ -197,7 +202,7 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
                     <SelectContent>
                       {instructors.map((instructor) => (
                         <SelectItem key={instructor.id} value={instructor.id}>
-                          {instructor.name} ({instructor.email})
+                          {instructor.first_name} {instructor.last_name} ({instructor.email})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -237,6 +242,25 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>حداکثر تعداد دانشجویان (0 = نامحدود)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="0"
+                      {...field}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>قیمت (تومان)</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 

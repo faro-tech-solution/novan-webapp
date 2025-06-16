@@ -1,4 +1,3 @@
-
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -26,6 +25,7 @@ import NotFound from "@/pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminDashboard from "@/pages/AdminDashboard";
 import UserManagement from "@/pages/UserManagement";
+import Profile from "@/pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -101,6 +101,16 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute requiredRole="trainee">
             <StudentCourses />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Profile route - accessible to all authenticated users */}
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         } 
       />

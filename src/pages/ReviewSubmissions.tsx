@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -9,20 +8,25 @@ import { ReviewSubmissionsHeader } from '@/components/exercises/ReviewSubmission
 import { SubmissionsList } from '@/components/exercises/SubmissionsList';
 import { SubmissionDetailView } from '@/components/exercises/SubmissionDetailView';
 import { GradingSection } from '@/components/exercises/GradingSection';
+import { ExerciseForm } from '@/types/formBuilder';
 
 interface Submission {
   id: string;
-  student_name: string;
+  exercise_id: string;
+  student_id: string;
+  first_name: string;
+  last_name: string;
   student_email: string;
+  status: string;
   submitted_at: string;
-  score: number | null;
-  feedback: string | null;
+  score?: number;
+  feedback?: string;
   solution: string;
   exercise: {
     id: string;
     title: string;
     points: number;
-    form_structure: any;
+    form_structure: ExerciseForm | null;
   };
 }
 
@@ -51,7 +55,17 @@ const ReviewSubmissions = () => {
       const { data, error } = await supabase
         .from('exercise_submissions')
         .select(`
-          *,
+          id,
+          exercise_id,
+          student_id,
+          first_name,
+          last_name,
+          student_email,
+          status,
+          submitted_at,
+          score,
+          feedback,
+          solution,
           exercise:exercises (
             id,
             title,
@@ -124,7 +138,8 @@ const ReviewSubmissions = () => {
   };
 
   const filteredSubmissions = submissions.filter(submission =>
-    submission.student_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    `${submission.first_name} ${submission.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    submission.student_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     submission.exercise.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

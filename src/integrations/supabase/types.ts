@@ -133,43 +133,28 @@ export type Database = {
       }
       courses: {
         Row: {
-          created_at: string
-          description: string | null
-          end_date: string | null
           id: string
-          instructor_id: string
-          instructor_name: string
-          max_students: number | null
           name: string
-          start_date: string | null
-          status: string
-          updated_at: string
+          description: string | null
+          created_at: string | null
+          updated_at: string | null
+          price: number
         }
         Insert: {
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
           id?: string
-          instructor_id: string
-          instructor_name: string
-          max_students?: number | null
           name: string
-          start_date?: string | null
-          status?: string
-          updated_at?: string
+          description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          price?: number
         }
         Update: {
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
           id?: string
-          instructor_id?: string
-          instructor_name?: string
-          max_students?: number | null
           name?: string
-          start_date?: string | null
-          status?: string
-          updated_at?: string
+          description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          price?: number
         }
         Relationships: []
       }
@@ -289,9 +274,21 @@ export type Database = {
           created_at: string | null
           email: string | null
           id: string
-          name: string | null
+          first_name: string | null
+          last_name: string | null
           role: string | null
           updated_at: string | null
+          gender: string | null
+          job: string | null
+          education: string | null
+          phone_number: string | null
+          country: string | null
+          city: string | null
+          birthday: string | null
+          ai_familiarity: 'beginner' | 'intermediate' | 'advanced' | 'expert' | null
+          english_level: 'beginner' | 'intermediate' | 'advanced' | 'native' | null
+          telegram_id: string | null
+          whatsapp_id: string | null
         }
         Insert: {
           class_id?: string | null
@@ -299,9 +296,21 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id: string
-          name?: string | null
+          first_name?: string | null
+          last_name?: string | null
           role?: string | null
           updated_at?: string | null
+          gender?: string | null
+          job?: string | null
+          education?: string | null
+          phone_number?: string | null
+          country?: string | null
+          city?: string | null
+          birthday?: string | null
+          ai_familiarity?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | null
+          english_level?: 'beginner' | 'intermediate' | 'advanced' | 'native' | null
+          telegram_id?: string | null
+          whatsapp_id?: string | null
         }
         Update: {
           class_id?: string | null
@@ -309,9 +318,21 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
-          name?: string | null
+          first_name?: string | null
+          last_name?: string | null
           role?: string | null
           updated_at?: string | null
+          gender?: string | null
+          job?: string | null
+          education?: string | null
+          phone_number?: string | null
+          country?: string | null
+          city?: string | null
+          birthday?: string | null
+          ai_familiarity?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | null
+          english_level?: 'beginner' | 'intermediate' | 'advanced' | 'native' | null
+          telegram_id?: string | null
+          whatsapp_id?: string | null
         }
         Relationships: []
       }
