@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Exercise, Course } from '@/types/exercise';
@@ -41,11 +40,21 @@ export const useExercises = () => {
     if (!user) return { error: 'کاربر وارد نشده است' };
 
     try {
-      const result = await createExercise(exerciseData, user.id, courses);
-      if (!result.error) {
-        await handleFetchExercises(); // Refresh the list
-      }
-      return result;
+      const result = await createExercise({
+        title: exerciseData.title,
+        description: exerciseData.description,
+        difficulty: exerciseData.difficulty,
+        estimatedTime: exerciseData.estimated_time,
+        points: exerciseData.points,
+        courseId: exerciseData.course_id,
+        daysToOpen: exerciseData.days_to_open,
+        daysToDue: exerciseData.days_to_due,
+        daysToClose: exerciseData.days_to_close,
+        formStructure: exerciseData.form_structure || { questions: [] }
+      }, user.id);
+
+      await handleFetchExercises(); // Refresh the list
+      return { data: result };
     } catch (err) {
       console.error('Error in createExercise:', err);
       return { error: 'خطا در ایجاد تمرین' };

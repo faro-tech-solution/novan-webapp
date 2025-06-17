@@ -107,7 +107,7 @@ const Profile = () => {
           phone_number: data.phone_number,
           country: data.country,
           city: data.city,
-          birthday: data.birthday,
+          birthday: data.birthday ? new Date(data.birthday).toISOString() : null,
           ai_familiarity: data.ai_familiarity,
           english_level: data.english_level,
           telegram_id: data.telegram_id,

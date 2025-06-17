@@ -1,4 +1,3 @@
-
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { UseFormReturn } from 'react-hook-form';
@@ -91,6 +90,7 @@ export const TimingAndPointsSection = ({ form }: TimingAndPointsSectionProps) =>
               <Input 
                 placeholder="۲ ساعت" 
                 {...field}
+                required
               />
             </FormControl>
             <FormMessage />

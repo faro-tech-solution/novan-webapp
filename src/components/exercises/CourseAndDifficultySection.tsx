@@ -1,4 +1,3 @@
-
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UseFormReturn } from 'react-hook-form';
@@ -32,7 +31,7 @@ export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficult
                   </SelectItem>
                 ) : (
                   courses.map((course) => (
-                    <SelectItem key={course.id} value={course.name}>
+                    <SelectItem key={course.id} value={course.id}>
                       {course.name}
                     </SelectItem>
                   ))

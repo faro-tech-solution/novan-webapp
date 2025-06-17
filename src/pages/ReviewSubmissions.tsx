@@ -4,11 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import DashboardLayout from '@/components/DashboardLayout';
 import { GradingSection } from '@/components/exercises/GradingSection';
 import { ExerciseForm } from '@/types/formBuilder';
+import { SubmissionViewer } from '@/components/exercises/SubmissionViewer';
 
 interface Submission {
   id: string;
@@ -63,6 +65,7 @@ const ReviewSubmissions = () => {
   const [score, setScore] = useState('');
   const [feedback, setFeedback] = useState('');
   const [grading, setGrading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
   // Fetch all courses on mount
@@ -160,6 +163,7 @@ const ReviewSubmissions = () => {
       });
 
       fetchSubmissions();
+      setIsDialogOpen(false);
       setSelectedSubmission(null);
       setScore('');
       setFeedback('');
@@ -178,6 +182,7 @@ const ReviewSubmissions = () => {
     setSelectedSubmission(submission);
     setScore(submission.score?.toString() || '');
     setFeedback(submission.feedback || '');
+    setIsDialogOpen(true);
   };
 
   // Helper to get course name by course_id
@@ -195,7 +200,7 @@ const ReviewSubmissions = () => {
   );
 
   return (
-    <DashboardLayout title="بررسی تمرین‌ها">
+    <DashboardLayout title="بررسی تمرین‌های ارسالی">
       <Card>
         <CardHeader>
           <CardTitle>لیست تمرین‌های ارسالی</CardTitle>
@@ -203,10 +208,10 @@ const ReviewSubmissions = () => {
         <CardContent>
           <div className="mb-4">
             <Input
-              placeholder="جستجو بر اساس نام، ایمیل، عنوان تمرین یا دوره..."
+              placeholder="جستجو بر اساس نام دانشجو، ایمیل، عنوان تمرین یا نام دوره..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
+              className="max-w-md"
             />
           </div>
 
@@ -221,6 +226,7 @@ const ReviewSubmissions = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="text-right">نام دانشجو</TableHead>
+                  <TableHead className="text-right">ایمیل</TableHead>
                   <TableHead className="text-right">عنوان تمرین</TableHead>
                   <TableHead className="text-right">دوره</TableHead>
                   <TableHead className="text-right">تاریخ ارسال</TableHead>
@@ -231,21 +237,16 @@ const ReviewSubmissions = () => {
               <TableBody>
                 {filteredSubmissions.map((submission) => (
                   <TableRow key={submission.id}>
-                    <TableCell className="text-right">
-                      {submission.student_name}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {submission.exercise?.title || 'تمرین حذف شده'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {getCourseName(submission.exercise?.course_id)}
-                    </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell>{submission.student_name}</TableCell>
+                    <TableCell>{submission.student_email}</TableCell>
+                    <TableCell>{submission.exercise?.title || '---'}</TableCell>
+                    <TableCell>{getCourseName(submission.exercise?.course_id)}</TableCell>
+                    <TableCell>
                       {new Date(submission.submitted_at).toLocaleDateString('fa-IR')}
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Badge variant={submission.graded_at ? 'secondary' : 'default'}>
-                        {submission.graded_at ? 'بررسی شده' : 'در انتظار بررسی'}
+                    <TableCell>
+                      <Badge variant={submission.score !== null ? "default" : "secondary"}>
+                        {submission.score !== null ? 'بررسی شده' : 'در انتظار بررسی'}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
@@ -266,16 +267,39 @@ const ReviewSubmissions = () => {
         </CardContent>
       </Card>
 
-      {selectedSubmission && selectedSubmission.exercise && (
-        <GradingSection
-          score={score}
-          feedback={feedback}
-          grading={grading}
-          onScoreChange={setScore}
-          onFeedbackChange={setFeedback}
-          onSubmitGrade={handleGradingComplete}
-        />
-      )}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedSubmission?.exercise?.title} - {selectedSubmission?.student_name}
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedSubmission && selectedSubmission.exercise && (
+            <>
+              <SubmissionViewer
+                form={selectedSubmission.exercise.form_structure}
+                answers={JSON.parse(selectedSubmission.solution)}
+                submissionInfo={{
+                  studentName: selectedSubmission.student_name,
+                  submittedAt: selectedSubmission.submitted_at,
+                  score: selectedSubmission.score || undefined,
+                  feedback: selectedSubmission.feedback || undefined
+                }}
+              />
+
+              <GradingSection
+                score={score}
+                feedback={feedback}
+                grading={grading}
+                onScoreChange={setScore}
+                onFeedbackChange={setFeedback}
+                onSubmitGrade={handleGradingComplete}
+              />
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };

@@ -67,7 +67,6 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
                 <TableCell>
                   <div>
                     <div className="font-medium">{exercise.title}</div>
-                    <div className="text-sm text-gray-600">{exercise.description}</div>
                     <div className="flex items-center space-x-2 space-x-reverse text-xs text-gray-500 mt-1">
                       <Clock className="h-3 w-3" />
                       <span>{exercise.estimated_time}</span>

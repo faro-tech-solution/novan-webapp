@@ -27,7 +27,7 @@ interface Profile {
   role: string;
   created_at: string;
   gender: string;
-  education_level: string;
+  education: string;
   course_enrollments: CourseEnrollment[];
 }
 
@@ -61,7 +61,7 @@ const Students = () => {
           role,
           created_at,
           gender,
-          education_level,
+          education,
           course_enrollments (
             course:courses (
               name
@@ -88,7 +88,7 @@ const Students = () => {
           role: student.role,
           created_at: student.created_at,
           gender: student.gender,
-          education_level: student.education_level,
+          education_level: student.education,
           courseName: enrollment?.course?.name || 'بدون دوره',
           joinDate: enrollment?.enrolled_at || student.created_at,
           status: enrollment?.status || 'فعال',

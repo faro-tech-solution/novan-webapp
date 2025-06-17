@@ -29,7 +29,7 @@ interface StudentDetailsDialogProps {
     bio?: string;
     avatar_url?: string;
     gender?: string;
-    education_level?: string;
+    education?: string;
   } | null;
 }
 
@@ -76,33 +76,11 @@ export function StudentDetailsDialog({ open, onOpenChange, student }: StudentDet
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">جنسیت</div>
-                  <Select defaultValue={student.gender || 'other'}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="انتخاب کنید" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {genders.map((gender) => (
-                        <SelectItem key={gender.value} value={gender.value}>
-                          {gender.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="font-medium">{student.gender}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">تحصیلات</div>
-                  <Select defaultValue={student.education_level || 'other'}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="انتخاب کنید" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {educationLevels.map((level) => (
-                        <SelectItem key={level.value} value={level.value}>
-                          {level.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="font-medium">{student.education}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">دوره</div>

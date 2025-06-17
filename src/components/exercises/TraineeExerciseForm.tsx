@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -115,7 +114,7 @@ export const TraineeExerciseForm = ({
               <div className="flex justify-end">
                 <Button 
                   onClick={handleSubmit} 
-                  disabled={submitting}
+                  disabled={submitting || exercise.score !== undefined}
                 >
                   <Send className="h-4 w-4 mr-2" />
                   {submitting ? 'در حال ارسال...' : (isSubmitted ? 'بروزرسانی پاسخ' : 'ارسال پاسخ')}

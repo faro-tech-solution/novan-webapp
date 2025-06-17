@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Exercise } from '@/types/exercise';
 import { ExerciseForm } from '@/types/formBuilder';
@@ -36,21 +35,25 @@ const parseFormStructure = (form_structure: any): ExerciseForm => {
 
 export const createExercise = async (exerciseData: CreateExerciseData, createdBy: string): Promise<Exercise> => {
   try {
+    const requestData = {
+      title: exerciseData.title,
+      description: exerciseData.description || null,
+      difficulty: exerciseData.difficulty,
+      estimated_time: exerciseData.estimatedTime || '-',
+      points: exerciseData.points,
+      course_id: exerciseData.courseId,
+      days_to_open: exerciseData.daysToOpen,
+      days_to_due: exerciseData.daysToDue,
+      days_to_close: exerciseData.daysToClose,
+      form_structure: JSON.stringify(exerciseData.formStructure || { questions: [] }),
+      created_by: createdBy,
+    };
+
+    console.log('Sending request to database:', requestData);
+
     const { data, error } = await supabase
       .from('exercises')
-      .insert({
-        title: exerciseData.title,
-        description: exerciseData.description || null,
-        difficulty: exerciseData.difficulty,
-        estimated_time: exerciseData.estimatedTime,
-        points: exerciseData.points,
-        course_id: exerciseData.courseId,
-        days_to_open: exerciseData.daysToOpen,
-        days_to_due: exerciseData.daysToDue,
-        days_to_close: exerciseData.daysToClose,
-        form_structure: exerciseData.formStructure,
-        created_by: createdBy,
-      })
+      .insert(requestData)
       .select()
       .single();
 

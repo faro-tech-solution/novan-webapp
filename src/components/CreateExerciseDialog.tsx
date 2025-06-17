@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -26,28 +25,29 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
   const onSubmit = useCallback(async (data: CreateExerciseFormData) => {
     try {
       setIsSubmitting(true);
-      console.log('Creating new exercise:', data);
-      console.log('Available courses:', courses);
+      console.log('Form data:', data);
       
       const exerciseData = {
         title: data.title,
-        description: data.description,
+        description: data.description || null,
         course_id: data.course_id,
         difficulty: data.difficulty,
-        days_to_due: data.days_to_open + data.days_duration,
         days_to_open: data.days_to_open,
+        days_to_due: data.days_to_open + data.days_duration,
         days_to_close: data.days_to_open + data.days_duration,
         points: data.points,
-        estimated_time: data.estimated_time,
-        form_structure: data.form_structure,
+        estimated_time: data.estimated_time || '-',
+        form_structure: data.form_structure || { questions: [] }
       };
       
-      const { error } = await createExercise(exerciseData);
+      console.log('Transformed exercise data:', exerciseData);
       
-      if (error) {
+      const result = await createExercise(exerciseData);
+      
+      if ('error' in result) {
         toast({
           title: "خطا",
-          description: error,
+          description: result.error,
           variant: "destructive",
         });
         return;
@@ -73,7 +73,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
     } finally {
       setIsSubmitting(false);
     }
-  }, [courses, createExercise, toast, setOpen, onExerciseCreated]);
+  }, [createExercise, onExerciseCreated, setOpen, toast]);
 
   const handleCancel = useCallback(() => {
     setOpen(false);
