@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Exercise } from '@/types/exercise';
 import { ExerciseForm } from '@/types/formBuilder';
@@ -36,7 +35,7 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
         days_to_open: exerciseData.daysToOpen,
         days_to_due: exerciseData.daysToDue,
         days_to_close: exerciseData.daysToClose,
-        form_structure: exerciseData.formStructure,
+        form_structure: JSON.stringify(exerciseData.formStructure),
         updated_at: new Date().toISOString(),
       })
       .eq('id', exerciseId)

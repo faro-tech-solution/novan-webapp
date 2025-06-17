@@ -53,7 +53,7 @@ export function AccountingTable({ records }: AccountingTableProps) {
               <TableCell>
                 {record.user?.first_name} {record.user?.last_name}
               </TableCell>
-              <TableCell>{record.course?.title || '-'}</TableCell>
+              <TableCell>{record.course?.name || '-'}</TableCell>
               <TableCell className="text-right font-medium">
                 <span className={getAmountColor(record.payment_type)}>
                   {record.amount.toLocaleString('fa-IR')} تومان

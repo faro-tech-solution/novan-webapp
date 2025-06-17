@@ -1,3 +1,5 @@
+import { PaymentStatus, PaymentType } from "@/types/accounting"
+
 export type Json =
   | string
   | number
@@ -508,8 +510,8 @@ export type Database = {
           amount: number;
           description: string | null;
           payment_method: string | null;
-          payment_status: 'pending' | 'completed' | 'failed' | 'refunded';
-          payment_type: 'buy_course' | 'discount' | 'pay_money' | 'refund';
+          payment_status: PaymentStatus;
+          payment_type: PaymentType;
           transaction_date: string;
           created_at: string;
           updated_at: string;
@@ -521,8 +523,8 @@ export type Database = {
           amount: number;
           description?: string | null;
           payment_method?: string | null;
-          payment_status?: 'pending' | 'completed' | 'failed' | 'refunded';
-          payment_type?: 'buy_course' | 'discount' | 'pay_money' | 'refund';
+          payment_status?: PaymentStatus;
+          payment_type?: PaymentType;
           transaction_date?: string;
           created_at?: string;
           updated_at?: string;
@@ -534,8 +536,8 @@ export type Database = {
           amount?: number;
           description?: string | null;
           payment_method?: string | null;
-          payment_status?: 'pending' | 'completed' | 'failed' | 'refunded';
-          payment_type?: 'buy_course' | 'discount' | 'pay_money' | 'refund';
+          payment_status?: PaymentStatus;
+          payment_type?: PaymentType;
           transaction_date?: string;
           created_at?: string;
           updated_at?: string;

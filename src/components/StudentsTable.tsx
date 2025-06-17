@@ -19,6 +19,12 @@ export interface Student {
   termName?: string;
   role?: string;
   created_at?: string;
+  completedExercises: number;
+  totalExercises: number;
+  averageScore: number;
+  lastActivity: string;
+  totalPoints: number;
+  education?: string;
   course_enrollments?: {
     course: {
       name: string;

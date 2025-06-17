@@ -1,3 +1,6 @@
+export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded' | 'waiting';
+export type PaymentType = 'buy_course' | 'discount' | 'pay_money' | 'refund' | 'installment';
+
 export interface AccountingRecord {
   id: string;
   user_id: string;
@@ -5,8 +8,8 @@ export interface AccountingRecord {
   amount: number;
   description?: string;
   payment_method?: string;
-  payment_status: 'pending' | 'completed' | 'failed' | 'refunded' | 'waiting';
-  payment_type: 'buy_course' | 'discount' | 'pay_money' | 'refund' | 'installment';
+  payment_status: PaymentStatus;
+  payment_type: PaymentType;
   transaction_date: string;
   created_at: string;
   updated_at: string;
@@ -16,8 +19,9 @@ export interface AccountingRecord {
     email: string;
   };
   course?: {
-    title: string;
-  };
+    id: string;
+    name: string;
+  } | null;
 }
 
 export interface AccountingWithDetails extends AccountingRecord {
@@ -39,8 +43,8 @@ export interface CreatePaymentData {
   amount: number;
   description?: string;
   payment_method?: string;
-  payment_status: 'pending' | 'completed' | 'failed' | 'refunded' | 'waiting';
-  payment_type: 'buy_course' | 'discount' | 'pay_money' | 'refund' | 'installment';
+  payment_status: PaymentStatus;
+  payment_type: PaymentType;
   transaction_date: string;
 }
 
@@ -49,6 +53,6 @@ export interface UpdatePaymentData {
   amount?: number;
   description?: string;
   payment_method?: string;
-  payment_status?: 'pending' | 'completed' | 'failed' | 'refunded';
-  payment_type?: 'buy_course' | 'discount' | 'pay_money' | 'refund' | 'installment';
+  payment_status?: PaymentStatus;
+  payment_type?: PaymentType;
 } 

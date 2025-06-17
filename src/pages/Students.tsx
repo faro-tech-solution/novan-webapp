@@ -93,7 +93,12 @@ const Students = () => {
           joinDate: enrollment?.enrolled_at || student.created_at,
           status: enrollment?.status || 'فعال',
           termName: enrollment?.course_terms?.name || 'عمومی',
-          course_enrollments: student.course_enrollments
+          course_enrollments: student.course_enrollments,
+          completedExercises: 0,
+          totalExercises: 0,
+          averageScore: 0,
+          lastActivity: student.created_at,
+          totalPoints: 0
         } as Student;
       });
 
