@@ -1,9 +1,9 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { ResponsiveTable } from '@/components/ui/responsive-table';
 import { CheckCircle, Clock, FileText, Award, Calendar } from 'lucide-react';
 
 interface ExerciseWithSubmission {
@@ -70,6 +70,16 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
     return new Date(dateString).toLocaleDateString('fa-IR');
   };
 
+  const tableHeaders = [
+    'وضعیت',
+    'عنوان',
+    'سطح',
+    'موعد تحویل',
+    'امتیاز',
+    'زمان تخمینی',
+    'عملیات'
+  ];
+
   return (
     <Card>
       <CardHeader>
@@ -84,55 +94,42 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
             {exercises.length === 0 ? 'هیچ تمرینی برای شما تعریف نشده است.' : 'هیچ تمرینی با فیلترهای انتخابی یافت نشد.'}
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-right">وضعیت</TableHead>
-                <TableHead className="text-right">عنوان</TableHead>
-                <TableHead className="text-right">سطح</TableHead>
-                <TableHead className="text-right">موعد تحویل</TableHead>
-                <TableHead className="text-right">امتیاز</TableHead>
-                <TableHead className="text-right">زمان تخمینی</TableHead>
-                <TableHead className="text-right">عملیات</TableHead>
+          <ResponsiveTable headers={tableHeaders}>
+            {filteredExercises.map((exercise) => (
+              <TableRow key={exercise.id}>
+                <TableCell>
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    {getStatusIcon(exercise.submission_status)}
+                    {getStatusBadge(exercise.submission_status)}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="font-medium">{exercise.title}</div>
+                </TableCell>
+                <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <Calendar className="h-4 w-4 text-gray-400" />
+                    <span>{formatDate(exercise.due_date)}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <Award className="h-4 w-4 text-yellow-500" />
+                    <span>{exercise.points}</span>
+                  </div>
+                </TableCell>
+                <TableCell>{exercise.estimated_time}</TableCell>
+                <TableCell>
+                  <Link to={`/exercises/${exercise.id}`}>
+                    <Button size="sm" variant="outline">
+                      {exercise.submission_status === 'completed' ? 'مشاهده' : 'شروع'}
+                    </Button>
+                  </Link>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredExercises.map((exercise) => (
-                <TableRow key={exercise.id}>
-                  <TableCell>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      {getStatusIcon(exercise.submission_status)}
-                      {getStatusBadge(exercise.submission_status)}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{exercise.title}</div>
-                  </TableCell>
-                  <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span>{formatDate(exercise.due_date)}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Award className="h-4 w-4 text-yellow-500" />
-                      <span>{exercise.points}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{exercise.estimated_time}</TableCell>
-                  <TableCell>
-                    <Link to={`/exercises/${exercise.id}`}>
-                      <Button size="sm" variant="outline">
-                        {exercise.submission_status === 'completed' ? 'مشاهده' : 'شروع'}
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+            ))}
+          </ResponsiveTable>
         )}
       </CardContent>
     </Card>

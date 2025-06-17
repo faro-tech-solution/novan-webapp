@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import CreateCourseDialog from '@/components/CreateCourseDialog';
 import EditCourseDialog from '@/components/EditCourseDialog';
@@ -7,24 +7,12 @@ import CourseManagementHeader from '@/components/CourseManagementHeader';
 import CourseGrid from '@/components/CourseGrid';
 import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog';
 import TermsManagementModal from '@/components/TermsManagementModal';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-
-interface Course {
-  id: string;
-  name: string;
-  description: string | null;
-  status: string;
-  max_students: number | null;
-  created_at: string;
-  student_count?: number;
-  price: number;
-}
+import { useCoursesQuery, Course } from '@/hooks/queries/useCoursesQuery';
+import { useQueryClient } from '@tanstack/react-query';
 
 const CourseManagement = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -33,78 +21,8 @@ const CourseManagement = () => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const { profile } = useAuth();
   const { toast } = useToast();
-
-  const fetchCourses = async () => {
-    if (!profile) return;
-
-    try {
-      let query = supabase
-        .from('courses')
-        .select('id, name, description, status, max_students, created_at, price')
-        .order('created_at', { ascending: false });
-
-      // Admins see all courses, trainers only see assigned courses
-      if (profile.role === 'admin') {
-        // No additional filter needed for admins
-      } else if (profile.role === 'trainer') {
-        // Filter to only show assigned courses
-        const { data: assignments } = await supabase
-          .from('teacher_course_assignments')
-          .select('course_id')
-          .eq('teacher_id', profile.id);
-
-        if (assignments && assignments.length > 0) {
-          const assignedCourseIds = assignments.map(a => a.course_id);
-          query = query.in('id', assignedCourseIds);
-        } else {
-          // No assignments, return empty array
-          setCourses([]);
-          return;
-        }
-      }
-
-      const { data: coursesData, error: coursesError } = await query;
-
-      if (coursesError) throw coursesError;
-
-      // Get enrollment counts for each course
-      const coursesWithCounts = await Promise.all(
-        (coursesData || []).map(async (course) => {
-          const { count } = await supabase
-            .from('course_enrollments')
-            .select('*', { count: 'exact', head: true })
-            .eq('course_id', course.id)
-            .eq('status', 'active');
-
-          return {
-            ...course,
-            student_count: count || 0,
-          };
-        })
-      );
-
-      setCourses(coursesWithCounts);
-    } catch (error) {
-      console.error('Error fetching courses:', error);
-      toast({
-        title: 'خطا',
-        description: 'خطا در بارگذاری درس‌ها',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      await fetchCourses();
-      setLoading(false);
-    };
-
-    if (profile) {
-      loadData();
-    }
-  }, [profile]);
+  const { courses, loading, error, deleteCourse } = useCoursesQuery();
+  const queryClient = useQueryClient();
 
   const handleEditCourse = (course: Course) => {
     setSelectedCourse(course);
@@ -142,19 +60,11 @@ const CourseManagement = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('courses')
-        .delete()
-        .eq('id', selectedCourse.id);
-
-      if (error) throw error;
-
+      await deleteCourse(selectedCourse.id);
       toast({
         title: 'موفقیت',
         description: 'درس با موفقیت حذف شد',
       });
-
-      fetchCourses();
     } catch (error) {
       console.error('Error deleting course:', error);
       toast({
@@ -169,11 +79,13 @@ const CourseManagement = () => {
   };
 
   const handleCourseCreated = () => {
-    fetchCourses();
+    queryClient.invalidateQueries({ queryKey: ['courses'] });
+    setShowCreateDialog(false);
   };
 
   const handleCourseUpdated = () => {
-    fetchCourses();
+    queryClient.invalidateQueries({ queryKey: ['courses'] });
+    setShowEditDialog(false);
   };
 
   // Only admins can create courses
@@ -185,6 +97,16 @@ const CourseManagement = () => {
       <DashboardLayout title={isAdmin ? 'مدیریت درس‌ها' : 'مدیریت درس‌ها'}>
         <div className="flex items-center justify-center h-64">
           <div className="text-lg">در حال بارگذاری...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout title={isAdmin ? 'مدیریت درس‌ها' : 'مدیریت درس‌ها'}>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-red-500">خطا در بارگذاری درس‌ها</div>
         </div>
       </DashboardLayout>
     );

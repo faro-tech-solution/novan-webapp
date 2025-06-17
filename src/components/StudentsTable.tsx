@@ -1,7 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { ResponsiveTable } from '@/components/ui/responsive-table';
 import { Eye, Mail, Calendar, BookOpen } from 'lucide-react';
 import { useState } from 'react';
 import { StudentDetailsDialog } from './StudentDetailsDialog';
@@ -55,6 +56,15 @@ export function StudentsTable({ students, filteredStudents }: StudentsTableProps
     }
   };
 
+  const tableHeaders = [
+    'نام',
+    'ایمیل',
+    'دوره',
+    'وضعیت',
+    'تاریخ ثبت‌نام',
+    'عملیات'
+  ];
+
   return (
     <Card>
       <CardHeader>
@@ -64,59 +74,47 @@ export function StudentsTable({ students, filteredStudents }: StudentsTableProps
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-right">نام</TableHead>
-              <TableHead className="text-right">ایمیل</TableHead>
-              <TableHead className="text-right">دوره</TableHead>
-              <TableHead className="text-right">وضعیت</TableHead>
-              <TableHead className="text-right">تاریخ ثبت‌نام</TableHead>
-              <TableHead className="text-right">عملیات</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredStudents.map((student) => (
-              <TableRow key={student.id}>
-                <TableCell className="text-right">{student.first_name} {student.last_name}</TableCell>
-                <TableCell className="text-right">{student.email}</TableCell>
-                <TableCell className="text-right">
+        <ResponsiveTable headers={tableHeaders}>
+          {filteredStudents.map((student) => (
+            <TableRow key={student.id}>
+              <TableCell className="text-right">{student.first_name} {student.last_name}</TableCell>
+              <TableCell className="text-right">{student.email}</TableCell>
+              <TableCell className="text-right">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto font-normal"
+                  onClick={() => setSelectedStudentForCourses(student)}
+                >
+                  <BookOpen className="h-4 w-4 ml-1" />
+                  {student.course_enrollments?.length || 0} دوره
+                </Button>
+              </TableCell>
+              <TableCell className="text-right">
+                <Badge variant={student.status === 'active' ? 'default' : 'secondary'}>
+                  {student.status === 'active' ? 'فعال' : 'غیرفعال'}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-right">
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  <Calendar className="h-4 w-4 text-gray-400" />
+                  <span>{formatJoinDate(student.joinDate)}</span>
+                </div>
+              </TableCell>
+              <TableCell className="text-right">
+                <div className="flex justify-start gap-2">
                   <Button
-                    variant="link"
-                    className="p-0 h-auto font-normal"
-                    onClick={() => setSelectedStudentForCourses(student)}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedStudent(student)}
                   >
-                    <BookOpen className="h-4 w-4 ml-1" />
-                    {student.course_enrollments?.length || 0} دوره
+                    <Eye className="h-4 w-4 ml-2" />
+                    مشاهده جزئیات
                   </Button>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Badge variant={student.status === 'active' ? 'default' : 'secondary'}>
-                    {student.status === 'active' ? 'فعال' : 'غیرفعال'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span>{formatJoinDate(student.joinDate)}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-start gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedStudent(student)}
-                    >
-                      <Eye className="h-4 w-4 ml-2" />
-                      مشاهده جزئیات
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </ResponsiveTable>
       </CardContent>
 
       <StudentDetailsDialog

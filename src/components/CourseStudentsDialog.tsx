@@ -496,7 +496,7 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
 
             <div className="space-y-2">
               <Label>دانشجویان ثبت‌نام شده</Label>
-              <div className="border rounded-md divide-y">
+              <div className="border rounded-md divide-y max-h-[400px] overflow-y-auto">
                 {enrollments.map((enrollment) => (
                   <div key={enrollment.id} className="p-3 flex items-center justify-between">
                     <div>

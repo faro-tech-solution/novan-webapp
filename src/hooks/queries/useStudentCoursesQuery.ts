@@ -1,36 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useCache } from './useCache';
+import { StudentCourse } from '@/hooks/useStudentCourses';
 
-export interface StudentCourse {
-  id: string;
-  title: string;
-  instructor: string;
-  progress: number;
-  totalLessons: number;
-  completedLessons: number;
-  duration: string;
-  difficulty: string;
-  category: string;
-  thumbnail: string;
-  enrollDate: string;
-  nextLesson: string | null;
-  status: 'active' | 'completed';
-  description?: string;
-}
-
-export const useStudentCourses = () => {
+export const useStudentCoursesQuery = () => {
   const { user } = useAuth();
 
-  const {
-    data: courses,
-    loading,
-    error,
-    refetch
-  } = useCache<StudentCourse[]>(
-    `student-courses-${user?.id}`,
-    async () => {
+  const query = useQuery({
+    queryKey: ['student-courses', user?.id],
+    queryFn: async () => {
       if (!user) return [];
 
       const { data: enrollments, error: enrollmentsError } = await supabase
@@ -88,13 +66,13 @@ export const useStudentCourses = () => {
 
       return transformedCourses;
     },
-    { ttl: 5 * 60 * 1000 } // 5 minutes cache
-  );
+    enabled: !!user,
+  });
 
   return {
-    courses: courses || [],
-    loading,
-    error,
-    refetch
+    courses: query.data || [],
+    loading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
   };
-};
+}; 

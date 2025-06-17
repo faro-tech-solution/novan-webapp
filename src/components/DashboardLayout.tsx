@@ -13,8 +13,19 @@ import {
   Award,
   UserCog,
   CheckCircle,
-  Wallet
+  Wallet,
+  Menu
 } from 'lucide-react';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarProvider,
+  SidebarTrigger
+} from '@/components/ui/sidebar';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -87,63 +98,107 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center space-x-4 space-x-reverse">
-            <Link to="/" className="flex items-center space-x-2 space-x-reverse">
-              <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">آ</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900 font-peyda">آموزش‌هاب</span>
-            </Link>
-            <span className="text-gray-400">|</span>
-            <h1 className="text-lg font-semibold text-gray-900 font-peyda">{title}</h1>
-          </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen bg-gray-50 w-full">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b">
+          <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex items-center space-x-4 space-x-reverse">
+              <Link to="/" className="flex items-center space-x-2 space-x-reverse">
+                <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">آ</span>
+                </div>
+                <span className="text-xl font-bold text-gray-900 font-peyda">آموزش‌هاب</span>
+              </Link>
+              <span className="text-gray-400 hidden md:inline">|</span>
+              <h1 className="text-lg font-semibold text-gray-900 font-peyda hidden md:block">{title}</h1>
+            </div>
 
-          <div className="flex items-center space-x-4 space-x-reverse">
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center space-x-2 space-x-reverse">
-              <span className="text-sm text-gray-700">
-                {profile?.first_name && profile?.last_name ? `${profile.first_name} ${profile.last_name}` : 'کاربر'} ({getRoleLabel(profile?.role)})
-              </span>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 ml-2" />
-                خروج
+            <div className="flex items-center space-x-4 space-x-reverse">
+              <Button variant="ghost" size="icon" className="hidden md:flex">
+                <Bell className="h-5 w-5" />
               </Button>
+              <div className="hidden md:flex items-center space-x-2 space-x-reverse">
+                <span className="text-sm text-gray-700">
+                  {profile?.first_name && profile?.last_name ? `${profile.first_name} ${profile.last_name}` : 'کاربر'} ({getRoleLabel(profile?.role)})
+                </span>
+                <Button variant="ghost" size="sm" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 ml-2" />
+                  خروج
+                </Button>
+              </div>
+              <SidebarTrigger className="md:hidden" />
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-[200px] bg-white shadow-sm min-h-screen">
-          <nav className="p-4">
-            <div className="space-y-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  className="flex items-center space-x-3 space-x-reverse px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+        <div className="flex">
+          {/* Desktop Sidebar */}
+          <div className="hidden md:block w-64 bg-white border-l">
+            <div className="h-full py-4">
+              <div className="px-4 mb-4">
+                <h2 className="text-lg font-semibold">{title}</h2>
+              </div>
+              <nav className="space-y-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  >
+                    <item.icon className="h-5 w-5 ml-3" />
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 >
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
+                  <LogOut className="h-5 w-5 ml-3" />
+                  <span>خروج</span>
+                </button>
+              </nav>
             </div>
-          </nav>
-        </aside>
+          </div>
 
-        {/* Main Content */}
-        <main className="flex-1 p-6">
-          {children}
-        </main>
+          {/* Mobile Sidebar */}
+          <div className="md:hidden">
+            <Sidebar variant="inset" collapsible="icon">
+              <SidebarHeader>
+                <div className="flex items-center justify-between px-4 py-2">
+                  <h2 className="text-lg font-semibold">{title}</h2>
+                </div>
+              </SidebarHeader>
+              <SidebarContent>
+                <SidebarMenu>
+                  {navItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton asChild>
+                        <Link to={item.href}>
+                          <item.icon className="h-5 w-5" />
+                          <span>{item.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton onClick={handleLogout}>
+                      <LogOut className="h-5 w-5" />
+                      <span>خروج</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarContent>
+            </Sidebar>
+          </div>
+
+          {/* Main Content */}
+          <main className="flex-1 p-6">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
