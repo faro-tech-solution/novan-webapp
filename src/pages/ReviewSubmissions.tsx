@@ -1,168 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import DashboardLayout from '@/components/DashboardLayout';
 import { GradingSection } from '@/components/exercises/GradingSection';
-import { ExerciseForm } from '@/types/formBuilder';
 import { SubmissionViewer } from '@/components/exercises/SubmissionViewer';
-
-interface Submission {
-  id: string;
-  exercise_id: string;
-  student_id: string;
-  student_email: string;
-  submitted_at: string;
-  score: number | null;
-  feedback: string | null;
-  graded_at: string | null;
-  graded_by: string | null;
-  solution: string;
-  student_name: string;
-  exercise: {
-    title: string;
-    form_structure: ExerciseForm | null;
-    course_id: string;
-  } | null;
-}
-
-interface Course {
-  id: string;
-  name: string;
-  // Add other fields as needed
-}
-
-const parseFormStructure = (form_structure: any): ExerciseForm | null => {
-  if (!form_structure) {
-    return null;
-  }
-
-  try {
-    if (typeof form_structure === 'string') {
-      return JSON.parse(form_structure) as ExerciseForm;
-    } else if (typeof form_structure === 'object' && form_structure.questions) {
-      return form_structure as ExerciseForm;
-    }
-    return null;
-  } catch (error) {
-    console.error('Error parsing form_structure:', error);
-    return null;
-  }
-};
+import { useSubmissionsQuery, useCoursesQuery, useGradeSubmissionMutation, Submission } from '@/hooks/useReviewSubmissionsQuery';
 
 const ReviewSubmissions = () => {
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [score, setScore] = useState('');
   const [feedback, setFeedback] = useState('');
-  const [grading, setGrading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  // Fetch all courses on mount
-  useEffect(() => {
-    const fetchCourses = async () => {
-      const { data, error } = await supabase
-        .from('courses')
-        .select('id, name');
-      if (error) {
-        toast({
-          title: 'خطا',
-          description: error.message || 'خطا در دریافت لیست دوره‌ها',
-          variant: 'destructive',
-        });
-        return;
-      }
-      setCourses(data || []);
-    };
-    fetchCourses();
-  }, []);
-
-  const fetchSubmissions = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const { data, error } = await supabase
-        .from('exercise_submissions')
-        .select(`
-          id,
-          exercise_id,
-          student_id,
-          student_email,
-          submitted_at,
-          score,
-          feedback,
-          graded_at,
-          graded_by,
-          solution,
-          student_name,
-          exercise:exercises (
-            title,
-            form_structure,
-            course_id
-          )
-        `)
-        .order('submitted_at', { ascending: false });
-
-      if (error) throw error;
-
-      // Parse form_structure for each submission
-      const parsedSubmissions = (data || []).map(submission => ({
-        ...submission,
-        exercise: submission.exercise ? {
-          ...submission.exercise,
-          form_structure: parseFormStructure(submission.exercise.form_structure)
-        } : null
-      }));
-
-      setSubmissions(parsedSubmissions as Submission[]);
-    } catch (err: any) {
-      setError('خطا در دریافت اطلاعات');
-      toast({
-        title: 'خطا',
-        description: err.message || 'خطا در دریافت اطلاعات',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchSubmissions();
-  }, []);
+  const { data: submissions = [], isLoading: submissionsLoading, error: submissionsError } = useSubmissionsQuery();
+  const { data: courses = [] } = useCoursesQuery();
+  const gradeSubmissionMutation = useGradeSubmissionMutation();
 
   const handleGradingComplete = async () => {
     if (!selectedSubmission) return;
 
     try {
-      setGrading(true);
-      const { error } = await supabase
-        .from('exercise_submissions')
-        .update({
-          score: score ? parseInt(score) : null,
-          feedback: feedback || null,
-          graded_at: new Date().toISOString()
-        })
-        .eq('id', selectedSubmission.id);
-
-      if (error) throw error;
+      await gradeSubmissionMutation.mutateAsync({
+        submissionId: selectedSubmission.id,
+        score: score ? parseInt(score) : null,
+        feedback: feedback || null
+      });
 
       toast({
         title: "نمره‌دهی انجام شد",
         description: "نمره و بازخورد با موفقیت ثبت شد",
       });
 
-      fetchSubmissions();
       setIsDialogOpen(false);
       setSelectedSubmission(null);
       setScore('');
@@ -173,8 +48,6 @@ const ReviewSubmissions = () => {
         description: err.message || "خطا در ثبت نمره",
         variant: "destructive",
       });
-    } finally {
-      setGrading(false);
     }
   };
 
@@ -215,20 +88,20 @@ const ReviewSubmissions = () => {
             />
           </div>
 
-          {loading ? (
+          {submissionsLoading ? (
             <div className="text-center py-4">در حال بارگذاری...</div>
-          ) : error ? (
-            <div className="text-center py-4 text-red-500">{error}</div>
+          ) : submissionsError ? (
+            <div className="text-center py-4 text-red-500">
+              {submissionsError instanceof Error ? submissionsError.message : 'خطا در دریافت اطلاعات'}
+            </div>
           ) : filteredSubmissions.length === 0 ? (
             <div className="text-center py-4">هیچ تمرینی برای بررسی وجود ندارد</div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-right">نام دانشجو</TableHead>
-                  <TableHead className="text-right">ایمیل</TableHead>
-                  <TableHead className="text-right">عنوان تمرین</TableHead>
-                  <TableHead className="text-right">دوره</TableHead>
+                  <TableHead className="text-right">دانشجو</TableHead>
+                  <TableHead className="text-right">تمرین</TableHead>
                   <TableHead className="text-right">تاریخ ارسال</TableHead>
                   <TableHead className="text-right">وضعیت</TableHead>
                   <TableHead className="text-right">عملیات</TableHead>
@@ -237,10 +110,14 @@ const ReviewSubmissions = () => {
               <TableBody>
                 {filteredSubmissions.map((submission) => (
                   <TableRow key={submission.id}>
-                    <TableCell>{submission.student_name}</TableCell>
-                    <TableCell>{submission.student_email}</TableCell>
-                    <TableCell>{submission.exercise?.title || '---'}</TableCell>
-                    <TableCell>{getCourseName(submission.exercise?.course_id)}</TableCell>
+                    <TableCell>
+                      <label className="block">{submission.student_name}</label>
+                      <label className="block text-sm text-gray-400">{submission.student_email}</label>
+                    </TableCell>
+                    <TableCell>
+                      <label className="block">{submission.exercise?.title || '---'}</label>
+                      <label className="block text-sm text-gray-400">{getCourseName(submission.exercise?.course_id)}</label>
+                    </TableCell>
                     <TableCell>
                       {new Date(submission.submitted_at).toLocaleDateString('fa-IR')}
                     </TableCell>
@@ -249,14 +126,12 @@ const ReviewSubmissions = () => {
                         {submission.score !== null ? 'بررسی شده' : 'در انتظار بررسی'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell>
                       <Button
                         variant="outline"
-                        size="sm"
                         onClick={() => handleViewSubmission(submission)}
-                        disabled={!submission.exercise}
                       >
-                        مشاهده و بررسی
+                        مشاهده و نمره‌دهی
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -268,36 +143,36 @@ const ReviewSubmissions = () => {
       </Card>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle>
-              {selectedSubmission?.exercise?.title} - {selectedSubmission?.student_name}
-            </DialogTitle>
+            <DialogTitle>مشاهده و نمره‌دهی تمرین</DialogTitle>
           </DialogHeader>
-
-          {selectedSubmission && selectedSubmission.exercise && (
-            <>
-              <SubmissionViewer
-                form={selectedSubmission.exercise.form_structure}
-                answers={JSON.parse(selectedSubmission.solution)}
-                submissionInfo={{
-                  studentName: selectedSubmission.student_name,
-                  submittedAt: selectedSubmission.submitted_at,
-                  score: selectedSubmission.score || undefined,
-                  feedback: selectedSubmission.feedback || undefined
-                }}
-              />
-
-              <GradingSection
-                score={score}
-                feedback={feedback}
-                grading={grading}
-                onScoreChange={setScore}
-                onFeedbackChange={setFeedback}
-                onSubmitGrade={handleGradingComplete}
-              />
-            </>
-          )}
+          
+          <div className="overflow-y-auto flex-1 pr-2">
+            {selectedSubmission && selectedSubmission.exercise && (
+              <>
+                <SubmissionViewer
+                  form={selectedSubmission.exercise.form_structure || { questions: [] }}
+                  answers={JSON.parse(selectedSubmission.solution)}
+                  submissionInfo={{
+                    studentName: selectedSubmission.student_name,
+                    submittedAt: selectedSubmission.submitted_at,
+                    score: selectedSubmission.score || undefined,
+                    feedback: selectedSubmission.feedback || undefined
+                  }}
+                />
+                
+                <GradingSection
+                  score={score}
+                  feedback={feedback}
+                  grading={gradeSubmissionMutation.isPending}
+                  onScoreChange={setScore}
+                  onFeedbackChange={setFeedback}
+                  onSubmitGrade={handleGradingComplete}
+                />
+              </>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </DashboardLayout>

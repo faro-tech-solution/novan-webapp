@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,8 @@ import TeacherAssignments from './TeacherAssignments';
 
 interface UserProfile {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   role: UserRole;
   created_at: string;
@@ -40,7 +40,8 @@ const UserManagement = () => {
       // Map the data to ensure proper typing
       const mappedUsers: UserProfile[] = (data || []).map(user => ({
         id: user.id,
-        name: user.name || '',
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
         email: user.email || '',
         role: user.role as UserRole,
         created_at: user.created_at || '',
@@ -144,7 +145,9 @@ const UserManagement = () => {
                 {users.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell>
-                      <div className="font-medium">{user.name || 'نامشخص'}</div>
+                      <div className="font-medium">
+                        {`${user.first_name} ${user.last_name}`.trim() || 'نامشخص'}
+                      </div>
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{getRoleBadge(user.role)}</TableCell>
@@ -198,7 +201,7 @@ const UserManagement = () => {
           setSelectedTeacher(null);
         }}
         teacherId={selectedTeacher?.id || ''}
-        teacherName={selectedTeacher?.name || ''}
+        teacherName={`${selectedTeacher?.first_name || ''} ${selectedTeacher?.last_name || ''}`.trim() || 'نامشخص'}
       />
     </>
   );

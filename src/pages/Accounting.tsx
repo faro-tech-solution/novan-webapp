@@ -1,24 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { StudentAccountDetailsDialog } from '@/components/StudentAccountDetailsDialog';
 import CreatePaymentDialog from '@/components/CreatePaymentDialog';
-import { accountingService } from '@/services/accountingService';
 import { useToast } from '@/hooks/use-toast';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-
-interface StudentBalance {
-  user: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-  };
-  balance: number;
-}
+import { useAccountingRecordsQuery } from '@/hooks/useAccountingQuery';
 
 interface SelectedStudent {
   id: string;
@@ -26,119 +16,31 @@ interface SelectedStudent {
   email: string;
 }
 
-interface FinancialReport {
-  totalSales: number;
-  totalDiscounts: number;
-  totalIncome: number;
-  totalReceived: number;
-  totalReceivable: number;
-  pendingInstallments: number;
-}
-
 const Accounting = () => {
-  const [records, setRecords] = useState<StudentBalance[]>([]);
-  const [filteredRecords, setFilteredRecords] = useState<StudentBalance[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<SelectedStudent | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [report, setReport] = useState<FinancialReport>({
+  const { toast } = useToast();
+
+  const { data, isLoading, error } = useAccountingRecordsQuery();
+  const { balances: records = [], report } = data || { balances: [], report: {
     totalSales: 0,
     totalDiscounts: 0,
     totalIncome: 0,
     totalReceived: 0,
     totalReceivable: 0,
     pendingInstallments: 0,
-  });
-  const { toast } = useToast();
+  }};
 
-  const fetchRecords = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await accountingService.getAllRecords();
-      const balances = new Map<string, StudentBalance>();
-      const financialReport: FinancialReport = {
-        totalSales: 0,
-        totalDiscounts: 0,
-        totalIncome: 0,
-        totalReceived: 0,
-        totalReceivable: 0,
-        pendingInstallments: 0,
-      };
-
-      data.forEach(record => {
-        const userId = record.user.id;
-        if (!balances.has(userId)) {
-          balances.set(userId, {
-            user: record.user,
-            balance: 0
-          });
-        }
-
-        // Only add to balance if it's not a pending installment
-        if (!(record.payment_type === 'installment' && record.payment_status === 'waiting')) {
-          balances.get(userId)!.balance += record.amount;
-        }
-
-        // Update financial report
-        if (record.payment_type === 'buy_course') {
-          financialReport.totalSales += Math.abs(record.amount);
-        } else if (record.payment_type === 'discount') {
-          financialReport.totalDiscounts += Math.abs(record.amount);
-        }
-
-        // Only count positive payments that are not discounts and not incomplete installments
-        if (record.amount > 0 && 
-            record.payment_type !== 'discount' && 
-            !(record.payment_type === 'installment' && record.payment_status === 'waiting')) {
-          financialReport.totalReceived += record.amount;
-        }
-
-        // Track pending installments
-        if (record.payment_type === 'installment' && record.payment_status === 'waiting') {
-          financialReport.pendingInstallments += record.amount;
-        }
+  // Add search filter
+  const filteredRecords = searchQuery.trim() === '' 
+    ? records 
+    : records.filter(record => {
+        const fullName = `${record.user.first_name} ${record.user.last_name}`.toLowerCase();
+        const email = record.user.email.toLowerCase();
+        const query = searchQuery.toLowerCase();
+        return fullName.includes(query) || email.includes(query);
       });
-
-      // Calculate total income and receivables
-      financialReport.totalIncome = financialReport.totalSales - financialReport.totalDiscounts;
-      financialReport.totalReceivable = financialReport.totalIncome - financialReport.totalReceived;
-
-      setRecords(Array.from(balances.values()));
-      setReport(financialReport);
-    } catch (err) {
-      setError('خطا در دریافت اطلاعات');
-      toast({
-        title: 'خطا',
-        description: 'خطا در دریافت اطلاعات',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchRecords();
-  }, []);
-
-  // Add search filter effect
-  useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredRecords(records);
-      return;
-    }
-
-    const query = searchQuery.toLowerCase();
-    const filtered = records.filter(record => {
-      const fullName = `${record.user.first_name} ${record.user.last_name}`.toLowerCase();
-      const email = record.user.email.toLowerCase();
-      return fullName.includes(query) || email.includes(query);
-    });
-    setFilteredRecords(filtered);
-  }, [searchQuery, records]);
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('fa-IR').format(amount);
@@ -213,10 +115,10 @@ const Accounting = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {loading ? (
+          {isLoading ? (
             <div className="text-center py-4">در حال بارگذاری...</div>
           ) : error ? (
-            <div className="text-center py-4 text-red-500">{error}</div>
+            <div className="text-center py-4 text-red-500">خطا در دریافت اطلاعات</div>
           ) : filteredRecords.length === 0 ? (
             <div className="text-center py-4">
               {records.length === 0 ? 'هیچ دانشجویی یافت نشد' : 'هیچ دانشجویی با این فیلتر یافت نشد'}
@@ -294,7 +196,6 @@ const Accounting = () => {
           userId={selectedStudent.id}
           userName={selectedStudent.name}
           onPaymentCreated={() => {
-            fetchRecords();
             setIsCreateDialogOpen(false);
           }}
         />
