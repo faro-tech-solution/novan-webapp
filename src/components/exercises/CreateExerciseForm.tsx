@@ -60,9 +60,9 @@ export const CreateExerciseForm = ({ courses, isSubmitting, onSubmit, onCancel, 
   }, [defaultValues, form]);
 
   const handleFormSubmit = useCallback((e: React.FormEvent) => {
+    form.handleSubmit(onSubmit)(e);
     e.preventDefault();
     e.stopPropagation();
-    form.handleSubmit(onSubmit)(e);
   }, [form, onSubmit]);
 
   const handleCancel = useCallback((e: React.FormEvent) => {

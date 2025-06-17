@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Exercise, Course } from '@/types/exercise';
 import { fetchCourses, fetchExercises, createExercise, updateExercise, deleteExercise } from '@/services/exerciseService';
@@ -11,6 +11,7 @@ export const useExercises = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const dataLoadedRef = useRef(false);
 
   const handleFetchCourses = async () => {
     try {
@@ -28,6 +29,7 @@ export const useExercises = () => {
       setLoading(true);
       const exercisesData = await fetchExercises();
       setExercises(exercisesData);
+      dataLoadedRef.current = true;
     } catch (err) {
       console.error('Error in fetchExercises:', err);
       setError('خطا در دریافت تمرین‌ها');
@@ -40,6 +42,7 @@ export const useExercises = () => {
     if (!user) return { error: 'کاربر وارد نشده است' };
 
     try {
+      console.log('Creating exercise with data:', exerciseData);
       const result = await createExercise({
         title: exerciseData.title,
         description: exerciseData.description,
@@ -53,7 +56,8 @@ export const useExercises = () => {
         formStructure: exerciseData.form_structure || { questions: [] }
       }, user.id);
 
-      await handleFetchExercises(); // Refresh the list
+      console.log('Exercise created:', result);
+      setExercises(prev => [result, ...prev]);
       return { data: result };
     } catch (err) {
       console.error('Error in createExercise:', err);
@@ -65,11 +69,23 @@ export const useExercises = () => {
     if (!user) return { error: 'کاربر وارد نشده است' };
 
     try {
-      const result = await updateExercise(exerciseId, exerciseData, courses);
-      if (!result.error) {
-        await handleFetchExercises(); // Refresh the list
-      }
-      return result;
+      const result = await updateExercise(exerciseId, {
+        title: exerciseData.title || '',
+        description: exerciseData.description,
+        difficulty: exerciseData.difficulty || '',
+        estimatedTime: exerciseData.estimated_time || '',
+        points: exerciseData.points || 0,
+        courseId: exerciseData.course_id || '',
+        daysToOpen: exerciseData.days_to_open || 0,
+        daysToDue: exerciseData.days_to_due || 0,
+        daysToClose: exerciseData.days_to_close || 0,
+        formStructure: exerciseData.form_structure || { questions: [] }
+      });
+
+      setExercises(prev => prev.map(ex => 
+        ex.id === exerciseId ? result : ex
+      ));
+      return { data: result };
     } catch (err) {
       console.error('Error in updateExercise:', err);
       return { error: 'خطا در به‌روزرسانی تمرین' };
@@ -82,7 +98,7 @@ export const useExercises = () => {
     try {
       const result = await deleteExercise(id);
       if (!result.error) {
-        await handleFetchExercises(); // Refresh the list
+        setExercises(prev => prev.filter(ex => ex.id !== id));
       }
       return result;
     } catch (err) {
@@ -92,7 +108,7 @@ export const useExercises = () => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && !dataLoadedRef.current) {
       handleFetchCourses();
       handleFetchExercises();
     }

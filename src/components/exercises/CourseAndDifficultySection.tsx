@@ -18,7 +18,7 @@ export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficult
         render={({ field }) => (
           <FormItem>
             <FormLabel>دوره</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <Select onValueChange={field.onChange} value={field.value || ''}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="انتخاب دوره" />
@@ -49,7 +49,7 @@ export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficult
         render={({ field }) => (
           <FormItem>
             <FormLabel>سطح دشواری</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <Select onValueChange={field.onChange} value={field.value || ''}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="انتخاب سطح" />

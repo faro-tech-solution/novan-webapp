@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -84,7 +83,7 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
     return {
       title: exercise.title,
       description: exercise.description || '',
-      course_id: exercise.course_name || '',
+      course_id: exercise.course_id || '',
       difficulty: exercise.difficulty,
       days_to_open: exercise.days_to_open,
       days_duration: daysDuration,
