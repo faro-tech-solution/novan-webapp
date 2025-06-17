@@ -3,20 +3,19 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useExercises } from '@/hooks/useExercises';
+import { useCoursesQuery, useCreateExerciseMutation } from '@/hooks/useExercisesQuery';
 import { CreateExerciseForm, CreateExerciseFormData } from './exercises/CreateExerciseForm';
 
 interface CreateExerciseDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onExerciseCreated?: () => void;
 }
 
-const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCreated }: CreateExerciseDialogProps = {}) => {
+const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange }: CreateExerciseDialogProps = {}) => {
   const [internalOpen, setInternalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { courses, createExercise } = useExercises();
+  const { data: courses = [] } = useCoursesQuery();
+  const createExerciseMutation = useCreateExerciseMutation();
   
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
@@ -24,9 +23,6 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
 
   const onSubmit = useCallback(async (data: CreateExerciseFormData) => {
     try {
-      setIsSubmitting(true);
-      console.log('Form data:', data);
-      
       const exerciseData = {
         title: data.title,
         description: data.description || null,
@@ -40,18 +36,7 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
         form_structure: data.form_structure || { questions: [] }
       };
       
-      console.log('Transformed exercise data:', exerciseData);
-      
-      const result = await createExercise(exerciseData);
-      
-      if ('error' in result) {
-        toast({
-          title: "خطا",
-          description: result.error,
-          variant: "destructive",
-        });
-        return;
-      }
+      await createExerciseMutation.mutateAsync(exerciseData);
       
       toast({
         title: "تمرین ایجاد شد",
@@ -59,21 +44,15 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
       });
       
       setOpen(false);
-      
-      if (onExerciseCreated) {
-        onExerciseCreated();
-      }
     } catch (error) {
       console.error('Error creating exercise:', error);
       toast({
         title: "خطا",
-        description: "خطا در ایجاد تمرین",
+        description: error instanceof Error ? error.message : 'خطا در ایجاد تمرین',
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
-  }, [createExercise, onExerciseCreated, setOpen, toast]);
+  }, [createExerciseMutation, setOpen, toast]);
 
   const handleCancel = useCallback(() => {
     setOpen(false);
@@ -91,13 +70,13 @@ const CreateExerciseDialog = ({ open: controlledOpen, onOpenChange, onExerciseCr
       <div className="overflow-y-auto flex-1 pr-2">
         <CreateExerciseForm
           courses={courses}
-          isSubmitting={isSubmitting}
+          isSubmitting={createExerciseMutation.isPending}
           onSubmit={onSubmit}
           onCancel={handleCancel}
         />
       </div>
     </DialogContent>
-  ), [courses, isSubmitting, onSubmit, handleCancel]);
+  ), [courses, createExerciseMutation.isPending, onSubmit, handleCancel]);
 
   if (isControlled) {
     return (
