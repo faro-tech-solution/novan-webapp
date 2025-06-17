@@ -1,128 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { StudentsStats } from '@/components/StudentsStats';
 import StudentsFilters from '@/components/StudentsFilters';
 import { StudentsTable } from '@/components/StudentsTable';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useStudentsQuery } from '@/hooks/queries/useStudentsQuery';
 import { useAuth } from '@/contexts/AuthContext';
-import type { Student } from '@/components/StudentsTable';
-
-interface CourseEnrollment {
-  course: {
-    name: string;
-  };
-  status: string;
-  enrolled_at: string;
-  course_terms: {
-    name: string;
-  };
-}
-
-interface Profile {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-  created_at: string;
-  gender: string;
-  education: string;
-  course_enrollments: CourseEnrollment[];
-}
+import type { Student } from '@/hooks/queries/useStudentsQuery';
 
 const Students = () => {
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [courseFilter, setCourseFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [students, setStudents] = useState<Student[]>([]);
-  const [courses, setCourses] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
+  const { 
+    students, 
+    loading, 
+    error, 
+    updateStudent, 
+    deleteStudent 
+  } = useStudentsQuery();
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          email,
-          role,
-          created_at,
-          gender,
-          education,
-          course_enrollments (
-            course:courses (
-              name
-            ),
-            status,
-            enrolled_at,
-            course_terms (
-              name
-            )
-          )
-        `)
-        .eq('role', 'trainee')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      const students = (data as unknown as Profile[]).map(student => {
-        const enrollment = student.course_enrollments?.[0];
-        return {
-          id: student.id,
-          first_name: student.first_name,
-          last_name: student.last_name,
-          email: student.email,
-          role: student.role,
-          created_at: student.created_at,
-          gender: student.gender,
-          education_level: student.education,
-          courseName: enrollment?.course?.name || 'بدون دوره',
-          joinDate: enrollment?.enrolled_at || student.created_at,
-          status: enrollment?.status || 'فعال',
-          termName: enrollment?.course_terms?.name || 'عمومی',
-          course_enrollments: student.course_enrollments,
-          completedExercises: 0,
-          totalExercises: 0,
-          averageScore: 0,
-          lastActivity: student.created_at,
-          totalPoints: 0
-        } as Student;
-      });
-
-      setStudents(students);
-
-      // Extract unique course names for filter
-      const uniqueCourses = [...new Set(students.map(s => s.courseName))];
-      setCourses(uniqueCourses);
-
-    } catch (error) {
-      console.error('Error fetching students:', error);
-      toast({
-        title: 'خطا',
-        description: 'خطا در بارگذاری دانشجویان',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchStudents();
-  }, []);
+  // Extract unique course names for filter
+  const courses = [...new Set(students.map(s => s.courseName))];
 
   // Filter students
   const filteredStudents = students.filter(student => {
@@ -135,11 +37,53 @@ const Students = () => {
     return matchesSearch && matchesCourse && matchesStatus;
   });
 
+  const handleUpdateStudent = async (studentId: string, updates: Partial<Student>) => {
+    try {
+      await updateStudent({ studentId, updates });
+      toast({
+        title: 'موفقیت',
+        description: 'اطلاعات دانشجو با موفقیت بروزرسانی شد',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'خطا',
+        description: error.message || 'خطا در بروزرسانی اطلاعات دانشجو',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDeleteStudent = async (studentId: string) => {
+    try {
+      await deleteStudent(studentId);
+      toast({
+        title: 'موفقیت',
+        description: 'دانشجو با موفقیت حذف شد',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'خطا',
+        description: error.message || 'خطا در حذف دانشجو',
+        variant: 'destructive',
+      });
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout title="مدیریت دانشجویان">
         <div className="flex items-center justify-center h-64">
           <div className="text-lg">در حال بارگذاری...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout title="مدیریت دانشجویان">
+        <div className="text-center text-red-500">
+          خطا در بارگذاری اطلاعات دانشجویان
         </div>
       </DashboardLayout>
     );
@@ -169,7 +113,12 @@ const Students = () => {
         />
 
         {/* Students Table */}
-        <StudentsTable students={students} filteredStudents={filteredStudents} />
+        <StudentsTable 
+          students={students} 
+          filteredStudents={filteredStudents}
+          onUpdateStudent={handleUpdateStudent}
+          onDeleteStudent={handleDeleteStudent}
+        />
       </div>
     </DashboardLayout>
   );

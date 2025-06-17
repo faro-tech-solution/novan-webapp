@@ -1,49 +1,24 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { TableCell, TableRow } from '@/components/ui/table';
 import { ResponsiveTable } from '@/components/ui/responsive-table';
-import { Eye, Mail, Calendar, BookOpen } from 'lucide-react';
+import { Eye, Calendar, BookOpen } from 'lucide-react';
 import { useState } from 'react';
 import { StudentDetailsDialog } from './StudentDetailsDialog';
 import { StudentCoursesDialog } from './StudentCoursesDialog';
 import { formatDate } from '@/lib/utils';
+import type { Student } from '@/hooks/queries/useStudentsQuery';
 
-export interface Student {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  courseName: string;
-  joinDate: string;
-  status: string;
-  termName?: string;
-  role?: string;
-  created_at?: string;
-  completedExercises: number;
-  totalExercises: number;
-  averageScore: number;
-  lastActivity: string;
-  totalPoints: number;
-  education?: string;
-  course_enrollments?: {
-    course: {
-      name: string;
-    };
-    status: string;
-    enrolled_at: string;
-    course_terms: {
-      name: string;
-    };
-  }[];
-}
-
-interface StudentsTableProps {
+export interface StudentsTableProps {
   students: Student[];
   filteredStudents: Student[];
 }
 
-export function StudentsTable({ students, filteredStudents }: StudentsTableProps) {
+export const StudentsTable = ({ 
+  students, 
+  filteredStudents
+}: StudentsTableProps) => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedStudentForCourses, setSelectedStudentForCourses] = useState<Student | null>(null);
 
@@ -66,56 +41,57 @@ export function StudentsTable({ students, filteredStudents }: StudentsTableProps
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>لیست دانشجویان</CardTitle>
-        <CardDescription>
-          {filteredStudents.length} از {students.length} دانشجو
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveTable headers={tableHeaders}>
-          {filteredStudents.map((student) => (
-            <TableRow key={student.id}>
-              <TableCell className="text-right">{student.first_name} {student.last_name}</TableCell>
-              <TableCell className="text-right">{student.email}</TableCell>
-              <TableCell className="text-right">
-                <Button
-                  variant="link"
-                  className="p-0 h-auto font-normal"
-                  onClick={() => setSelectedStudentForCourses(student)}
-                >
-                  <BookOpen className="h-4 w-4 ml-1" />
-                  {student.course_enrollments?.length || 0} دوره
-                </Button>
-              </TableCell>
-              <TableCell className="text-right">
-                <Badge variant={student.status === 'active' ? 'default' : 'secondary'}>
-                  {student.status === 'active' ? 'فعال' : 'غیرفعال'}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <Calendar className="h-4 w-4 text-gray-400" />
-                  <span>{formatJoinDate(student.joinDate)}</span>
-                </div>
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-start gap-2">
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>لیست دانشجویان</CardTitle>
+          <CardDescription>
+            {filteredStudents.length} از {students.length} دانشجو
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveTable headers={tableHeaders}>
+            {filteredStudents.map((student) => (
+              <TableRow key={student.id}>
+                <TableCell className="text-right">{student.first_name} {student.last_name}</TableCell>
+                <TableCell className="text-right">{student.email}</TableCell>
+                <TableCell className="text-right">
                   <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedStudent(student)}
+                    variant="link"
+                    className="p-0 h-auto font-normal"
+                    onClick={() => setSelectedStudentForCourses(student)}
                   >
-                    <Eye className="h-4 w-4 ml-2" />
-                    مشاهده جزئیات
+                    <BookOpen className="h-4 w-4 ml-1" />
+                    {student.course_enrollments?.length || 0} دوره
                   </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </ResponsiveTable>
-      </CardContent>
+                </TableCell>
+                <TableCell className="text-right">
+                  <Badge variant={student.status === 'active' ? 'default' : 'secondary'}>
+                    {student.status === 'active' ? 'فعال' : 'غیرفعال'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    <Calendar className="h-4 w-4 text-gray-400" />
+                    <span>{formatJoinDate(student.joinDate)}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-start gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedStudent(student)}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </ResponsiveTable>
+        </CardContent>
+      </Card>
 
       <StudentDetailsDialog
         open={!!selectedStudent}
@@ -129,6 +105,6 @@ export function StudentsTable({ students, filteredStudents }: StudentsTableProps
         studentName={selectedStudentForCourses ? `${selectedStudentForCourses.first_name} ${selectedStudentForCourses.last_name}` : ''}
         enrollments={selectedStudentForCourses?.course_enrollments || []}
       />
-    </Card>
+    </>
   );
-}
+};
