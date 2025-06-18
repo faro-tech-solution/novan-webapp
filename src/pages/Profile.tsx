@@ -13,6 +13,8 @@ import { supabase } from '@/integrations/supabase/client';
 import DashboardLayout from '@/components/DashboardLayout';
 import { PasswordStrengthMeter } from '@/components/PasswordStrengthMeter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useProfileQuery, useUpdateProfileMutation, useChangePasswordMutation } from '@/hooks/queries/useProfileQuery';
+import React from 'react';
 
 const profileFormSchema = z.object({
   first_name: z.string().min(1, 'نام الزامی است'),
@@ -58,10 +60,15 @@ const genders = [
 ];
 
 const Profile = () => {
-  const { profile, user } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [isPasswordStrong, setIsPasswordStrong] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // React Query hooks
+  const { data: profile, isLoading: profileLoading } = useProfileQuery();
+  const updateProfileMutation = useUpdateProfileMutation();
+  const changePasswordMutation = useChangePasswordMutation();
 
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileFormSchema),
@@ -91,92 +98,79 @@ const Profile = () => {
     },
   });
 
+  // Update form values when profile is loaded
+  React.useEffect(() => {
+    if (profile) {
+      profileForm.reset({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        gender: profile.gender || '',
+        job: profile.job || '',
+        education: profile.education || '',
+        phone_number: profile.phone_number || '',
+        country: profile.country || '',
+        city: profile.city || '',
+        birthday: profile.birthday || '',
+        ai_familiarity: profile.ai_familiarity || undefined,
+        english_level: profile.english_level || undefined,
+        telegram_id: profile.telegram_id || '',
+        whatsapp_id: profile.whatsapp_id || '',
+      });
+    }
+  }, [profile]);
+
   const onProfileSubmit = async (data: ProfileFormData) => {
     if (!user) return;
-    
     setLoading(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          first_name: data.first_name,
-          last_name: data.last_name,
-          gender: data.gender,
-          job: data.job,
-          education: data.education,
-          phone_number: data.phone_number,
-          country: data.country,
-          city: data.city,
-          birthday: data.birthday ? new Date(data.birthday).toISOString() : null,
-          ai_familiarity: data.ai_familiarity,
-          english_level: data.english_level,
-          telegram_id: data.telegram_id,
-          whatsapp_id: data.whatsapp_id,
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "پروفایل بروزرسانی شد",
-        description: "اطلاعات پروفایل شما با موفقیت بروزرسانی شد.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || 'خطا در بروزرسانی پروفایل',
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+    updateProfileMutation.mutate(data, {
+      onSuccess: () => {
+        toast({
+          title: 'پروفایل بروزرسانی شد',
+          description: 'اطلاعات پروفایل شما با موفقیت بروزرسانی شد.',
+        });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'خطا',
+          description: error.message || 'خطا در بروزرسانی پروفایل',
+          variant: 'destructive',
+        });
+      },
+      onSettled: () => setLoading(false),
+    });
   };
 
   const onPasswordSubmit = async (data: PasswordFormData) => {
     if (!user) return;
-    
     if (!isPasswordStrong) {
       toast({
-        title: "رمز عبور ضعیف",
-        description: "لطفا یک رمز عبور قوی انتخاب کنید",
-        variant: "destructive",
+        title: 'رمز عبور ضعیف',
+        description: 'لطفا یک رمز عبور قوی انتخاب کنید',
+        variant: 'destructive',
       });
       return;
     }
-
     setLoading(true);
-    try {
-      // First verify current password
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user.email!,
-        password: data.current_password,
-      });
-
-      if (signInError) throw new Error('رمز عبور فعلی اشتباه است');
-
-      // Update password
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: data.new_password,
-      });
-
-      if (updateError) throw updateError;
-
-      toast({
-        title: "رمز عبور بروزرسانی شد",
-        description: "رمز عبور شما با موفقیت بروزرسانی شد.",
-      });
-
-      // Reset form
-      passwordForm.reset();
-    } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || 'خطا در بروزرسانی رمز عبور',
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+    changePasswordMutation.mutate(
+      { current_password: data.current_password, new_password: data.new_password },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'رمز عبور بروزرسانی شد',
+            description: 'رمز عبور شما با موفقیت بروزرسانی شد.',
+          });
+          passwordForm.reset();
+        },
+        onError: (error: any) => {
+          toast({
+            title: 'خطا',
+            description: error.message || 'خطا در بروزرسانی رمز عبور',
+            variant: 'destructive',
+          });
+        },
+        onSettled: () => setLoading(false),
+      }
+    );
   };
 
   return (
