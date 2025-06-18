@@ -16,12 +16,14 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { useStudentCourses } from '@/hooks/useStudentCourses';
+import { useStudentCoursesQuery } from '@/hooks/queries/useStudentCoursesQuery';
+import { useToast } from '@/hooks/use-toast';
 
 const StudentCourses = () => {
   const { profile } = useAuth();
   const [filter, setFilter] = useState('all');
-  const { courses, loading, error } = useStudentCourses();
+  const { toast } = useToast();
+  const { data: courses = [], isLoading, error, refetch } = useStudentCoursesQuery();
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
   const filteredCourses = courses.filter(course => {
@@ -48,7 +50,23 @@ const StudentCourses = () => {
     }
   };
 
-  if (loading) {
+  const handleRetry = async () => {
+    try {
+      await refetch();
+      toast({
+        title: 'بروزرسانی',
+        description: 'دوره‌ها با موفقیت بروزرسانی شدند',
+      });
+    } catch (error) {
+      toast({
+        title: 'خطا',
+        description: 'خطا در بروزرسانی دوره‌ها',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  if (isLoading) {
     return (
       <DashboardLayout title="دوره‌های من">
         <div className="flex items-center justify-center py-12">
@@ -63,10 +81,31 @@ const StudentCourses = () => {
     return (
       <DashboardLayout title="دوره‌های من">
         <div className="text-center py-12">
-          <div className="text-red-600 mb-4">{error}</div>
-          <Button onClick={() => window.location.reload()}>
+          <div className="text-red-600 mb-4">{error instanceof Error ? error.message : 'خطا در دریافت دوره‌ها'}</div>
+          <Button onClick={handleRetry}>
             تلاش مجدد
           </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (courses.length === 0) {
+    return (
+      <DashboardLayout title="دوره‌های من">
+        <div className="text-center py-12">
+          <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            هیچ دوره‌ای یافت نشد
+          </h3>
+          <p className="text-gray-600 mb-4">
+            در این بخش دوره‌ای وجود ندارد
+          </p>
+          <Link to="/courses">
+            <Button>
+              مشاهده دوره‌های موجود
+            </Button>
+          </Link>
         </div>
       </DashboardLayout>
     );
@@ -176,67 +215,35 @@ const StudentCourses = () => {
           ))}
         </div>
 
-        {filteredCourses.length === 0 && (
-          <div className="text-center py-12">
-            <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              هیچ دوره‌ای یافت نشد
-            </h3>
-            <p className="text-gray-600 mb-4">
-              در این بخش دوره‌ای وجود ندارد
-            </p>
-            <Link to="/courses">
-              <Button>
-                مشاهده دوره‌های موجود
-              </Button>
-            </Link>
-          </div>
-        )}
-
         {/* Course Details Dialog */}
         <Dialog open={!!selectedCourse} onOpenChange={(open) => !open && setSelectedCourse(null)}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>{selectedCourse?.title}</DialogTitle>
             </DialogHeader>
-            
             {selectedCourse && (
               <div className="space-y-6">
-                {/* Course Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Users className="h-4 w-4 text-gray-500" />
-                      <span>مدرس: {selectedCourse.instructor}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                      <span>تاریخ شروع: {new Date(selectedCourse.startDate).toLocaleDateString('fa-IR')}</span>
-                    </div>
+                    <h3 className="font-semibold">مدرس</h3>
+                    <p className="text-gray-600">{selectedCourse.instructor}</p>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <span>مدت زمان: {selectedCourse.duration} ساعت</span>
-                    </div>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <BookOpen className="h-4 w-4 text-gray-500" />
-                      <span>تعداد درس‌ها: {selectedCourse.lessonsCount}</span>
-                    </div>
+                    <h3 className="font-semibold">سطح</h3>
+                    <p className="text-gray-600">{selectedCourse.difficulty}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">دسته‌بندی</h3>
+                    <p className="text-gray-600">{selectedCourse.category}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">وضعیت</h3>
+                    <p className="text-gray-600">
+                      {selectedCourse.status === 'active' ? 'در حال مطالعه' : 'تکمیل شده'}
+                    </p>
                   </div>
                 </div>
 
-                {/* Status and Difficulty */}
-                <div className="flex space-x-4 space-x-reverse">
-                  <Badge className={getDifficultyColor(selectedCourse.difficulty)}>
-                    {selectedCourse.difficulty}
-                  </Badge>
-                  <Badge className={getStatusColor(selectedCourse.status)}>
-                    {selectedCourse.status === 'active' ? 'در حال مطالعه' : 'تکمیل شده'}
-                  </Badge>
-                </div>
-
-                {/* Description */}
                 {selectedCourse.description && (
                   <div className="space-y-2">
                     <h3 className="font-semibold">توضیحات دوره</h3>
