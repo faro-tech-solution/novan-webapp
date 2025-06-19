@@ -1,20 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Search, Plus, Trash2, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import StudentProfileModal from './StudentProfileModal';
-import { accountingService } from '@/services/accountingService';
 import { Tables } from '@/integrations/supabase/types';
+import { CourseTerm } from '@/types/course';
+import { CourseStudent } from '@/types/student';
 
 type CourseEnrollment = Tables<'course_enrollments'> & {
   profiles?: {
@@ -24,25 +19,10 @@ type CourseEnrollment = Tables<'course_enrollments'> & {
   };
 };
 
-interface CourseTerm {
-  id: string;
-  name: string;
-  start_date: string | null;
-  end_date: string | null;
-}
-
 interface CourseStudentsDialogProps {
   courseId: string;
   isOpen: boolean;
   onClose: () => void;
-}
-
-interface Student {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  enrolled: boolean;
 }
 
 const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialogProps) => {
@@ -59,7 +39,7 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
   const [selectedStudentName, setSelectedStudentName] = useState<string>('');
   const { toast } = useToast();
   const { profile } = useAuth();
-  const [students, setStudents] = useState<Student[]>([]);
+  const [students, setStudents] = useState<CourseStudent[]>([]);
   const [enrolledStudents, setEnrolledStudents] = useState<CourseEnrollment[]>([]);
   const [coursePrice, setCoursePrice] = useState<number>(0);
   const [selectedStudent, setSelectedStudent] = useState<string>('');
@@ -83,7 +63,8 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
           term_id,
           created_at,
           updated_at,
-          profiles:student_id (
+          profiles!student_id (
+            id,
             first_name,
             last_name,
             email
@@ -162,7 +143,8 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
           term_id,
           created_at,
           updated_at,
-          profiles:student_id (
+          profiles!student_id (
+            id,
             first_name,
             last_name,
             email

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -7,11 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AccountingRecord } from "@/types/accounting";
+import { AccountingWithDetails } from "@/types/accounting";
 import { formatDate } from "@/lib/utils";
 
 interface AccountingTableProps {
-  records: AccountingRecord[];
+  records: AccountingWithDetails[];
 }
 
 const getAmountColor = (paymentType: string) => {
@@ -41,7 +40,6 @@ export function AccountingTable({ records }: AccountingTableProps) {
             <TableHead>دوره</TableHead>
             <TableHead>مبلغ</TableHead>
             <TableHead>توضیحات</TableHead>
-            <TableHead>روش پرداخت</TableHead>
             <TableHead>وضعیت</TableHead>
             <TableHead>نوع</TableHead>
             <TableHead>تاریخ</TableHead>
@@ -60,10 +58,9 @@ export function AccountingTable({ records }: AccountingTableProps) {
                 </span>
               </TableCell>
               <TableCell>{record.description || '-'}</TableCell>
-              <TableCell>{record.payment_method || '-'}</TableCell>
               <TableCell>{record.payment_status}</TableCell>
               <TableCell>{record.payment_type}</TableCell>
-              <TableCell>{formatDate(record.transaction_date)}</TableCell>
+              <TableCell>{formatDate(record.created_at)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

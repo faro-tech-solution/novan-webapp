@@ -6,7 +6,7 @@ import { StudentsTable } from '@/components/StudentsTable';
 import { useToast } from '@/hooks/use-toast';
 import { useStudentsQuery } from '@/hooks/queries/useStudentsQuery';
 import { useAuth } from '@/contexts/AuthContext';
-import type { Student } from '@/hooks/queries/useStudentsQuery';
+import { Student } from '@/types/student';
 
 const Students = () => {
   const { profile } = useAuth();

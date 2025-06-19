@@ -1,27 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-
-export interface Student {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-  created_at: string;
-  gender: string;
-  education_level: string;
-  courseName: string;
-  joinDate: string;
-  status: string;
-  termName: string;
-  course_enrollments: any[];
-  completedExercises: number;
-  totalExercises: number;
-  averageScore: number;
-  lastActivity: string;
-  totalPoints: number;
-}
+import { Student } from '@/types/student';
 
 export const useStudentsQuery = () => {
   const { user, profile } = useAuth();
@@ -88,10 +68,42 @@ export const useStudentsQuery = () => {
     enabled: !!user,
   });
 
+  const updateStudentMutation = useMutation({
+    mutationFn: async ({ studentId, updates }: { studentId: string; updates: Partial<Student> }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', studentId);
+      
+      if (error) throw error;
+      return { studentId, updates };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+    }
+  });
+
+  const deleteStudentMutation = useMutation({
+    mutationFn: async (studentId: string) => {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', studentId);
+      
+      if (error) throw error;
+      return studentId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+    }
+  });
+
   return {
     students,
     loading: isLoading,
     error,
     refetch,
+    updateStudent: updateStudentMutation.mutateAsync,
+    deleteStudent: deleteStudentMutation.mutateAsync
   };
 }; 

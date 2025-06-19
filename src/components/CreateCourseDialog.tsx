@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { Instructor } from '@/types/instructor';
 
 const formSchema = z.object({
   name: z.string().min(1, 'نام درس الزامی است'),
@@ -27,13 +28,6 @@ interface CreateCourseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCourseCreated: () => void;
-}
-
-interface Instructor {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
 }
 
 const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCourseDialogProps) => {

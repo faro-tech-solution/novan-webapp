@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Database } from '@/integrations/supabase/types';
-import { ExerciseWithSubmission, CourseEnrollment, ExerciseData, ExerciseSubmission } from '@/types/exerciseSubmission';
+import { ExerciseWithSubmission, ExerciseData, ExerciseSubmission } from '@/types/exerciseSubmission';
+import { CourseEnrollment } from '@/types/course';
 import { calculateAdjustedDates } from '@/utils/exerciseDateUtils';
 import { calculateSubmissionStatus } from '@/utils/exerciseSubmissionUtils';
 
@@ -75,9 +76,7 @@ export const useMyExercisesQuery = () => {
             graded_at,
             graded_by,
             solution,
-            student_email,
-            student_id,
-            student_name
+            student_id
           )
         `)
         .in('course_id', enrolledCourseIds)

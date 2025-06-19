@@ -2,23 +2,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatDate } from '@/lib/utils';
-
-interface CourseEnrollment {
-  course: {
-    name: string;
-  };
-  status: string;
-  enrolled_at: string;
-  course_terms: {
-    name: string;
-  };
-}
+import { StudentCourseEnrollment } from '@/types/student';
 
 interface StudentCoursesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   studentName: string;
-  enrollments: CourseEnrollment[];
+  enrollments: StudentCourseEnrollment[];
 }
 
 export function StudentCoursesDialog({ open, onOpenChange, studentName, enrollments }: StudentCoursesDialogProps) {

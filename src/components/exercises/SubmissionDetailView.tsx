@@ -4,26 +4,7 @@ import { Button } from '@/components/ui/button';
 import { User, Clock, Award } from 'lucide-react';
 import { SubmissionViewer } from './SubmissionViewer';
 import { ExerciseForm, FormAnswer } from '@/types/formBuilder';
-
-interface Submission {
-  id: string;
-  exercise_id: string;
-  student_id: string;
-  first_name: string;
-  last_name: string;
-  student_email: string;
-  status: string;
-  submitted_at: string;
-  score?: number;
-  feedback?: string;
-  solution: string;
-  exercise: {
-    id: string;
-    title: string;
-    points: number;
-    form_structure: ExerciseForm | null;
-  };
-}
+import { Submission } from '@/types/reviewSubmissions';
 
 interface SubmissionDetailViewProps {
   submission: Submission;
@@ -73,7 +54,7 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
                 <div className="flex items-center space-x-4 space-x-reverse text-sm">
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <User className="h-4 w-4" />
-                    <span>{`${submission.first_name} ${submission.last_name}`}</span>
+                    <span>{`${submission.student?.first_name} ${submission.student?.last_name}`}</span>
                   </div>
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <Clock className="h-4 w-4" />
@@ -105,7 +86,7 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
             form={parseFormStructure(submission.exercise.form_structure)}
             answers={JSON.parse(submission.solution) as FormAnswer[]}
             submissionInfo={{
-              studentName: `${submission.first_name} ${submission.last_name}`,
+              studentName: `${submission.student?.first_name} ${submission.student?.last_name}`,
               submittedAt: submission.submitted_at,
               score: submission.score || undefined,
               feedback: submission.feedback || undefined

@@ -1,5 +1,5 @@
-
-import { ExerciseForm } from './formBuilder';
+import { ExerciseForm, FormAnswer } from './formBuilder';
+import { ExerciseCourse } from './course';
 
 export interface Exercise {
   id: string;
@@ -22,9 +22,44 @@ export interface Exercise {
   course_name?: string;
 }
 
-export interface Course {
+// For upcoming exercises card
+export interface UpcomingExercise {
   id: string;
-  name: string;
-  instructor_name: string;
-  status: string;
+  title: string;
+  due_date: string;
+  estimated_time: string;
+  points: number;
+}
+
+// For my exercise table
+export interface MyExerciseWithSubmission {
+  id: string;
+  title: string;
+  description: string | null;
+  course_name?: string;
+  difficulty: string;
+  due_date: string;
+  open_date: string;
+  points: number;
+  estimated_time: string;
+  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
+}
+
+// For exercise detail service
+export interface ExerciseDetail {
+  id: string;
+  title: string;
+  description: string | null;
+  course_id: string;
+  course_name: string;
+  difficulty: string;
+  points: number;
+  estimated_time: string;
+  open_date: string;
+  due_date: string;
+  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
+  form_structure?: ExerciseForm;
+  submission_answers?: FormAnswer[];
+  feedback?: string;
+  score?: number;
 }

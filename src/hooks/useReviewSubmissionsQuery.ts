@@ -1,30 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ExerciseForm } from '@/types/formBuilder';
-
-export interface Submission {
-  id: string;
-  exercise_id: string;
-  student_id: string;
-  student_email: string;
-  submitted_at: string;
-  score: number | null;
-  feedback: string | null;
-  graded_at: string | null;
-  graded_by: string | null;
-  solution: string;
-  student_name: string;
-  exercise: {
-    title: string;
-    form_structure: ExerciseForm | null;
-    course_id: string;
-  } | null;
-}
-
-export interface Course {
-  id: string;
-  name: string;
-}
+import { Submission } from '@/types/reviewSubmissions';
+import { ReviewCourse } from '@/types/course';
 
 const parseFormStructure = (form_structure: any): ExerciseForm | null => {
   if (!form_structure) {
@@ -52,7 +30,6 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
       id,
       exercise_id,
       student_id,
-      student_email,
       submitted_at,
       score,
       feedback,
@@ -60,6 +37,7 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
       graded_by,
       solution,
       exercise:exercises (
+        id,
         title,
         form_structure,
         course_id
@@ -73,7 +51,7 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
   const studentIds = submissions?.map(s => s.student_id) || [];
   const { data: profiles, error: profilesError } = await supabase
     .from('profiles')
-    .select('id, first_name, last_name')
+    .select('id, first_name, last_name, email')
     .in('id', studentIds);
 
   if (profilesError) throw profilesError;
@@ -84,23 +62,14 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
   // Combine the data
   return (submissions || []).map(submission => ({
     ...submission,
-    student_name: profileMap.get(submission.student_id) 
-      ? `${profileMap.get(submission.student_id)?.first_name} ${profileMap.get(submission.student_id)?.last_name}`.trim()
-      : 'نامشخص',
+    student: profileMap.get(submission.student_id) || undefined,
     exercise: submission.exercise ? {
-      ...submission.exercise,
-      form_structure: parseFormStructure(submission.exercise.form_structure)
+      id: submission.exercise.id,
+      title: submission.exercise.title,
+      form_structure: parseFormStructure(submission.exercise.form_structure),
+      course_id: submission.exercise.course_id
     } : null
   })) as Submission[];
-};
-
-const fetchCourses = async (): Promise<Course[]> => {
-  const { data, error } = await supabase
-    .from('courses')
-    .select('id, name');
-
-  if (error) throw error;
-  return data || [];
 };
 
 export const useSubmissionsQuery = () => {
@@ -113,7 +82,15 @@ export const useSubmissionsQuery = () => {
 export const useCoursesQuery = () => {
   return useQuery({
     queryKey: ['courses'],
-    queryFn: fetchCourses,
+    queryFn: async (): Promise<ReviewCourse[]> => {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('id, name')
+        .order('name');
+
+      if (error) throw error;
+      return data || [];
+    }
   });
 };
 

@@ -1,18 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Star, Users, BookOpen } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { InstructorCard as InstructorCardType } from '@/types/instructor';
 
-interface InstructorCardProps {
-  id: string;
-  first_name: string;
-  last_name: string;
-  title: string;
-  image: string;
-  rating: number;
-  students: number;
-  courses: number;
-  expertise: string[];
-}
+interface InstructorCardProps extends InstructorCardType {}
 
 const InstructorCard = ({
   id,

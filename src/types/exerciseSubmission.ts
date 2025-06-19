@@ -1,3 +1,4 @@
+import { ExerciseCourse } from './course';
 
 export interface ExerciseWithSubmission {
   id: string;
@@ -15,21 +16,6 @@ export interface ExerciseWithSubmission {
   submitted_at: string | null;
   score: number | null;
   feedback: string | null;
-}
-
-export interface CourseEnrollment {
-  course_id: string;
-  enrolled_at: string;
-  term_id: string | null;
-  courses: {
-    id: string;
-    name: string;
-  } | null;
-  course_terms: {
-    id: string;
-    start_date: string;
-    end_date: string;
-  } | null;
 }
 
 export interface ExerciseData {

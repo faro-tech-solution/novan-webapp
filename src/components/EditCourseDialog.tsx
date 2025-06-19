@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { EditableCourse } from '@/types/course';
+import { Instructor } from '@/types/instructor';
 
 const formSchema = z.object({
   name: z.string().min(1, 'نام درس الزامی است'),
@@ -22,28 +24,11 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-interface Course {
-  id: string;
-  name: string;
-  description: string | null;
-  max_students: number | null;
-  instructor_id: string;
-  status: string;
-  price?: number;
-}
-
 interface EditCourseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  course: Course;
+  course: EditableCourse;
   onCourseUpdated: () => void;
-}
-
-interface Instructor {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
 }
 
 const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditCourseDialogProps) => {

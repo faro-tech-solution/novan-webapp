@@ -1,23 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-
-export interface StudentCourse {
-  id: string;
-  title: string;
-  instructor: string;
-  progress: number;
-  totalLessons: number;
-  completedLessons: number;
-  duration: string;
-  difficulty: string;
-  category: string;
-  thumbnail: string;
-  enrollDate: string;
-  nextLesson: string | null;
-  status: 'active' | 'completed';
-  description?: string;
-}
+import { StudentCourse } from '@/types/course';
 
 const fetchStudentCourses = async (userId: string | undefined): Promise<StudentCourse[]> => {
   if (!userId) return [];
@@ -32,8 +16,7 @@ const fetchStudentCourses = async (userId: string | undefined): Promise<StudentC
       courses (
         id,
         name,
-        description,
-        instructor_name
+        description
       )
     `)
     .eq('student_id', userId)
@@ -49,11 +32,11 @@ const fetchStudentCourses = async (userId: string | undefined): Promise<StudentC
 
   // Transform the data to match the StudentCourse interface
   return enrollmentsWithCourses.map(enrollment => {
-    const course = enrollment.courses || {};
+    const course = enrollment.courses as { name: string; description: string | null } | null;
     return {
       id: enrollment.course_id,
-      title: course.name ?? '',
-      instructor: course.instructor_name ?? '',
+      title: course?.name ?? '',
+      instructor: 'نامشخص', // Default value since instructor_name doesn't exist
       progress: 0, // This would need to be calculated based on completed lessons
       totalLessons: 0, // This would need to be fetched from lessons table
       completedLessons: 0, // This would need to be calculated from student progress
@@ -64,7 +47,7 @@ const fetchStudentCourses = async (userId: string | undefined): Promise<StudentC
       enrollDate: enrollment.enrolled_at,
       nextLesson: null, // This would need to be calculated based on progress
       status: enrollment.status as 'active' | 'completed',
-      description: course.description ?? undefined
+      description: course?.description ?? undefined
     };
   });
 };

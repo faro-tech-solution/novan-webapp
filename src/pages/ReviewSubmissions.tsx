@@ -9,7 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import DashboardLayout from '@/components/DashboardLayout';
 import { GradingSection } from '@/components/exercises/GradingSection';
 import { SubmissionViewer } from '@/components/exercises/SubmissionViewer';
-import { useSubmissionsQuery, useCoursesQuery, useGradeSubmissionMutation, Submission } from '@/hooks/useReviewSubmissionsQuery';
+import { useSubmissionsQuery, useCoursesQuery, useGradeSubmissionMutation } from '@/hooks/useReviewSubmissionsQuery';
+import { Submission } from '@/types/reviewSubmissions';
 
 const ReviewSubmissions = () => {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
@@ -66,8 +67,8 @@ const ReviewSubmissions = () => {
   };
 
   const filteredSubmissions = submissions.filter(submission =>
-    submission.student_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    submission.student_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    `${submission.student?.first_name} ${submission.student?.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    submission.student?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (submission.exercise?.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     getCourseName(submission.exercise?.course_id).toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -111,8 +112,8 @@ const ReviewSubmissions = () => {
                 {filteredSubmissions.map((submission) => (
                   <TableRow key={submission.id}>
                     <TableCell>
-                      <label className="block">{submission.student_name}</label>
-                      <label className="block text-sm text-gray-400">{submission.student_email}</label>
+                      <label className="block">{`${submission.student?.first_name} ${submission.student?.last_name}`}</label>
+                      <label className="block text-sm text-gray-400">{submission.student?.email}</label>
                     </TableCell>
                     <TableCell>
                       <label className="block">{submission.exercise?.title || '---'}</label>
@@ -155,7 +156,7 @@ const ReviewSubmissions = () => {
                   form={selectedSubmission.exercise.form_structure || { questions: [] }}
                   answers={JSON.parse(selectedSubmission.solution)}
                   submissionInfo={{
-                    studentName: selectedSubmission.student_name,
+                    studentName: `${selectedSubmission.student?.first_name} ${selectedSubmission.student?.last_name}`,
                     submittedAt: selectedSubmission.submitted_at,
                     score: selectedSubmission.score || undefined,
                     feedback: selectedSubmission.feedback || undefined

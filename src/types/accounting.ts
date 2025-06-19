@@ -1,36 +1,22 @@
+import { SubmissionStudent } from './student';
+
 export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded' | 'waiting';
 export type PaymentType = 'buy_course' | 'discount' | 'pay_money' | 'refund' | 'installment';
 
 export interface AccountingRecord {
   id: string;
   user_id: string;
-  course_id?: string;
+  course_id: string | null;
   amount: number;
-  description?: string;
-  payment_method?: string;
-  payment_status: PaymentStatus;
-  payment_type: PaymentType;
-  transaction_date: string;
+  payment_type: 'buy_course' | 'discount' | 'installment' | 'refund';
+  payment_status: 'completed' | 'waiting' | 'cancelled';
+  description: string | null;
   created_at: string;
   updated_at: string;
-  user?: {
-    first_name: string;
-    last_name: string;
-    email: string;
-  };
-  course?: {
-    id: string;
-    name: string;
-  } | null;
 }
 
 export interface AccountingWithDetails extends AccountingRecord {
-  user: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-  };
+  user: SubmissionStudent & { id: string };
   course: {
     id: string;
     name: string;
@@ -41,11 +27,9 @@ export interface CreatePaymentData {
   user_id: string;
   course_id?: string;
   amount: number;
+  payment_type: 'buy_course' | 'discount' | 'installment' | 'refund';
+  payment_status?: 'completed' | 'waiting' | 'cancelled';
   description?: string;
-  payment_method?: string;
-  payment_status: PaymentStatus;
-  payment_type: PaymentType;
-  transaction_date: string;
 }
 
 export interface UpdatePaymentData {

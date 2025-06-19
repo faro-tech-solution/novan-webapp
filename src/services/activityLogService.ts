@@ -1,5 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
+import { StudentActivityLog } from '@/types/student';
 
 export interface ActivityLog {
   id: string;
@@ -10,15 +10,6 @@ export interface ActivityLog {
   created_at: string;
   session_id?: string;
   duration_minutes: number;
-}
-
-export interface ActivityLogInsert {
-  student_id: string;
-  activity_type: string;
-  activity_data?: any;
-  points_earned?: number;
-  session_id?: string;
-  duration_minutes?: number;
 }
 
 // Activity types constants (removed PAGE_VISIT, added daily_login)
@@ -32,7 +23,7 @@ export const ACTIVITY_TYPES = {
   LOGOUT: 'logout'
 } as const;
 
-export const logStudentActivity = async (activityData: ActivityLogInsert): Promise<string | null> => {
+export const logStudentActivity = async (activityData: StudentActivityLog): Promise<string | null> => {
   try {
     console.log('Logging student activity:', activityData);
     

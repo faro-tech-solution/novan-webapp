@@ -176,9 +176,7 @@ export type Database = {
           id: string
           score: number | null
           solution: string
-          student_email: string
           student_id: string
-          student_name: string
           submitted_at: string
         }
         Insert: {
@@ -189,9 +187,7 @@ export type Database = {
           id?: string
           score?: number | null
           solution: string
-          student_email: string
           student_id: string
-          student_name: string
           submitted_at?: string
         }
         Update: {
@@ -202,9 +198,7 @@ export type Database = {
           id?: string
           score?: number | null
           solution?: string
-          student_email?: string
           student_id?: string
-          student_name?: string
           submitted_at?: string
         }
         Relationships: [
@@ -377,7 +371,37 @@ export type Database = {
           student_id?: string
         }
         Relationships: []
-      }
+      },
+      daily_activities: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          points: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          points?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          points?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: []
+      },
       student_awards: {
         Row: {
           award_id: string

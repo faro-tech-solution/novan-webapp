@@ -2,35 +2,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatDate } from '@/lib/utils';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { StudentDetails } from '@/types/student';
 
 interface StudentDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  student: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    courseName: string;
-    joinDate: string;
-    status: string;
-    completedExercises: number;
-    totalExercises: number;
-    averageScore: number;
-    lastActivity: string;
-    totalPoints: number;
-    termName?: string;
-    role?: string;
-    created_at?: string;
-    updated_at?: string;
-    phone?: string;
-    address?: string;
-    bio?: string;
-    avatar_url?: string;
-    gender?: string;
-    education?: string;
-  } | null;
+  student: StudentDetails | null;
 }
 
 const educationLevels = [

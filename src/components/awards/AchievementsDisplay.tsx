@@ -1,8 +1,8 @@
-
 import { Award, Trophy, Star, Crown, Medal, Target, Zap, Flame } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { Award as AwardType, StudentAward } from '@/services/awardsService';
+import { Award as AwardType } from '@/services/awardsService';
+import { StudentAward } from '@/types/student';
 
 interface AchievementsDisplayProps {
   allAwards: AwardType[];

@@ -8,16 +8,20 @@ import { useState } from 'react';
 import { StudentDetailsDialog } from './StudentDetailsDialog';
 import { StudentCoursesDialog } from './StudentCoursesDialog';
 import { formatDate } from '@/lib/utils';
-import type { Student } from '@/hooks/queries/useStudentsQuery';
+import { Student } from '@/types/student';
 
 export interface StudentsTableProps {
   students: Student[];
   filteredStudents: Student[];
+  onUpdateStudent: (studentId: string, updates: Partial<Student>) => Promise<void>;
+  onDeleteStudent: (studentId: string) => Promise<void>;
 }
 
 export const StudentsTable = ({ 
   students, 
-  filteredStudents
+  filteredStudents,
+  onUpdateStudent,
+  onDeleteStudent
 }: StudentsTableProps) => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedStudentForCourses, setSelectedStudentForCourses] = useState<Student | null>(null);

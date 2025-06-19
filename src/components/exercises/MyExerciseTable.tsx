@@ -5,23 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { ResponsiveTable } from '@/components/ui/responsive-table';
 import { CheckCircle, Clock, FileText, Award, Calendar } from 'lucide-react';
-
-interface ExerciseWithSubmission {
-  id: string;
-  title: string;
-  description: string | null;
-  course_name?: string;
-  difficulty: string;
-  due_date: string;
-  open_date: string;
-  points: number;
-  estimated_time: string;
-  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
-}
+import { MyExerciseWithSubmission } from '@/types/exercise';
 
 interface MyExerciseTableProps {
-  exercises: ExerciseWithSubmission[];
-  filteredExercises: ExerciseWithSubmission[];
+  exercises: MyExerciseWithSubmission[];
+  filteredExercises: MyExerciseWithSubmission[];
 }
 
 export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTableProps) => {

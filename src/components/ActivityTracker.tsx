@@ -1,9 +1,9 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, ReactNode } from 'react';
 import { useActivityLogger } from '@/hooks/useActivityLogger';
 
 interface ActivityTrackerProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const ActivityTracker = ({ children }: ActivityTrackerProps) => {

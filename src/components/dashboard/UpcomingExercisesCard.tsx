@@ -1,19 +1,11 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Play, Calendar } from 'lucide-react';
-
-interface Exercise {
-  id: string;
-  title: string;
-  due_date: string;
-  estimated_time: string;
-  points: number;
-}
+import { UpcomingExercise } from '@/types/exercise';
 
 interface UpcomingExercisesCardProps {
-  exercises: Exercise[];
+  exercises: UpcomingExercise[];
 }
 
 export const UpcomingExercisesCard = ({ exercises }: UpcomingExercisesCardProps) => {

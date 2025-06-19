@@ -1,19 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-
-export interface Course {
-  id: string;
-  name: string;
-  description: string | null;
-  instructor_id: string;
-  instructor_name: string;
-  status: string;
-  max_students: number | null;
-  created_at: string;
-  student_count?: number;
-  price: number;
-}
+import { Course } from '@/types/course';
 
 export const useCoursesQuery = () => {
   const { profile } = useAuth();

@@ -1,18 +1,6 @@
-
 import { Button } from '@/components/ui/button';
 import CourseTermsManagement from './CourseTermsManagement';
-
-interface Course {
-  id: string;
-  name: string;
-  description: string | null;
-  instructor_id: string;
-  instructor_name: string;
-  status: string;
-  max_students: number | null;
-  created_at: string;
-  student_count?: number;
-}
+import { Course } from '@/types/course';
 
 interface TermsManagementModalProps {
   open: boolean;

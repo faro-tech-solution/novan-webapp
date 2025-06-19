@@ -1,16 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { accountingService } from '@/services/accountingService';
 import type { AccountingWithDetails, CreatePaymentData } from '@/types/accounting';
-
-interface StudentBalance {
-  user: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-  };
-  balance: number;
-}
+import { StudentBalance } from '@/types/student';
 
 interface FinancialReport {
   totalSales: number;

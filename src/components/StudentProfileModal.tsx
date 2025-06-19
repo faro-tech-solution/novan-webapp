@@ -5,24 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Mail, Calendar, Award, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-interface StudentProfile {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-  class_id: string | null;
-  class_name: string | null;
-  created_at: string;
-}
-
-interface StudentEnrollment {
-  course_name: string;
-  enrolled_at: string;
-  status: string;
-  term_name?: string;
-}
+import { StudentProfile, StudentEnrollment } from '@/types/student';
 
 interface StudentProfileModalProps {
   open: boolean;

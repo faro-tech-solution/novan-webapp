@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, GraduationCap, Award } from 'lucide-react';
-import type { Student } from './StudentsTable';
+import { Student } from '@/types/student';
 
 interface StudentsStatsProps {
   students: Student[];

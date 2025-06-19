@@ -2,23 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCache } from './useCache';
-
-export interface StudentCourse {
-  id: string;
-  title: string;
-  instructor: string;
-  progress: number;
-  totalLessons: number;
-  completedLessons: number;
-  duration: string;
-  difficulty: string;
-  category: string;
-  thumbnail: string;
-  enrollDate: string;
-  nextLesson: string | null;
-  status: 'active' | 'completed';
-  description?: string;
-}
+import { StudentCourse } from '@/types/course';
 
 export const useStudentCourses = () => {
   const { user } = useAuth();

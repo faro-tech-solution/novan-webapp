@@ -28,6 +28,7 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import UserManagement from "@/pages/UserManagement";
 import Profile from "@/pages/Profile";
 import Accounting from "@/pages/Accounting";
+import DailyActivitiesManagement from './pages/DailyActivitiesManagement';
 
 const queryClient = new QueryClient();
 
@@ -212,6 +213,8 @@ const AppRoutes = () => {
           </ProtectedRoute>
         } 
       />
+      
+      <Route path="/daily-activities-management" element={<DailyActivitiesManagement />} />
       
       <Route path="*" element={<NotFound />} />
     </Routes>

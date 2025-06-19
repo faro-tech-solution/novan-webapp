@@ -6,24 +6,7 @@ import { Eye, FileText, User, Calendar, Award } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SubmissionViewer } from './SubmissionViewer';
 import { ExerciseForm, FormAnswer } from '@/types/formBuilder';
-
-interface Submission {
-  id: string;
-  exercise_id: string;
-  student_id: string;
-  first_name: string;
-  last_name: string;
-  student_email: string;
-  status: string;
-  submitted_at: string;
-  score?: number;
-  feedback?: string;
-  solution: string;
-  exercise: {
-    title: string;
-    form_structure: ExerciseForm | null;
-  };
-}
+import { Submission } from '@/types/reviewSubmissions';
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -72,14 +55,14 @@ export const SubmissionCard: React.FC<SubmissionCardProps> = ({ submission }) =>
             <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600">
               <div className="flex items-center space-x-1 space-x-reverse">
                 <User className="h-4 w-4" />
-                <span>{`${submission.first_name} ${submission.last_name}`}</span>
+                <span>{`${submission.student?.first_name} ${submission.student?.last_name}`}</span>
               </div>
               <div className="flex items-center space-x-2 space-x-reverse">
                 <span className="text-sm text-gray-500">
                   {new Date(submission.submitted_at).toLocaleDateString('fa-IR')}
                 </span>
                 <span className="text-sm text-gray-500">•</span>
-                <span>{`${submission.first_name} ${submission.last_name}`}</span>
+                <span>{`${submission.student?.first_name} ${submission.student?.last_name}`}</span>
               </div>
             </div>
           </div>
@@ -107,7 +90,7 @@ export const SubmissionCard: React.FC<SubmissionCardProps> = ({ submission }) =>
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>پاسخ‌های {`${submission.first_name} ${submission.last_name}`}</DialogTitle>
+                <DialogTitle>پاسخ‌های {`${submission.student?.first_name} ${submission.student?.last_name}`}</DialogTitle>
               </DialogHeader>
               
               {submission.exercise.form_structure && (
@@ -115,7 +98,7 @@ export const SubmissionCard: React.FC<SubmissionCardProps> = ({ submission }) =>
                   form={submission.exercise.form_structure}
                   answers={answers}
                   submissionInfo={{
-                    studentName: `${submission.first_name} ${submission.last_name}`,
+                    studentName: `${submission.student?.first_name} ${submission.student?.last_name}`,
                     submittedAt: submission.submitted_at,
                     score: submission.score || undefined,
                     feedback: submission.feedback || undefined,

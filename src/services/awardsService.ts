@@ -1,5 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
+import { StudentAward } from '@/types/student';
 
 export interface Award {
   id: string;
@@ -7,18 +7,9 @@ export interface Award {
   description: string;
   icon: string;
   points_value: number;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  rarity: string;
   category: string;
   created_at: string;
-}
-
-export interface StudentAward {
-  id: string;
-  student_id: string;
-  award_id: string;
-  earned_at: string;
-  bonus_points: number;
-  awards: Award;
 }
 
 export const fetchStudentAwards = async (studentId: string): Promise<StudentAward[]> => {
