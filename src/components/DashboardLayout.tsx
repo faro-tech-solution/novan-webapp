@@ -26,6 +26,8 @@ import {
   SidebarProvider,
   SidebarTrigger
 } from '@/components/ui/sidebar';
+import { useSubmissionsQuery } from '@/hooks/useReviewSubmissionsQuery';
+import { Badge } from '@/components/ui/badge';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -83,6 +85,9 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   };
 
   const navItems = getNavItems();
+
+  const { data: submissions = [] } = useSubmissionsQuery();
+  const pendingReviewCount = submissions.filter(s => s.score === null).length;
 
   const getRoleLabel = (role?: string) => {
     switch (role) {
@@ -144,10 +149,15 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
                   <Link
                     key={item.href}
                     to={item.href}
-                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 relative"
                   >
                     <item.icon className="h-5 w-5 ml-3" />
                     <span>{item.label}</span>
+                    {item.href === '/review-submissions' && pendingReviewCount > 0 && (
+                      <Badge className="absolute left-2 top-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                        {pendingReviewCount}
+                      </Badge>
+                    )}
                   </Link>
                 ))}
                 <button
@@ -174,9 +184,14 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
                   {navItems.map((item) => (
                     <SidebarMenuItem key={item.href}>
                       <SidebarMenuButton asChild>
-                        <Link to={item.href}>
+                        <Link to={item.href} className="flex items-center">
                           <item.icon className="h-5 w-5" />
                           <span>{item.label}</span>
+                          {item.href === '/review-submissions' && pendingReviewCount > 0 && (
+                            <Badge className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                              {pendingReviewCount}
+                            </Badge>
+                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>

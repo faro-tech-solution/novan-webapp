@@ -5,6 +5,7 @@ export interface Student {
   last_name: string;
   email: string;
   role: string;
+  is_demo?: boolean;
   created_at: string;
   gender: string;
   education_level: string;
@@ -36,6 +37,7 @@ export interface StudentProfile {
   last_name: string;
   email: string;
   role: string;
+  is_demo?: boolean;
   class_id: string | null;
   class_name: string | null;
   created_at: string;
@@ -82,6 +84,8 @@ export interface StudentBalance {
     first_name: string;
     last_name: string;
     email: string;
+    role: string;
+    is_demo?: boolean;
   };
   balance: number;
 }

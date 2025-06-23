@@ -23,6 +23,7 @@ export interface User {
   english_level: 'beginner' | 'intermediate' | 'advanced' | 'native' | null;
   telegram_id: string | null;
   whatsapp_id: string | null;
+  is_demo?: boolean;
 }
 
 export const useUsersQuery = () => {

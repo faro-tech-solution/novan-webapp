@@ -29,13 +29,7 @@ export const SubmissionCard: React.FC<SubmissionCardProps> = ({ submission }) =>
     if (score === null) {
       return <Badge variant="secondary">در انتظار نمره</Badge>;
     }
-    if (score >= 80) {
-      return <Badge className="bg-green-100 text-green-800">عالی ({score}%)</Badge>;
-    }
-    if (score >= 60) {
-      return <Badge className="bg-yellow-100 text-yellow-800">خوب ({score}%)</Badge>;
-    }
-    return <Badge className="bg-red-100 text-red-800">نیاز به بهبود ({score}%)</Badge>;
+    return <Badge variant="outline">{score}</Badge>;
   };
 
   // Parse answers from solution

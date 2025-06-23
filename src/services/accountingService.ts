@@ -8,7 +8,7 @@ export const accountingService = {
       .from('accounting')
       .select(`
         *,
-        user:profiles(id, first_name, last_name, email),
+        user:profiles(id, first_name, last_name, email, role, is_demo),
         course:courses(id, name)
       `)
       .order('created_at', { ascending: false });
@@ -23,7 +23,7 @@ export const accountingService = {
       .from('accounting')
       .select(`
         *,
-        user:profiles(id, first_name, last_name, email),
+        user:profiles(id, first_name, last_name, email, role, is_demo),
         course:courses(id, name)
       `)
       .eq('user_id', userId)
@@ -77,7 +77,7 @@ export const accountingService = {
       .from('accounting')
       .select(`
         *,
-        user:profiles(id, first_name, last_name, email),
+        user:profiles(id, first_name, last_name, email, role, is_demo),
         course:courses(id, name)
       `)
       .eq('id', id)
@@ -94,7 +94,7 @@ export const accountingService = {
       .from('accounting')
       .select(`
         *,
-        user:profiles(id, first_name, last_name, email),
+        user:profiles(id, first_name, last_name, email, role, is_demo),
         course:courses(id, name)
       `)
       .eq('course_id', courseId)

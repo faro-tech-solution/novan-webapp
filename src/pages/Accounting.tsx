@@ -9,6 +9,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useAccountingRecordsQuery } from '@/hooks/useAccountingQuery';
+import { Badge } from '@/components/ui/badge';
 
 interface SelectedStudent {
   id: string;
@@ -21,6 +22,7 @@ const Accounting = () => {
   const [selectedStudent, setSelectedStudent] = useState<SelectedStudent | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const { toast } = useToast();
+  const [showDemoUsers, setShowDemoUsers] = useState(false);
 
   const { data, isLoading, error } = useAccountingRecordsQuery();
   const { balances: records = [], report } = data || { balances: [], report: {
@@ -32,15 +34,20 @@ const Accounting = () => {
     pendingInstallments: 0,
   }};
 
-  // Add search filter
-  const filteredRecords = searchQuery.trim() === '' 
-    ? records 
-    : records.filter(record => {
-        const fullName = `${record.user.first_name} ${record.user.last_name}`.toLowerCase();
-        const email = record.user.email.toLowerCase();
-        const query = searchQuery.toLowerCase();
-        return fullName.includes(query) || email.includes(query);
-      });
+  // Add search filter, trainee filter, and demo user filter
+  let filteredRecords = records.filter(record => record.user.role === 'trainee');
+  if (showDemoUsers) {
+    filteredRecords = filteredRecords.filter(record => record.user.is_demo);
+  } else {
+    filteredRecords = filteredRecords.filter(record => !record.user.is_demo);
+  }
+  filteredRecords = filteredRecords.filter(record => {
+    if (searchQuery.trim() === '') return true;
+    const fullName = `${record.user.first_name} ${record.user.last_name}`.toLowerCase();
+    const email = record.user.email.toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return fullName.includes(query) || email.includes(query);
+  });
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('fa-IR').format(amount);
@@ -103,14 +110,25 @@ const Accounting = () => {
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>لیست دانشجویان</CardTitle>
-            <div className="relative w-72">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="جستجو بر اساس نام یا ایمیل..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 text-right"
-              />
+            <div className="flex flex-col gap-2 w-72">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="جستجو بر اساس نام یا ایمیل..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8 text-right"
+                />
+              </div>
+              <label className="flex items-center gap-2 text-sm mt-1">
+                <input
+                  type="checkbox"
+                  checked={showDemoUsers}
+                  onChange={e => setShowDemoUsers(e.target.checked)}
+                  className="accent-yellow-500"
+                />
+                نمایش کاربران آزمایشی
+              </label>
             </div>
           </div>
         </CardHeader>
@@ -136,7 +154,7 @@ const Accounting = () => {
               <TableBody>
                 {filteredRecords.map((record) => (
                   <TableRow key={record.user.id}>
-                    <TableCell className="text-right">{record.user.first_name} {record.user.last_name}</TableCell>
+                    <TableCell className="text-right">{record.user.first_name} {record.user.last_name}{record.user.is_demo && <Badge className="ml-2 bg-yellow-200 text-yellow-800">آزمایشی</Badge>}</TableCell>
                     <TableCell className="text-right">{record.user.email}</TableCell>
                     <TableCell className="text-right">
                       <span className={record.balance >= 0 ? 'text-green-600' : 'text-red-600'}>

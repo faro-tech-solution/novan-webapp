@@ -17,6 +17,7 @@ interface UserProfile {
   email: string;
   role: UserRole;
   created_at: string;
+  is_demo?: boolean;
 }
 
 const UserManagement = () => {
@@ -45,6 +46,7 @@ const UserManagement = () => {
         email: user.email || '',
         role: user.role as UserRole,
         created_at: user.created_at || '',
+        is_demo: user.is_demo || false,
       }));
 
       setUsers(mappedUsers);
@@ -147,6 +149,7 @@ const UserManagement = () => {
                     <TableCell>
                       <div className="font-medium">
                         {`${user.first_name} ${user.last_name}`.trim() || 'نامشخص'}
+                        {user.is_demo && <Badge className="ml-2 bg-yellow-200 text-yellow-800">آزمایشی</Badge>}
                       </div>
                     </TableCell>
                     <TableCell>{user.email}</TableCell>

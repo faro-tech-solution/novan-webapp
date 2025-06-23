@@ -16,7 +16,7 @@ export interface AccountingRecord {
 }
 
 export interface AccountingWithDetails extends AccountingRecord {
-  user: SubmissionStudent & { id: string };
+  user: SubmissionStudent & { id: string; role?: string; is_demo?: boolean };
   course: {
     id: string;
     name: string;

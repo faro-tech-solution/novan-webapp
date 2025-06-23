@@ -11,6 +11,13 @@ import { GradingSection } from '@/components/exercises/GradingSection';
 import { SubmissionViewer } from '@/components/exercises/SubmissionViewer';
 import { useSubmissionsQuery, useCoursesQuery, useGradeSubmissionMutation } from '@/hooks/useReviewSubmissionsQuery';
 import { Submission } from '@/types/reviewSubmissions';
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from '@/components/ui/select';
 
 const ReviewSubmissions = () => {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
@@ -19,6 +26,7 @@ const ReviewSubmissions = () => {
   const [feedback, setFeedback] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+  const [statusFilter, setStatusFilter] = useState<'pending' | 'reviewed' | 'all'>('pending');
 
   const { data: submissions = [], isLoading: submissionsLoading, error: submissionsError } = useSubmissionsQuery();
   const { data: courses = [] } = useCoursesQuery();
@@ -66,12 +74,18 @@ const ReviewSubmissions = () => {
     return course ? course.name : '---';
   };
 
-  const filteredSubmissions = submissions.filter(submission =>
-    `${submission.student?.first_name} ${submission.student?.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    submission.student?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (submission.exercise?.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-    getCourseName(submission.exercise?.course_id).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredSubmissions = submissions.filter(submission => {
+    // Status filter
+    if (statusFilter === 'pending' && submission.score !== null) return false;
+    if (statusFilter === 'reviewed' && submission.score === null) return false;
+    // Search filter
+    return (
+      `${submission.student?.first_name} ${submission.student?.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      submission.student?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (submission.exercise?.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      getCourseName(submission.exercise?.course_id).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <DashboardLayout title="بررسی تمرین‌های ارسالی">
@@ -80,13 +94,23 @@ const ReviewSubmissions = () => {
           <CardTitle>لیست تمرین‌های ارسالی</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-4">
+          <div className="mb-4 flex flex-col md:flex-row md:items-center md:space-x-4 md:space-x-reverse gap-2">
             <Input
               placeholder="جستجو بر اساس نام دانشجو، ایمیل، عنوان تمرین یا نام دوره..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-md"
             />
+            <Select value={statusFilter} onValueChange={v => setStatusFilter(v as any)}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pending">در انتظار بررسی</SelectItem>
+                <SelectItem value="reviewed">بررسی شده</SelectItem>
+                <SelectItem value="all">همه</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {submissionsLoading ? (
@@ -170,6 +194,7 @@ const ReviewSubmissions = () => {
                   onScoreChange={setScore}
                   onFeedbackChange={setFeedback}
                   onSubmitGrade={handleGradingComplete}
+                  maxScore={selectedSubmission.exercise.points ?? 100}
                 />
               </>
             )}

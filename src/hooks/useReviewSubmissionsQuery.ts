@@ -39,6 +39,7 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
       exercise:exercises (
         id,
         title,
+        points,
         form_structure,
         course_id
       )
@@ -66,6 +67,7 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
     exercise: submission.exercise ? {
       id: submission.exercise.id,
       title: submission.exercise.title,
+      points: submission.exercise.points,
       form_structure: parseFormStructure(submission.exercise.form_structure),
       course_id: submission.exercise.course_id
     } : null

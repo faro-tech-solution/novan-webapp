@@ -59,7 +59,7 @@ export const SubmissionsList: React.FC<SubmissionsListProps> = ({
               <div className="flex items-center space-x-2 space-x-reverse">
                 {submission.score !== null ? (
                   <Badge variant={submission.score >= 80 ? "default" : submission.score >= 60 ? "secondary" : "destructive"}>
-                    نمره: {submission.score}%
+                    نمره: {submission.score}
                   </Badge>
                 ) : (
                   <Badge variant="outline">بدون نمره</Badge>

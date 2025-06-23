@@ -105,7 +105,7 @@ export const TraineeExerciseForm = ({
                 <h5 className="font-semibold text-blue-800 mb-2">بازخورد استاد:</h5>
                 <p className="text-blue-700">{exercise.feedback}</p>
                 {exercise.score !== null && (
-                  <p className="text-blue-800 font-semibold mt-2">نمره: {exercise.score}%</p>
+                  <p className="text-blue-800 font-semibold mt-2">نمره: {exercise.score}</p>
                 )}
               </div>
             )}
