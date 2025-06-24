@@ -7,12 +7,14 @@ import { useToast } from '@/hooks/use-toast';
 import { useStudentsQuery } from '@/hooks/queries/useStudentsQuery';
 import { useAuth } from '@/contexts/AuthContext';
 import { Student } from '@/types/student';
+import { Input } from '@/components/ui/input';
 
 const Students = () => {
   const { profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [courseFilter, setCourseFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showDemoUsers, setShowDemoUsers] = useState(false);
   const { toast } = useToast();
 
   const { 
@@ -27,15 +29,19 @@ const Students = () => {
   const courses = [...new Set(students.map(s => s.courseName))];
 
   // Filter students
-  const filteredStudents = students.filter(student => {
+  let filteredStudents = students.filter(student => {
     const matchesSearch = `${student.first_name} ${student.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.courseName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCourse = courseFilter === 'all' || student.courseName === courseFilter;
     const matchesStatus = statusFilter === 'all' || student.status === statusFilter;
-    
     return matchesSearch && matchesCourse && matchesStatus;
   });
+  if (showDemoUsers) {
+    filteredStudents = filteredStudents.filter(student => student.is_demo);
+  } else {
+    filteredStudents = filteredStudents.filter(student => !student.is_demo);
+  }
 
   const handleUpdateStudent = async (studentId: string, updates: Partial<Student>) => {
     try {
@@ -110,6 +116,8 @@ const Students = () => {
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
           courses={courses}
+          showDemoUsers={showDemoUsers}
+          setShowDemoUsers={setShowDemoUsers}
         />
 
         {/* Students Table */}

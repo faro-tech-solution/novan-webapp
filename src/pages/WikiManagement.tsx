@@ -448,15 +448,16 @@ const WikiManagement: React.FC = () => {
             
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Badge variant={category.access_type === 'all_students' ? 'default' : 'secondary'}>
-                    {category.access_type === 'all_students' ? 'همه دانشجویان' : 'دوره‌های خاص'}
-                  </Badge>
-                </div>
+                { category.access_type === 'all_students' && 
+                  <div className="flex items-center gap-2">
+                    <Badge variant={'default'}>
+                      همه دانشجویان
+                    </Badge>
+                  </div>
+                }
                 
                 {category.access_type === 'course_specific' && category.course_access && (
                   <div className="text-xs text-gray-500">
-                    <p>دوره‌های مجاز:</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {category.course_access.map((access) => (
                         <Badge key={access.id} variant="outline" className="text-xs">
@@ -466,11 +467,6 @@ const WikiManagement: React.FC = () => {
                     </div>
                   </div>
                 )}
-                
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <FileText className="h-4 w-4" />
-                  <span>{(category as any).topics?.length || 0} موضوع</span>
-                </div>
                 
                 <Button asChild className="w-full">
                   <Link to={`/wiki/category/${category.id}`}>
