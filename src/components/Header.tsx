@@ -17,7 +17,7 @@ const Header = () => {
             <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">آ</span>
             </div>
-            <span className="text-xl font-bold text-gray-900 font-peyda">آموزش‌هاب</span>
+            <span className="text-xl font-bold text-gray-900 font-peyda">پرتال آموزش فاروباکس</span>
           </Link>
 
           {/* Desktop Navigation */}

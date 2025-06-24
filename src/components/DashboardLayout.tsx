@@ -122,7 +122,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
                 <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">آ</span>
                 </div>
-                <span className="text-xl font-bold text-gray-900 font-peyda">آموزش‌هاب</span>
+                <span className="text-xl font-bold text-gray-900 font-peyda">پرتال آموزش فاروباکس</span>
               </Link>
               <span className="text-gray-400 hidden md:inline">|</span>
               <h1 className="text-lg font-semibold text-gray-900 font-peyda hidden md:block">{title}</h1>
