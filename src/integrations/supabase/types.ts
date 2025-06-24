@@ -581,6 +581,172 @@ export type Database = {
           }
         ];
       };
+      wiki_categories: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          access_type: 'all_students' | 'course_specific';
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          access_type?: 'all_students' | 'course_specific';
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          access_type?: 'all_students' | 'course_specific';
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wiki_categories_created_by_fkey";
+            columns: ["created_by"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      wiki_topics: {
+        Row: {
+          id: string;
+          category_id: string;
+          title: string;
+          description: string | null;
+          order_index: number;
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          category_id: string;
+          title: string;
+          description?: string | null;
+          order_index?: number;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          category_id?: string;
+          title?: string;
+          description?: string | null;
+          order_index?: number;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wiki_topics_category_id_fkey";
+            columns: ["category_id"];
+            referencedRelation: "wiki_categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wiki_topics_created_by_fkey";
+            columns: ["created_by"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      wiki_articles: {
+        Row: {
+          id: string;
+          topic_id: string;
+          title: string;
+          content: string;
+          order_index: number;
+          is_published: boolean;
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          topic_id: string;
+          title: string;
+          content: string;
+          order_index?: number;
+          is_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          topic_id?: string;
+          title?: string;
+          content?: string;
+          order_index?: number;
+          is_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wiki_articles_topic_id_fkey";
+            columns: ["topic_id"];
+            referencedRelation: "wiki_topics";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wiki_articles_created_by_fkey";
+            columns: ["created_by"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      wiki_category_course_access: {
+        Row: {
+          id: string;
+          category_id: string;
+          course_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          category_id: string;
+          course_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          category_id?: string;
+          course_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wiki_category_course_access_category_id_fkey";
+            columns: ["category_id"];
+            referencedRelation: "wiki_categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wiki_category_course_access_course_id_fkey";
+            columns: ["course_id"];
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     }
     Views: {
       [_ in never]: never

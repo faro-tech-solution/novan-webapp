@@ -14,7 +14,13 @@ import {
   UserCog,
   CheckCircle,
   Wallet,
-  Menu
+  Menu,
+  Home,
+  GraduationCap,
+  CheckSquare,
+  TrendingUp,
+  User,
+  Edit
 } from 'lucide-react';
 import {
   Sidebar,
@@ -49,6 +55,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
     { href: '/review-submissions', icon: CheckCircle, label: 'بررسی تمرین‌ها' },
     { href: '/students', icon: Award, label: 'دانشجویان' },
+    { href: '/wiki/manage', icon: Edit, label: 'مدیریت ویکی' },
     { href: '/profile', icon: UserCog, label: 'پروفایل' },
   ];
 
@@ -58,6 +65,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/progress', icon: Award, label: 'پیشرفت' },
     { href: '/student-courses', icon: BookOpen, label: 'دوره‌های من' },
     { href: '/profile', icon: UserCog, label: 'پروفایل' },
+    { href: '/wiki', icon: BookOpen, label: 'ویکی' },
   ];
 
   const adminNavItems = [
@@ -68,6 +76,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
     { href: '/review-submissions', icon: CheckCircle, label: 'بررسی تمرین‌ها' },
     { href: '/accounting', icon: Wallet, label: 'حسابداری' },
+    { href: '/wiki/manage', icon: Edit, label: 'مدیریت ویکی' },
     { href: '/profile', icon: UserCog, label: 'پروفایل' },
   ];
 
@@ -137,7 +146,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
           </div>
         </header>
 
-        <div className="flex">
+        <div className="flex min-h-[calc(100vh-theme(space.20))]">
           {/* Desktop Sidebar */}
           <div className="hidden md:block w-64 bg-white border-l">
             <div className="h-full py-4">

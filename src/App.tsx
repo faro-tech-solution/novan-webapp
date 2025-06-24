@@ -29,6 +29,11 @@ import UserManagement from "@/pages/UserManagement";
 import Profile from "@/pages/Profile";
 import Accounting from "@/pages/Accounting";
 import DailyActivitiesManagement from './pages/DailyActivitiesManagement';
+import Wiki from '@/pages/Wiki';
+import WikiCategory from '@/pages/WikiCategory';
+import WikiArticle from '@/pages/WikiArticle';
+import CreateWikiArticle from '@/pages/CreateWikiArticle';
+import WikiManagement from '@/pages/WikiManagement';
 
 const queryClient = new QueryClient();
 
@@ -215,6 +220,13 @@ const AppRoutes = () => {
       />
       
       <Route path="/daily-activities-management" element={<DailyActivitiesManagement />} />
+      
+      {/* Wiki Routes */}
+      <Route path="/wiki" element={<Wiki />} />
+      <Route path="/wiki/category/:categoryId" element={<WikiCategory />} />
+      <Route path="/wiki/article/:articleId" element={<WikiArticle />} />
+      <Route path="/wiki/create-article" element={<CreateWikiArticle />} />
+      <Route path="/wiki/manage" element={<WikiManagement />} />
       
       <Route path="*" element={<NotFound />} />
     </Routes>
