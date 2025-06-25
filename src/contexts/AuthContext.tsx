@@ -33,6 +33,7 @@ interface AuthContextType {
   register: (first_name: string, last_name: string, email: string, password: string, role: UserRole) => Promise<{ error: any }>;
   logout: () => Promise<void>;
   loading: boolean;
+  resetPassword: (email: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -184,6 +185,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
   };
 
+  const resetPassword = async (email: string) => {
+    // Redirect to root path which renders the Login component
+    const redirectUrl = `${window.location.origin}/`;
+    console.log('Password reset redirect URL:', redirectUrl);
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
+    return { error };
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -192,7 +204,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login, 
       register, 
       logout, 
-      loading 
+      loading,
+      resetPassword
     }}>
       {children}
     </AuthContext.Provider>

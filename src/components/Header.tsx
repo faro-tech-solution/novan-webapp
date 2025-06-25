@@ -17,7 +17,7 @@ const Header = () => {
             <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">آ</span>
             </div>
-            <span className="text-xl font-bold text-gray-900 font-peyda">پرتال آموزش فاروباکس</span>
+            <span className="text-xl font-bold text-gray-900 font-peyda">پورتال آموزش فاروباکس</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -65,7 +65,7 @@ const Header = () => {
                 </Link>
               ) : (
                 <div className="flex items-center space-x-2 space-x-reverse">
-                  <Link to="/login">
+                  <Link to="/">
                     <Button variant="outline">
                       <LogIn className="h-4 w-4 ml-2" />
                       ورود
@@ -117,7 +117,7 @@ const Header = () => {
               )}
               {!profile && (
                 <>
-                  <Link to="/login" className="text-gray-700 hover:text-teal-600 transition-colors">
+                  <Link to="/" className="text-gray-700 hover:text-teal-600 transition-colors">
                     ورود
                   </Link>
                   <Link to="/register" className="text-gray-700 hover:text-teal-600 transition-colors">

@@ -58,7 +58,7 @@ const Register = () => {
           title: "ثبت نام موفق",
           description: "لطفا ایمیل خود را بررسی کنید و حساب کاربری را تایید کنید.",
         });
-        navigate('/login');
+        navigate('/');
       }
     } catch (err) {
       toast({
@@ -156,7 +156,7 @@ const Register = () => {
 
             <div className="mt-4 text-center text-sm">
               <span className="text-gray-600">قبلا ثبت نام کرده‌اید؟ </span>
-              <Link to="/login" className="text-teal-600 hover:text-teal-700 font-medium">
+              <Link to="/" className="text-teal-600 hover:text-teal-700 font-medium">
                 ورود
               </Link>
             </div>

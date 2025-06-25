@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     if (!loading) {
       // If user is not authenticated, redirect to login
       if (!profile) {
-        navigate('/login');
+        navigate('/');
         return;
       }
 

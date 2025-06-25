@@ -10,7 +10,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!loading) {
       if (!profile) {
-        navigate('/login');
+        navigate('/');
         return;
       }
 
