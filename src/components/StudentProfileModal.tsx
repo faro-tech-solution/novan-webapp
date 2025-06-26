@@ -6,6 +6,7 @@ import { Mail, Calendar, Award, BookOpen } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { StudentProfile, StudentEnrollment } from '@/types/student';
+import UserNameWithBadge from '@/components/ui/UserNameWithBadge';
 
 interface StudentProfileModalProps {
   open: boolean;
@@ -173,7 +174,7 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium text-gray-500">نام</label>
-                    <p className="text-lg font-medium">{profile.first_name && profile.last_name ? `${profile.first_name} ${profile.last_name}` : 'نامشخص'}{profile.is_demo && <Badge className="ml-2 bg-yellow-200 text-yellow-800">آزمایشی</Badge>}</p>
+                    <p className="text-lg font-medium">{profile.first_name && profile.last_name ? <UserNameWithBadge firstName={profile.first_name} lastName={profile.last_name} isDemo={profile.is_demo} /> : 'نامشخص'}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-500">ایمیل</label>

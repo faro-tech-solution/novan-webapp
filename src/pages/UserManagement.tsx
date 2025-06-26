@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from '@/components/ui/label';
 import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import UserNameWithBadge from '@/components/ui/UserNameWithBadge';
 
 const UserManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -156,7 +157,7 @@ const UserManagement = () => {
             <TableBody>
               {filteredUsers.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell>{`${user.first_name} ${user.last_name}`}{user.is_demo && <Badge className="ml-2 bg-yellow-200 text-yellow-800">آزمایشی</Badge>}</TableCell>
+                  <TableCell><UserNameWithBadge firstName={user.first_name} lastName={user.last_name} isDemo={user.is_demo} /></TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded-full text-xs ${

@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useAccountingRecordsQuery } from '@/hooks/useAccountingQuery';
 import { Badge } from '@/components/ui/badge';
+import UserNameWithBadge from '@/components/ui/UserNameWithBadge';
 
 interface SelectedStudent {
   id: string;
@@ -154,7 +155,7 @@ const Accounting = () => {
               <TableBody>
                 {filteredRecords.map((record) => (
                   <TableRow key={record.user.id}>
-                    <TableCell className="text-right">{record.user.first_name} {record.user.last_name}{record.user.is_demo && <Badge className="ml-2 bg-yellow-200 text-yellow-800">آزمایشی</Badge>}</TableCell>
+                    <TableCell className="text-right"><UserNameWithBadge firstName={record.user.first_name} lastName={record.user.last_name} isDemo={record.user.is_demo} /></TableCell>
                     <TableCell className="text-right">{record.user.email}</TableCell>
                     <TableCell className="text-right">
                       <span className={record.balance >= 0 ? 'text-green-600' : 'text-red-600'}>

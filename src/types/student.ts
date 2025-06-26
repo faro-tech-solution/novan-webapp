@@ -95,6 +95,7 @@ export interface SubmissionStudent {
   first_name: string;
   last_name: string;
   email: string;
+  is_demo?: boolean;
 }
 
 // Student interface for activity logs

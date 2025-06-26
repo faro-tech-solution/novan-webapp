@@ -52,7 +52,7 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
   const studentIds = submissions?.map(s => s.student_id) || [];
   const { data: profiles, error: profilesError } = await supabase
     .from('profiles')
-    .select('id, first_name, last_name, email')
+    .select('id, first_name, last_name, email, is_demo')
     .in('id', studentIds);
 
   if (profilesError) throw profilesError;

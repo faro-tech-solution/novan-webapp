@@ -9,6 +9,7 @@ import { StudentDetailsDialog } from './StudentDetailsDialog';
 import { StudentCoursesDialog } from './StudentCoursesDialog';
 import { formatDate } from '@/lib/utils';
 import { Student } from '@/types/student';
+import UserNameWithBadge from '@/components/ui/UserNameWithBadge';
 
 export interface StudentsTableProps {
   students: Student[];
@@ -57,7 +58,7 @@ export const StudentsTable = ({
           <ResponsiveTable headers={tableHeaders}>
             {filteredStudents.map((student) => (
               <TableRow key={student.id}>
-                <TableCell className="text-right">{student.first_name} {student.last_name} {student.is_demo && <Badge variant="secondary" className="ml-2 bg-yellow-200 text-yellow-800">آزمایشی</Badge>}</TableCell>
+                <TableCell className="text-right"><UserNameWithBadge firstName={student.first_name} lastName={student.last_name} isDemo={student.is_demo} /></TableCell>
                 <TableCell className="text-right">{student.email}</TableCell>
                 <TableCell className="text-right">
                   <Button

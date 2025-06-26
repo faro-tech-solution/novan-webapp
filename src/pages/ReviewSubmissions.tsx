@@ -18,6 +18,10 @@ import {
   SelectItem,
   SelectValue
 } from '@/components/ui/select';
+import { useExercisesQuery as useExercisesByCourseQuery } from '@/hooks/useExercisesQuery';
+import { Checkbox } from '@/components/ui/checkbox';
+import UserNameWithBadge from '@/components/ui/UserNameWithBadge';
+import { useStudentsQuery } from '@/hooks/queries/useStudentsQuery';
 
 const ReviewSubmissions = () => {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
@@ -27,10 +31,16 @@ const ReviewSubmissions = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
   const [statusFilter, setStatusFilter] = useState<'pending' | 'reviewed' | 'all'>('pending');
+  const [selectedCourse, setSelectedCourse] = useState<string>('all');
+  const [selectedExercise, setSelectedExercise] = useState<string>('all');
+  const [showDemoUsers, setShowDemoUsers] = useState(false);
+  const [showNoSubmission, setShowNoSubmission] = useState(false);
 
   const { data: submissions = [], isLoading: submissionsLoading, error: submissionsError } = useSubmissionsQuery();
   const { data: courses = [] } = useCoursesQuery();
+  const { data: exercisesByCourse = [], isLoading: exercisesLoading } = useExercisesByCourseQuery(selectedCourse !== 'all' ? selectedCourse : undefined);
   const gradeSubmissionMutation = useGradeSubmissionMutation();
+  const { students: allStudents = [] } = useStudentsQuery();
 
   const handleGradingComplete = async () => {
     if (!selectedSubmission) return;
@@ -78,6 +88,16 @@ const ReviewSubmissions = () => {
     // Status filter
     if (statusFilter === 'pending' && submission.score !== null) return false;
     if (statusFilter === 'reviewed' && submission.score === null) return false;
+    // Course filter
+    if (selectedCourse !== 'all' && submission.exercise?.course_id !== selectedCourse) return false;
+    // Exercise filter
+    if (selectedExercise !== 'all' && submission.exercise?.id !== selectedExercise) return false;
+    // Demo user filter
+    if (showDemoUsers) {
+      if (!submission.student?.is_demo) return false;
+    } else {
+      if (submission.student?.is_demo) return false;
+    }
     // Search filter
     return (
       `${submission.student?.first_name} ${submission.student?.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -86,6 +106,43 @@ const ReviewSubmissions = () => {
       getCourseName(submission.exercise?.course_id).toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+
+  // Find students who have NOT submitted for the current filters
+  let studentsWithNoSubmission: typeof allStudents = [];
+  if (showNoSubmission) {
+    // Get filtered student IDs who have submitted
+    let relevantSubmissions = submissions;
+    // Apply course filter to submissions
+    if (selectedCourse !== 'all') {
+      relevantSubmissions = relevantSubmissions.filter(s => s.exercise?.course_id === selectedCourse);
+    }
+    // Apply exercise filter to submissions
+    if (selectedExercise !== 'all') {
+      relevantSubmissions = relevantSubmissions.filter(s => s.exercise?.id === selectedExercise);
+    }
+    // Demo user filter for submissions
+    if (showDemoUsers) {
+      relevantSubmissions = relevantSubmissions.filter(s => s.student?.is_demo);
+    } else {
+      relevantSubmissions = relevantSubmissions.filter(s => !s.student?.is_demo);
+    }
+    const submittedStudentIds = new Set(relevantSubmissions.map(s => s.student_id));
+    studentsWithNoSubmission = allStudents.filter(student => {
+      // Course filter: must be enrolled in the selected course
+      if (selectedCourse !== 'all') {
+        const enrolled = student.course_enrollments?.some(e => e.course?.name && courses.find(c => c.id === selectedCourse)?.name === e.course?.name);
+        if (!enrolled) return false;
+      }
+      // Demo user filter
+      if (showDemoUsers) {
+        if (!student.is_demo) return false;
+      } else {
+        if (student.is_demo) return false;
+      }
+      // Only those who have NOT submitted for the relevant exercise/course
+      return !submittedStudentIds.has(student.id);
+    });
+  }
 
   return (
     <DashboardLayout title="بررسی تمرین‌های ارسالی">
@@ -111,6 +168,38 @@ const ReviewSubmissions = () => {
                 <SelectItem value="all">همه</SelectItem>
               </SelectContent>
             </Select>
+            {/* Course Filter */}
+            <Select value={selectedCourse} onValueChange={v => { setSelectedCourse(v); setSelectedExercise('all'); }}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="انتخاب دوره" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">همه دوره‌ها</SelectItem>
+                {courses.map(course => (
+                  <SelectItem key={course.id} value={course.id}>{course.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {/* Exercise Filter */}
+            <Select value={selectedExercise} onValueChange={v => setSelectedExercise(v)} disabled={selectedCourse === 'all' || exercisesLoading}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="انتخاب تمرین" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">همه تمرین‌ها</SelectItem>
+                {exercisesByCourse.map(ex => (
+                  <SelectItem key={ex.id} value={ex.id}>{ex.title}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex items-center space-x-2 space-x-reverse">
+              <Checkbox id="show-demo-users" checked={showDemoUsers} onCheckedChange={v => setShowDemoUsers(v === true)} />
+              <label htmlFor="show-demo-users" className="text-sm cursor-pointer select-none">نمایش کاربران آزمایشی</label>
+            </div>
+            <div className="flex items-center space-x-2 space-x-reverse">
+              <Checkbox id="show-no-submission" checked={showNoSubmission} onCheckedChange={v => setShowNoSubmission(v === true)} />
+              <label htmlFor="show-no-submission" className="text-sm cursor-pointer select-none">کاربرانی که تمرین نکرده اند</label>
+            </div>
           </div>
 
           {submissionsLoading ? (
@@ -119,50 +208,79 @@ const ReviewSubmissions = () => {
             <div className="text-center py-4 text-red-500">
               {submissionsError instanceof Error ? submissionsError.message : 'خطا در دریافت اطلاعات'}
             </div>
+          ) : showNoSubmission ? (
+            studentsWithNoSubmission.length === 0 ? (
+              <div className="text-center py-4">همه دانشجویان برای این فیلتر تمرین ارسال کرده‌اند</div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-right">دانشجو</TableHead>
+                    <TableHead className="text-right">ایمیل</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {studentsWithNoSubmission.map(student => (
+                    <TableRow key={student.id}>
+                      <TableCell>
+                        <UserNameWithBadge firstName={student.first_name} lastName={student.last_name} isDemo={student.is_demo} />
+                      </TableCell>
+                      <TableCell>{student.email}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )
           ) : filteredSubmissions.length === 0 ? (
             <div className="text-center py-4">هیچ تمرینی برای بررسی وجود ندارد</div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">دانشجو</TableHead>
-                  <TableHead className="text-right">تمرین</TableHead>
-                  <TableHead className="text-right">تاریخ ارسال</TableHead>
-                  <TableHead className="text-right">وضعیت</TableHead>
-                  <TableHead className="text-right">عملیات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredSubmissions.map((submission) => (
-                  <TableRow key={submission.id}>
-                    <TableCell>
-                      <label className="block">{`${submission.student?.first_name} ${submission.student?.last_name}`}</label>
-                      <label className="block text-sm text-gray-400">{submission.student?.email}</label>
-                    </TableCell>
-                    <TableCell>
-                      <label className="block">{submission.exercise?.title || '---'}</label>
-                      <label className="block text-sm text-gray-400">{getCourseName(submission.exercise?.course_id)}</label>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(submission.submitted_at).toLocaleDateString('fa-IR')}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={submission.score !== null ? "default" : "secondary"}>
-                        {submission.score !== null ? 'بررسی شده' : 'در انتظار بررسی'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleViewSubmission(submission)}
-                      >
-                        مشاهده و نمره‌دهی
-                      </Button>
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-right">دانشجو</TableHead>
+                    <TableHead className="text-right">تمرین</TableHead>
+                    <TableHead className="text-right">تاریخ ارسال</TableHead>
+                    <TableHead className="text-right">وضعیت</TableHead>
+                    <TableHead className="text-right">عملیات</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredSubmissions.map((submission) => (
+                    <TableRow key={submission.id}>
+                      <TableCell>
+                        <UserNameWithBadge
+                          firstName={submission.student?.first_name || ''}
+                          lastName={submission.student?.last_name || ''}
+                          isDemo={submission.student?.is_demo}
+                        />
+                        <label className="block text-sm text-gray-400">{submission.student?.email}</label>
+                      </TableCell>
+                      <TableCell>
+                        <label className="block">{submission.exercise?.title || '---'}</label>
+                        <label className="block text-sm text-gray-400">{getCourseName(submission.exercise?.course_id)}</label>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(submission.submitted_at).toLocaleDateString('fa-IR')}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={submission.score !== null ? "default" : "secondary"}>
+                          {submission.score !== null ? 'بررسی شده' : 'در انتظار بررسی'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleViewSubmission(submission)}
+                        >
+                          مشاهده و نمره‌دهی
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>
           )}
         </CardContent>
       </Card>
