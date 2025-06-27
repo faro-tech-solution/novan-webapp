@@ -91,6 +91,8 @@ const Login = () => {
         navigate('/dashboard/trainee');
       } else if (profile.role === 'admin') {
         navigate('/dashboard/admin');
+      } else if (profile.role === 'teammate') {
+        navigate('/dashboard/teammate');
       }
     }
   }, [profile, navigate, showNewPasswordForm]);
@@ -184,6 +186,35 @@ const Login = () => {
 
     setUpdatePasswordLoading(true);
     try {
+      // Extract access token from URL hash
+      const hash = location.hash;
+      const accessToken = hash.split('access_token=')[1]?.split('&')[0];
+      
+      if (!accessToken) {
+        toast({
+          title: 'خطا',
+          description: 'لینک بازیابی نامعتبر است.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Set the session using the access token
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: '', // We don't have refresh token from URL
+      });
+
+      if (sessionError) {
+        toast({
+          title: 'خطا',
+          description: 'خطا در احراز هویت. لطفا دوباره تلاش کنید.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      // Now update the password
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });

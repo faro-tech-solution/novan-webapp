@@ -34,6 +34,9 @@ import WikiCategory from '@/pages/WikiCategory';
 import WikiArticle from '@/pages/WikiArticle';
 import CreateWikiArticle from '@/pages/CreateWikiArticle';
 import WikiManagement from '@/pages/WikiManagement';
+import TeammatesDashboard from '@/pages/TeammatesDashboard';
+import TasksManagement from './pages/TasksManagement';
+import TeammateTasks from './pages/TeammateTasks';
 
 const queryClient = new QueryClient();
 
@@ -226,6 +229,33 @@ const AppRoutes = () => {
       <Route path="/wiki/article/:articleId" element={<WikiArticle />} />
       <Route path="/wiki/create-article" element={<CreateWikiArticle />} />
       <Route path="/wiki/manage" element={<WikiManagement />} />
+      
+      <Route 
+        path="/dashboard/teammate" 
+        element={
+          <ProtectedRoute requiredRole="teammate">
+            <TeammatesDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/tasks-management" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <TasksManagement />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route
+        path="/tasks"
+        element={
+          <ProtectedRoute requiredRole="teammate">
+            <TeammateTasks />
+          </ProtectedRoute>
+        }
+      />
       
       <Route path="*" element={<NotFound />} />
     </Routes>

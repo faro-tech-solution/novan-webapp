@@ -20,7 +20,8 @@ import {
   CheckSquare,
   TrendingUp,
   User,
-  Edit
+  Edit,
+  ListChecks
 } from 'lucide-react';
 import {
   Sidebar,
@@ -77,6 +78,13 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     { href: '/review-submissions', icon: CheckCircle, label: 'بررسی تمرین‌ها' },
     { href: '/accounting', icon: Wallet, label: 'حسابداری' },
     { href: '/wiki/manage', icon: Edit, label: 'مدیریت ویکی' },
+    { href: '/tasks-management', icon: ListChecks, label: 'مدیریت وظایف' },
+    { href: '/profile', icon: UserCog, label: 'پروفایل' },
+  ];
+
+  const teammateNavItems = [
+    { href: '/dashboard/teammate', icon: LayoutDashboard, label: 'داشبورد' },
+    { href: '/tasks', icon: CheckCircle, label: 'کارهای من' },
     { href: '/profile', icon: UserCog, label: 'پروفایل' },
   ];
 
@@ -88,6 +96,8 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
         return traineeNavItems;
       case 'admin':
         return adminNavItems;
+      case 'teammate':
+        return teammateNavItems;
       default:
         return traineeNavItems;
     }
@@ -106,6 +116,8 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
         return 'دانشجو';
       case 'admin':
         return 'مدیر';
+      case 'teammate':
+        return 'هم‌تیمی';
       default:
         return 'کاربر';
     }

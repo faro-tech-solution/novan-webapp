@@ -133,6 +133,7 @@ const UserManagement = () => {
                 <SelectItem value="admin">مدیر</SelectItem>
                 <SelectItem value="trainer">مدرس</SelectItem>
                 <SelectItem value="trainee">دانشجو</SelectItem>
+                <SelectItem value="teammate">هم‌تیمی</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -160,14 +161,24 @@ const UserManagement = () => {
                   <TableCell><UserNameWithBadge firstName={user.first_name} lastName={user.last_name} isDemo={user.is_demo} /></TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                      user.role === 'trainer' ? 'bg-blue-100 text-blue-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
-                      {user.role === 'admin' ? 'مدیر' :
-                       user.role === 'trainer' ? 'مدرس' :
-                       'دانشجو'}
+                    <span className={`px-2 py-1 rounded-full text-xs ${(() => {
+                      switch (String(user.role)) {
+                        case 'admin': return 'bg-purple-100 text-purple-800';
+                        case 'trainer': return 'bg-blue-100 text-blue-800';
+                        case 'teammate': return 'bg-teal-100 text-teal-800';
+                        case 'trainee': return 'bg-green-100 text-green-800';
+                        default: return 'bg-gray-200 text-gray-800';
+                      }
+                    })()}`}>
+                      {(() => {
+                        switch (String(user.role)) {
+                          case 'admin': return 'مدیر';
+                          case 'trainer': return 'مدرس';
+                          case 'teammate': return 'هم‌تیمی';
+                          case 'trainee': return 'دانشجو';
+                          default: return user.role;
+                        }
+                      })()}
                     </span>
                   </TableCell>
                   <TableCell>{new Date(user.created_at).toLocaleDateString('fa-IR')}</TableCell>
@@ -243,6 +254,7 @@ const UserManagement = () => {
                     <SelectItem value="admin">مدیر</SelectItem>
                     <SelectItem value="trainer">مدرس</SelectItem>
                     <SelectItem value="trainee">دانشجو</SelectItem>
+                    <SelectItem value="teammate">هم‌تیمی</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

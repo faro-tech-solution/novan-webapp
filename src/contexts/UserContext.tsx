@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type UserRole = 'trainer' | 'trainee';
+export type UserRole = 'trainer' | 'trainee' | 'admin' | 'teammate';
 
 export interface User {
   id: string;
@@ -35,6 +35,7 @@ const mockUsers: User[] = [
   { id: '1', first_name: 'John', last_name: 'Trainer', email: 'trainer@example.com', role: 'trainer' },
   { id: '2', first_name: 'Jane', last_name: 'Student', email: 'student@example.com', role: 'trainee', classId: '1', className: 'Web Development Basics' },
   { id: '3', first_name: 'Bob', last_name: 'Learner', email: 'bob@example.com', role: 'trainee', classId: '1', className: 'Web Development Basics' },
+  { id: '4', first_name: 'Sara', last_name: 'Teammate', email: 'teammate@example.com', role: 'teammate' },
 ];
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
