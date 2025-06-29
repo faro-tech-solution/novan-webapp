@@ -35,8 +35,9 @@ import WikiArticle from '@/pages/WikiArticle';
 import CreateWikiArticle from '@/pages/CreateWikiArticle';
 import WikiManagement from '@/pages/WikiManagement';
 import TeammatesDashboard from '@/pages/TeammatesDashboard';
-import TasksManagement from './pages/TasksManagement';
-import TeammateTasks from './pages/TeammateTasks';
+import TasksManagement from '@/pages/TasksManagement';
+import TeammateTasks from '@/pages/TeammateTasks';
+import ForgetPassword from '@/pages/ForgetPassword';
 
 const queryClient = new QueryClient();
 
@@ -256,6 +257,8 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      
+      <Route path="/forget_password" element={<ForgetPassword />} />
       
       <Route path="*" element={<NotFound />} />
     </Routes>
