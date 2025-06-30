@@ -72,7 +72,8 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   const adminNavItems = [
     { href: '/dashboard/admin', icon: LayoutDashboard, label: 'داشبورد' },
     { href: '/user-management', icon: UserCog, label: 'مدیریت کاربران' },
-    { href: '/courses-management', icon: Users, label: 'مدیریت درس‌ها' },
+    { href: '/group-management', icon: Users, label: 'مدیریت گروه‌ها' },
+    { href: '/courses-management', icon: BookOpen, label: 'مدیریت درس‌ها' },
     { href: '/students', icon: Award, label: 'دانشجویان' },
     { href: '/exercises', icon: FileText, label: 'تمرین‌ها' },
     { href: '/review-submissions', icon: CheckCircle, label: 'بررسی تمرین‌ها' },

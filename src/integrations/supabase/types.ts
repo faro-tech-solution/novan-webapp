@@ -270,6 +270,126 @@ export type Database = {
           },
         ]
       }
+      groups: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          telegram_channels: string | null
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          telegram_channels?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          telegram_channels?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      group_members: {
+        Row: {
+          id: string
+          group_id: string
+          user_id: string
+          joined_at: string
+        }
+        Insert: {
+          id?: string
+          group_id: string
+          user_id: string
+          joined_at?: string
+        }
+        Update: {
+          id?: string
+          group_id?: string
+          user_id?: string
+          joined_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      group_courses: {
+        Row: {
+          id: string
+          group_id: string
+          course_id: string
+          assigned_at: string
+          assigned_by: string | null
+        }
+        Insert: {
+          id?: string
+          group_id: string
+          course_id: string
+          assigned_at?: string
+          assigned_by?: string | null
+        }
+        Update: {
+          id?: string
+          group_id?: string
+          course_id?: string
+          assigned_at?: string
+          assigned_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_courses_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_courses_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           class_id: string | null
@@ -292,6 +412,7 @@ export type Database = {
           english_level: 'beginner' | 'intermediate' | 'advanced' | 'native' | null
           telegram_id: string | null
           whatsapp_id: string | null
+          is_demo: boolean | null
         }
         Insert: {
           class_id?: string | null
@@ -314,6 +435,7 @@ export type Database = {
           english_level?: 'beginner' | 'intermediate' | 'advanced' | 'native' | null
           telegram_id?: string | null
           whatsapp_id?: string | null
+          is_demo?: boolean | null
         }
         Update: {
           class_id?: string | null
@@ -336,6 +458,7 @@ export type Database = {
           english_level?: 'beginner' | 'intermediate' | 'advanced' | 'native' | null
           telegram_id?: string | null
           whatsapp_id?: string | null
+          is_demo?: boolean | null
         }
         Relationships: []
       }
@@ -434,27 +557,122 @@ export type Database = {
           },
         ]
       }
-      teacher_course_assignments: {
+      subtasks: {
         Row: {
-          assigned_at: string
-          assigned_by: string | null
-          course_id: string
           id: string
-          teacher_id: string
+          task_id: string
+          title: string
+          description: string | null
+          is_completed: boolean
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          assigned_at?: string
-          assigned_by?: string | null
-          course_id: string
           id?: string
-          teacher_id: string
+          task_id: string
+          title: string
+          description?: string | null
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
         }
         Update: {
+          id?: string
+          task_id?: string
+          title?: string
+          description?: string | null
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subtasks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          assigned_to: string | null
+          assigned_by: string | null
+          status: string
+          priority: string
+          due_date: string | null
+          is_completed: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          assigned_to?: string | null
+          assigned_by?: string | null
+          status?: string
+          priority?: string
+          due_date?: string | null
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          assigned_to?: string | null
+          assigned_by?: string | null
+          status?: string
+          priority?: string
+          due_date?: string | null
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_course_assignments: {
+        Row: {
+          id: string
+          teacher_id: string
+          course_id: string
+          assigned_at: string
+          assigned_by: string | null
+        }
+        Insert: {
+          id?: string
+          teacher_id: string
+          course_id: string
           assigned_at?: string
           assigned_by?: string | null
-          course_id?: string
+        }
+        Update: {
           id?: string
           teacher_id?: string
+          course_id?: string
+          assigned_at?: string
+          assigned_by?: string | null
         }
         Relationships: [
           {
@@ -709,40 +927,6 @@ export type Database = {
             foreignKeyName: "wiki_articles_created_by_fkey";
             columns: ["created_by"];
             referencedRelation: "auth.users";
-            referencedColumns: ["id"];
-          }
-        ];
-      };
-      wiki_category_course_access: {
-        Row: {
-          id: string;
-          category_id: string;
-          course_id: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          category_id: string;
-          course_id: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          category_id?: string;
-          course_id?: string;
-          created_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "wiki_category_course_access_category_id_fkey";
-            columns: ["category_id"];
-            referencedRelation: "wiki_categories";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "wiki_category_course_access_course_id_fkey";
-            columns: ["course_id"];
-            referencedRelation: "courses";
             referencedColumns: ["id"];
           }
         ];

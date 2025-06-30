@@ -26,6 +26,7 @@ import NotFound from "@/pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminDashboard from "@/pages/AdminDashboard";
 import UserManagement from "@/pages/UserManagement";
+import GroupManagement from "@/pages/GroupManagement";
 import Profile from "@/pages/Profile";
 import Accounting from "@/pages/Accounting";
 import DailyActivitiesManagement from './pages/DailyActivitiesManagement';
@@ -97,6 +98,16 @@ const AppRoutes = () => {
         } 
       />
       
+      {/* Group Management - Admin only */}
+      <Route 
+        path="/group-management" 
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <GroupManagement />
+          </ProtectedRoute>
+        } 
+      />
+      
       <Route 
         path="/courses" 
         element={
@@ -126,7 +137,7 @@ const AppRoutes = () => {
         } 
       />
       
-      {/* Updated to allow both trainers and admins */}
+      {/* Course Management - Admin and Trainer */}
       <Route 
         path="/courses-management" 
         element={
@@ -140,15 +151,7 @@ const AppRoutes = () => {
         } 
       />
       
-      <Route 
-        path="/instructors" 
-        element={
-          <ProtectedRoute>
-            <Instructors />
-          </ProtectedRoute>
-        } 
-      />
-      
+      {/* Exercises routes */}
       <Route 
         path="/exercises" 
         element={
@@ -161,14 +164,14 @@ const AppRoutes = () => {
       <Route 
         path="/my-exercises" 
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="trainee">
             <MyExercises />
           </ProtectedRoute>
         } 
       />
       
       <Route 
-        path="/exercises/:id" 
+        path="/exercise/:id" 
         element={
           <ProtectedRoute>
             <ExerciseDetail />
@@ -176,7 +179,7 @@ const AppRoutes = () => {
         } 
       />
       
-      {/* Review Submissions - Trainers and Admins only */}
+      {/* Review Submissions - Admin and Trainer */}
       <Route 
         path="/review-submissions" 
         element={
@@ -190,7 +193,7 @@ const AppRoutes = () => {
         } 
       />
       
-      {/* Updated to allow both trainers and admins */}
+      {/* Students - Admin and Trainer */}
       <Route 
         path="/students" 
         element={
@@ -204,10 +207,21 @@ const AppRoutes = () => {
         } 
       />
       
+      {/* Instructors - All authenticated users */}
+      <Route 
+        path="/instructors" 
+        element={
+          <ProtectedRoute>
+            <Instructors />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Progress - Trainee only */}
       <Route 
         path="/progress" 
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredRole="trainee">
             <Progress />
           </ProtectedRoute>
         } 
@@ -268,19 +282,17 @@ const AppRoutes = () => {
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <BrowserRouter>
-            <div className="min-h-screen bg-background font-sans antialiased w-full">
-              <Suspense fallback={<div>Loading...</div>}>
-                <AppRoutes />
-              </Suspense>
-              <Toaster />
-              <Sonner />
-            </div>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
+      <TooltipProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <Suspense fallback={<div>Loading...</div>}>
+              <AppRoutes />
+            </Suspense>
+          </AuthProvider>
+        </BrowserRouter>
+        <Toaster />
+        <Sonner />
+      </TooltipProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

@@ -1,7 +1,7 @@
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, BookOpen, FileText, Award, ListChecks } from 'lucide-react';
+import { Users, BookOpen, FileText, Award, ListChecks, UserCog } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AdminDashboard = () => {
@@ -25,6 +25,22 @@ const AdminDashboard = () => {
               <div className="text-2xl font-bold">مدیریت</div>
               <p className="text-xs text-muted-foreground">کاربران و نقش‌ها</p>
               <Link to="/user-management">
+                <Button variant="outline" size="sm" className="mt-2">
+                  مشاهده
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">مدیریت گروه‌ها</CardTitle>
+              <UserCog className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">گروه‌ها</div>
+              <p className="text-xs text-muted-foreground">ایجاد و مدیریت گروه‌ها</p>
+              <Link to="/group-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
