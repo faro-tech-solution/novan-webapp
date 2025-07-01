@@ -1,0 +1,4 @@
+// Course Pages
+export { default as Courses } from './Courses';
+export { default as StudentCourses } from './StudentCourses';
+export { default as CourseManagement } from './CourseManagement';
