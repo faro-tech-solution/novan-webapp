@@ -1,25 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { User, Clock } from 'lucide-react';
-
-interface Submission {
-  id: string;
-  student_name: string;
-  student_email: string;
-  submitted_at: string;
-  score: number | null;
-  feedback: string | null;
-  solution: string;
-  exercise: {
-    id: string;
-    title: string;
-    points: number;
-    form_structure: any;
-  };
-}
+import { Submission } from '@/types/reviewSubmissions';
 
 interface SubmissionsListProps {
   submissions: Submission[];
@@ -61,18 +45,21 @@ export const SubmissionsList: React.FC<SubmissionsListProps> = ({
                 <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600">
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <User className="h-4 w-4" />
-                    <span>{submission.student_name}</span>
+                    <span>{`${submission.student?.first_name} ${submission.student?.last_name}`}</span>
                   </div>
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <Clock className="h-4 w-4" />
-                    <span>{formatDate(submission.submitted_at)}</span>
+                    <span className="text-sm text-gray-500">•</span>
+                    <span className="text-sm text-gray-500">
+                      {new Date(submission.submitted_at).toLocaleDateString('fa-IR')}
+                    </span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center space-x-2 space-x-reverse">
                 {submission.score !== null ? (
                   <Badge variant={submission.score >= 80 ? "default" : submission.score >= 60 ? "secondary" : "destructive"}>
-                    نمره: {submission.score}%
+                    نمره: {submission.score}
                   </Badge>
                 ) : (
                   <Badge variant="outline">بدون نمره</Badge>

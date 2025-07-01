@@ -1,13 +1,15 @@
-
+import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import InstructorCard from '@/components/InstructorCard';
+import { InstructorCard as InstructorCardType } from '@/types/instructor';
 
 const Instructors = () => {
-  const instructors = [
+  const instructors: InstructorCardType[] = [
     {
       id: '1',
-      name: 'Edward Norton',
+      first_name: 'Edward',
+      last_name: 'Norton',
       title: 'SEO Specialist',
       image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
       rating: 4.9,
@@ -17,7 +19,8 @@ const Instructors = () => {
     },
     {
       id: '2',
-      name: 'Sarah Johnson',
+      first_name: 'Sarah',
+      last_name: 'Johnson',
       title: 'Content Writer',
       image: 'https://images.unsplash.com/photo-1494790108755-2616b2e3c3e5?w=150&h=150&fit=crop&crop=face',
       rating: 4.8,
@@ -27,7 +30,8 @@ const Instructors = () => {
     },
     {
       id: '3',
-      name: 'Michael Chen',
+      first_name: 'Michael',
+      last_name: 'Chen',
       title: 'Senior Developer',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
       rating: 4.9,
@@ -37,7 +41,8 @@ const Instructors = () => {
     },
     {
       id: '4',
-      name: 'Lisa Wong',
+      first_name: 'Lisa',
+      last_name: 'Wong',
       title: 'UX Designer',
       image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
       rating: 4.7,
@@ -47,7 +52,8 @@ const Instructors = () => {
     },
     {
       id: '5',
-      name: 'David Miller',
+      first_name: 'David',
+      last_name: 'Miller',
       title: 'Full Stack Developer',
       image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
       rating: 4.6,
@@ -57,7 +63,8 @@ const Instructors = () => {
     },
     {
       id: '6',
-      name: 'Alex Thompson',
+      first_name: 'Alex',
+      last_name: 'Thompson',
       title: 'Design Lead',
       image: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=150&h=150&fit=crop&crop=face',
       rating: 4.8,

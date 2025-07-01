@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -62,7 +61,7 @@ export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({
               <div className="flex justify-between items-center">
                 <span className="font-medium">نمره:</span>
                 <Badge variant={submissionInfo.score >= 80 ? "default" : submissionInfo.score >= 60 ? "secondary" : "destructive"}>
-                  {submissionInfo.score}%
+                  {submissionInfo.score}
                 </Badge>
               </div>
             )}

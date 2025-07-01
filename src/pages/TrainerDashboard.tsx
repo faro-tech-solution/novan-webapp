@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -109,7 +108,7 @@ const TrainerDashboard = () => {
                     </div>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       {submission.score ? (
-                        <Badge variant="secondary">{submission.score}%</Badge>
+                        <Badge variant="secondary">{submission.score}</Badge>
                       ) : (
                         <Badge variant="outline">در انتظار</Badge>
                       )}

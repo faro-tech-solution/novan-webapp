@@ -1,17 +1,28 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-export type UserRole = 'trainer' | 'trainee' | 'admin';
+export type UserRole = 'trainer' | 'trainee' | 'admin' | 'teammate';
 
 export interface UserProfile {
   id: string;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   role: UserRole;
   classId?: string;
   className?: string;
+  gender?: string;
+  job?: string;
+  education?: string;
+  phone_number?: string;
+  country?: string;
+  city?: string;
+  birthday?: string;
+  ai_familiarity?: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  english_level?: 'beginner' | 'intermediate' | 'advanced' | 'native';
+  telegram_id?: string;
+  whatsapp_id?: string;
 }
 
 interface AuthContextType {
@@ -19,9 +30,10 @@ interface AuthContextType {
   profile: UserProfile | null;
   session: Session | null;
   login: (email: string, password: string) => Promise<{ error: any }>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<{ error: any }>;
+  register: (first_name: string, last_name: string, email: string, password: string, role: UserRole) => Promise<{ error: any }>;
   logout: () => Promise<void>;
   loading: boolean;
+  resetPassword: (email: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,11 +76,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Profile fetched successfully:', data);
         setProfile({
           id: data.id,
-          name: data.name || '',
+          first_name: data.first_name || '',
+          last_name: data.last_name || '',
           email: data.email || '',
           role: data.role as UserRole,
           classId: data.class_id || undefined,
           className: data.class_name || undefined,
+          gender: data.gender || undefined,
+          job: data.job || undefined,
+          education: data.education || undefined,
+          phone_number: data.phone_number || undefined,
+          country: data.country || undefined,
+          city: data.city || undefined,
+          birthday: data.birthday || undefined,
+          ai_familiarity: data.ai_familiarity as 'beginner' | 'intermediate' | 'advanced' | 'expert' || undefined,
+          english_level: data.english_level as 'beginner' | 'intermediate' | 'advanced' | 'native' || undefined,
+          telegram_id: data.telegram_id || undefined,
+          whatsapp_id: data.whatsapp_id || undefined,
         });
       }
     } catch (error) {
@@ -136,7 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
-  const register = async (name: string, email: string, password: string, role: UserRole) => {
+  const register = async (first_name: string, last_name: string, email: string, password: string, role: UserRole) => {
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
@@ -145,7 +169,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       options: {
         emailRedirectTo: redirectUrl,
         data: {
-          name,
+          first_name,
+          last_name,
           role,
         },
       },
@@ -160,6 +185,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
   };
 
+  const resetPassword = async (email: string) => {
+    // Redirect to forget password page
+    const redirectUrl = `${window.location.origin}/forget_password`;
+    console.log('Password reset redirect URL:', redirectUrl);
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
+    return { error };
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -168,7 +204,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login, 
       register, 
       logout, 
-      loading 
+      loading,
+      resetPassword
     }}>
       {children}
     </AuthContext.Provider>

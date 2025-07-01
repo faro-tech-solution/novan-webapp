@@ -1,7 +1,4 @@
-
-import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress as ProgressBar } from '@/components/ui/progress';
 import { 
@@ -19,14 +16,17 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, BarChart, Bar } from 'recharts';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { useProgressStats } from '@/hooks/useProgressStats';
-import { useStudentAwards } from '@/hooks/useStudentAwards';
+import { useProgressStatsQuery, useStudentAwardsQuery, useAllAwardsQuery } from '@/hooks/queries/useProgressQuery';
 import { AchievementsDisplay } from '@/components/awards/AchievementsDisplay';
 
 const Progress = () => {
   const { profile } = useAuth();
-  const { stats, loading, error } = useProgressStats();
-  const { studentAwards, allAwards } = useStudentAwards();
+  const { data: stats, isLoading: statsLoading, error: statsError } = useProgressStatsQuery();
+  const { data: studentAwards = [], isLoading: awardsLoading } = useStudentAwardsQuery();
+  const { data: allAwards = [], isLoading: allAwardsLoading } = useAllAwardsQuery();
+
+  const loading = statsLoading || awardsLoading || allAwardsLoading;
+  const error = statsError;
 
   if (loading) {
     return (
@@ -45,7 +45,7 @@ const Progress = () => {
     return (
       <DashboardLayout title="پیشرفت تحصیلی">
         <div className="text-center py-8">
-          <p className="text-red-600">{error || 'خطا در بارگذاری اطلاعات'}</p>
+          <p className="text-red-600">{error?.message || 'خطا در بارگذاری اطلاعات'}</p>
         </div>
       </DashboardLayout>
     );

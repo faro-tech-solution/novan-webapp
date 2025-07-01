@@ -1,8 +1,7 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Award, Trophy, Star, Crown } from 'lucide-react';
-import { StudentAward } from '@/services/awardsService';
+import { StudentAward } from '@/types/student';
 
 interface AwardsCardProps {
   studentAwards: StudentAward[];

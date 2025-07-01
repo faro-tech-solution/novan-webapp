@@ -10,7 +10,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!loading) {
       if (!profile) {
-        navigate('/login');
+        navigate('/');
         return;
       }
 
@@ -21,6 +21,8 @@ const Dashboard = () => {
         navigate('/dashboard/trainee');
       } else if (profile.role === 'admin') {
         navigate('/dashboard/admin');
+      } else if (profile.role === 'teammate') {
+        navigate('/dashboard/teammate');
       }
     }
   }, [profile, loading, navigate]);

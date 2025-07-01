@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Search, ShoppingCart, User, LogIn } from 'lucide-react';
@@ -18,7 +17,7 @@ const Header = () => {
             <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">آ</span>
             </div>
-            <span className="text-xl font-bold text-gray-900 font-peyda">آموزش‌هاب</span>
+            <span className="text-xl font-bold text-gray-900 font-peyda">پورتال آموزش فاروباکس</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -61,12 +60,12 @@ const Header = () => {
                 <Link to="/dashboard">
                   <Button variant="outline">
                     <User className="h-4 w-4 ml-2" />
-                    {profile.name}
+                    {profile.first_name && profile.last_name ? `${profile.first_name} ${profile.last_name}` : 'کاربر'}
                   </Button>
                 </Link>
               ) : (
                 <div className="flex items-center space-x-2 space-x-reverse">
-                  <Link to="/login">
+                  <Link to="/">
                     <Button variant="outline">
                       <LogIn className="h-4 w-4 ml-2" />
                       ورود
@@ -74,7 +73,7 @@ const Header = () => {
                   </Link>
                   <Link to="/register">
                     <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-                      رایگان امتحان کنید
+                      ثبت نام
                     </Button>
                   </Link>
                 </div>
@@ -118,7 +117,7 @@ const Header = () => {
               )}
               {!profile && (
                 <>
-                  <Link to="/login" className="text-gray-700 hover:text-teal-600 transition-colors">
+                  <Link to="/" className="text-gray-700 hover:text-teal-600 transition-colors">
                     ورود
                   </Link>
                   <Link to="/register" className="text-gray-700 hover:text-teal-600 transition-colors">

@@ -1,68 +1,44 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-
-export interface StudentCourse {
-  id: string;
-  title: string;
-  instructor: string;
-  progress: number;
-  totalLessons: number;
-  completedLessons: number;
-  duration: string;
-  difficulty: string;
-  category: string;
-  thumbnail: string;
-  enrollDate: string;
-  nextLesson: string | null;
-  status: 'active' | 'completed';
-  description?: string;
-}
+import { useCache } from './useCache';
+import { StudentCourse } from '@/types/course';
 
 export const useStudentCourses = () => {
-  const [courses, setCourses] = useState<StudentCourse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const fetchStudentCourses = async () => {
-    if (!user) return;
+  const {
+    data: courses,
+    loading,
+    error,
+    refetch
+  } = useCache<StudentCourse[]>(
+    `student-courses-${user?.id}`,
+    async () => {
+      if (!user) return [];
 
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Fetch enrollments with course data using a join
-      const { data: enrollmentsWithCourses, error: fetchError } = await supabase
+      const { data: enrollments, error: enrollmentsError } = await supabase
         .from('course_enrollments')
         .select(`
           id,
-          status,
-          enrolled_at,
           course_id,
+          enrolled_at,
+          status,
           courses (
             id,
             name,
             description,
-            instructor_name,
-            start_date,
-            end_date,
-            status
+            instructor_name
           )
         `)
-        .eq('student_id', user.id);
+        .eq('student_id', user.id)
+        .eq('status', 'active');
 
-      if (fetchError) {
-        console.error('Error fetching enrollments with courses:', fetchError);
-        setError('خطا در دریافت دوره‌ها');
-        return;
+      if (enrollmentsError) {
+        throw new Error('خطا در دریافت دوره‌ها');
       }
 
-      if (!enrollmentsWithCourses || enrollmentsWithCourses.length === 0) {
-        setCourses([]);
-        return;
-      }
+      const enrollmentsWithCourses = enrollments || [];
 
       // Transform the data to match the StudentCourse interface
       const transformedCourses: StudentCourse[] = enrollmentsWithCourses
@@ -94,23 +70,15 @@ export const useStudentCourses = () => {
           };
         });
 
-      setCourses(transformedCourses);
-    } catch (err) {
-      console.error('Error in fetchStudentCourses:', err);
-      setError('خطا در دریافت دوره‌ها');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchStudentCourses();
-  }, [user]);
+      return transformedCourses;
+    },
+    { ttl: 5 * 60 * 1000 } // 5 minutes cache
+  );
 
   return {
-    courses,
+    courses: courses || [],
     loading,
     error,
-    refetch: fetchStudentCourses
+    refetch
   };
 };

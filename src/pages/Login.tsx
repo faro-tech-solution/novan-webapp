@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,13 +13,13 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, profile, user } = useAuth();
+  const { login, profile } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   // Add debugging logs
   console.log('Login component - profile:', profile);
-  console.log('Login component - user:', user);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -32,9 +31,18 @@ const Login = () => {
         navigate('/dashboard/trainee');
       } else if (profile.role === 'admin') {
         navigate('/dashboard/admin');
+      } else if (profile.role === 'teammate') {
+        navigate('/dashboard/teammate');
       }
     }
   }, [profile, navigate]);
+
+  // Redirect from /login to / for backward compatibility
+  useEffect(() => {
+    if (location.pathname === '/') {
+      navigate('/', { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,6 +113,14 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                <div className="text-left mt-1">
+                  <Link
+                    to="/forget_password"
+                    className="text-xs text-teal-600 hover:text-teal-700 underline"
+                  >
+                    رمز عبور را فراموش کرده‌اید؟
+                  </Link>
+                </div>
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>

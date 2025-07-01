@@ -1,8 +1,7 @@
-
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { useExercises } from '@/hooks/useExercises';
+import { useCoursesQuery, useUpdateExerciseMutation } from '@/hooks/useExercisesQuery';
 import { CreateExerciseForm, CreateExerciseFormData } from './CreateExerciseForm';
 import { Exercise } from '@/types/exercise';
 
@@ -10,21 +9,17 @@ interface EditExerciseDialogProps {
   exercise: Exercise | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onExerciseUpdated?: () => void;
 }
 
-export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpdated }: EditExerciseDialogProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export const EditExerciseDialog = ({ exercise, open, onOpenChange }: EditExerciseDialogProps) => {
   const { toast } = useToast();
-  const { courses, updateExercise } = useExercises();
+  const { data: courses = [] } = useCoursesQuery();
+  const updateExerciseMutation = useUpdateExerciseMutation();
 
   const onSubmit = useCallback(async (data: CreateExerciseFormData) => {
     if (!exercise) return;
 
     try {
-      setIsSubmitting(true);
-      console.log('Updating exercise:', data);
-      
       const exerciseData = {
         title: data.title,
         description: data.description,
@@ -38,16 +33,7 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
         form_structure: data.form_structure,
       };
       
-      const { error } = await updateExercise(exercise.id, exerciseData);
-      
-      if (error) {
-        toast({
-          title: "خطا",
-          description: error,
-          variant: "destructive",
-        });
-        return;
-      }
+      await updateExerciseMutation.mutateAsync({ exerciseId: exercise.id, exerciseData });
       
       toast({
         title: "به‌روزرسانی تمرین",
@@ -55,21 +41,15 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
       });
       
       onOpenChange(false);
-      
-      if (onExerciseUpdated) {
-        onExerciseUpdated();
-      }
     } catch (error) {
       console.error('Error updating exercise:', error);
       toast({
         title: "خطا",
-        description: "خطا در به‌روزرسانی تمرین",
+        description: error instanceof Error ? error.message : 'خطا در به‌روزرسانی تمرین',
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
     }
-  }, [exercise, toast, onOpenChange, onExerciseUpdated, updateExercise]);
+  }, [exercise, toast, onOpenChange, updateExerciseMutation]);
 
   const handleCancel = useCallback(() => {
     onOpenChange(false);
@@ -84,7 +64,7 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
     return {
       title: exercise.title,
       description: exercise.description || '',
-      course_id: exercise.course_name || '',
+      course_id: exercise.course_id || '',
       difficulty: exercise.difficulty,
       days_to_open: exercise.days_to_open,
       days_duration: daysDuration,
@@ -109,7 +89,7 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange, onExerciseUpd
         <div className="overflow-y-auto flex-1 pr-2">
           <CreateExerciseForm
             courses={courses}
-            isSubmitting={isSubmitting}
+            isSubmitting={updateExerciseMutation.isPending}
             onSubmit={onSubmit}
             onCancel={handleCancel}
             defaultValues={getFormDefaultValues()}

@@ -10,16 +10,7 @@ import CreateTermDialog from '@/components/CreateTermDialog';
 import EditTermDialog from '@/components/EditTermDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-interface CourseTerm {
-  id: string;
-  name: string;
-  start_date: string | null;
-  end_date: string | null;
-  max_students: number;
-  created_at: string;
-  student_count?: number;
-}
+import { CourseTerm } from '@/types/course';
 
 interface CourseTermsManagementProps {
   courseId: string;

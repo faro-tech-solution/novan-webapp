@@ -1,28 +1,16 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { CourseTerm } from '@/types/course';
+import { TeacherAssignment } from '@/types/instructor';
 
 interface Course {
   id: string;
   name: string;
-  instructor_name: string;
-}
-
-interface CourseTerm {
-  id: string;
-  name: string;
-  course_id: string;
-  course_name: string;
-}
-
-interface TeacherAssignment {
-  course_ids: string[];
-  term_ids: string[];
+  description: string | null;
 }
 
 interface TeacherAssignmentsProps {
@@ -52,7 +40,7 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
       // Fetch all courses
       const { data: coursesData, error: coursesError } = await supabase
         .from('courses')
-        .select('id, name, instructor_name')
+        .select('id, name, description')
         .order('name');
 
       if (coursesError) throw coursesError;
@@ -64,6 +52,8 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
           id,
           name,
           course_id,
+          start_date,
+          end_date,
           courses!inner(name)
         `)
         .order('name');
@@ -83,12 +73,16 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
       ]);
 
       setCourses(coursesData || []);
-      setTerms((termsData || []).map(term => ({
+      const processedTermsData = termsData.map(term => ({
         id: term.id,
         name: term.name,
         course_id: term.course_id,
-        course_name: term.courses.name
-      })));
+        course_name: term.courses.name,
+        start_date: term.start_date,
+        end_date: term.end_date,
+        max_students: 0 // Default value since it's not in the query
+      }));
+      setTerms(processedTermsData);
 
       setAssignments({
         course_ids: courseAssignments.data?.map(a => a.course_id) || [],
@@ -244,9 +238,6 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                         >
                           {course.name}
-                          <span className="text-gray-500 text-xs block">
-                            مربی: {course.instructor_name}
-                          </span>
                         </label>
                       </div>
                     ))}

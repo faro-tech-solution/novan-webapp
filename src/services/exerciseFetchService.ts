@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Exercise } from '@/types/exercise';
 import { ExerciseForm } from '@/types/formBuilder';
@@ -27,9 +26,8 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
       .from('exercises')
       .select(`
         *,
-        courses (
-          name,
-          instructor_name
+        courses!inner (
+          name
         )
       `)
       .order('created_at', { ascending: false });
@@ -47,6 +45,7 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
 
     return (data || []).map(exercise => ({
       ...exercise,
+      course_name: exercise.courses.name,
       form_structure: parseFormStructure(exercise.form_structure)
     })) as Exercise[];
   } catch (error) {

@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/DashboardLayout';
 import { MyExerciseStatsCards } from '@/components/exercises/MyExerciseStatsCards';
 import { MyExerciseFilters } from '@/components/exercises/MyExerciseFilters';
 import { MyExerciseTable } from '@/components/exercises/MyExerciseTable';
-import { useMyExercises } from '@/hooks/useMyExercises';
+import { useMyExercisesQuery } from '@/hooks/queries/useMyExercisesQuery';
 
 const MyExercises = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,7 +12,7 @@ const MyExercises = () => {
   const [difficultyFilter, setDifficultyFilter] = useState('all');
   const [courseFilter, setCourseFilter] = useState('all');
   
-  const { myExercises, loading, error, refetch } = useMyExercises();
+  const { data: myExercises = [], isLoading, error, refetch } = useMyExercisesQuery();
 
   // Filter out exercises that will start in the future
   const currentExercises = myExercises.filter(exercise => {
@@ -42,7 +41,7 @@ const MyExercises = () => {
     return matchesSearch && matchesStatus && matchesDifficulty && matchesCourse;
   });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <DashboardLayout title="تمرین‌های من">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -59,8 +58,8 @@ const MyExercises = () => {
     return (
       <DashboardLayout title="تمرین‌های من">
         <div className="text-center py-8">
-          <p className="text-red-600">{error}</p>
-          <Button onClick={refetch} className="mt-4">
+          <p className="text-red-600">{error instanceof Error ? error.message : 'خطا در بارگذاری اطلاعات'}</p>
+          <Button onClick={() => refetch()} className="mt-4">
             تلاش مجدد
           </Button>
         </div>

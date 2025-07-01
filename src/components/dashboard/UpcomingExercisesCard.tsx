@@ -1,19 +1,11 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Play, Calendar } from 'lucide-react';
-
-interface Exercise {
-  id: string;
-  title: string;
-  due_date: string;
-  estimated_time: string;
-  points: number;
-}
+import { UpcomingExercise } from '@/types/exercise';
 
 interface UpcomingExercisesCardProps {
-  exercises: Exercise[];
+  exercises: UpcomingExercise[];
 }
 
 export const UpcomingExercisesCard = ({ exercises }: UpcomingExercisesCardProps) => {
@@ -47,7 +39,7 @@ export const UpcomingExercisesCard = ({ exercises }: UpcomingExercisesCardProps)
                     <span className="text-purple-600">{exercise.points} امتیاز</span>
                   </div>
                 </div>
-                <Link to={`/exercises/${exercise.id}`}>
+                <Link to={`/exercise/${exercise.id}`}>
                   <Button size="sm" className="mr-4">
                     <Play className="h-4 w-4 ml-2" />
                     شروع

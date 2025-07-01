@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { Instructor } from '@/types/instructor';
 
 const formSchema = z.object({
   name: z.string().min(1, 'نام درس الزامی است'),
@@ -19,6 +19,7 @@ const formSchema = z.object({
   maxStudents: z.number().min(0, 'حداکثر تعداد دانشجویان نمی‌تواند منفی باشد').default(50),
   instructorId: z.string().min(1, 'انتخاب مربی الزامی است'),
   status: z.string().min(1, 'انتخاب وضعیت الزامی است'),
+  price: z.number().min(0, 'قیمت نمی‌تواند منفی باشد').default(0),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -27,12 +28,6 @@ interface CreateCourseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCourseCreated: () => void;
-}
-
-interface Instructor {
-  id: string;
-  name: string;
-  email: string;
 }
 
 const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCourseDialogProps) => {
@@ -49,6 +44,7 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
       maxStudents: 50,
       instructorId: '',
       status: 'upcoming',
+      price: 0,
     },
   });
 
@@ -63,7 +59,7 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, name, email')
+        .select('id, first_name, last_name, email')
         .eq('role', 'trainer');
 
       if (error) throw error;
@@ -93,9 +89,10 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
           name: data.name,
           description: data.description,
           instructor_id: data.instructorId,
-          instructor_name: selectedInstructor?.name || 'Unknown',
+          instructor_name: selectedInstructor ? `${selectedInstructor.first_name} ${selectedInstructor.last_name}` : 'Unknown',
           max_students: data.maxStudents,
           status: data.status,
+          price: data.price,
         });
 
       if (error) throw error;
@@ -179,7 +176,7 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
                     <SelectContent>
                       {instructors.map((instructor) => (
                         <SelectItem key={instructor.id} value={instructor.id}>
-                          {instructor.name} ({instructor.email})
+                          {instructor.first_name} {instructor.last_name} ({instructor.email})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -223,6 +220,25 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
                     <Input 
                       type="number" 
                       placeholder="50"
+                      {...field}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>قیمت (تومان)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="0"
                       {...field}
                       onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                     />

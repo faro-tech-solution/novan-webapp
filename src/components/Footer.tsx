@@ -15,15 +15,13 @@ const Footer = () => {
               <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm">آ</span>
               </div>
-              <span className="text-xl font-bold font-peyda">آموزش‌هاب</span>
+              <span className="text-xl font-bold font-peyda">پورتال آموزش فاروباکس</span>
             </div>
             <p className="text-gray-400 text-sm">
               مهارت‌های جدید را از متخصصان صنعت یاد بگیرید و با دوره‌های آنلاین جامع ما، حرفه خود را پیش ببرید.
             </p>
             <div className="space-y-2 text-sm text-gray-400">
-              <p>آدرس: تهران، خیابان ولیعصر، پلاک ۷۰</p>
-              <p>تماس: ۰۲۱-۱۲۳۴۵۶۷۸</p>
-              <p>ایمیل: info@tutorialhub.ir</p>
+              <p>ایمیل: info@farobox.io</p>
             </div>
           </div>
 
@@ -114,7 +112,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-          <p>کپی‌رایت ۱۴۰۳ آموزش‌هاب | توسعه یافته توسط DevBlink. تمام حقوق محفوظ است</p>
+          <p>کپی‌رایت ۱۴۰۳ پورتال آموزش فاروباکس | توسعه یافته توسط DevBlink. تمام حقوق محفوظ است</p>
         </div>
       </div>
     </footer>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ interface GradingSectionProps {
   onScoreChange: (score: string) => void;
   onFeedbackChange: (feedback: string) => void;
   onSubmitGrade: () => void;
+  maxScore: number;
 }
 
 export const GradingSection: React.FC<GradingSectionProps> = ({
@@ -20,7 +20,8 @@ export const GradingSection: React.FC<GradingSectionProps> = ({
   grading,
   onScoreChange,
   onFeedbackChange,
-  onSubmitGrade
+  onSubmitGrade,
+  maxScore
 }) => {
   return (
     <Card>
@@ -30,12 +31,12 @@ export const GradingSection: React.FC<GradingSectionProps> = ({
       <CardContent className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-2">
-            نمره (از 0 تا 100)
+            نمره (از 0 تا {maxScore})
           </label>
           <Input
             type="number"
             min="0"
-            max="100"
+            max={maxScore}
             value={score}
             onChange={(e) => onScoreChange(e.target.value)}
             placeholder="نمره را وارد کنید"

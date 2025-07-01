@@ -1,24 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import { checkAndAwardAchievements } from '@/services/awardsService';
 import { FormAnswer, ExerciseForm } from '@/types/formBuilder';
-
-export interface ExerciseDetail {
-  id: string;
-  title: string;
-  description: string | null;
-  course_id: string;
-  course_name: string;
-  difficulty: string;
-  points: number;
-  estimated_time: string;
-  open_date: string;
-  due_date: string;
-  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
-  form_structure?: ExerciseForm;
-  submission_answers?: FormAnswer[];
-  feedback?: string;
-  score?: number;
-}
+import { logStudentActivity, ACTIVITY_TYPES } from '@/services/activityLogService';
+import { ExerciseDetail } from '@/types/exercise';
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
   if (!form_structure) {
@@ -152,8 +136,6 @@ export const submitExerciseSolution = async (
     .upsert({
       exercise_id: exerciseId,
       student_id: studentId,
-      student_email: studentEmail,
-      student_name: studentName,
       solution: solution,
       submitted_at: new Date().toISOString()
     }, {

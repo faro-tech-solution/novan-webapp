@@ -51,14 +51,14 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>عنوان</TableHead>
-              <TableHead>دوره</TableHead>
-              <TableHead>سطح</TableHead>
-              {isStudent && <TableHead>وضعیت تمرین</TableHead>}
-              {isStudent && <TableHead>تاریخ باز شدن</TableHead>}
-              {isStudent && <TableHead>مهلت تحویل</TableHead>}
-              <TableHead>ارسال‌ها</TableHead>
-              <TableHead>عملیات</TableHead>
+              <TableHead className="text-right">عنوان</TableHead>
+              <TableHead className="text-right">دوره</TableHead>
+              <TableHead className="text-right">سطح</TableHead>
+              {isStudent && <TableHead className="text-right">وضعیت تمرین</TableHead>}
+              {isStudent && <TableHead className="text-right">تاریخ باز شدن</TableHead>}
+              {isStudent && <TableHead className="text-right">مهلت تحویل</TableHead>}
+              <TableHead className="text-right">ارسال‌ها</TableHead>
+              <TableHead className="text-right">عملیات</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -67,7 +67,6 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
                 <TableCell>
                   <div>
                     <div className="font-medium">{exercise.title}</div>
-                    <div className="text-sm text-gray-600">{exercise.description}</div>
                     <div className="flex items-center space-x-2 space-x-reverse text-xs text-gray-500 mt-1">
                       <Clock className="h-3 w-3" />
                       <span>{exercise.estimated_time}</span>

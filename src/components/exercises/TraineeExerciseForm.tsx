@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -106,7 +105,7 @@ export const TraineeExerciseForm = ({
                 <h5 className="font-semibold text-blue-800 mb-2">بازخورد استاد:</h5>
                 <p className="text-blue-700">{exercise.feedback}</p>
                 {exercise.score !== null && (
-                  <p className="text-blue-800 font-semibold mt-2">نمره: {exercise.score}%</p>
+                  <p className="text-blue-800 font-semibold mt-2">نمره: {exercise.score}</p>
                 )}
               </div>
             )}
@@ -115,7 +114,7 @@ export const TraineeExerciseForm = ({
               <div className="flex justify-end">
                 <Button 
                   onClick={handleSubmit} 
-                  disabled={submitting}
+                  disabled={submitting || exercise.score !== undefined}
                 >
                   <Send className="h-4 w-4 mr-2" />
                   {submitting ? 'در حال ارسال...' : (isSubmitted ? 'بروزرسانی پاسخ' : 'ارسال پاسخ')}

@@ -1,15 +1,14 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Clock, AlertTriangle, Award } from 'lucide-react';
 
-interface ExerciseWithSubmission {
+interface ExerciseStats {
   id: string;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
   points: number;
 }
 
 interface TraineeStatsCardsProps {
-  exercises: ExerciseWithSubmission[];
+  exercises: ExerciseStats[];
 }
 
 export const TraineeStatsCards = ({ exercises }: TraineeStatsCardsProps) => {

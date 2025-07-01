@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,6 +11,8 @@ interface StudentsFiltersProps {
   statusFilter: string;
   setStatusFilter: (value: string) => void;
   courses: string[];
+  showDemoUsers: boolean;
+  setShowDemoUsers: (value: boolean) => void;
 }
 
 const StudentsFilters = ({
@@ -21,7 +22,9 @@ const StudentsFilters = ({
   setCourseFilter,
   statusFilter,
   setStatusFilter,
-  courses
+  courses,
+  showDemoUsers,
+  setShowDemoUsers
 }: StudentsFiltersProps) => {
   return (
     <Card>
@@ -32,8 +35,8 @@ const StudentsFilters = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex-1 w-full">
             <div className="relative">
               <Search className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
               <Input
@@ -44,7 +47,6 @@ const StudentsFilters = ({
               />
             </div>
           </div>
-          
           <Select value={courseFilter} onValueChange={setCourseFilter}>
             <SelectTrigger className="w-full md:w-48">
               <SelectValue placeholder="دوره" />
@@ -56,7 +58,6 @@ const StudentsFilters = ({
               ))}
             </SelectContent>
           </Select>
-
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-full md:w-48">
               <SelectValue placeholder="وضعیت" />
@@ -67,6 +68,16 @@ const StudentsFilters = ({
               <SelectItem value="inactive">غیرفعال</SelectItem>
             </SelectContent>
           </Select>
+          <div className="flex items-center gap-2 mt-2 md:mt-0">
+            <input
+              type="checkbox"
+              checked={showDemoUsers}
+              onChange={e => setShowDemoUsers(e.target.checked)}
+              className="accent-yellow-500"
+              id="show-demo-users"
+            />
+            <label htmlFor="show-demo-users" className="text-sm">نمایش کاربران آزمایشی</label>
+          </div>
         </div>
       </CardContent>
     </Card>

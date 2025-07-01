@@ -1,17 +1,5 @@
-
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-
-interface Course {
-  id: string;
-  name: string;
-  description: string | null;
-  instructor_id: string;
-  instructor_name: string;
-  status: string;
-  max_students: number | null;
-  created_at: string;
-  student_count?: number;
-}
+import { Course } from '@/types/course';
 
 interface ConfirmDeleteDialogProps {
   open: boolean;

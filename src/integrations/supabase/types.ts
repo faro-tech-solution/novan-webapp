@@ -1,3 +1,5 @@
+import { PaymentStatus, PaymentType } from "@/types/accounting"
+
 export type Json =
   | string
   | number
@@ -48,30 +50,30 @@ export type Database = {
           enrolled_at: string
           id: string
           status: string
-          student_email: string
           student_id: string
-          student_name: string
           term_id: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           course_id: string
           enrolled_at?: string
           id?: string
           status?: string
-          student_email: string
           student_id: string
-          student_name: string
           term_id?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Update: {
           course_id?: string
           enrolled_at?: string
           id?: string
           status?: string
-          student_email?: string
           student_id?: string
-          student_name?: string
           term_id?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -88,6 +90,13 @@ export type Database = {
             referencedRelation: "course_terms"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "course_enrollments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
         ]
       }
       course_terms: {
@@ -133,43 +142,28 @@ export type Database = {
       }
       courses: {
         Row: {
-          created_at: string
-          description: string | null
-          end_date: string | null
           id: string
-          instructor_id: string
-          instructor_name: string
-          max_students: number | null
           name: string
-          start_date: string | null
-          status: string
-          updated_at: string
+          description: string | null
+          created_at: string | null
+          updated_at: string | null
+          price: number
         }
         Insert: {
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
           id?: string
-          instructor_id: string
-          instructor_name: string
-          max_students?: number | null
           name: string
-          start_date?: string | null
-          status?: string
-          updated_at?: string
+          description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          price?: number
         }
         Update: {
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
           id?: string
-          instructor_id?: string
-          instructor_name?: string
-          max_students?: number | null
           name?: string
-          start_date?: string | null
-          status?: string
-          updated_at?: string
+          description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          price?: number
         }
         Relationships: []
       }
@@ -182,9 +176,7 @@ export type Database = {
           id: string
           score: number | null
           solution: string
-          student_email: string
           student_id: string
-          student_name: string
           submitted_at: string
         }
         Insert: {
@@ -195,9 +187,7 @@ export type Database = {
           id?: string
           score?: number | null
           solution: string
-          student_email: string
           student_id: string
-          student_name: string
           submitted_at?: string
         }
         Update: {
@@ -208,9 +198,7 @@ export type Database = {
           id?: string
           score?: number | null
           solution?: string
-          student_email?: string
           student_id?: string
-          student_name?: string
           submitted_at?: string
         }
         Relationships: [
@@ -282,6 +270,126 @@ export type Database = {
           },
         ]
       }
+      groups: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          telegram_channels: string | null
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          telegram_channels?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          telegram_channels?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      group_members: {
+        Row: {
+          id: string
+          group_id: string
+          user_id: string
+          joined_at: string
+        }
+        Insert: {
+          id?: string
+          group_id: string
+          user_id: string
+          joined_at?: string
+        }
+        Update: {
+          id?: string
+          group_id?: string
+          user_id?: string
+          joined_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      group_courses: {
+        Row: {
+          id: string
+          group_id: string
+          course_id: string
+          assigned_at: string
+          assigned_by: string | null
+        }
+        Insert: {
+          id?: string
+          group_id: string
+          course_id: string
+          assigned_at?: string
+          assigned_by?: string | null
+        }
+        Update: {
+          id?: string
+          group_id?: string
+          course_id?: string
+          assigned_at?: string
+          assigned_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_courses_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_courses_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profiles: {
         Row: {
           class_id: string | null
@@ -289,9 +397,22 @@ export type Database = {
           created_at: string | null
           email: string | null
           id: string
-          name: string | null
+          first_name: string | null
+          last_name: string | null
           role: string | null
           updated_at: string | null
+          gender: string | null
+          job: string | null
+          education: string | null
+          phone_number: string | null
+          country: string | null
+          city: string | null
+          birthday: string | null
+          ai_familiarity: 'beginner' | 'intermediate' | 'advanced' | 'expert' | null
+          english_level: 'beginner' | 'intermediate' | 'advanced' | 'native' | null
+          telegram_id: string | null
+          whatsapp_id: string | null
+          is_demo: boolean | null
         }
         Insert: {
           class_id?: string | null
@@ -299,9 +420,22 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id: string
-          name?: string | null
+          first_name?: string | null
+          last_name?: string | null
           role?: string | null
           updated_at?: string | null
+          gender?: string | null
+          job?: string | null
+          education?: string | null
+          phone_number?: string | null
+          country?: string | null
+          city?: string | null
+          birthday?: string | null
+          ai_familiarity?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | null
+          english_level?: 'beginner' | 'intermediate' | 'advanced' | 'native' | null
+          telegram_id?: string | null
+          whatsapp_id?: string | null
+          is_demo?: boolean | null
         }
         Update: {
           class_id?: string | null
@@ -309,9 +443,22 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
-          name?: string | null
+          first_name?: string | null
+          last_name?: string | null
           role?: string | null
           updated_at?: string | null
+          gender?: string | null
+          job?: string | null
+          education?: string | null
+          phone_number?: string | null
+          country?: string | null
+          city?: string | null
+          birthday?: string | null
+          ai_familiarity?: 'beginner' | 'intermediate' | 'advanced' | 'expert' | null
+          english_level?: 'beginner' | 'intermediate' | 'advanced' | 'native' | null
+          telegram_id?: string | null
+          whatsapp_id?: string | null
+          is_demo?: boolean | null
         }
         Relationships: []
       }
@@ -347,7 +494,37 @@ export type Database = {
           student_id?: string
         }
         Relationships: []
-      }
+      },
+      daily_activities: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          points: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          points?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          points?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: []
+      },
       student_awards: {
         Row: {
           award_id: string
@@ -380,27 +557,122 @@ export type Database = {
           },
         ]
       }
-      teacher_course_assignments: {
+      subtasks: {
         Row: {
-          assigned_at: string
-          assigned_by: string | null
-          course_id: string
           id: string
-          teacher_id: string
+          task_id: string
+          title: string
+          description: string | null
+          is_completed: boolean
+          created_at: string
+          updated_at: string
         }
         Insert: {
-          assigned_at?: string
-          assigned_by?: string | null
-          course_id: string
           id?: string
-          teacher_id: string
+          task_id: string
+          title: string
+          description?: string | null
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
         }
         Update: {
+          id?: string
+          task_id?: string
+          title?: string
+          description?: string | null
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subtasks_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          assigned_to: string | null
+          assigned_by: string | null
+          status: string
+          priority: string
+          due_date: string | null
+          is_completed: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          assigned_to?: string | null
+          assigned_by?: string | null
+          status?: string
+          priority?: string
+          due_date?: string | null
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          assigned_to?: string | null
+          assigned_by?: string | null
+          status?: string
+          priority?: string
+          due_date?: string | null
+          is_completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_course_assignments: {
+        Row: {
+          id: string
+          teacher_id: string
+          course_id: string
+          assigned_at: string
+          assigned_by: string | null
+        }
+        Insert: {
+          id?: string
+          teacher_id: string
+          course_id: string
           assigned_at?: string
           assigned_by?: string | null
-          course_id?: string
+        }
+        Update: {
           id?: string
           teacher_id?: string
+          course_id?: string
+          assigned_at?: string
+          assigned_by?: string | null
         }
         Relationships: [
           {
@@ -472,6 +744,193 @@ export type Database = {
           },
         ]
       }
+      accounting: {
+        Row: {
+          id: string;
+          user_id: string;
+          course_id: string | null;
+          amount: number;
+          description: string | null;
+          payment_method: string | null;
+          payment_status: PaymentStatus;
+          payment_type: PaymentType;
+          transaction_date: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          course_id?: string | null;
+          amount: number;
+          description?: string | null;
+          payment_method?: string | null;
+          payment_status?: PaymentStatus;
+          payment_type?: PaymentType;
+          transaction_date?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          course_id?: string | null;
+          amount?: number;
+          description?: string | null;
+          payment_method?: string | null;
+          payment_status?: PaymentStatus;
+          payment_type?: PaymentType;
+          transaction_date?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "accounting_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "accounting_course_id_fkey";
+            columns: ["course_id"];
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      wiki_categories: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          access_type: 'all_students' | 'course_specific';
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          access_type?: 'all_students' | 'course_specific';
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          access_type?: 'all_students' | 'course_specific';
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wiki_categories_created_by_fkey";
+            columns: ["created_by"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      wiki_topics: {
+        Row: {
+          id: string;
+          category_id: string;
+          title: string;
+          description: string | null;
+          order_index: number;
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          category_id: string;
+          title: string;
+          description?: string | null;
+          order_index?: number;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          category_id?: string;
+          title?: string;
+          description?: string | null;
+          order_index?: number;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wiki_topics_category_id_fkey";
+            columns: ["category_id"];
+            referencedRelation: "wiki_categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wiki_topics_created_by_fkey";
+            columns: ["created_by"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      wiki_articles: {
+        Row: {
+          id: string;
+          topic_id: string;
+          title: string;
+          content: string;
+          order_index: number;
+          is_published: boolean;
+          created_at: string;
+          updated_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          topic_id: string;
+          title: string;
+          content: string;
+          order_index?: number;
+          is_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          topic_id?: string;
+          title?: string;
+          content?: string;
+          order_index?: number;
+          is_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wiki_articles_topic_id_fkey";
+            columns: ["topic_id"];
+            referencedRelation: "wiki_topics";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wiki_articles_created_by_fkey";
+            columns: ["created_by"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     }
     Views: {
       [_ in never]: never
