@@ -39,7 +39,7 @@ export const UpcomingExercisesCard = ({ exercises }: UpcomingExercisesCardProps)
                     <span className="text-purple-600">{exercise.points} امتیاز</span>
                   </div>
                 </div>
-                <Link to={`/exercises/${exercise.id}`}>
+                <Link to={`/exercise/${exercise.id}`}>
                   <Button size="sm" className="mr-4">
                     <Play className="h-4 w-4 ml-2" />
                     شروع

@@ -109,7 +109,7 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                 </TableCell>
                 <TableCell>{exercise.estimated_time}</TableCell>
                 <TableCell>
-                  <Link to={`/exercises/${exercise.id}`}>
+                  <Link to={`/exercise/${exercise.id}`}>
                     <Button size="sm" variant="outline">
                       {exercise.submission_status === 'completed' ? 'مشاهده' : 'شروع'}
                     </Button>

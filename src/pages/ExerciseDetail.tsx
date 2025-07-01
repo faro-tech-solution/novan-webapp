@@ -1,99 +1,47 @@
-
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
-import { fetchExerciseDetail, submitExerciseSolution, ExerciseDetail as ExerciseDetailType } from '@/services/exerciseDetailService';
-import { useToast } from '@/hooks/use-toast';
 import { FormAnswer } from '@/types/formBuilder';
 import { ExerciseDetailHeader } from '@/components/exercises/ExerciseDetailHeader';
 import { ExerciseInfoCard } from '@/components/exercises/ExerciseInfoCard';
 import { TraineeExerciseForm } from '@/components/exercises/TraineeExerciseForm';
 import { InstructorFormView } from '@/components/exercises/InstructorFormView';
+import { useExerciseDetailQuery, useSubmitExerciseMutation } from '@/hooks/queries/useExerciseDetailQuery';
 
 const ExerciseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { profile, user } = useAuth();
-  const { toast } = useToast();
-  
-  const [exercise, setExercise] = useState<ExerciseDetailType | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<FormAnswer[]>([]);
-  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    const loadExercise = async () => {
-      if (!id || !user) return;
+  const { data: exercise, isLoading, error } = useExerciseDetailQuery(id!, user?.id);
+  const submitMutation = useSubmitExerciseMutation();
 
-      try {
-        setLoading(true);
-        const exerciseData = await fetchExerciseDetail(id, user.id);
-        
-        if (!exerciseData) {
-          setError('تمرین یافت نشد');
-          return;
-        }
-
-        setExercise(exerciseData);
-        
-        // If there's already a submission, load the answers
-        if (exerciseData.submission_answers) {
-          setAnswers(exerciseData.submission_answers);
-        }
-      } catch (err) {
-        console.error('Error loading exercise:', err);
-        setError(err instanceof Error ? err.message : 'خطا در بارگذاری تمرین');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadExercise();
-  }, [id, user]);
+  // Set initial answers if there's a submission
+  React.useEffect(() => {
+    if (exercise?.submission_answers) {
+      setAnswers(exercise.submission_answers);
+    }
+  }, [exercise?.submission_answers]);
 
   const handleSubmit = async () => {
-    if (!exercise || !user) return;
+    if (!exercise || !user || !profile) return;
 
-    try {
-      setSubmitting(true);
-      const { error } = await submitExerciseSolution(
-        exercise.id,
-        user.id,
-        user.email || '',
-        profile?.name || '',
-        JSON.stringify(answers)
-      );
-
-      if (error) {
-        toast({
-          title: "خطا",
-          description: error,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "ارسال شد",
-          description: "پاسخ شما با موفقیت ارسال شد",
-        });
-        
-        // Redirect to exercises list
+    submitMutation.mutate({
+      exerciseId: exercise.id,
+      studentId: user.id,
+      studentEmail: user.email || '',
+      studentName: profile.first_name ? `${profile.first_name} ${profile.last_name || ''}` : '',
+      answers,
+    }, {
+      onSuccess: () => {
         navigate('/my-exercises');
       }
-    } catch (err) {
-      console.error('Error submitting solution:', err);
-      toast({
-        title: "خطا",
-        description: "خطا در ارسال پاسخ",
-        variant: "destructive",
-      });
-    } finally {
-      setSubmitting(false);
-    }
+    });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <DashboardLayout title="جزئیات تمرین">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -110,7 +58,7 @@ const ExerciseDetail = () => {
     return (
       <DashboardLayout title="جزئیات تمرین">
         <div className="text-center py-8">
-          <p className="text-red-600">{error || 'تمرین یافت نشد'}</p>
+          <p className="text-red-600">{error instanceof Error ? error.message : 'تمرین یافت نشد'}</p>
           <button onClick={() => navigate(-1)} className="mt-4">
             بازگشت
           </button>
@@ -144,7 +92,7 @@ const ExerciseDetail = () => {
             answers={answers}
             onAnswersChange={setAnswers}
             onSubmit={handleSubmit}
-            submitting={submitting}
+            submitting={submitMutation.isPending}
           />
         )}
 
