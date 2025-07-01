@@ -14,7 +14,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStudentCoursesQuery } from '@/hooks/queries/useStudentCoursesQuery';
 import { useToast } from '@/hooks/use-toast';

@@ -1,16 +1,23 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { StudentAccountDetailsDialog } from '@/components/StudentAccountDetailsDialog';
-import CreatePaymentDialog from '@/components/CreatePaymentDialog';
-import { useToast } from '@/hooks/use-toast';
-import DashboardLayout from '@/components/DashboardLayout';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
-import { useAccountingRecordsQuery } from '@/hooks/useAccountingQuery';
-import { Badge } from '@/components/ui/badge';
-import UserNameWithBadge from '@/components/ui/UserNameWithBadge';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { StudentAccountDetailsDialog } from "@/components/students/StudentAccountDetailsDialog";
+import CreatePaymentDialog from "@/components/dialogs/CreatePaymentDialog";
+import { useToast } from "@/hooks/use-toast";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import { useAccountingRecordsQuery } from "@/hooks/useAccountingQuery";
+import { Badge } from "@/components/ui/badge";
+import UserNameWithBadge from "@/components/ui/UserNameWithBadge";
 
 interface SelectedStudent {
   id: string;
@@ -19,39 +26,46 @@ interface SelectedStudent {
 }
 
 const Accounting = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStudent, setSelectedStudent] = useState<SelectedStudent | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStudent, setSelectedStudent] =
+    useState<SelectedStudent | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const { toast } = useToast();
   const [showDemoUsers, setShowDemoUsers] = useState(false);
 
   const { data, isLoading, error } = useAccountingRecordsQuery();
-  const { balances: records = [], report } = data || { balances: [], report: {
-    totalSales: 0,
-    totalDiscounts: 0,
-    totalIncome: 0,
-    totalReceived: 0,
-    totalReceivable: 0,
-    pendingInstallments: 0,
-  }};
+  const { balances: records = [], report } = data || {
+    balances: [],
+    report: {
+      totalSales: 0,
+      totalDiscounts: 0,
+      totalIncome: 0,
+      totalReceived: 0,
+      totalReceivable: 0,
+      pendingInstallments: 0,
+    },
+  };
 
   // Add search filter, trainee filter, and demo user filter
-  let filteredRecords = records.filter(record => record.user.role === 'trainee');
+  let filteredRecords = records.filter(
+    (record) => record.user.role === "trainee"
+  );
   if (showDemoUsers) {
-    filteredRecords = filteredRecords.filter(record => record.user.is_demo);
+    filteredRecords = filteredRecords.filter((record) => record.user.is_demo);
   } else {
-    filteredRecords = filteredRecords.filter(record => !record.user.is_demo);
+    filteredRecords = filteredRecords.filter((record) => !record.user.is_demo);
   }
-  filteredRecords = filteredRecords.filter(record => {
-    if (searchQuery.trim() === '') return true;
-    const fullName = `${record.user.first_name} ${record.user.last_name}`.toLowerCase();
+  filteredRecords = filteredRecords.filter((record) => {
+    if (searchQuery.trim() === "") return true;
+    const fullName =
+      `${record.user.first_name} ${record.user.last_name}`.toLowerCase();
     const email = record.user.email.toLowerCase();
     const query = searchQuery.toLowerCase();
     return fullName.includes(query) || email.includes(query);
   });
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('fa-IR').format(amount);
+    return new Intl.NumberFormat("fa-IR").format(amount);
   };
 
   return (
@@ -62,7 +76,9 @@ const Accounting = () => {
             <CardTitle className="text-sm font-medium">کل فروش</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{formatAmount(report.totalSales)}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {formatAmount(report.totalSales)}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -70,7 +86,9 @@ const Accounting = () => {
             <CardTitle className="text-sm font-medium">تخفیف ها</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{formatAmount(report.totalDiscounts)}</div>
+            <div className="text-2xl font-bold text-red-600">
+              {formatAmount(report.totalDiscounts)}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -78,15 +96,21 @@ const Accounting = () => {
             <CardTitle className="text-sm font-medium">مبلغ کل درآمد</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{formatAmount(report.totalIncome)}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {formatAmount(report.totalIncome)}
+            </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">مبلغ دریافت شده</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              مبلغ دریافت شده
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{formatAmount(report.totalReceived)}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {formatAmount(report.totalReceived)}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -94,15 +118,21 @@ const Accounting = () => {
             <CardTitle className="text-sm font-medium">مبلغ بستانکار</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">{formatAmount(report.totalReceivable)}</div>
+            <div className="text-2xl font-bold text-red-600">
+              {formatAmount(report.totalReceivable)}
+            </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">اقساط در انتظار پرداخت</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              اقساط در انتظار پرداخت
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-500">{formatAmount(report.pendingInstallments)}</div>
+            <div className="text-2xl font-bold text-orange-500">
+              {formatAmount(report.pendingInstallments)}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -125,7 +155,7 @@ const Accounting = () => {
                 <input
                   type="checkbox"
                   checked={showDemoUsers}
-                  onChange={e => setShowDemoUsers(e.target.checked)}
+                  onChange={(e) => setShowDemoUsers(e.target.checked)}
                   className="accent-yellow-500"
                 />
                 نمایش کاربران آزمایشی
@@ -137,10 +167,14 @@ const Accounting = () => {
           {isLoading ? (
             <div className="text-center py-4">در حال بارگذاری...</div>
           ) : error ? (
-            <div className="text-center py-4 text-red-500">خطا در دریافت اطلاعات</div>
+            <div className="text-center py-4 text-red-500">
+              خطا در دریافت اطلاعات
+            </div>
           ) : filteredRecords.length === 0 ? (
             <div className="text-center py-4">
-              {records.length === 0 ? 'هیچ دانشجویی یافت نشد' : 'هیچ دانشجویی با این فیلتر یافت نشد'}
+              {records.length === 0
+                ? "هیچ دانشجویی یافت نشد"
+                : "هیچ دانشجویی با این فیلتر یافت نشد"}
             </div>
           ) : (
             <Table>
@@ -155,10 +189,24 @@ const Accounting = () => {
               <TableBody>
                 {filteredRecords.map((record) => (
                   <TableRow key={record.user.id}>
-                    <TableCell className="text-right"><UserNameWithBadge firstName={record.user.first_name} lastName={record.user.last_name} isDemo={record.user.is_demo} /></TableCell>
-                    <TableCell className="text-right">{record.user.email}</TableCell>
                     <TableCell className="text-right">
-                      <span className={record.balance >= 0 ? 'text-green-600' : 'text-red-600'}>
+                      <UserNameWithBadge
+                        firstName={record.user.first_name}
+                        lastName={record.user.last_name}
+                        isDemo={record.user.is_demo}
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {record.user.email}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span
+                        className={
+                          record.balance >= 0
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
                         {formatAmount(record.balance)}
                       </span>
                     </TableCell>
@@ -167,11 +215,13 @@ const Accounting = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setSelectedStudent({ 
-                            id: record.user.id, 
-                            name: `${record.user.first_name} ${record.user.last_name}`,
-                            email: record.user.email 
-                          })}
+                          onClick={() =>
+                            setSelectedStudent({
+                              id: record.user.id,
+                              name: `${record.user.first_name} ${record.user.last_name}`,
+                              email: record.user.email,
+                            })
+                          }
                         >
                           مشاهده جزئیات حساب
                         </Button>
@@ -179,10 +229,10 @@ const Accounting = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            setSelectedStudent({ 
-                              id: record.user.id, 
+                            setSelectedStudent({
+                              id: record.user.id,
                               name: `${record.user.first_name} ${record.user.last_name}`,
-                              email: record.user.email 
+                              email: record.user.email,
                             });
                             setIsCreateDialogOpen(true);
                           }}
@@ -223,4 +273,4 @@ const Accounting = () => {
   );
 };
 
-export default Accounting; 
+export default Accounting;

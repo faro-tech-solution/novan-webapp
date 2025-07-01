@@ -1,21 +1,40 @@
-import { useState } from 'react';
-import DashboardLayout from '@/components/DashboardLayout';
-import { useToast } from '@/hooks/use-toast';
-import { useUsersQuery, User } from '@/hooks/queries/useUsersQuery';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import UserNameWithBadge from '@/components/ui/UserNameWithBadge';
+import { useState } from "react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { useToast } from "@/hooks/use-toast";
+import { useUsersQuery, User } from "@/hooks/queries/useUsersQuery";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Plus, Search, Edit2, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import UserNameWithBadge from "@/components/ui/UserNameWithBadge";
 
 const UserManagement = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRole, setSelectedRole] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRole, setSelectedRole] = useState<string>("all");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -39,15 +58,15 @@ const UserManagement = () => {
     try {
       await deleteUser(selectedUser.id);
       toast({
-        title: 'موفقیت',
-        description: 'کاربر با موفقیت حذف شد',
+        title: "موفقیت",
+        description: "کاربر با موفقیت حذف شد",
       });
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error("Error deleting user:", error);
       toast({
-        title: 'خطا',
-        description: 'خطا در حذف کاربر',
-        variant: 'destructive',
+        title: "خطا",
+        description: "خطا در حذف کاربر",
+        variant: "destructive",
       });
     } finally {
       setShowDeleteDialog(false);
@@ -61,30 +80,29 @@ const UserManagement = () => {
     try {
       await updateUser({ userId: selectedUser.id, updates });
       toast({
-        title: 'موفقیت',
-        description: 'اطلاعات کاربر با موفقیت بروزرسانی شد',
+        title: "موفقیت",
+        description: "اطلاعات کاربر با موفقیت بروزرسانی شد",
       });
       setShowEditDialog(false);
     } catch (error) {
-      console.error('Error updating user:', error);
+      console.error("Error updating user:", error);
       toast({
-        title: 'خطا',
-        description: 'خطا در بروزرسانی اطلاعات کاربر',
-        variant: 'destructive',
+        title: "خطا",
+        description: "خطا در بروزرسانی اطلاعات کاربر",
+        variant: "destructive",
       });
     }
   };
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = users.filter((user) => {
     const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = (
+    const matchesSearch =
       user.first_name.toLowerCase().includes(searchLower) ||
       user.last_name.toLowerCase().includes(searchLower) ||
       user.email.toLowerCase().includes(searchLower) ||
-      user.role.toLowerCase().includes(searchLower)
-    );
+      user.role.toLowerCase().includes(searchLower);
 
-    const matchesRole = selectedRole === 'all' || user.role === selectedRole;
+    const matchesRole = selectedRole === "all" || user.role === selectedRole;
 
     return matchesSearch && matchesRole;
   });
@@ -158,30 +176,50 @@ const UserManagement = () => {
             <TableBody>
               {filteredUsers.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell><UserNameWithBadge firstName={user.first_name} lastName={user.last_name} isDemo={user.is_demo} /></TableCell>
+                  <TableCell>
+                    <UserNameWithBadge
+                      firstName={user.first_name}
+                      lastName={user.last_name}
+                      isDemo={user.is_demo}
+                    />
+                  </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs ${(() => {
-                      switch (String(user.role)) {
-                        case 'admin': return 'bg-purple-100 text-purple-800';
-                        case 'trainer': return 'bg-blue-100 text-blue-800';
-                        case 'teammate': return 'bg-teal-100 text-teal-800';
-                        case 'trainee': return 'bg-green-100 text-green-800';
-                        default: return 'bg-gray-200 text-gray-800';
-                      }
-                    })()}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${(() => {
+                        switch (String(user.role)) {
+                          case "admin":
+                            return "bg-purple-100 text-purple-800";
+                          case "trainer":
+                            return "bg-blue-100 text-blue-800";
+                          case "teammate":
+                            return "bg-teal-100 text-teal-800";
+                          case "trainee":
+                            return "bg-green-100 text-green-800";
+                          default:
+                            return "bg-gray-200 text-gray-800";
+                        }
+                      })()}`}
+                    >
                       {(() => {
                         switch (String(user.role)) {
-                          case 'admin': return 'مدیر';
-                          case 'trainer': return 'مدرس';
-                          case 'teammate': return 'هم‌تیمی';
-                          case 'trainee': return 'دانشجو';
-                          default: return user.role;
+                          case "admin":
+                            return "مدیر";
+                          case "trainer":
+                            return "مدرس";
+                          case "teammate":
+                            return "هم‌تیمی";
+                          case "trainee":
+                            return "دانشجو";
+                          default:
+                            return user.role;
                         }
                       })()}
                     </span>
                   </TableCell>
-                  <TableCell>{new Date(user.created_at).toLocaleDateString('fa-IR')}</TableCell>
+                  <TableCell>
+                    {new Date(user.created_at).toLocaleDateString("fa-IR")}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
                       <Button
@@ -221,7 +259,12 @@ const UserManagement = () => {
                   <Input
                     id="firstName"
                     value={selectedUser.first_name}
-                    onChange={(e) => setSelectedUser({ ...selectedUser, first_name: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedUser({
+                        ...selectedUser,
+                        first_name: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -229,7 +272,12 @@ const UserManagement = () => {
                   <Input
                     id="lastName"
                     value={selectedUser.last_name}
-                    onChange={(e) => setSelectedUser({ ...selectedUser, last_name: e.target.value })}
+                    onChange={(e) =>
+                      setSelectedUser({
+                        ...selectedUser,
+                        last_name: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -238,14 +286,21 @@ const UserManagement = () => {
                 <Input
                   id="email"
                   value={selectedUser.email}
-                  onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
+                  onChange={(e) =>
+                    setSelectedUser({ ...selectedUser, email: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role">نقش</Label>
                 <Select
                   value={selectedUser.role}
-                  onValueChange={(value) => setSelectedUser({ ...selectedUser, role: value as User['role'] })}
+                  onValueChange={(value) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      role: value as User["role"],
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="انتخاب نقش" />
@@ -259,7 +314,10 @@ const UserManagement = () => {
                 </Select>
               </div>
               <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEditDialog(false)}
+                >
                   انصراف
                 </Button>
                 <Button onClick={() => handleUpdateUser(selectedUser)}>
@@ -280,7 +338,10 @@ const UserManagement = () => {
           <div className="space-y-4">
             <p>آیا از حذف این کاربر اطمینان دارید؟</p>
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(false)}
+              >
                 انصراف
               </Button>
               <Button variant="destructive" onClick={confirmDeleteUser}>

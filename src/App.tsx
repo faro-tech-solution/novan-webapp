@@ -23,22 +23,22 @@ import Progress from "@/pages/Progress";
 import CourseManagement from "@/pages/CourseManagement";
 import ReviewSubmissions from "@/pages/ReviewSubmissions";
 import NotFound from "@/pages/NotFound";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import AdminDashboard from "@/pages/AdminDashboard";
 import UserManagement from "@/pages/UserManagement";
 import GroupManagement from "@/pages/GroupManagement";
 import Profile from "@/pages/Profile";
 import Accounting from "@/pages/Accounting";
-import DailyActivitiesManagement from './pages/DailyActivitiesManagement';
-import Wiki from '@/pages/Wiki';
-import WikiCategory from '@/pages/WikiCategory';
-import WikiArticle from '@/pages/WikiArticle';
-import CreateWikiArticle from '@/pages/CreateWikiArticle';
-import WikiManagement from '@/pages/WikiManagement';
-import TeammatesDashboard from '@/pages/TeammatesDashboard';
-import TasksManagement from '@/pages/TasksManagement';
-import TeammateTasks from '@/pages/TeammateTasks';
-import ForgetPassword from '@/pages/ForgetPassword';
+import DailyActivitiesManagement from "./pages/DailyActivitiesManagement";
+import Wiki from "@/pages/Wiki";
+import WikiCategory from "@/pages/WikiCategory";
+import WikiArticle from "@/pages/WikiArticle";
+import CreateWikiArticle from "@/pages/CreateWikiArticle";
+import WikiManagement from "@/pages/WikiManagement";
+import TeammatesDashboard from "@/pages/TeammatesDashboard";
+import TasksManagement from "@/pages/TasksManagement";
+import TeammateTasks from "@/pages/TeammateTasks";
+import ForgetPassword from "@/pages/ForgetPassword";
 
 const queryClient = new QueryClient();
 
@@ -49,220 +49,223 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      
+
       {/* Protected Routes */}
-      <Route 
-        path="/dashboard" 
+      <Route
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Specific dashboard routes */}
-      <Route 
-        path="/dashboard/trainer" 
+      <Route
+        path="/dashboard/trainer"
         element={
           <ProtectedRoute requiredRole="trainer">
             <TrainerDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/dashboard/trainee" 
+
+      <Route
+        path="/dashboard/trainee"
         element={
           <ProtectedRoute requiredRole="trainee">
             <TraineeDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/dashboard/admin" 
+
+      <Route
+        path="/dashboard/admin"
         element={
           <ProtectedRoute requiredRole="admin">
             <AdminDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* User Management - Admin only */}
-      <Route 
-        path="/user-management" 
+      <Route
+        path="/user-management"
         element={
           <ProtectedRoute requiredRole="admin">
             <UserManagement />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Group Management - Admin only */}
-      <Route 
-        path="/group-management" 
+      <Route
+        path="/group-management"
         element={
           <ProtectedRoute requiredRole="admin">
             <GroupManagement />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/courses" 
+
+      <Route
+        path="/courses"
         element={
           <ProtectedRoute>
-            {profile?.role === 'trainer' ? <Courses /> : <StudentCourses />}
+            {profile?.role === "trainer" ? <Courses /> : <StudentCourses />}
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Add the student-courses route */}
-      <Route 
-        path="/student-courses" 
+      <Route
+        path="/student-courses"
         element={
           <ProtectedRoute requiredRole="trainee">
             <StudentCourses />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Profile route - accessible to all authenticated users */}
-      <Route 
-        path="/profile" 
+      <Route
+        path="/profile"
         element={
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Course Management - Admin and Trainer */}
-      <Route 
-        path="/courses-management" 
+      <Route
+        path="/courses-management"
         element={
           <ProtectedRoute>
-            {(profile?.role === 'trainer' || profile?.role === 'admin') ? (
+            {profile?.role === "trainer" || profile?.role === "admin" ? (
               <CourseManagement />
             ) : (
               <NotFound />
             )}
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Exercises routes */}
-      <Route 
-        path="/exercises" 
+      <Route
+        path="/exercises"
         element={
           <ProtectedRoute>
             <Exercises />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/my-exercises" 
+
+      <Route
+        path="/my-exercises"
         element={
           <ProtectedRoute requiredRole="trainee">
             <MyExercises />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/exercise/:id" 
+
+      <Route
+        path="/exercise/:id"
         element={
           <ProtectedRoute>
             <ExerciseDetail />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Review Submissions - Admin and Trainer */}
-      <Route 
-        path="/review-submissions" 
+      <Route
+        path="/review-submissions"
         element={
           <ProtectedRoute>
-            {(profile?.role === 'trainer' || profile?.role === 'admin') ? (
+            {profile?.role === "trainer" || profile?.role === "admin" ? (
               <ReviewSubmissions />
             ) : (
               <NotFound />
             )}
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Students - Admin and Trainer */}
-      <Route 
-        path="/students" 
+      <Route
+        path="/students"
         element={
           <ProtectedRoute>
-            {(profile?.role === 'trainer' || profile?.role === 'admin') ? (
+            {profile?.role === "trainer" || profile?.role === "admin" ? (
               <Students />
             ) : (
               <NotFound />
             )}
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Instructors - All authenticated users */}
-      <Route 
-        path="/instructors" 
+      <Route
+        path="/instructors"
         element={
           <ProtectedRoute>
             <Instructors />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Progress - Trainee only */}
-      <Route 
-        path="/progress" 
+      <Route
+        path="/progress"
         element={
           <ProtectedRoute requiredRole="trainee">
             <Progress />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/accounting" 
+
+      <Route
+        path="/accounting"
         element={
           <ProtectedRoute requiredRole="admin">
             <Accounting />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route path="/daily-activities-management" element={<DailyActivitiesManagement />} />
-      
+
+      <Route
+        path="/daily-activities-management"
+        element={<DailyActivitiesManagement />}
+      />
+
       {/* Wiki Routes */}
       <Route path="/wiki" element={<Wiki />} />
       <Route path="/wiki/category/:categoryId" element={<WikiCategory />} />
       <Route path="/wiki/article/:articleId" element={<WikiArticle />} />
       <Route path="/wiki/create-article" element={<CreateWikiArticle />} />
       <Route path="/wiki/manage" element={<WikiManagement />} />
-      
-      <Route 
-        path="/dashboard/teammate" 
+
+      <Route
+        path="/dashboard/teammate"
         element={
           <ProtectedRoute requiredRole="teammate">
             <TeammatesDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-      <Route 
-        path="/tasks-management" 
+
+      <Route
+        path="/tasks-management"
         element={
           <ProtectedRoute requiredRole="admin">
             <TasksManagement />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       <Route
         path="/tasks"
         element={
@@ -271,9 +274,9 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-      
+
       <Route path="/forget_password" element={<ForgetPassword />} />
-      
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

@@ -14,7 +14,7 @@ import {
   Activity
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, BarChart, Bar } from 'recharts';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProgressStatsQuery, useStudentAwardsQuery, useAllAwardsQuery } from '@/hooks/queries/useProgressQuery';
 import { AchievementsDisplay } from '@/components/awards/AchievementsDisplay';

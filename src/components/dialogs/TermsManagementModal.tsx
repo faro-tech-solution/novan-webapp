@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
-import CourseTermsManagement from './CourseTermsManagement';
-import { Course } from '@/types/course';
+import { Button } from "@/components/ui/button";
+import CourseTermsManagement from "@/components/terms/CourseTermsManagement";
+import { Course } from "@/types/course";
 
 interface TermsManagementModalProps {
   open: boolean;
@@ -9,7 +9,12 @@ interface TermsManagementModalProps {
   userRole?: string;
 }
 
-const TermsManagementModal = ({ open, onClose, course, userRole }: TermsManagementModalProps) => {
+const TermsManagementModal = ({
+  open,
+  onClose,
+  course,
+  userRole,
+}: TermsManagementModalProps) => {
   if (!open || !course) return null;
 
   return (
@@ -18,16 +23,14 @@ const TermsManagementModal = ({ open, onClose, course, userRole }: TermsManageme
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">
-              {userRole === 'admin' ? 'مدیریت ترم‌های' : 'ترم‌های'} {course.name}
+              {userRole === "admin" ? "مدیریت ترم‌های" : "ترم‌های"}{" "}
+              {course.name}
             </h2>
-            <Button 
-              variant="outline" 
-              onClick={onClose}
-            >
+            <Button variant="outline" onClick={onClose}>
               بستن
             </Button>
           </div>
-          <CourseTermsManagement 
+          <CourseTermsManagement
             courseId={course.id}
             courseName={course.name}
             userRole={userRole}

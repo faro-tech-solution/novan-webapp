@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useDeleteWikiCategoryMutation } from '@/hooks/useWikiQuery';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const Wiki: React.FC = () => {
   const { user, profile } = useAuth();

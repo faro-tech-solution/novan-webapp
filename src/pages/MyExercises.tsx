@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { MyExerciseStatsCards } from '@/components/exercises/MyExerciseStatsCards';
 import { MyExerciseFilters } from '@/components/exercises/MyExerciseFilters';
 import { MyExerciseTable } from '@/components/exercises/MyExerciseTable';

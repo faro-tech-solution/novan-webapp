@@ -1,17 +1,23 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { login, profile } = useAuth();
   const navigate = useNavigate();
@@ -19,28 +25,28 @@ const Login = () => {
   const { toast } = useToast();
 
   // Add debugging logs
-  console.log('Login component - profile:', profile);
+  console.log("Login component - profile:", profile);
 
   // Redirect if already logged in
   useEffect(() => {
     if (profile) {
-      console.log('Redirecting user with role:', profile.role);
-      if (profile.role === 'trainer') {
-        navigate('/dashboard/trainer');
-      } else if (profile.role === 'trainee') {
-        navigate('/dashboard/trainee');
-      } else if (profile.role === 'admin') {
-        navigate('/dashboard/admin');
-      } else if (profile.role === 'teammate') {
-        navigate('/dashboard/teammate');
+      console.log("Redirecting user with role:", profile.role);
+      if (profile.role === "trainer") {
+        navigate("/dashboard/trainer");
+      } else if (profile.role === "trainee") {
+        navigate("/dashboard/trainee");
+      } else if (profile.role === "admin") {
+        navigate("/dashboard/admin");
+      } else if (profile.role === "teammate") {
+        navigate("/dashboard/teammate");
       }
     }
   }, [profile, navigate]);
 
   // Redirect from /login to / for backward compatibility
   useEffect(() => {
-    if (location.pathname === '/') {
-      navigate('/', { replace: true });
+    if (location.pathname === "/") {
+      navigate("/", { replace: true });
     }
   }, [location.pathname, navigate]);
 
@@ -49,17 +55,17 @@ const Login = () => {
     setLoading(true);
 
     try {
-      console.log('Attempting login...');
+      console.log("Attempting login...");
       const { error } = await login(email, password);
       if (error) {
-        console.error('Login error:', error);
+        console.error("Login error:", error);
         toast({
           title: "خطا در ورود",
-          description: error.message || 'اطلاعات نادرست است',
+          description: error.message || "اطلاعات نادرست است",
           variant: "destructive",
         });
       } else {
-        console.log('Login successful');
+        console.log("Login successful");
         toast({
           title: "ورود موفق",
           description: "به داشبورد منتقل می‌شوید...",
@@ -68,10 +74,10 @@ const Login = () => {
         // once the profile is loaded from the AuthContext
       }
     } catch (err) {
-      console.error('Login catch error:', err);
+      console.error("Login catch error:", err);
       toast({
         title: "خطا",
-        description: 'ورود ناموفق. لطفا دوباره تلاش کنید.',
+        description: "ورود ناموفق. لطفا دوباره تلاش کنید.",
         variant: "destructive",
       });
     } finally {
@@ -82,7 +88,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <div className="flex items-center justify-center py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
@@ -103,7 +109,7 @@ const Login = () => {
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">رمز عبور</Label>
                 <Input
@@ -124,13 +130,16 @@ const Login = () => {
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'در حال ورود...' : 'ورود'}
+                {loading ? "در حال ورود..." : "ورود"}
               </Button>
             </form>
 
             <div className="mt-4 text-center text-sm">
               <span className="text-gray-600">حساب ندارید؟ </span>
-              <Link to="/register" className="text-teal-600 hover:text-teal-700 font-medium">
+              <Link
+                to="/register"
+                className="text-teal-600 hover:text-teal-700 font-medium"
+              >
                 ثبت نام
               </Link>
             </div>

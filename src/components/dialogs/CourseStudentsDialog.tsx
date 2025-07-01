@@ -1,17 +1,23 @@
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
-import StudentProfileModal from './StudentProfileModal';
-import { Tables } from '@/integrations/supabase/types';
-import { CourseTerm } from '@/types/course';
-import { CourseStudent } from '@/types/student';
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import StudentProfileModal from "@/components/students/StudentProfileModal";
+import { Tables } from "@/integrations/supabase/types";
+import { CourseTerm } from "@/types/course";
+import { CourseStudent } from "@/types/student";
 
-type CourseEnrollment = Tables<'course_enrollments'> & {
+type CourseEnrollment = Tables<"course_enrollments"> & {
   profiles?: {
     first_name: string;
     last_name: string;
@@ -25,27 +31,33 @@ interface CourseStudentsDialogProps {
   onClose: () => void;
 }
 
-const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialogProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
+const CourseStudentsDialog = ({
+  courseId,
+  isOpen,
+  onClose,
+}: CourseStudentsDialogProps) => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [enrollments, setEnrollments] = useState<CourseEnrollment[]>([]);
   const [terms, setTerms] = useState<CourseTerm[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [addStudentEmail, setAddStudentEmail] = useState('');
-  const [selectedTermId, setSelectedTermId] = useState<string>('general');
+  const [addStudentEmail, setAddStudentEmail] = useState("");
+  const [selectedTermId, setSelectedTermId] = useState<string>("general");
   const [addingStudent, setAddingStudent] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [selectedStudentId, setSelectedStudentId] = useState<string>('');
-  const [selectedStudentName, setSelectedStudentName] = useState<string>('');
+  const [selectedStudentId, setSelectedStudentId] = useState<string>("");
+  const [selectedStudentName, setSelectedStudentName] = useState<string>("");
   const { toast } = useToast();
   const { profile } = useAuth();
   const [students, setStudents] = useState<CourseStudent[]>([]);
-  const [enrolledStudents, setEnrolledStudents] = useState<CourseEnrollment[]>([]);
+  const [enrolledStudents, setEnrolledStudents] = useState<CourseEnrollment[]>(
+    []
+  );
   const [coursePrice, setCoursePrice] = useState<number>(0);
-  const [selectedStudent, setSelectedStudent] = useState<string>('');
+  const [selectedStudent, setSelectedStudent] = useState<string>("");
 
   // Only admins can delete students from courses
-  const canDeleteStudents = profile?.role === 'admin';
+  const canDeleteStudents = profile?.role === "admin";
 
   const fetchEnrollments = async () => {
     if (!courseId) return;
@@ -53,8 +65,9 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('course_enrollments')
-        .select(`
+        .from("course_enrollments")
+        .select(
+          `
           id,
           course_id,
           student_id,
@@ -69,19 +82,20 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
             last_name,
             email
           )
-        `)
-        .eq('course_id', courseId)
-        .order('enrolled_at', { ascending: false });
+        `
+        )
+        .eq("course_id", courseId)
+        .order("enrolled_at", { ascending: false });
 
       if (error) throw error;
 
       setEnrollments(data || []);
     } catch (error) {
-      console.error('Error fetching enrollments:', error);
+      console.error("Error fetching enrollments:", error);
       toast({
-        title: 'خطا',
-        description: 'خطا در بارگذاری ثبت‌نام‌ها',
-        variant: 'destructive',
+        title: "خطا",
+        description: "خطا در بارگذاری ثبت‌نام‌ها",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -93,31 +107,31 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
 
     try {
       const { data, error } = await supabase
-        .from('course_terms')
-        .select('*')
-        .eq('course_id', courseId)
-        .order('created_at', { ascending: false });
+        .from("course_terms")
+        .select("*")
+        .eq("course_id", courseId)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
 
       setTerms(data || []);
     } catch (error) {
-      console.error('Error fetching terms:', error);
+      console.error("Error fetching terms:", error);
     }
   };
 
   const fetchCoursePrice = async () => {
     try {
       const { data, error } = await supabase
-        .from('courses')
-        .select('price')
-        .eq('id', courseId)
+        .from("courses")
+        .select("price")
+        .eq("id", courseId)
         .single();
 
       if (error) throw error;
       setCoursePrice(data.price || 0);
     } catch (error: any) {
-      console.error('Error fetching course price:', error);
+      console.error("Error fetching course price:", error);
     }
   };
 
@@ -125,16 +139,17 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
     try {
       // Fetch all students
       const { data: allStudents, error: studentsError } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, email')
-        .eq('role', 'trainee');
+        .from("profiles")
+        .select("id, first_name, last_name, email")
+        .eq("role", "trainee");
 
       if (studentsError) throw studentsError;
 
       // Fetch enrolled students
       const { data: enrolledData, error: enrolledError } = await supabase
-        .from('course_enrollments')
-        .select(`
+        .from("course_enrollments")
+        .select(
+          `
           id,
           course_id,
           student_id,
@@ -149,23 +164,26 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
             last_name,
             email
           )
-        `)
-        .eq('course_id', courseId);
+        `
+        )
+        .eq("course_id", courseId);
 
       if (enrolledError) throw enrolledError;
 
       setEnrolledStudents(enrolledData as CourseEnrollment[]);
-      const enrolledIds = new Set(enrolledData.map(e => e.student_id));
+      const enrolledIds = new Set(enrolledData.map((e) => e.student_id));
 
-      setStudents(allStudents.map(student => ({
-        ...student,
-        enrolled: enrolledIds.has(student.id)
-      })));
+      setStudents(
+        allStudents.map((student) => ({
+          ...student,
+          enrolled: enrolledIds.has(student.id),
+        }))
+      );
     } catch (error: any) {
       toast({
-        title: 'خطا',
-        description: error.message || 'خطا در دریافت لیست دانشجویان',
-        variant: 'destructive',
+        title: "خطا",
+        description: error.message || "خطا در دریافت لیست دانشجویان",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -184,9 +202,9 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
   const handleAddStudent = async () => {
     if (!addStudentEmail.trim()) {
       toast({
-        title: 'خطا',
-        description: 'لطفا ایمیل دانشجو را وارد کنید',
-        variant: 'destructive',
+        title: "خطا",
+        description: "لطفا ایمیل دانشجو را وارد کنید",
+        variant: "destructive",
       });
       return;
     }
@@ -196,33 +214,33 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
     try {
       // First, try to find the user by email in profiles
       const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('email', addStudentEmail.trim())
+        .from("profiles")
+        .select("*")
+        .eq("email", addStudentEmail.trim())
         .single();
 
       if (profileError || !profileData) {
         toast({
-          title: 'خطا',
-          description: 'کاربری با این ایمیل یافت نشد',
-          variant: 'destructive',
+          title: "خطا",
+          description: "کاربری با این ایمیل یافت نشد",
+          variant: "destructive",
         });
         return;
       }
 
       // Check if student is already enrolled
       const { data: existingEnrollment } = await supabase
-        .from('course_enrollments')
-        .select('*')
-        .eq('course_id', courseId)
-        .eq('student_id', profileData.id)
+        .from("course_enrollments")
+        .select("*")
+        .eq("course_id", courseId)
+        .eq("student_id", profileData.id)
         .single();
 
       if (existingEnrollment) {
         toast({
-          title: 'خطا',
-          description: 'این دانشجو قبلاً در این درس ثبت‌نام کرده است',
-          variant: 'destructive',
+          title: "خطا",
+          description: "این دانشجو قبلاً در این درس ثبت‌نام کرده است",
+          variant: "destructive",
         });
         return;
       }
@@ -231,58 +249,61 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
       const enrollmentData = {
         course_id: courseId,
         student_id: profileData.id,
-        status: 'active',
-        ...(selectedTermId !== 'general' && { term_id: selectedTermId })
+        status: "active",
+        ...(selectedTermId !== "general" && { term_id: selectedTermId }),
       };
 
       const { error: enrollmentError } = await supabase
-        .from('course_enrollments')
+        .from("course_enrollments")
         .insert([enrollmentData]);
 
       if (enrollmentError) throw enrollmentError;
 
       toast({
-        title: 'موفق',
-        description: 'دانشجو با موفقیت به درس اضافه شد',
+        title: "موفق",
+        description: "دانشجو با موفقیت به درس اضافه شد",
       });
 
       // Refresh the list
       fetchEnrollments();
       fetchStudents();
       setShowAddForm(false);
-      setAddStudentEmail('');
+      setAddStudentEmail("");
     } catch (error: any) {
       toast({
-        title: 'خطا',
-        description: error.message || 'خطا در افزودن دانشجو',
-        variant: 'destructive',
+        title: "خطا",
+        description: error.message || "خطا در افزودن دانشجو",
+        variant: "destructive",
       });
     } finally {
       setAddingStudent(false);
     }
   };
 
-  const handleRemoveStudent = async (enrollmentId: string, studentFullName: string) => {
+  const handleRemoveStudent = async (
+    enrollmentId: string,
+    studentFullName: string
+  ) => {
     try {
       const { error } = await supabase
-        .from('course_enrollments')
+        .from("course_enrollments")
         .delete()
-        .eq('id', enrollmentId);
+        .eq("id", enrollmentId);
 
       if (error) throw error;
 
       toast({
-        title: 'موفقیت',
+        title: "موفقیت",
         description: `${studentFullName} با موفقیت از درس حذف شد`,
       });
 
       fetchEnrollments();
     } catch (error) {
-      console.error('Error removing student:', error);
+      console.error("Error removing student:", error);
       toast({
-        title: 'خطا',
-        description: 'خطا در حذف دانشجو',
-        variant: 'destructive',
+        title: "خطا",
+        description: "خطا در حذف دانشجو",
+        variant: "destructive",
       });
     }
   };
@@ -295,37 +316,48 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "inactive":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active': return 'فعال';
-      case 'inactive': return 'غیرفعال';
-      default: return status;
+      case "active":
+        return "فعال";
+      case "inactive":
+        return "غیرفعال";
+      default:
+        return status;
     }
   };
 
   const getTermName = (termId: string | undefined) => {
-    if (!termId) return 'عمومی';
-    const term = terms.find(t => t.id === termId);
-    return term ? term.name : 'نامشخص';
+    if (!termId) return "عمومی";
+    const term = terms.find((t) => t.id === termId);
+    return term ? term.name : "نامشخص";
   };
 
-  const filteredEnrollments = enrollments.filter(enrollment =>
-    `${enrollment.profiles?.first_name} ${enrollment.profiles?.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    enrollment.profiles?.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredEnrollments = enrollments.filter(
+    (enrollment) =>
+      `${enrollment.profiles?.first_name} ${enrollment.profiles?.last_name}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      enrollment.profiles?.email
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
   );
 
   const handleEnroll = async () => {
     if (!selectedStudent) {
       toast({
-        title: 'خطا',
-        description: 'لطفا ایمیل دانشجو را وارد کنید',
-        variant: 'destructive',
+        title: "خطا",
+        description: "لطفا ایمیل دانشجو را وارد کنید",
+        variant: "destructive",
       });
       return;
     }
@@ -333,33 +365,33 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
     try {
       // First, find the student by email
       const { data: studentData, error: studentError } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, email')
-        .eq('email', selectedStudent.trim())
+        .from("profiles")
+        .select("id, first_name, last_name, email")
+        .eq("email", selectedStudent.trim())
         .single();
 
       if (studentError || !studentData) {
         toast({
-          title: 'خطا',
-          description: 'دانشجویی با این ایمیل یافت نشد',
-          variant: 'destructive',
+          title: "خطا",
+          description: "دانشجویی با این ایمیل یافت نشد",
+          variant: "destructive",
         });
         return;
       }
 
       // Check if student is already enrolled
       const { data: existingEnrollment } = await supabase
-        .from('course_enrollments')
-        .select('*')
-        .eq('course_id', courseId)
-        .eq('student_id', studentData.id)
+        .from("course_enrollments")
+        .select("*")
+        .eq("course_id", courseId)
+        .eq("student_id", studentData.id)
         .single();
 
       if (existingEnrollment) {
         toast({
-          title: 'خطا',
-          description: 'این دانشجو قبلاً در این دوره ثبت‌نام کرده است',
-          variant: 'destructive',
+          title: "خطا",
+          description: "این دانشجو قبلاً در این دوره ثبت‌نام کرده است",
+          variant: "destructive",
         });
         return;
       }
@@ -370,42 +402,44 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
       const enrollmentData = {
         course_id: courseId,
         student_id: studentData.id,
-        status: 'active',
+        status: "active",
         enrolled_at: now,
-        term_id: selectedTermId === 'general' ? null : selectedTermId,
+        term_id: selectedTermId === "general" ? null : selectedTermId,
         created_at: now,
-        updated_at: now
+        updated_at: now,
       };
 
       const { error: enrollError } = await supabase
-        .from('course_enrollments')
+        .from("course_enrollments")
         .insert([enrollmentData]);
 
       if (enrollError) {
-        console.error('Enrollment error:', enrollError);
+        console.error("Enrollment error:", enrollError);
         throw enrollError;
       }
 
       // Update student list
-      setStudents(students.map(student => 
-        student.id === studentData.id 
-          ? { ...student, enrolled: true }
-          : student
-      ));
+      setStudents(
+        students.map((student) =>
+          student.id === studentData.id
+            ? { ...student, enrolled: true }
+            : student
+        )
+      );
 
       toast({
-        title: 'ثبت‌نام موفق',
-        description: 'دانشجو با موفقیت در دوره ثبت‌نام شد',
+        title: "ثبت‌نام موفق",
+        description: "دانشجو با موفقیت در دوره ثبت‌نام شد",
       });
 
-      setSelectedStudent('');
+      setSelectedStudent("");
       fetchEnrollments(); // Refresh the enrollments list
     } catch (error: any) {
-      console.error('Error in handleEnroll:', error);
+      console.error("Error in handleEnroll:", error);
       toast({
-        title: 'خطا',
-        description: error.message || 'خطا در ثبت‌نام دانشجو',
-        variant: 'destructive',
+        title: "خطا",
+        description: error.message || "خطا در ثبت‌نام دانشجو",
+        variant: "destructive",
       });
     }
   };
@@ -413,29 +447,29 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
   const handleUnenroll = async (studentId: string) => {
     try {
       const { error } = await supabase
-        .from('course_enrollments')
+        .from("course_enrollments")
         .delete()
-        .eq('course_id', courseId)
-        .eq('student_id', studentId);
+        .eq("course_id", courseId)
+        .eq("student_id", studentId);
 
       if (error) throw error;
 
       // Update student list
-      setStudents(students.map(student => 
-        student.id === studentId 
-          ? { ...student, enrolled: false }
-          : student
-      ));
+      setStudents(
+        students.map((student) =>
+          student.id === studentId ? { ...student, enrolled: false } : student
+        )
+      );
 
       toast({
-        title: 'حذف موفق',
-        description: 'دانشجو با موفقیت از دوره حذف شد',
+        title: "حذف موفق",
+        description: "دانشجو با موفقیت از دوره حذف شد",
       });
     } catch (error: any) {
       toast({
-        title: 'خطا',
-        description: error.message || 'خطا در حذف دانشجو',
-        variant: 'destructive',
+        title: "خطا",
+        description: error.message || "خطا در حذف دانشجو",
+        variant: "destructive",
       });
     }
   };
@@ -454,9 +488,9 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>قیمت دوره</Label>
-              <Input 
-                type="number" 
-                value={coursePrice} 
+              <Input
+                type="number"
+                value={coursePrice}
                 onChange={(e) => setCoursePrice(Number(e.target.value))}
                 className="text-right"
               />
@@ -480,10 +514,14 @@ const CourseStudentsDialog = ({ courseId, isOpen, onClose }: CourseStudentsDialo
               <Label>دانشجویان ثبت‌نام شده</Label>
               <div className="border rounded-md divide-y max-h-[400px] overflow-y-auto">
                 {enrollments.map((enrollment) => (
-                  <div key={enrollment.id} className="p-3 flex items-center justify-between">
+                  <div
+                    key={enrollment.id}
+                    className="p-3 flex items-center justify-between"
+                  >
                     <div>
                       <div className="font-medium">
-                        {enrollment.profiles?.first_name} {enrollment.profiles?.last_name}
+                        {enrollment.profiles?.first_name}{" "}
+                        {enrollment.profiles?.last_name}
                       </div>
                       <div className="text-sm text-gray-500">
                         {enrollment.profiles?.email}

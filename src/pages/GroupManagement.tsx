@@ -1,33 +1,42 @@
-import { useState } from 'react';
-import DashboardLayout from '@/components/DashboardLayout';
-import { useAuth } from '@/contexts/AuthContext';
-import { useGroupsQuery, useGroupStatsQuery } from '@/hooks/queries/useGroupsQuery';
-import { Group } from '@/types/group';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Users, 
-  BookOpen, 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
+import { useState } from "react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  useGroupsQuery,
+  useGroupStatsQuery,
+} from "@/hooks/queries/useGroupsQuery";
+import { Group } from "@/types/group";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Users,
+  BookOpen,
+  Plus,
+  Search,
+  Edit,
+  Trash2,
   Eye,
   Calendar,
-  MessageCircle
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
-import CreateGroupDialog from '@/components/CreateGroupDialog';
-import EditGroupDialog from '@/components/EditGroupDialog';
-import GroupDetailsDialog from '@/components/GroupDetailsDialog';
-import ConfirmDeleteGroupDialog from '@/components/ConfirmDeleteGroupDialog';
+  MessageCircle,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import CreateGroupDialog from "@/components/dialogs/CreateGroupDialog";
+import EditGroupDialog from "@/components/dialogs/EditGroupDialog";
+import GroupDetailsDialog from "@/components/dialogs/GroupDetailsDialog";
+import ConfirmDeleteGroupDialog from "@/components/dialogs/ConfirmDeleteGroupDialog";
 
 const GroupManagement = () => {
   const { profile } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
@@ -35,16 +44,21 @@ const GroupManagement = () => {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   // Queries
-  const { data: groups = [], isLoading, error } = useGroupsQuery({ search: searchQuery });
+  const {
+    data: groups = [],
+    isLoading,
+    error,
+  } = useGroupsQuery({ search: searchQuery });
   const { data: stats } = useGroupStatsQuery();
 
   // Check admin access
-  if (profile?.role !== 'admin') {
+  if (profile?.role !== "admin") {
     return (
       <DashboardLayout title="مدیریت گروه‌ها">
         <Alert>
           <AlertDescription>
-            شما مجوز دسترسی به این صفحه را ندارید. (نقش شما: {profile?.role || 'نامشخص'})
+            شما مجوز دسترسی به این صفحه را ندارید. (نقش شما:{" "}
+            {profile?.role || "نامشخص"})
           </AlertDescription>
         </Alert>
       </DashboardLayout>
@@ -112,7 +126,9 @@ const GroupManagement = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">کل گروه‌ها</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  کل گروه‌ها
+                </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -128,28 +144,38 @@ const GroupManagement = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.total_members}</div>
-                <p className="text-xs text-muted-foreground">کاربر در گروه‌ها</p>
+                <p className="text-xs text-muted-foreground">
+                  کاربر در گروه‌ها
+                </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">دوره‌های تخصیص داده شده</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  دوره‌های تخصیص داده شده
+                </CardTitle>
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.total_courses_assigned}</div>
+                <div className="text-2xl font-bold">
+                  {stats.total_courses_assigned}
+                </div>
                 <p className="text-xs text-muted-foreground">دوره به گروه‌ها</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">میانگین اعضا</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  میانگین اعضا
+                </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.average_members_per_group}</div>
+                <div className="text-2xl font-bold">
+                  {stats.average_members_per_group}
+                </div>
                 <p className="text-xs text-muted-foreground">در هر گروه</p>
               </CardContent>
             </Card>
@@ -178,7 +204,7 @@ const GroupManagement = () => {
                   <div className="flex-1">
                     <CardTitle className="text-lg">{group.title}</CardTitle>
                     <CardDescription className="mt-2">
-                      {group.description || 'بدون توضیحات'}
+                      {group.description || "بدون توضیحات"}
                     </CardDescription>
                   </div>
                   <div className="flex items-center space-x-1 space-x-reverse">
@@ -233,7 +259,8 @@ const GroupManagement = () => {
                   <div className="flex items-center space-x-1 space-x-reverse text-xs text-gray-500">
                     <Calendar className="h-3 w-3" />
                     <span>
-                      ایجاد شده در {new Date(group.created_at).toLocaleDateString('fa-IR')}
+                      ایجاد شده در{" "}
+                      {new Date(group.created_at).toLocaleDateString("fa-IR")}
                     </span>
                   </div>
                 </div>
@@ -246,9 +273,13 @@ const GroupManagement = () => {
         {groups.length === 0 && (
           <div className="text-center py-12">
             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">هیچ گروهی یافت نشد</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              هیچ گروهی یافت نشد
+            </h3>
             <p className="text-gray-600 mb-4">
-              {searchQuery ? 'هیچ گروهی با این جستجو مطابقت ندارد.' : 'هنوز هیچ گروهی ایجاد نشده است.'}
+              {searchQuery
+                ? "هیچ گروهی با این جستجو مطابقت ندارد."
+                : "هنوز هیچ گروهی ایجاد نشده است."}
             </p>
             {!searchQuery && (
               <Button onClick={handleCreateGroup}>
@@ -291,4 +322,4 @@ const GroupManagement = () => {
   );
 };
 
-export default GroupManagement; 
+export default GroupManagement;

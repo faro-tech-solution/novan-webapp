@@ -12,7 +12,7 @@ import { useDeleteWikiTopicMutation, useDeleteWikiArticleMutation } from '@/hook
 import { toast } from 'sonner';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const WikiCategory: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
