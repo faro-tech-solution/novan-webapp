@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { FileText, ArrowLeft, Edit, Calendar, User, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { faIR } from 'date-fns/locale';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const WikiArticle: React.FC = () => {
   const { articleId } = useParams<{ articleId: string }>();

@@ -15,7 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { BookOpen, Plus, Edit, Trash2, FileText, Users, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCoursesQuery } from '@/hooks/queries/useCoursesQuery';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const WikiManagement: React.FC = () => {
   const { user, profile, loading } = useAuth();

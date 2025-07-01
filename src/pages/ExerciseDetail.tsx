@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { FormAnswer } from '@/types/formBuilder';
 import { ExerciseDetailHeader } from '@/components/exercises/ExerciseDetailHeader';

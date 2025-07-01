@@ -1,13 +1,19 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Users, FileText, Award, Plus, Eye } from 'lucide-react';
-import DashboardLayout from '@/components/DashboardLayout';
-import CreateExerciseDialog from '@/components/CreateExerciseDialog';
-import { useRecentSubmissions } from '@/hooks/useRecentSubmissions';
-import { useTrainerStats } from '@/hooks/useTrainerStats';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Users, FileText, Award, Plus, Eye } from "lucide-react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import CreateExerciseDialog from "@/components/dialogs/CreateExerciseDialog";
+import { useRecentSubmissions } from "@/hooks/useRecentSubmissions";
+import { useTrainerStats } from "@/hooks/useTrainerStats";
 
 const TrainerDashboard = () => {
   const navigate = useNavigate();
@@ -20,11 +26,11 @@ const TrainerDashboard = () => {
   };
 
   const handleManageCourses = () => {
-    navigate('/courses-management');
+    navigate("/courses-management");
   };
 
   const handleReviewSubmissions = () => {
-    navigate('/review-submissions');
+    navigate("/review-submissions");
   };
 
   const handleViewSubmission = (submissionId: string) => {
@@ -38,7 +44,9 @@ const TrainerDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">مجموع دانشجویان</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                مجموع دانشجویان
+              </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -53,22 +61,30 @@ const TrainerDashboard = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">تمرین‌های فعال</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                تمرین‌های فعال
+              </CardTitle>
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               {statsLoading ? (
                 <div className="text-2xl font-bold">...</div>
               ) : (
-                <div className="text-2xl font-bold">{stats.activeExercises}</div>
+                <div className="text-2xl font-bold">
+                  {stats.activeExercises}
+                </div>
               )}
-              <p className="text-xs text-muted-foreground">تمرین‌های در دسترس</p>
+              <p className="text-xs text-muted-foreground">
+                تمرین‌های در دسترس
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">بررسی‌های در انتظار</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                بررسی‌های در انتظار
+              </CardTitle>
               <Award className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -86,7 +102,9 @@ const TrainerDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle>ارسال‌های اخیر</CardTitle>
-            <CardDescription>آخرین ارسال‌های تمرین که نیاز به بررسی دارند</CardDescription>
+            <CardDescription>
+              آخرین ارسال‌های تمرین که نیاز به بررسی دارند
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {submissionsLoading ? (
@@ -100,11 +118,18 @@ const TrainerDashboard = () => {
             ) : (
               <div className="space-y-4">
                 {submissions.slice(0, 5).map((submission) => (
-                  <div key={submission.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={submission.id}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
                     <div>
                       <p className="font-medium">{submission.student}</p>
-                      <p className="text-sm text-gray-600">{submission.exercise}</p>
-                      <p className="text-xs text-gray-500">{submission.submitted}</p>
+                      <p className="text-sm text-gray-600">
+                        {submission.exercise}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {submission.submitted}
+                      </p>
                     </div>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       {submission.score ? (
@@ -112,8 +137,8 @@ const TrainerDashboard = () => {
                       ) : (
                         <Badge variant="outline">در انتظار</Badge>
                       )}
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
                         onClick={() => handleViewSubmission(submission.id)}
                       >
@@ -131,27 +156,29 @@ const TrainerDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle>اقدامات سریع</CardTitle>
-            <CardDescription>وظایف رایج برای مدیریت برنامه آموزشی شما</CardDescription>
+            <CardDescription>
+              وظایف رایج برای مدیریت برنامه آموزشی شما
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button 
+              <Button
                 className="h-20 flex flex-col items-center justify-center space-y-2"
                 onClick={handleCreateExercise}
               >
                 <Plus className="h-6 w-6" />
                 <span>ایجاد تمرین</span>
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="h-20 flex flex-col items-center justify-center space-y-2"
                 onClick={handleManageCourses}
               >
                 <Users className="h-6 w-6" />
                 <span>مدیریت درس‌ها</span>
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="h-20 flex flex-col items-center justify-center space-y-2"
                 onClick={handleReviewSubmissions}
               >
@@ -165,7 +192,7 @@ const TrainerDashboard = () => {
 
       {/* Create Exercise Dialog */}
       {showCreateExercise && (
-        <CreateExerciseDialog 
+        <CreateExerciseDialog
           open={showCreateExercise}
           onOpenChange={setShowCreateExercise}
         />

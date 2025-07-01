@@ -1,21 +1,27 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { useToast } from '@/hooks/use-toast';
-import { PasswordStrengthMeter } from '@/components/PasswordStrengthMeter';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { useToast } from "@/hooks/use-toast";
+import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 
 const Register = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatPassword, setRepeatPassword] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isPasswordStrong, setIsPasswordStrong] = useState(false);
   const { register } = useAuth();
@@ -24,7 +30,7 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isPasswordStrong) {
       toast({
         title: "رمز عبور ضعیف",
@@ -46,24 +52,31 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const { error } = await register(firstName, lastName, email, password, 'trainee');
+      const { error } = await register(
+        firstName,
+        lastName,
+        email,
+        password,
+        "trainee"
+      );
       if (error) {
         toast({
           title: "خطا در ثبت نام",
-          description: error.message || 'ثبت نام ناموفق بود',
+          description: error.message || "ثبت نام ناموفق بود",
           variant: "destructive",
         });
       } else {
         toast({
           title: "ثبت نام موفق",
-          description: "لطفا ایمیل خود را بررسی کنید و حساب کاربری را تایید کنید.",
+          description:
+            "لطفا ایمیل خود را بررسی کنید و حساب کاربری را تایید کنید.",
         });
-        navigate('/');
+        navigate("/");
       }
     } catch (err) {
       toast({
         title: "خطا",
-        description: 'ثبت نام ناموفق. لطفا دوباره تلاش کنید.',
+        description: "ثبت نام ناموفق. لطفا دوباره تلاش کنید.",
         variant: "destructive",
       });
     } finally {
@@ -74,14 +87,12 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <div className="flex items-center justify-center py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="font-peyda">ثبت نام</CardTitle>
-            <CardDescription>
-              در پلتفرم یادگیری ما عضو شوید
-            </CardDescription>
+            <CardDescription>در پلتفرم یادگیری ما عضو شوید</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -118,7 +129,7 @@ const Register = () => {
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">رمز عبور</Label>
                 <Input
@@ -128,8 +139,8 @@ const Register = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                <PasswordStrengthMeter 
-                  password={password} 
+                <PasswordStrengthMeter
+                  password={password}
                   onStrengthChange={setIsPasswordStrong}
                 />
               </div>
@@ -145,18 +156,21 @@ const Register = () => {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full" 
+              <Button
+                type="submit"
+                className="w-full"
                 disabled={loading || !isPasswordStrong}
               >
-                {loading ? 'در حال ثبت نام...' : 'ثبت نام'}
+                {loading ? "در حال ثبت نام..." : "ثبت نام"}
               </Button>
             </form>
 
             <div className="mt-4 text-center text-sm">
               <span className="text-gray-600">قبلا ثبت نام کرده‌اید؟ </span>
-              <Link to="/" className="text-teal-600 hover:text-teal-700 font-medium">
+              <Link
+                to="/"
+                className="text-teal-600 hover:text-teal-700 font-medium"
+              >
                 ورود
               </Link>
             </div>

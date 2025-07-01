@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { GradingSection } from '@/components/exercises/GradingSection';
 import { SubmissionViewer } from '@/components/exercises/SubmissionViewer';
 import { useSubmissionsQuery, useCoursesQuery, useGradeSubmissionMutation } from '@/hooks/useReviewSubmissionsQuery';
