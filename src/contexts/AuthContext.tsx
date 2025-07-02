@@ -23,6 +23,7 @@ export interface UserProfile {
   english_level?: "beginner" | "intermediate" | "advanced" | "native";
   telegram_id?: string;
   whatsapp_id?: string;
+  language_preference?: "fa" | "en";
 }
 
 interface AuthContextType {
@@ -113,6 +114,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               | "native") || undefined,
           telegram_id: data.telegram_id || undefined,
           whatsapp_id: data.whatsapp_id || undefined,
+          language_preference:
+            (data.language_preference as "fa" | "en") || "fa",
         });
       }
     } catch (error) {
