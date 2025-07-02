@@ -82,17 +82,17 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
 };
 
 export const useSubmissionsQuery = () => {
-  const { user } = useAuth();
+  const { user, isInitialized } = useAuth();
   
   return useQuery({
     queryKey: ['submissions'],
     queryFn: fetchSubmissions,
-    enabled: !!user
+    enabled: !!user && isInitialized
   });
 };
 
 export const useCoursesForReviewQuery = () => {
-  const { user } = useAuth();
+  const { user, isInitialized } = useAuth();
   
   return useQuery({
     queryKey: ['reviewCourses'],
@@ -105,7 +105,7 @@ export const useCoursesForReviewQuery = () => {
       if (error) throw error;
       return data || [];
     },
-    enabled: !!user
+    enabled: !!user && isInitialized
   });
 };
 

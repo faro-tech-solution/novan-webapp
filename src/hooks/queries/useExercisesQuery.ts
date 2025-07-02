@@ -2,10 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Exercise } from '@/types/exercise';
 import { Course } from '@/types/course';
 import { fetchCourses, fetchExercises, createExercise, updateExercise, deleteExercise } from '@/services/exerciseService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useStableAuth } from '@/hooks/useStableAuth';
 
 export const useExercisesQuery = (courseId?: string) => {
-  const { user } = useAuth();
+  const { user, isQueryEnabled } = useStableAuth();
   const queryClient = useQueryClient();
 
   const exercisesQuery = useQuery({
@@ -14,7 +14,8 @@ export const useExercisesQuery = (courseId?: string) => {
       if (!user) return [];
       return await fetchExercises(courseId);
     },
-    enabled: !!user,
+    enabled: isQueryEnabled,
+    // Use global defaults from react-query.ts
   });
 
   const coursesQuery = useQuery({
@@ -22,6 +23,7 @@ export const useExercisesQuery = (courseId?: string) => {
     queryFn: async () => {
       return await fetchCourses();
     },
+    // Use global defaults from react-query.ts
   });
 
   const createExerciseMutation = useMutation({

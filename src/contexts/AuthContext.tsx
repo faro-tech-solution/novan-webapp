@@ -33,6 +33,7 @@ interface AuthContextType {
   register: (first_name: string, last_name: string, email: string, password: string, role: UserRole) => Promise<{ error: any }>;
   logout: () => Promise<void>;
   loading: boolean;
+  isInitialized: boolean;
   resetPassword: (email: string) => Promise<{ error: any }>;
 }
 
@@ -51,6 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -103,24 +105,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('Setting up auth state listener...');
     
+    let initialCheckDone = false;
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id);
         
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Defer profile fetching to avoid potential deadlocks
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-          }, 0);
-        } else {
-          setProfile(null);
+        // Only process significant auth changes after initial load
+        if (isInitialized && event === 'TOKEN_REFRESHED') {
+          console.log('Token refreshed, not updating user state');
+          return;
         }
         
-        setLoading(false);
+        setSession(session);
+        
+        // Only update user state if there's a meaningful change
+        const newUser = session?.user ?? null;
+        if (newUser?.id !== user?.id) {
+          setUser(newUser);
+          
+          if (newUser) {
+            // Defer profile fetching to avoid potential deadlocks
+            setTimeout(() => {
+              fetchProfile(newUser.id);
+            }, 0);
+          } else {
+            setProfile(null);
+          }
+        }
+        
+        if (!initialCheckDone) {
+          setLoading(false);
+          setIsInitialized(true);
+          initialCheckDone = true;
+        }
       }
     );
 
@@ -138,10 +157,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       setLoading(false);
+      setIsInitialized(true);
+      initialCheckDone = true;
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [user?.id, isInitialized]);
 
   const login = async (email: string, password: string) => {
     console.log('Login attempt for:', email);
@@ -205,6 +226,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       register, 
       logout, 
       loading,
+      isInitialized,
       resetPassword
     }}>
       {children}

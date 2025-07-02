@@ -4,6 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import { AuthProvider } from './contexts/AuthContext'
 
+// Render the app with AuthProvider
 createRoot(document.getElementById("root")!).render(
   <AuthProvider>
     <App />
