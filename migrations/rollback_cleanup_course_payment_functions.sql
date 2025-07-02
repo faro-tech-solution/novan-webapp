@@ -1,0 +1,8 @@
+-- Rollback for cleanup_course_payment_functions.sql
+-- Date: 2025-07-02
+-- Description: This rollback is empty because the cleanup operation removed redundant functions
+-- and we don't want to restore these redundant functions.
+-- Note: If you need to restore a specific function that was accidentally removed,
+-- you would need to consult the database backups or original migration that created it.
+-- This rollback script is intentionally empty as restoring redundant functions
+-- would likely cause more confusion and potential issues.

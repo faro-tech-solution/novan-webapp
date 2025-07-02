@@ -5,6 +5,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import StudentProfileModal from "@/components/students/StudentProfileModal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Tables } from "@/integrations/supabase/types";
 import { CourseTerm } from "@/types/course";
 import { CourseStudent } from "@/types/student";
@@ -47,6 +58,9 @@ const CourseStudentsDialog = ({
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string>("");
   const [selectedStudentName, setSelectedStudentName] = useState<string>("");
+  const [enrollmentPrices, setEnrollmentPrices] = useState<
+    Record<string, number>
+  >({});
   const { toast } = useToast();
   const { profile } = useAuth();
   const [students, setStudents] = useState<CourseStudent[]>([]);
@@ -54,7 +68,13 @@ const CourseStudentsDialog = ({
     []
   );
   const [coursePrice, setCoursePrice] = useState<number>(0);
+  const [courseName, setCourseName] = useState<string>("");
   const [selectedStudent, setSelectedStudent] = useState<string>("");
+  const [studentToRemove, setStudentToRemove] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Only admins can delete students from courses
   const canDeleteStudents = profile?.role === "admin";
@@ -89,7 +109,13 @@ const CourseStudentsDialog = ({
 
       if (error) throw error;
 
-      setEnrollments(data || []);
+      const enrollmentsData = data || [];
+      setEnrollments(enrollmentsData);
+
+      // After setting enrollments, fetch prices for all enrollments
+      if (enrollmentsData.length > 0) {
+        fetchAllEnrollmentPrices();
+      }
     } catch (error) {
       console.error("Error fetching enrollments:", error);
       toast({
@@ -124,14 +150,24 @@ const CourseStudentsDialog = ({
     try {
       const { data, error } = await supabase
         .from("courses")
-        .select("price")
+        .select("price, name")
         .eq("id", courseId)
-        .single();
+        .maybeSingle(); // Use maybeSingle() instead of single() to avoid PGRST116 error
 
       if (error) throw error;
-      setCoursePrice(data.price || 0);
+      // Check if data exists before trying to access its properties
+      if (data) {
+        setCoursePrice(data.price || 0);
+        setCourseName(data.name || "");
+      } else {
+        console.warn("Course not found:", courseId);
+        setCoursePrice(0);
+        setCourseName("");
+      }
     } catch (error: any) {
       console.error("Error fetching course price:", error);
+      setCoursePrice(0);
+      setCourseName("");
     }
   };
 
@@ -188,6 +224,45 @@ const CourseStudentsDialog = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  // Function to fetch student enrollment price from accounting records
+  const fetchEnrollmentPrice = async (studentId: string): Promise<number> => {
+    try {
+      const { data, error } = await supabase
+        .from("accounting")
+        .select("amount")
+        .eq("course_id", courseId)
+        .eq("user_id", studentId)
+        .eq("payment_type", "buy_course")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching enrollment price:", error);
+        return 0;
+      }
+
+      return data?.amount || 0;
+    } catch (error) {
+      console.error("Error in fetchEnrollmentPrice:", error);
+      return 0;
+    }
+  };
+
+  // Function to fetch all enrollment prices
+  const fetchAllEnrollmentPrices = async () => {
+    if (!enrollments.length) return;
+
+    const prices: Record<string, number> = {};
+
+    for (const enrollment of enrollments) {
+      const price = await fetchEnrollmentPrice(enrollment.student_id);
+      prices[enrollment.student_id] = price;
+    }
+
+    setEnrollmentPrices(prices);
   };
 
   useEffect(() => {
@@ -259,9 +334,34 @@ const CourseStudentsDialog = ({
 
       if (enrollmentError) throw enrollmentError;
 
+      // Create accounting record for the course enrollment if price is set
+      if (coursePrice > 0) {
+        // Create accounting record for the course fee - using negative amount
+        const accountingData = {
+          user_id: profileData.id,
+          course_id: courseId,
+          amount: -coursePrice, // Use NEGATIVE price for what user owes
+          payment_type: "buy_course" as const,
+          payment_status: "waiting" as const,
+          description: `ثبت نام در دوره ${courseName || String(courseId)}`,
+        };
+
+        const { error: accountingError } = await supabase
+          .from("accounting")
+          .insert([accountingData]);
+
+        if (accountingError) {
+          console.error("Accounting error:", accountingError);
+          // Don't throw error here, just log it and continue
+        }
+      }
+
       toast({
         title: "موفق",
-        description: "دانشجو با موفقیت به درس اضافه شد",
+        description:
+          coursePrice > 0
+            ? "دانشجو با موفقیت به درس اضافه شد و سند حسابداری ایجاد شد"
+            : "دانشجو با موفقیت به درس اضافه شد",
       });
 
       // Refresh the list
@@ -380,14 +480,22 @@ const CourseStudentsDialog = ({
       }
 
       // Check if student is already enrolled
-      const { data: existingEnrollment } = await supabase
-        .from("course_enrollments")
-        .select("*")
-        .eq("course_id", courseId)
-        .eq("student_id", studentData.id)
-        .single();
+      const { data: existingEnrollments, error: enrollmentCheckError } =
+        await supabase
+          .from("course_enrollments")
+          .select("*")
+          .eq("course_id", courseId)
+          .eq("student_id", studentData.id);
 
-      if (existingEnrollment) {
+      if (enrollmentCheckError) {
+        console.error(
+          "Error checking existing enrollment:",
+          enrollmentCheckError
+        );
+      }
+
+      // If we found any enrollments, the student is already enrolled
+      if (existingEnrollments && existingEnrollments.length > 0) {
         toast({
           title: "خطا",
           description: "این دانشجو قبلاً در این دوره ثبت‌نام کرده است",
@@ -398,7 +506,7 @@ const CourseStudentsDialog = ({
 
       const now = new Date().toISOString();
 
-      // Create enrollment with just the essential fields
+      // Create enrollment without price field - we'll handle pricing in accounting
       const enrollmentData = {
         course_id: courseId,
         student_id: studentData.id,
@@ -418,6 +526,28 @@ const CourseStudentsDialog = ({
         throw enrollError;
       }
 
+      // Create accounting record for the course enrollment if price is set
+      if (coursePrice > 0) {
+        // Create accounting record for the course fee - using negative amount
+        const accountingData = {
+          user_id: studentData.id,
+          course_id: courseId,
+          amount: -coursePrice, // Use NEGATIVE price for what user owes
+          payment_type: "buy_course" as const,
+          payment_status: "waiting" as const, // Set initial status to waiting
+          description: `ثبت نام در دوره ${courseName || String(courseId)}`,
+        };
+
+        const { error: accountingError } = await supabase
+          .from("accounting")
+          .insert([accountingData]);
+
+        if (accountingError) {
+          console.error("Accounting error:", accountingError);
+          // Don't throw error here, just log it and continue
+        }
+      }
+
       // Update student list
       setStudents(
         students.map((student) =>
@@ -429,7 +559,10 @@ const CourseStudentsDialog = ({
 
       toast({
         title: "ثبت‌نام موفق",
-        description: "دانشجو با موفقیت در دوره ثبت‌نام شد",
+        description:
+          coursePrice > 0
+            ? "دانشجو با موفقیت در دوره ثبت‌نام شد و سند حسابداری ایجاد شد"
+            : "دانشجو با موفقیت در دوره ثبت‌نام شد",
       });
 
       setSelectedStudent("");
@@ -444,6 +577,13 @@ const CourseStudentsDialog = ({
     }
   };
 
+  // Open confirmation dialog before unenrolling
+  const confirmUnenroll = (studentId: string, studentName: string) => {
+    setStudentToRemove({ id: studentId, name: studentName });
+    setShowDeleteConfirm(true);
+  };
+
+  // Actually perform the unenroll action after confirmation
   const handleUnenroll = async (studentId: string) => {
     try {
       const { error } = await supabase
@@ -530,7 +670,14 @@ const CourseStudentsDialog = ({
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => handleUnenroll(enrollment.student_id)}
+                      onClick={() =>
+                        confirmUnenroll(
+                          enrollment.student_id,
+                          `${enrollment.profiles?.first_name || ""} ${
+                            enrollment.profiles?.last_name || ""
+                          }`
+                        )
+                      }
                     >
                       حذف
                     </Button>
@@ -546,6 +693,34 @@ const CourseStudentsDialog = ({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأیید حذف دانشجو</AlertDialogTitle>
+            <AlertDialogDescription>
+              آیا مطمئن هستید که می‌خواهید{" "}
+              {studentToRemove?.name || "این دانشجو"} را از دوره حذف کنید؟ این
+              عمل قابل بازگشت نیست و ممکن است بر سوابق مالی دوره تأثیر بگذارد.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>انصراف</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (studentToRemove) {
+                  handleUnenroll(studentToRemove.id);
+                  setStudentToRemove(null);
+                }
+              }}
+            >
+              بله، حذف شود
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Student Profile Modal */}
       <StudentProfileModal
