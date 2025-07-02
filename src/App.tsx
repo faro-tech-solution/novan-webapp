@@ -307,7 +307,7 @@ const App = () => {
         <Toaster />
         <Sonner />
       </TooltipProvider>
-      <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };

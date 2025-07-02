@@ -1,12 +1,13 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Card, CardContent } from "@/components/ui/card";
+import { AlertCircle, CheckCircle } from "lucide-react";
+import { FeedbackForm } from "./FeedbackForm";
 
 interface AudioPlayerProps {
   audioUrl: string;
-  onComplete: () => void;
+  onComplete: (feedback: string) => void;
   isCompleted: boolean;
   disabled: boolean;
 }
@@ -15,17 +16,19 @@ export const AudioPlayer = ({
   audioUrl,
   onComplete,
   isCompleted,
-  disabled
+  disabled,
 }: AudioPlayerProps) => {
   const [listenedPercentage, setListenedPercentage] = useState(0);
   const [hasError, setHasError] = useState(false);
   const [canComplete, setCanComplete] = useState(false);
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleTimeUpdate = (e: React.SyntheticEvent<HTMLAudioElement>) => {
     const audio = e.currentTarget;
     const percentage = (audio.currentTime / audio.duration) * 100;
     setListenedPercentage(Math.floor(percentage));
-    
+
     // Enable completion button when listened to at least 90% of the audio
     if (percentage >= 90 && !canComplete) {
       setCanComplete(true);
@@ -36,19 +39,47 @@ export const AudioPlayer = ({
     setHasError(true);
   };
 
+  const handleShowFeedbackForm = () => {
+    setShowFeedbackForm(true);
+  };
+
+  const handleFeedbackSubmit = async (feedback: string) => {
+    setIsSubmitting(true);
+    try {
+      await onComplete(feedback);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (showFeedbackForm && !isCompleted) {
+    return (
+      <FeedbackForm
+        onSubmit={handleFeedbackSubmit}
+        isSubmitting={isSubmitting}
+        title="بازخورد فایل صوتی"
+        description="شما ۹۰٪ از فایل صوتی را شنیدید. برای تکمیل تمرین، لطفاً بازخورد خود را وارد کنید."
+        placeholder="لطفاً نظرات خود درباره محتوای صوتی، نکات آموخته شده یا سوالاتی که دارید را بنویسید..."
+      />
+    );
+  }
+
   return (
     <Card>
       <CardContent className="p-4 space-y-4">
         {hasError ? (
           <div className="bg-red-50 text-red-800 p-4 rounded-md flex items-center">
             <AlertCircle className="h-5 w-5 mr-2" />
-            <span>خطا در بارگذاری فایل صوتی. لطفاً مطمئن شوید آدرس فایل صحیح است و دسترسی به آن امکان‌پذیر است.</span>
+            <span>
+              خطا در بارگذاری فایل صوتی. لطفاً مطمئن شوید آدرس فایل صحیح است و
+              دسترسی به آن امکان‌پذیر است.
+            </span>
           </div>
         ) : (
           <>
-            <audio 
-              className="w-full" 
-              controls 
+            <audio
+              className="w-full"
+              controls
               onTimeUpdate={handleTimeUpdate}
               onError={handleError}
               src={audioUrl}
@@ -65,8 +96,8 @@ export const AudioPlayer = ({
                   <span>تکمیل شده</span>
                 </div>
               ) : canComplete ? (
-                <Button 
-                  onClick={onComplete} 
+                <Button
+                  onClick={handleShowFeedbackForm}
                   disabled={disabled}
                   size="sm"
                 >

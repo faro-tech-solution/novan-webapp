@@ -22,7 +22,7 @@ const Exercises = () => {
     error: exercisesError,
     courses = [],
     deleteExercise: handleDeleteExerciseRequest,
-    isDeleting
+    isDeleting,
   } = useExercisesQuery();
   const { toast } = useToast();
 

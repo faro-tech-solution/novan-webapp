@@ -41,9 +41,6 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         days_to_due,
         created_at,
         form_structure,
-        exercise_type,
-        content_url,
-        auto_grade,
         courses (
           name
         )
@@ -71,7 +68,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     // Get submission if exists
     const { data: submission } = await supabase
       .from('exercise_submissions')
-      .select('solution, feedback, score, submitted_at, auto_graded, completion_percentage')
+      .select('solution, feedback, score, submitted_at')
       .eq('exercise_id', exerciseId)
       .eq('student_id', userId)
       .single();
@@ -92,11 +89,25 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
 
     // Parse submission answers if they exist
     let submissionAnswers: FormAnswer[] = [];
+    let submissionFeedback: string | undefined;
+    
     if (submission?.solution) {
       try {
-        submissionAnswers = JSON.parse(submission.solution);
+        const parsedSolution = JSON.parse(submission.solution);
+        
+        // Check if this is a new format with feedback
+        if (parsedSolution.exerciseType === 'media' && parsedSolution.feedback) {
+          submissionAnswers = Array.isArray(parsedSolution.answers) ? parsedSolution.answers : [];
+          submissionFeedback = parsedSolution.feedback;
+        } else if (Array.isArray(parsedSolution)) {
+          // Old format - just form answers
+          submissionAnswers = parsedSolution;
+        } else {
+          // Handle other formats
+          submissionAnswers = [];
+        }
       } catch (error) {
-        console.error('Error parsing submission answers:', error);
+        console.error('Error parsing submission solution:', error);
       }
     }
 
@@ -114,15 +125,15 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       open_date: openDate.toISOString(),
       due_date: dueDate.toISOString(),
       submission_status: submissionStatus,
-      exercise_type: exercise.exercise_type || 'form',
-      content_url: exercise.content_url,
-      auto_grade: exercise.auto_grade || false,
+      exercise_type: 'form', // Default to form for now
+      content_url: null, // Will be added when migration is run
+      auto_grade: false, // Will be added when migration is run
       form_structure: form_structure,
       submission_answers: submissionAnswers,
-      feedback: submission?.feedback,
+      feedback: submissionFeedback || submission?.feedback,
       score: submission?.score,
-      completion_percentage: submission?.completion_percentage || 0,
-      auto_graded: submission?.auto_graded || false
+      completion_percentage: 0, // Will be added when migration is run
+      auto_graded: false // Will be added when migration is run
     };
   } catch (error) {
     console.error('Error in fetchExerciseDetail:', error);
@@ -135,39 +146,42 @@ export const submitExerciseSolution = async (
   studentId: string,
   studentEmail: string,
   studentName: string,
-  solution: string
+  solution: string,
+  feedback?: string
 ): Promise<{ error: string | null }> => {
   console.log('Submitting solution for exercise:', exerciseId);
 
-  // First get exercise details to check if it's auto-graded
-  const { data: exercise } = await supabase
-    .from('exercises')
-    .select('auto_grade, exercise_type, points')
-    .eq('id', exerciseId)
-    .single();
+  // For video, audio, and simple exercises, store feedback in the solution field
+  // as a JSON object with both answers and feedback
+  let finalSolution = solution;
+  
+  if (feedback && feedback.trim()) {
+    try {
+      // Try to parse existing solution to see if it's already JSON
+      const existingSolution = JSON.parse(solution);
+      // If it's an array (form answers), wrap it with feedback
+      finalSolution = JSON.stringify({
+        answers: existingSolution,
+        feedback: feedback.trim(),
+        exerciseType: 'media' // indicator that this includes feedback
+      });
+    } catch {
+      // If solution is not JSON (simple string), create new structure
+      finalSolution = JSON.stringify({
+        answers: solution,
+        feedback: feedback.trim(),
+        exerciseType: 'media'
+      });
+    }
+  }
 
   // Set default values for submission
   let submissionData: any = {
     exercise_id: exerciseId,
     student_id: studentId,
-    solution: solution,
+    solution: finalSolution,
     submitted_at: new Date().toISOString()
   };
-
-  // Handle auto-grading if enabled
-  if (exercise && exercise.auto_grade) {
-    const completion_percentage = 100; // For now, simple auto-grading gives 100%
-    const score = exercise.points; // For auto-graded exercises, award full points
-    
-    submissionData = {
-      ...submissionData,
-      auto_graded: true,
-      completion_percentage: completion_percentage,
-      score: score,
-      feedback: 'این تمرین به صورت خودکار نمره‌دهی شده است.',
-      graded_at: new Date().toISOString()
-    };
-  }
 
   const { error } = await supabase
     .from('exercise_submissions')

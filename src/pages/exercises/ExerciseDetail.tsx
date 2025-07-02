@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
-import { CheckCircle, AlertCircle } from 'lucide-react';
-import { useParams, useNavigate } from 'react-router-dom';
-import DashboardLayout from '@/components/layout/DashboardLayout';
-import { useAuth } from '@/contexts/AuthContext';
-import { FormAnswer } from '@/types/formBuilder';
-import { ExerciseDetailHeader } from '@/components/exercises/ExerciseDetailHeader';
-import { ExerciseInfoCard } from '@/components/exercises/ExerciseInfoCard';
-import { TraineeExerciseForm } from '@/components/exercises/TraineeExerciseForm';
-import { InstructorFormView } from '@/components/exercises/InstructorFormView';
-import { useExerciseDetailQuery, useSubmitExerciseMutation } from '@/hooks/queries/useExerciseDetailQuery';
+import React, { useState } from "react";
+import { CheckCircle, AlertCircle } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { useAuth } from "@/contexts/AuthContext";
+import { FormAnswer } from "@/types/formBuilder";
+import { ExerciseDetailHeader } from "@/components/exercises/ExerciseDetailHeader";
+import { ExerciseInfoCard } from "@/components/exercises/ExerciseInfoCard";
+import { TraineeExerciseForm } from "@/components/exercises/TraineeExerciseForm";
+import { InstructorFormView } from "@/components/exercises/InstructorFormView";
+import {
+  useExerciseDetailQuery,
+  useSubmitExerciseMutation,
+} from "@/hooks/queries/useExerciseDetailQuery";
 
 const ExerciseDetail = () => {
   const { id } = useParams();
@@ -16,7 +19,11 @@ const ExerciseDetail = () => {
   const { profile, user } = useAuth();
   const [answers, setAnswers] = useState<FormAnswer[]>([]);
 
-  const { data: exercise, isLoading, error } = useExerciseDetailQuery(id!, user?.id);
+  const {
+    data: exercise,
+    isLoading,
+    error,
+  } = useExerciseDetailQuery(id!, user?.id);
   const submitMutation = useSubmitExerciseMutation();
 
   // Set initial answers if there's a submission
@@ -26,20 +33,26 @@ const ExerciseDetail = () => {
     }
   }, [exercise?.submission_answers]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (feedback?: string) => {
     if (!exercise || !user || !profile) return;
 
-    submitMutation.mutate({
-      exerciseId: exercise.id,
-      studentId: user.id,
-      studentEmail: user.email || '',
-      studentName: profile.first_name ? `${profile.first_name} ${profile.last_name || ''}` : '',
-      answers,
-    }, {
-      onSuccess: () => {
-        navigate('/my-exercises');
+    submitMutation.mutate(
+      {
+        exerciseId: exercise.id,
+        studentId: user.id,
+        studentEmail: user.email || "",
+        studentName: profile.first_name
+          ? `${profile.first_name} ${profile.last_name || ""}`
+          : "",
+        answers,
+        feedback: feedback || "", // Include feedback in submission
+      },
+      {
+        onSuccess: () => {
+          navigate("/my-exercises");
+        },
       }
-    });
+    );
   };
 
   if (isLoading) {
@@ -59,7 +72,9 @@ const ExerciseDetail = () => {
     return (
       <DashboardLayout title="جزئیات تمرین">
         <div className="text-center py-8">
-          <p className="text-red-600">{error instanceof Error ? error.message : 'تمرین یافت نشد'}</p>
+          <p className="text-red-600">
+            {error instanceof Error ? error.message : "تمرین یافت نشد"}
+          </p>
           <button onClick={() => navigate(-1)} className="mt-4">
             بازگشت
           </button>
@@ -87,7 +102,7 @@ const ExerciseDetail = () => {
           description={exercise.description}
         />
 
-        {profile?.role === 'trainee' && (
+        {profile?.role === "trainee" && (
           <TraineeExerciseForm
             exercise={exercise}
             answers={answers}
@@ -97,44 +112,68 @@ const ExerciseDetail = () => {
           />
         )}
 
-        {(profile?.role === 'trainer' || profile?.role === 'admin') && (
+        {(profile?.role === "trainer" || profile?.role === "admin") && (
           <>
-            {exercise.exercise_type === 'form' && exercise.form_structure && 
-             exercise.form_structure.questions.length > 0 ? (
+            {exercise.exercise_type === "form" &&
+            exercise.form_structure &&
+            exercise.form_structure.questions.length > 0 ? (
               <InstructorFormView formStructure={exercise.form_structure} />
-            ) : exercise.exercise_type === 'video' && exercise.content_url ? (
+            ) : exercise.exercise_type === "video" && exercise.content_url ? (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">محتوای تمرین ویدیویی</h3>
                 <div className="bg-gray-50 p-4 rounded-md">
-                  <p className="mb-4">آدرس ویدیو: <a href={exercise.content_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{exercise.content_url}</a></p>
-                  <video 
-                    className="w-full rounded-md max-h-[400px]" 
-                    controls 
+                  <p className="mb-4">
+                    آدرس ویدیو:{" "}
+                    <a
+                      href={exercise.content_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {exercise.content_url}
+                    </a>
+                  </p>
+                  <video
+                    className="w-full rounded-md max-h-[400px]"
+                    controls
                     src={exercise.content_url}
                   />
                 </div>
               </div>
-            ) : exercise.exercise_type === 'audio' && exercise.content_url ? (
+            ) : exercise.exercise_type === "audio" && exercise.content_url ? (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">محتوای تمرین صوتی</h3>
                 <div className="bg-gray-50 p-4 rounded-md">
-                  <p className="mb-4">آدرس فایل صوتی: <a href={exercise.content_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{exercise.content_url}</a></p>
-                  <audio 
-                    className="w-full" 
-                    controls 
+                  <p className="mb-4">
+                    آدرس فایل صوتی:{" "}
+                    <a
+                      href={exercise.content_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {exercise.content_url}
+                    </a>
+                  </p>
+                  <audio
+                    className="w-full"
+                    controls
                     src={exercise.content_url}
                   />
                 </div>
               </div>
-            ) : exercise.exercise_type === 'simple' ? (
+            ) : exercise.exercise_type === "simple" ? (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">محتوای تمرین ساده</h3>
                 <div className="bg-gray-50 p-4 rounded-md">
-                  <p>این یک تمرین ساده است که دانشجویان با کلیک روی دکمه «تکمیل تمرین» آن را تکمیل می‌کنند.</p>
+                  <p>
+                    این یک تمرین ساده است که دانشجویان با کلیک روی دکمه «تکمیل
+                    تمرین» آن را تکمیل می‌کنند.
+                  </p>
                 </div>
               </div>
             ) : null}
-            
+
             <div className="bg-blue-50 p-4 rounded-md mt-6">
               <h3 className="text-md font-semibold mb-2 flex items-center">
                 {exercise.auto_grade ? (
@@ -150,10 +189,9 @@ const ExerciseDetail = () => {
                 )}
               </h3>
               <p className="text-sm text-gray-700">
-                {exercise.auto_grade 
-                  ? 'دانشجویان بلافاصله پس از تکمیل تمرین نمره دریافت می‌کنند.'
-                  : 'تمرین‌ها پس از بررسی شما نمره‌دهی خواهند شد.'
-                }
+                {exercise.auto_grade
+                  ? "دانشجویان بلافاصله پس از تکمیل تمرین نمره دریافت می‌کنند."
+                  : "تمرین‌ها پس از بررسی شما نمره‌دهی خواهند شد."}
               </p>
             </div>
           </>
