@@ -8,7 +8,10 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "migrate:create": "node scripts/migrate.js create",
+    "migrate:sync": "node scripts/migrate.js sync",
+    "migrate:list": "node scripts/migrate.js list"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
