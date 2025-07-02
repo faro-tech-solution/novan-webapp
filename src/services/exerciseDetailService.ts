@@ -41,6 +41,9 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         days_to_due,
         created_at,
         form_structure,
+        exercise_type,
+        content_url,
+        auto_grade,
         courses (
           name
         )
@@ -68,7 +71,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     // Get submission if exists
     const { data: submission } = await supabase
       .from('exercise_submissions')
-      .select('solution, feedback, score, submitted_at')
+      .select('solution, feedback, score, submitted_at, auto_graded, completion_percentage')
       .eq('exercise_id', exerciseId)
       .eq('student_id', userId)
       .single();
@@ -111,10 +114,15 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       open_date: openDate.toISOString(),
       due_date: dueDate.toISOString(),
       submission_status: submissionStatus,
+      exercise_type: exercise.exercise_type || 'form',
+      content_url: exercise.content_url,
+      auto_grade: exercise.auto_grade || false,
       form_structure: form_structure,
       submission_answers: submissionAnswers,
       feedback: submission?.feedback,
-      score: submission?.score
+      score: submission?.score,
+      completion_percentage: submission?.completion_percentage || 0,
+      auto_graded: submission?.auto_graded || false
     };
   } catch (error) {
     console.error('Error in fetchExerciseDetail:', error);
@@ -131,14 +139,39 @@ export const submitExerciseSolution = async (
 ): Promise<{ error: string | null }> => {
   console.log('Submitting solution for exercise:', exerciseId);
 
+  // First get exercise details to check if it's auto-graded
+  const { data: exercise } = await supabase
+    .from('exercises')
+    .select('auto_grade, exercise_type, points')
+    .eq('id', exerciseId)
+    .single();
+
+  // Set default values for submission
+  let submissionData: any = {
+    exercise_id: exerciseId,
+    student_id: studentId,
+    solution: solution,
+    submitted_at: new Date().toISOString()
+  };
+
+  // Handle auto-grading if enabled
+  if (exercise && exercise.auto_grade) {
+    const completion_percentage = 100; // For now, simple auto-grading gives 100%
+    const score = exercise.points; // For auto-graded exercises, award full points
+    
+    submissionData = {
+      ...submissionData,
+      auto_graded: true,
+      completion_percentage: completion_percentage,
+      score: score,
+      feedback: 'این تمرین به صورت خودکار نمره‌دهی شده است.',
+      graded_at: new Date().toISOString()
+    };
+  }
+
   const { error } = await supabase
     .from('exercise_submissions')
-    .upsert({
-      exercise_id: exerciseId,
-      student_id: studentId,
-      solution: solution,
-      submitted_at: new Date().toISOString()
-    }, {
+    .upsert(submissionData, {
       onConflict: 'exercise_id,student_id'
     });
 

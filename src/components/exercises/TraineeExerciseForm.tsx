@@ -1,21 +1,30 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Send, Clock } from 'lucide-react';
+import { Send, Clock, Video, AudioLines, CheckCircle } from 'lucide-react';
 import { FormRenderer } from './FormRenderer';
 import { ExerciseForm, FormAnswer } from '@/types/formBuilder';
 import { useToast } from '@/hooks/use-toast';
+import { ExerciseType } from '@/types/exercise';
+import { VideoPlayer } from './VideoPlayer';
+import { AudioPlayer } from './AudioPlayer';
+import { SimpleExerciseCompletion } from './SimpleExerciseCompletion';
 
 interface TraineeExerciseFormProps {
   exercise: {
     id: string;
     title: string;
+    exercise_type: ExerciseType;
+    content_url?: string | null;
+    auto_grade: boolean;
     form_structure?: ExerciseForm;
     submission_status: string;
     open_date: string;
     due_date: string;
     feedback?: string;
     score?: number;
+    completion_percentage?: number;
+    auto_graded?: boolean;
   };
   answers: FormAnswer[];
   onAnswersChange: (answers: FormAnswer[]) => void;
@@ -87,12 +96,32 @@ export const TraineeExerciseForm = ({
       <CardContent>
         {canSubmit ? (
           <div className="space-y-6">
-            {exercise.form_structure && exercise.form_structure.questions.length > 0 ? (
+            {exercise.exercise_type === 'form' && exercise.form_structure && exercise.form_structure.questions.length > 0 ? (
               <FormRenderer
                 form={exercise.form_structure}
                 answers={answers}
                 onChange={onAnswersChange}
                 disabled={false}
+              />
+            ) : exercise.exercise_type === 'video' && exercise.content_url ? (
+              <VideoPlayer
+                videoUrl={exercise.content_url}
+                onComplete={handleSubmit}
+                isCompleted={isSubmitted}
+                disabled={submitting || exercise.score !== undefined}
+              />
+            ) : exercise.exercise_type === 'audio' && exercise.content_url ? (
+              <AudioPlayer
+                audioUrl={exercise.content_url}
+                onComplete={handleSubmit}
+                isCompleted={isSubmitted}
+                disabled={submitting || exercise.score !== undefined}
+              />
+            ) : exercise.exercise_type === 'simple' ? (
+              <SimpleExerciseCompletion
+                onComplete={handleSubmit}
+                isCompleted={isSubmitted}
+                disabled={submitting || exercise.score !== undefined}
               />
             ) : (
               <div className="text-center py-8 text-gray-500">
@@ -102,7 +131,9 @@ export const TraineeExerciseForm = ({
             
             {exercise.feedback && (
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h5 className="font-semibold text-blue-800 mb-2">بازخورد استاد:</h5>
+                <h5 className="font-semibold text-blue-800 mb-2">
+                  {exercise.auto_graded ? "نتیجه خودکار:" : "بازخورد استاد:"}
+                </h5>
                 <p className="text-blue-700">{exercise.feedback}</p>
                 {exercise.score !== null && (
                   <p className="text-blue-800 font-semibold mt-2">نمره: {exercise.score}</p>
@@ -110,7 +141,7 @@ export const TraineeExerciseForm = ({
               </div>
             )}
             
-            {exercise.form_structure && exercise.form_structure.questions.length > 0 && (
+            {exercise.exercise_type === 'form' && exercise.form_structure && exercise.form_structure.questions.length > 0 && (
               <div className="flex justify-end">
                 <Button 
                   onClick={handleSubmit} 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CheckCircle, AlertCircle } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -96,10 +97,66 @@ const ExerciseDetail = () => {
           />
         )}
 
-        {(profile?.role === 'trainer' || profile?.role === 'admin') && 
-         exercise.form_structure && 
-         exercise.form_structure.questions.length > 0 && (
-          <InstructorFormView formStructure={exercise.form_structure} />
+        {(profile?.role === 'trainer' || profile?.role === 'admin') && (
+          <>
+            {exercise.exercise_type === 'form' && exercise.form_structure && 
+             exercise.form_structure.questions.length > 0 ? (
+              <InstructorFormView formStructure={exercise.form_structure} />
+            ) : exercise.exercise_type === 'video' && exercise.content_url ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">محتوای تمرین ویدیویی</h3>
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <p className="mb-4">آدرس ویدیو: <a href={exercise.content_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{exercise.content_url}</a></p>
+                  <video 
+                    className="w-full rounded-md max-h-[400px]" 
+                    controls 
+                    src={exercise.content_url}
+                  />
+                </div>
+              </div>
+            ) : exercise.exercise_type === 'audio' && exercise.content_url ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">محتوای تمرین صوتی</h3>
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <p className="mb-4">آدرس فایل صوتی: <a href={exercise.content_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{exercise.content_url}</a></p>
+                  <audio 
+                    className="w-full" 
+                    controls 
+                    src={exercise.content_url}
+                  />
+                </div>
+              </div>
+            ) : exercise.exercise_type === 'simple' ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">محتوای تمرین ساده</h3>
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <p>این یک تمرین ساده است که دانشجویان با کلیک روی دکمه «تکمیل تمرین» آن را تکمیل می‌کنند.</p>
+                </div>
+              </div>
+            ) : null}
+            
+            <div className="bg-blue-50 p-4 rounded-md mt-6">
+              <h3 className="text-md font-semibold mb-2 flex items-center">
+                {exercise.auto_grade ? (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                    <span>نمره‌دهی خودکار فعال است</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="h-4 w-4 mr-2 text-blue-600" />
+                    <span>نیاز به بررسی و نمره‌دهی دارد</span>
+                  </>
+                )}
+              </h3>
+              <p className="text-sm text-gray-700">
+                {exercise.auto_grade 
+                  ? 'دانشجویان بلافاصله پس از تکمیل تمرین نمره دریافت می‌کنند.'
+                  : 'تمرین‌ها پس از بررسی شما نمره‌دهی خواهند شد.'
+                }
+              </p>
+            </div>
+          </>
         )}
       </div>
     </DashboardLayout>

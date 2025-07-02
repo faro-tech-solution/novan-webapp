@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { GradingSection } from '@/components/exercises/GradingSection';
 import { SubmissionViewer } from '@/components/exercises/SubmissionViewer';
-import { useSubmissionsQuery, useCoursesQuery, useGradeSubmissionMutation } from '@/hooks/useReviewSubmissionsQuery';
+import { useSubmissionsQuery, useCoursesForReviewQuery, useGradeSubmissionMutation } from '@/hooks/queries/useReviewSubmissionsQuery';
 import { Submission } from '@/types/reviewSubmissions';
 import {
   Select,
@@ -18,7 +18,7 @@ import {
   SelectItem,
   SelectValue
 } from '@/components/ui/select';
-import { useExercisesQuery as useExercisesByCourseQuery } from '@/hooks/useExercisesQuery';
+import { useExercisesQuery } from '@/hooks/queries/useExercisesQuery';
 import { Checkbox } from '@/components/ui/checkbox';
 import UserNameWithBadge from '@/components/ui/UserNameWithBadge';
 import { useStudentsQuery } from '@/hooks/queries/useStudentsQuery';
@@ -37,8 +37,8 @@ const ReviewSubmissions = () => {
   const [showNoSubmission, setShowNoSubmission] = useState(false);
 
   const { data: submissions = [], isLoading: submissionsLoading, error: submissionsError } = useSubmissionsQuery();
-  const { data: courses = [] } = useCoursesQuery();
-  const { data: exercisesByCourse = [], isLoading: exercisesLoading } = useExercisesByCourseQuery(selectedCourse !== 'all' ? selectedCourse : undefined);
+  const { data: courses = [] } = useCoursesForReviewQuery();
+  const { exercises = [], loading: exercisesLoading } = useExercisesQuery();
   const gradeSubmissionMutation = useGradeSubmissionMutation();
   const { students: allStudents = [] } = useStudentsQuery();
 
@@ -187,7 +187,7 @@ const ReviewSubmissions = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">همه تمرین‌ها</SelectItem>
-                {exercisesByCourse.map(ex => (
+                {exercises.filter(ex => selectedCourse === 'all' || ex.course_id === selectedCourse).map(ex => (
                   <SelectItem key={ex.id} value={ex.id}>{ex.title}</SelectItem>
                 ))}
               </SelectContent>

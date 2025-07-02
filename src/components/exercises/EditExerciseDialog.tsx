@@ -30,6 +30,9 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange }: EditExercis
         days_to_close: data.days_to_open + data.days_duration,
         points: data.points,
         estimated_time: data.estimated_time,
+        exercise_type: data.exercise_type,
+        content_url: data.content_url,
+        auto_grade: data.auto_grade,
         form_structure: data.form_structure,
       };
       
@@ -70,6 +73,9 @@ export const EditExerciseDialog = ({ exercise, open, onOpenChange }: EditExercis
       days_duration: daysDuration,
       points: exercise.points,
       estimated_time: exercise.estimated_time,
+      exercise_type: exercise.exercise_type || 'form',
+      content_url: exercise.content_url || null,
+      auto_grade: exercise.auto_grade || false,
       form_structure: exercise.form_structure || { questions: [] },
     };
   }, [exercise]);

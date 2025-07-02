@@ -22,3 +22,7 @@ export { SubmissionViewer } from './SubmissionViewer';
 export { SubmissionsList } from './SubmissionsList';
 export { TimingAndPointsSection } from './TimingAndPointsSection';
 export { TraineeExerciseForm } from './TraineeExerciseForm';
+export { VideoPlayer } from './VideoPlayer';
+export { AudioPlayer } from './AudioPlayer';
+export { SimpleExerciseCompletion } from './SimpleExerciseCompletion';
+export { ExerciseTypeSection } from './ExerciseTypeSection';

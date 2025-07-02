@@ -1,6 +1,8 @@
 import { ExerciseForm, FormAnswer } from './formBuilder';
 import { ExerciseCourse } from './course';
 
+export type ExerciseType = 'form' | 'video' | 'audio' | 'simple';
+
 export interface Exercise {
   id: string;
   title: string;
@@ -15,6 +17,9 @@ export interface Exercise {
   created_by: string;
   created_at: string;
   updated_at: string;
+  exercise_type: ExerciseType;
+  content_url?: string | null;
+  auto_grade: boolean;
   form_structure?: ExerciseForm;
   submissions?: number;
   total_students?: number;
@@ -42,7 +47,12 @@ export interface MyExerciseWithSubmission {
   open_date: string;
   points: number;
   estimated_time: string;
+  exercise_type: ExerciseType;
+  content_url?: string | null;
+  auto_grade: boolean;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
+  completion_percentage?: number;
+  auto_graded?: boolean;
 }
 
 // For exercise detail service
@@ -58,8 +68,13 @@ export interface ExerciseDetail {
   open_date: string;
   due_date: string;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
+  exercise_type: ExerciseType;
+  content_url?: string | null;
+  auto_grade: boolean;
   form_structure?: ExerciseForm;
   submission_answers?: FormAnswer[];
   feedback?: string;
   score?: number;
+  completion_percentage?: number;
+  auto_graded?: boolean;
 }

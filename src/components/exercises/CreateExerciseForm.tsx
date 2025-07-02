@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { BasicInfoSection } from './BasicInfoSection';
 import { CourseAndDifficultySection } from './CourseAndDifficultySection';
 import { TimingAndPointsSection } from './TimingAndPointsSection';
+import { ExerciseTypeSection } from './ExerciseTypeSection';
 import { FormBuilder } from './FormBuilder';
-import { Course } from '@/types/exercise';
+import { ExerciseType } from '@/types/exercise';
+import { Course } from '@/types/course';
 import { ExerciseForm } from '@/types/formBuilder';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,6 +22,9 @@ const formSchema = z.object({
   days_duration: z.number().min(1, 'مدت زمان باید حداقل 1 روز باشد'),
   points: z.number().min(0, 'امتیاز باید 0 یا بیشتر باشد'),
   estimated_time: z.string().min(1, 'زمان تخمینی الزامی است'),
+  exercise_type: z.enum(['form', 'video', 'audio', 'simple'] as const),
+  content_url: z.string().url('آدرس محتوا باید URL معتبر باشد').optional().nullable(),
+  auto_grade: z.boolean().default(false),
   form_structure: z.object({
     questions: z.array(z.any())
   }).transform((val) => val as ExerciseForm)
@@ -48,6 +53,9 @@ export const CreateExerciseForm = ({ courses, isSubmitting, onSubmit, onCancel, 
       days_duration: 7,
       points: 100,
       estimated_time: '',
+      exercise_type: 'form',
+      content_url: null,
+      auto_grade: false,
       form_structure: { questions: [] },
     },
   });
@@ -77,15 +85,18 @@ export const CreateExerciseForm = ({ courses, isSubmitting, onSubmit, onCancel, 
         <BasicInfoSection form={form} />
         <CourseAndDifficultySection form={form} courses={courses} />
         <TimingAndPointsSection form={form} />
+        <ExerciseTypeSection form={form} />
 
-        {/* Form Builder Section */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">محتوای تمرین</h3>
-          <FormBuilder
-            value={form.watch('form_structure')}
-            onChange={(formStructure) => form.setValue('form_structure', formStructure)}
-          />
-        </div>
+        {/* Form Builder Section - Only show for form type exercises */}
+        {form.watch('exercise_type') === 'form' && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">محتوای تمرین</h3>
+            <FormBuilder
+              value={form.watch('form_structure')}
+              onChange={(formStructure) => form.setValue('form_structure', formStructure)}
+            />
+          </div>
+        )}
 
         <div className="flex justify-end space-x-2 space-x-reverse pt-4">
           <Button 

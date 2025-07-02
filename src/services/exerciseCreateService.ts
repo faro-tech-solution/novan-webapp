@@ -12,6 +12,9 @@ export interface CreateExerciseData {
   daysToOpen: number;
   daysToDue: number;
   daysToClose: number;
+  exercise_type: 'form' | 'video' | 'audio' | 'simple';
+  content_url?: string | null;
+  auto_grade: boolean;
   formStructure: ExerciseForm;
 }
 
@@ -45,6 +48,9 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       days_to_open: exerciseData.daysToOpen,
       days_to_due: exerciseData.daysToDue,
       days_to_close: exerciseData.daysToClose,
+      exercise_type: exerciseData.exercise_type,
+      content_url: exerciseData.content_url,
+      auto_grade: exerciseData.auto_grade,
       form_structure: JSON.stringify(exerciseData.formStructure || { questions: [] }),
       created_by: createdBy,
     };

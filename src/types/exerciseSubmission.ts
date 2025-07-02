@@ -32,6 +32,9 @@ export interface ExerciseData {
   created_at: string;
   updated_at: string;
   created_by: string;
+  exercise_type: 'form' | 'video' | 'audio' | 'simple';
+  content_url?: string | null;
+  auto_grade: boolean;
   courses: {
     id: string;
     name: string;
@@ -44,4 +47,6 @@ export interface ExerciseSubmission {
   score: number | null;
   submitted_at: string;
   feedback: string | null;
+  auto_graded: boolean;
+  completion_percentage: number;
 }
