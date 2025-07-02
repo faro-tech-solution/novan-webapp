@@ -41,12 +41,15 @@ export interface ExerciseData {
   } | null;
 }
 
+// This type is being migrated to types/exercise.ts
+// Please import ExerciseSubmission from '@/types/exercise' instead
 export interface ExerciseSubmission {
   exercise_id: string;
   student_id: string;
   score: number | null;
   submitted_at: string;
   feedback: string | null;
+  solution?: string;
   auto_graded: boolean;
   completion_percentage: number;
 }

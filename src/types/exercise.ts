@@ -1,8 +1,12 @@
 import { ExerciseForm, FormAnswer } from './formBuilder';
 import { ExerciseCourse } from './course';
+import { Json } from '@/integrations/supabase/types';
 
 export type ExerciseType = 'form' | 'video' | 'audio' | 'simple';
+export type SubmissionStatusType = 'not_started' | 'pending' | 'completed' | 'overdue';
+export type ExerciseStatusType = 'upcoming' | 'active' | 'overdue' | 'closed';
 
+// Base exercise interface for database records
 export interface Exercise {
   id: string;
   title: string;
@@ -20,11 +24,37 @@ export interface Exercise {
   exercise_type: ExerciseType;
   content_url?: string | null;
   auto_grade: boolean;
-  form_structure?: ExerciseForm;
+  form_structure?: ExerciseForm | Json | null;
   submissions?: number;
   total_students?: number;
-  exercise_status?: 'upcoming' | 'active' | 'overdue' | 'closed';
+  exercise_status?: ExerciseStatusType;
   course_name?: string;
+}
+
+// Exercise with course information from database
+export interface ExerciseWithCourse extends Omit<Exercise, 'form_structure'> {
+  form_structure: Json | null;
+  courses: {
+    name: string;
+  } | null;
+}
+
+// Exercise submission in database
+export interface ExerciseSubmission {
+  solution: string;
+  feedback: string | null;
+  score: number | null;
+  submitted_at: string;
+  auto_graded: boolean;
+  completion_percentage: number;
+}
+
+// For submitting a new submission
+export interface SubmissionData {
+  exercise_id: string;
+  student_id: string;
+  solution: string;
+  submitted_at: string;
 }
 
 // For upcoming exercises card
@@ -50,7 +80,7 @@ export interface MyExerciseWithSubmission {
   exercise_type: ExerciseType;
   content_url?: string | null;
   auto_grade: boolean;
-  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
+  submission_status: SubmissionStatusType;
   completion_percentage?: number;
   auto_graded?: boolean;
 }
@@ -67,7 +97,7 @@ export interface ExerciseDetail {
   estimated_time: string;
   open_date: string;
   due_date: string;
-  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
+  submission_status: SubmissionStatusType;
   exercise_type: ExerciseType;
   content_url?: string | null;
   auto_grade: boolean;

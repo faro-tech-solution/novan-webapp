@@ -2,9 +2,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { checkAndAwardAchievements } from '@/services/awardsService';
 import { FormAnswer, ExerciseForm } from '@/types/formBuilder';
 import { logStudentActivity, ACTIVITY_TYPES } from '@/services/activityLogService';
-import { ExerciseDetail } from '@/types/exercise';
+import { 
+  ExerciseDetail, 
+  ExerciseType, 
+  SubmissionStatusType,
+  ExerciseWithCourse,
+  ExerciseSubmission,
+  SubmissionData
+} from '@/types/exercise';
+import { Json } from '@/integrations/supabase/types';
 
-const parseFormStructure = (form_structure: any): ExerciseForm => {
+const parseFormStructure = (form_structure: Json | null): ExerciseForm => {
   if (!form_structure) {
     return { questions: [] };
   }
@@ -12,8 +20,8 @@ const parseFormStructure = (form_structure: any): ExerciseForm => {
   try {
     if (typeof form_structure === 'string') {
       return JSON.parse(form_structure) as ExerciseForm;
-    } else if (typeof form_structure === 'object' && form_structure.questions) {
-      return form_structure as ExerciseForm;
+    } else if (typeof form_structure === 'object' && form_structure !== null && 'questions' in form_structure) {
+      return form_structure as unknown as ExerciseForm;
     }
     return { questions: [] };
   } catch (error) {
@@ -26,7 +34,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
   console.log('Fetching exercise detail for:', exerciseId, 'user:', userId);
 
   try {
-    // First get the exercise details
+    // First get the exercise details with course relationship
     const { data: exercise, error: exerciseError } = await supabase
       .from('exercises')
       .select(`
@@ -37,9 +45,12 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         difficulty,
         points,
         estimated_time,
+        created_at,
         days_to_open,
         days_to_due,
-        created_at,
+        exercise_type,
+        content_url,
+        auto_grade,
         form_structure,
         courses (
           name
@@ -57,28 +68,35 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       return null;
     }
 
-    // Calculate dates
-    const createdDate = new Date(exercise.created_at);
+    const typedExercise = exercise as unknown as ExerciseWithCourse;
+
+    // Calculate dates dynamically based on created_at + days_to_open/days_to_due
+    const createdDate = new Date(typedExercise.created_at);
+    const daysToOpen = typedExercise.days_to_open || 0;
+    const daysToDue = typedExercise.days_to_due || 7;
+    
     const openDate = new Date(createdDate);
-    openDate.setDate(openDate.getDate() + exercise.days_to_open);
+    openDate.setDate(openDate.getDate() + daysToOpen);
     
     const dueDate = new Date(createdDate);
-    dueDate.setDate(dueDate.getDate() + exercise.days_to_due);
+    dueDate.setDate(dueDate.getDate() + daysToDue);
 
     // Get submission if exists
     const { data: submission } = await supabase
       .from('exercise_submissions')
-      .select('solution, feedback, score, submitted_at')
+      .select('solution, feedback, score, submitted_at, auto_graded, completion_percentage')
       .eq('exercise_id', exerciseId)
       .eq('student_id', userId)
       .single();
 
+    const typedSubmission = submission as unknown as ExerciseSubmission | null;
+
     // Determine submission status
     const now = new Date();
-    let submissionStatus: 'not_started' | 'pending' | 'completed' | 'overdue' = 'not_started';
+    let submissionStatus: SubmissionStatusType = 'not_started';
     
-    if (submission) {
-      if (submission.score !== null) {
+    if (typedSubmission) {
+      if (typedSubmission.score !== null) {
         submissionStatus = 'completed';
       } else {
         submissionStatus = 'pending';
@@ -91,9 +109,9 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     let submissionAnswers: FormAnswer[] = [];
     let submissionFeedback: string | undefined;
     
-    if (submission?.solution) {
+    if (typedSubmission?.solution) {
       try {
-        const parsedSolution = JSON.parse(submission.solution);
+        const parsedSolution = JSON.parse(typedSubmission.solution);
         
         // Check if this is a new format with feedback
         if (parsedSolution.exerciseType === 'media' && parsedSolution.feedback) {
@@ -111,29 +129,29 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       }
     }
 
-    const form_structure = parseFormStructure(exercise.form_structure);
+    const form_structure = parseFormStructure(typedExercise.form_structure || null);
 
     return {
-      id: exercise.id,
-      title: exercise.title,
-      description: exercise.description,
-      course_id: exercise.course_id,
-      course_name: exercise.courses?.name || 'نامشخص',
-      difficulty: exercise.difficulty,
-      points: exercise.points,
-      estimated_time: exercise.estimated_time,
+      id: typedExercise.id,
+      title: typedExercise.title,
+      description: typedExercise.description,
+      course_id: typedExercise.course_id,
+      course_name: typedExercise.courses?.name || 'دوره نامشخص',
+      difficulty: typedExercise.difficulty,
+      points: typedExercise.points,
+      estimated_time: typedExercise.estimated_time,
       open_date: openDate.toISOString(),
       due_date: dueDate.toISOString(),
       submission_status: submissionStatus,
-      exercise_type: 'form', // Default to form for now
-      content_url: null, // Will be added when migration is run
-      auto_grade: false, // Will be added when migration is run
+      exercise_type: typedExercise.exercise_type,
+      content_url: typedExercise.content_url,
+      auto_grade: typedExercise.auto_grade,
       form_structure: form_structure,
       submission_answers: submissionAnswers,
-      feedback: submissionFeedback || submission?.feedback,
-      score: submission?.score,
-      completion_percentage: 0, // Will be added when migration is run
-      auto_graded: false // Will be added when migration is run
+      feedback: submissionFeedback || typedSubmission?.feedback || undefined,
+      score: typedSubmission?.score || undefined,
+      completion_percentage: typedSubmission?.completion_percentage || 0,
+      auto_graded: typedSubmission?.auto_graded || false
     };
   } catch (error) {
     console.error('Error in fetchExerciseDetail:', error);
@@ -176,7 +194,7 @@ export const submitExerciseSolution = async (
   }
 
   // Set default values for submission
-  let submissionData: any = {
+  const submissionData: SubmissionData = {
     exercise_id: exerciseId,
     student_id: studentId,
     solution: finalSolution,

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStableAuth } from '@/hooks/useStableAuth';
 import { Database } from '@/integrations/supabase/types';
-import { ExerciseWithSubmission, ExerciseData, ExerciseSubmission } from '@/types/exerciseSubmission';
+import { ExerciseWithSubmission, ExerciseData, ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
 import { CourseEnrollment } from '@/types/course';
 import { calculateAdjustedDates } from '@/utils/exerciseDateUtils';
 import { calculateSubmissionStatus } from '@/utils/exerciseSubmissionUtils';
@@ -124,7 +124,7 @@ export const useMyExercisesQuery = () => {
         
         // Cast to ExerciseSubmission
         const submissionStatus = calculateSubmissionStatus(
-          submissionObj as ExerciseSubmission | undefined,
+          submissionObj as unknown as ExerciseSubmissionLegacy | undefined,
           dates.adjustedOpenDate,
           dates.adjustedCloseDate
         );

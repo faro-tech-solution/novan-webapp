@@ -1,0 +1,2 @@
+-- Placeholder seed file
+-- Add seed data here if needed
