@@ -1,10 +1,10 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { User, Clock, Award } from 'lucide-react';
-import { SubmissionViewer } from './SubmissionViewer';
-import { ExerciseForm, FormAnswer } from '@/types/formBuilder';
-import { Submission } from '@/types/reviewSubmissions';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { User, Clock, Award } from "lucide-react";
+import { SubmissionViewer } from "./SubmissionViewer";
+import { ExerciseForm, FormAnswer } from "@/types/formBuilder";
+import { Submission } from "@/types/reviewSubmissions";
 
 interface SubmissionDetailViewProps {
   submission: Submission;
@@ -13,15 +13,15 @@ interface SubmissionDetailViewProps {
 
 export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
   submission,
-  onBack
+  onBack,
 }) => {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fa-IR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("fa-IR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -31,17 +31,71 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
     }
 
     try {
-      if (typeof form_structure === 'string') {
+      if (typeof form_structure === "string") {
         return JSON.parse(form_structure) as ExerciseForm;
-      } else if (typeof form_structure === 'object' && form_structure.questions) {
+      } else if (
+        typeof form_structure === "object" &&
+        form_structure.questions
+      ) {
         return form_structure as ExerciseForm;
       }
       return { questions: [] };
     } catch (error) {
-      console.error('Error parsing form_structure:', error);
+      console.error("Error parsing form_structure:", error);
       return { questions: [] };
     }
   };
+
+  // Helper function to parse submission solution based on exercise type
+  const parseSubmissionContent = (
+    solution: string
+  ): { answers: FormAnswer[]; userFeedback?: string } => {
+    try {
+      const parsedSolution = JSON.parse(solution);
+
+      // Check if this is a solution with feedback from video/audio/simple exercises
+      if (parsedSolution && typeof parsedSolution === "object") {
+        if (
+          parsedSolution.exerciseType === "media" &&
+          parsedSolution.feedback
+        ) {
+          return {
+            answers: Array.isArray(parsedSolution.answers)
+              ? parsedSolution.answers
+              : [],
+            userFeedback: parsedSolution.feedback,
+          };
+        }
+
+        // For non-form exercises, we might have direct feedback in the solution
+        if (
+          submission.exercise?.exercise_type &&
+          (submission.exercise.exercise_type === "video" ||
+            submission.exercise.exercise_type === "audio" ||
+            submission.exercise.exercise_type === "simple") &&
+          parsedSolution.feedback
+        ) {
+          return {
+            answers: [],
+            userFeedback: parsedSolution.feedback,
+          };
+        }
+      }
+
+      // For regular form exercises, just return the parsed answers
+      return {
+        answers: Array.isArray(parsedSolution) ? parsedSolution : [],
+      };
+    } catch (e) {
+      // If parsing fails, return empty answers
+      console.error("Error parsing submission solution:", e);
+      return { answers: [] };
+    }
+  };
+
+  // Parse the solution
+  const parsedContent = parseSubmissionContent(submission.solution);
+  const userFeedback = parsedContent.userFeedback;
 
   return (
     <div className="space-y-6">
@@ -49,7 +103,9 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-xl">{submission.exercise.title}</CardTitle>
+              <CardTitle className="text-xl">
+                {submission.exercise.title}
+              </CardTitle>
               <div className="mt-2">
                 <div className="flex items-center space-x-4 space-x-reverse text-sm">
                   <div className="flex items-center space-x-2 space-x-reverse">
@@ -60,7 +116,9 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
                     <Clock className="h-4 w-4" />
                     <span className="text-sm text-gray-500">•</span>
                     <span className="text-sm text-gray-500">
-                      {new Date(submission.submitted_at).toLocaleDateString('fa-IR')}
+                      {new Date(submission.submitted_at).toLocaleDateString(
+                        "fa-IR"
+                      )}
                     </span>
                   </div>
                   <div className="flex items-center space-x-2 space-x-reverse">
@@ -77,6 +135,20 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
         </CardHeader>
       </Card>
 
+      {/* Display user feedback for video, audio, and simple exercises */}
+      {userFeedback && (
+        <Card>
+          <CardHeader>
+            <CardTitle>بازخورد دانشجو</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="p-3 bg-blue-50 rounded-lg">
+              <p className="text-blue-700">{userFeedback}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>پاسخ دانشجو</CardTitle>
@@ -84,12 +156,12 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
         <CardContent>
           <SubmissionViewer
             form={parseFormStructure(submission.exercise.form_structure)}
-            answers={JSON.parse(submission.solution) as FormAnswer[]}
+            answers={parsedContent.answers}
             submissionInfo={{
               studentName: `${submission.student?.first_name} ${submission.student?.last_name}`,
               submittedAt: submission.submitted_at,
               score: submission.score || undefined,
-              feedback: submission.feedback || undefined
+              feedback: submission.feedback || undefined,
             }}
           />
         </CardContent>

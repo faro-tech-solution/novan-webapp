@@ -38,6 +38,74 @@ import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
 import { Checkbox } from "@/components/ui/checkbox";
 import UserNameWithBadge from "@/components/ui/UserNameWithBadge";
 import { useStudentsQuery } from "@/hooks/queries/useStudentsQuery";
+import { FormAnswer } from "@/types/formBuilder";
+
+// Helper function to parse submission solution based on exercise type
+const parseSubmissionSolution = (
+  solution: string,
+  exercise_type?: string
+): { answers: FormAnswer[]; userFeedback?: string } => {
+  try {
+    const parsedSolution = JSON.parse(solution);
+
+    // Check if this is a solution with feedback from video/audio/simple exercises
+    if (parsedSolution && typeof parsedSolution === "object") {
+      if (parsedSolution.exerciseType === "media" && parsedSolution.feedback) {
+        return {
+          answers: Array.isArray(parsedSolution.answers)
+            ? parsedSolution.answers
+            : [],
+          userFeedback: parsedSolution.feedback,
+        };
+      }
+
+      // For non-form exercises, we might have direct feedback in the solution
+      if (
+        (exercise_type === "video" ||
+          exercise_type === "audio" ||
+          exercise_type === "simple") &&
+        parsedSolution.feedback
+      ) {
+        return {
+          answers: [],
+          userFeedback: parsedSolution.feedback,
+        };
+      }
+    }
+
+    // For regular form exercises, just return the parsed answers
+    return {
+      answers: Array.isArray(parsedSolution) ? parsedSolution : [],
+    };
+  } catch (e) {
+    // If parsing fails, return empty answers
+    console.error("Error parsing submission solution:", e);
+    return { answers: [] };
+  }
+};
+
+// Helper to check if a submission has user feedback
+const hasUserFeedback = (submission: Submission): boolean => {
+  if (!submission.solution || !submission.exercise?.exercise_type) {
+    return false;
+  }
+
+  try {
+    if (
+      ["video", "audio", "simple"].includes(submission.exercise.exercise_type)
+    ) {
+      const parsed = parseSubmissionSolution(
+        submission.solution,
+        submission.exercise.exercise_type
+      );
+      return !!parsed.userFeedback;
+    }
+  } catch (e) {
+    console.error("Error checking for user feedback:", e);
+  }
+
+  return false;
+};
 
 const ReviewSubmissions = () => {
   const [selectedSubmission, setSelectedSubmission] =
@@ -367,9 +435,22 @@ const ReviewSubmissions = () => {
                         <label className="block">
                           {submission.exercise?.title || "---"}
                         </label>
-                        <label className="block text-sm text-gray-400">
-                          {getCourseName(submission.exercise?.course_id)}
-                        </label>
+                        <div className="flex items-center space-x-2 space-x-reverse mt-1">
+                          <label className="text-sm text-gray-400">
+                            {getCourseName(submission.exercise?.course_id)}
+                          </label>
+                          {submission.exercise?.exercise_type && (
+                            <Badge variant="outline" className="ml-2 text-xs">
+                              {submission.exercise?.exercise_type === "form"
+                                ? "فرم"
+                                : submission.exercise?.exercise_type === "video"
+                                ? "ویدیو"
+                                : submission.exercise?.exercise_type === "audio"
+                                ? "صوتی"
+                                : "ساده"}
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         {new Date(submission.submitted_at).toLocaleDateString(
@@ -377,15 +458,24 @@ const ReviewSubmissions = () => {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={
-                            submission.score !== null ? "default" : "secondary"
-                          }
-                        >
-                          {submission.score !== null
-                            ? "بررسی شده"
-                            : "در انتظار بررسی"}
-                        </Badge>
+                        <div className="flex flex-col gap-1">
+                          <Badge
+                            variant={
+                              submission.score !== null
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
+                            {submission.score !== null
+                              ? "بررسی شده"
+                              : "در انتظار بررسی"}
+                          </Badge>
+                          {hasUserFeedback(submission) && (
+                            <Badge variant="outline" className="bg-blue-50">
+                              دارای بازخورد
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <Button
@@ -413,13 +503,49 @@ const ReviewSubmissions = () => {
           <div className="overflow-y-auto flex-1 pr-2">
             {selectedSubmission && selectedSubmission.exercise && (
               <>
+                {/* Show student feedback for video, audio, and simple exercises */}
+                {selectedSubmission.exercise.exercise_type &&
+                  ["video", "audio", "simple"].includes(
+                    selectedSubmission.exercise.exercise_type
+                  ) &&
+                  parseSubmissionSolution(
+                    selectedSubmission.solution,
+                    selectedSubmission.exercise.exercise_type
+                  ).userFeedback && (
+                    <Card className="mb-4">
+                      <CardHeader>
+                        <CardTitle>بازخورد دانشجو</CardTitle>
+                        <p className="text-sm text-gray-500 mt-1">
+                          توضیحات و نظرات دانشجو در مورد این تمرین
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="p-3 bg-blue-50 rounded-lg">
+                          <p className="text-blue-700">
+                            {
+                              parseSubmissionSolution(
+                                selectedSubmission.solution,
+                                selectedSubmission.exercise.exercise_type
+                              ).userFeedback
+                            }
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
                 <SubmissionViewer
                   form={
                     selectedSubmission.exercise.form_structure || {
                       questions: [],
                     }
                   }
-                  answers={JSON.parse(selectedSubmission.solution)}
+                  answers={
+                    parseSubmissionSolution(
+                      selectedSubmission.solution,
+                      selectedSubmission.exercise?.exercise_type
+                    ).answers
+                  }
                   submissionInfo={{
                     studentName: `${selectedSubmission.student?.first_name} ${selectedSubmission.student?.last_name}`,
                     submittedAt: selectedSubmission.submitted_at,
