@@ -1,17 +1,15 @@
 import { QueryClient } from '@tanstack/react-query';
 
-// Configure React Query globally to prevent unnecessary refetches
+// Configure React Query with reduced caching to ensure data freshness
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 15 * 60 * 1000, // 15 minutes - data considered fresh for longer
-      gcTime: 30 * 60 * 1000,    // 30 minutes - cached data kept longer
+      staleTime: 0,              // Data immediately becomes stale
+      gcTime: 5 * 60 * 1000,     // Keep unused data in cache for 5 minutes
       retry: 1,                  // Only retry failed queries once
-      refetchOnWindowFocus: false,   // Don't refetch when window regains focus
-      refetchOnMount: false,         // Don't refetch when component mounts
-      refetchOnReconnect: false,     // Don't refetch when reconnecting network
-      refetchInterval: false,        // Disable interval refetching
-      refetchIntervalInBackground: false, // Disable background interval refetching
+      refetchOnWindowFocus: false, // Don't refetch when window regains focus
+      refetchOnMount: true,       // Refetch when component mounts
+      refetchOnReconnect: true,   // Refetch when reconnecting network
     },
     mutations: {
       retry: 1,
@@ -35,9 +33,9 @@ if (import.meta.env.DEV) {
 
 // Use this function to customize query options when needed
 export const getQueryOptions = (customOptions = {}) => ({
-  staleTime: 15 * 60 * 1000,
-  refetchOnWindowFocus: false,
-  refetchOnMount: false,
-  refetchOnReconnect: false,
+  staleTime: 0,
+  refetchOnWindowFocus: true,
+  refetchOnMount: true,
+  refetchOnReconnect: true,
   ...customOptions
 });
