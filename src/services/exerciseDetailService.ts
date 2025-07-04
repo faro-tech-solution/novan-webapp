@@ -82,13 +82,17 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     dueDate.setDate(dueDate.getDate() + daysToDue);
 
     // Get submission if exists
-    const { data: submission } = await supabase
+    const { data: submission, error: submissionError } = await supabase
       .from('exercise_submissions')
       .select('solution, feedback, score, submitted_at, auto_graded, completion_percentage')
       .eq('exercise_id', exerciseId)
       .eq('student_id', userId)
-      .single();
+      .maybeSingle(); // Use maybeSingle instead of single to handle cases where no submission exists
 
+    // Log submission retrieval for debugging
+    console.log('Submission fetch result:', submission ? 'found' : 'not found', 
+                submissionError ? `Error: ${submissionError.message}` : 'No error');
+    
     const typedSubmission = submission as unknown as ExerciseSubmission | null;
 
     // Determine submission status
@@ -201,6 +205,16 @@ export const submitExerciseSolution = async (
     submitted_at: new Date().toISOString()
   };
 
+  console.log('Upserting submission with conflict on:', 'exercise_id,student_id');
+  
+  // Log the submission data for debugging
+  console.log('Submission data:', {
+    ...submissionData,
+    solution: submissionData.solution.length > 100 
+      ? submissionData.solution.substring(0, 100) + '...' 
+      : submissionData.solution
+  });
+  
   const { error } = await supabase
     .from('exercise_submissions')
     .upsert(submissionData, {
@@ -212,9 +226,12 @@ export const submitExerciseSolution = async (
     return { error: error.message };
   }
 
+  console.log('Solution submitted successfully, checking achievements');
+  
   // Trigger achievement checking after successful submission
   try {
     await checkAndAwardAchievements(studentId);
+    console.log('Achievement check completed successfully');
   } catch (achievementError) {
     console.error('Error checking achievements:', achievementError);
     // Don't fail the submission if achievement checking fails

@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { fetchStudentAwards, fetchAllAwards, checkAndAwardAchievements, StudentAward, Award } from '@/services/awardsService';
+import { fetchStudentAwards, fetchAllAwards, checkAndAwardAchievements, Award } from '@/services/awardsService';
+import { StudentAward } from '@/types/student';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const useStudentAwards = () => {
@@ -20,11 +21,20 @@ export const useStudentAwards = () => {
       setAllAwards(awards);
       
       if (user) {
-        // First check for new achievements
-        await checkAndAwardAchievements(user.id);
+        try {
+          // First check for new achievements
+          console.log('Checking for new achievements for user:', user.id);
+          await checkAndAwardAchievements(user.id);
+          console.log('Achievement check completed successfully');
+        } catch (achievementError) {
+          console.error('Achievement check failed:', achievementError);
+          // Don't fail the whole load if just achievement checking fails
+        }
         
         // Then fetch the user's awards
+        console.log('Fetching awards for user:', user.id);
         const userAwards = await fetchStudentAwards(user.id);
+        console.log('Fetched user awards:', userAwards.length);
         setStudentAwards(userAwards);
       }
     } catch (err) {
