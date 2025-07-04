@@ -1,4 +1,5 @@
 // Re-export all UI components
+export * from './formatters';
 export * from './accordion';
 export * from './alert-dialog';
 export * from './alert';

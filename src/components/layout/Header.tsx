@@ -1,12 +1,16 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, Search, ShoppingCart, User, LogIn } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Menu, X, Search, ShoppingCart, User, LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { LanguageSwitch } from "./LanguageSwitch";
+import { useTranslation } from "@/utils/translations";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { profile, loading } = useAuth();
+  const { tCommon } = useTranslation();
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
@@ -17,28 +21,45 @@ const Header = () => {
             <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">آ</span>
             </div>
-            <span className="text-xl font-bold text-gray-900 font-peyda">پورتال آموزش فاروباکس</span>
+            <span className="text-xl font-bold text-gray-900 font-peyda">
+              {tCommon("portalName")}
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
-            <Link to="/" className="text-gray-700 hover:text-teal-600 transition-colors">
-              خانه
+            <Link
+              to="/"
+              className="text-gray-700 hover:text-teal-600 transition-colors"
+            >
+              {tCommon("home")}
             </Link>
-            <Link to="/courses" className="text-gray-700 hover:text-teal-600 transition-colors">
-              دوره‌ها
+            <Link
+              to="/courses"
+              className="text-gray-700 hover:text-teal-600 transition-colors"
+            >
+              {tCommon("courses")}
             </Link>
-            {(profile?.role === 'trainer' || profile?.role === 'admin') && (
-              <Link to="/students" className="text-gray-700 hover:text-teal-600 transition-colors">
-                دانشجویان
+            {(profile?.role === "trainer" || profile?.role === "admin") && (
+              <Link
+                to="/students"
+                className="text-gray-700 hover:text-teal-600 transition-colors"
+              >
+                {tCommon("students")}
               </Link>
             )}
-            <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
-              مربیان
+            <Link
+              to="/instructors"
+              className="text-gray-700 hover:text-teal-600 transition-colors"
+            >
+              {tCommon("instructors")}
             </Link>
             {profile && (
-              <Link to="/dashboard" className="text-gray-700 hover:text-teal-600 transition-colors">
-                داشبورد
+              <Link
+                to="/dashboard"
+                className="text-gray-700 hover:text-teal-600 transition-colors"
+              >
+                {tCommon("dashboard")}
               </Link>
             )}
           </nav>
@@ -54,13 +75,16 @@ const Header = () => {
                 0
               </span>
             </Button>
-            
-            {!loading && (
-              profile ? (
+            <LanguageSwitch />
+
+            {!loading &&
+              (profile ? (
                 <Link to="/dashboard">
                   <Button variant="outline">
                     <User className="h-4 w-4 ml-2" />
-                    {profile.first_name && profile.last_name ? `${profile.first_name} ${profile.last_name}` : 'کاربر'}
+                    {profile.first_name && profile.last_name
+                      ? `${profile.first_name} ${profile.last_name}`
+                      : tCommon("user")}
                   </Button>
                 </Link>
               ) : (
@@ -68,18 +92,17 @@ const Header = () => {
                   <Link to="/">
                     <Button variant="outline">
                       <LogIn className="h-4 w-4 ml-2" />
-                      ورود
+                      {tCommon("login")}
                     </Button>
                   </Link>
                   <Link to="/register">
                     <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-                      ثبت نام
+                      {tCommon("register")}
                     </Button>
                   </Link>
                 </div>
-              )
-            )}
-            
+              ))}
+
             {/* Mobile menu button */}
             <Button
               variant="ghost"
@@ -87,7 +110,11 @@ const Header = () => {
               className="md:hidden"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </Button>
           </div>
         </div>
@@ -96,35 +123,59 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t">
             <nav className="flex flex-col space-y-4">
-              <Link to="/" className="text-gray-700 hover:text-teal-600 transition-colors">
-                خانه
+              <Link
+                to="/"
+                className="text-gray-700 hover:text-teal-600 transition-colors"
+              >
+                {tCommon("home")}
               </Link>
-              <Link to="/courses" className="text-gray-700 hover:text-teal-600 transition-colors">
-                دوره‌ها
+              <Link
+                to="/courses"
+                className="text-gray-700 hover:text-teal-600 transition-colors"
+              >
+                {tCommon("courses")}
               </Link>
-              {(profile?.role === 'trainer' || profile?.role === 'admin') && (
-                <Link to="/students" className="text-gray-700 hover:text-teal-600 transition-colors">
-                  دانشجویان
+              {(profile?.role === "trainer" || profile?.role === "admin") && (
+                <Link
+                  to="/students"
+                  className="text-gray-700 hover:text-teal-600 transition-colors"
+                >
+                  {tCommon("students")}
                 </Link>
               )}
-              <Link to="/instructors" className="text-gray-700 hover:text-teal-600 transition-colors">
-                مربیان
+              <Link
+                to="/instructors"
+                className="text-gray-700 hover:text-teal-600 transition-colors"
+              >
+                {tCommon("instructors")}
               </Link>
               {profile && (
-                <Link to="/dashboard" className="text-gray-700 hover:text-teal-600 transition-colors">
-                  داشبورد
+                <Link
+                  to="/dashboard"
+                  className="text-gray-700 hover:text-teal-600 transition-colors"
+                >
+                  {tCommon("dashboard")}
                 </Link>
               )}
               {!profile && (
                 <>
-                  <Link to="/" className="text-gray-700 hover:text-teal-600 transition-colors">
-                    ورود
+                  <Link
+                    to="/"
+                    className="text-gray-700 hover:text-teal-600 transition-colors"
+                  >
+                    {tCommon("login")}
                   </Link>
-                  <Link to="/register" className="text-gray-700 hover:text-teal-600 transition-colors">
-                    ثبت نام
+                  <Link
+                    to="/register"
+                    className="text-gray-700 hover:text-teal-600 transition-colors"
+                  >
+                    {tCommon("register")}
                   </Link>
                 </>
               )}
+              <div className="mt-2 pt-2 border-t">
+                <LanguageSwitch />
+              </div>
             </nav>
           </div>
         )}

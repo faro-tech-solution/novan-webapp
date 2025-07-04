@@ -1,6 +1,17 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { CourseEnrollment, ExerciseData, ExerciseSubmission } from '@/types/exerciseSubmission';
+import { ExerciseData, ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
+// Add course enrollment type
+interface CourseEnrollment {
+  course_id: string;
+  enrolled_at: string;
+  student_id: string;
+  course_terms: {
+    id: string;
+    start_date: string;
+    end_date: string;
+  }[];
+}
 
 export const fetchStudentEnrollments = async (userId: string): Promise<CourseEnrollment[]> => {
   const { data: enrollments, error: enrollmentsError } = await supabase
@@ -27,7 +38,8 @@ export const fetchStudentEnrollments = async (userId: string): Promise<CourseEnr
     throw new Error('خطا در دریافت دوره‌های ثبت‌نام شده: ' + enrollmentsError.message);
   }
 
-  return enrollments || [];
+  // Convert to the required type with unknown conversion
+  return (enrollments || []) as unknown as CourseEnrollment[];
 };
 
 export const fetchCourseExercises = async (courseIds: string[]): Promise<ExerciseData[]> => {
@@ -60,10 +72,10 @@ export const fetchCourseExercises = async (courseIds: string[]): Promise<Exercis
     throw new Error('خطا در دریافت تمرین‌ها: ' + exercisesError.message);
   }
 
-  return exercises || [];
+  return (exercises || []) as unknown as ExerciseData[];
 };
 
-export const fetchStudentSubmissions = async (userId: string): Promise<ExerciseSubmission[]> => {
+export const fetchStudentSubmissions = async (userId: string): Promise<ExerciseSubmissionLegacy[]> => {
   const { data: submissions, error: submissionsError } = await supabase
     .from('exercise_submissions')
     .select('*')
@@ -74,5 +86,5 @@ export const fetchStudentSubmissions = async (userId: string): Promise<ExerciseS
     return [];
   }
 
-  return submissions || [];
+  return (submissions || []) as unknown as ExerciseSubmissionLegacy[];
 };

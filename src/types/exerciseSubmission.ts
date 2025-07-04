@@ -32,16 +32,24 @@ export interface ExerciseData {
   created_at: string;
   updated_at: string;
   created_by: string;
+  exercise_type: 'form' | 'video' | 'audio' | 'simple';
+  content_url?: string | null;
+  auto_grade: boolean;
   courses: {
     id: string;
     name: string;
   } | null;
 }
 
+// This type is being migrated to types/exercise.ts
+// Please import ExerciseSubmission from '@/types/exercise' instead
 export interface ExerciseSubmission {
   exercise_id: string;
   student_id: string;
   score: number | null;
   submitted_at: string;
   feedback: string | null;
+  solution?: string;
+  auto_graded: boolean;
+  completion_percentage: number;
 }

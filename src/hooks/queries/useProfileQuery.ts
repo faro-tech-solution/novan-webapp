@@ -19,6 +19,7 @@ export interface Profile {
   english_level?: 'beginner' | 'intermediate' | 'advanced' | 'native';
   telegram_id?: string;
   whatsapp_id?: string;
+  language_preference?: 'fa' | 'en';
 }
 
 export const useProfileQuery = () => {

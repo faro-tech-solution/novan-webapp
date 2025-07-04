@@ -50,6 +50,9 @@ const CreateExerciseDialog = ({
           days_to_close: data.days_to_open + data.days_duration,
           points: data.points,
           estimated_time: data.estimated_time || "-",
+          exercise_type: data.exercise_type,
+          content_url: data.content_url,
+          auto_grade: data.auto_grade,
           form_structure: data.form_structure || { questions: [] },
         };
 

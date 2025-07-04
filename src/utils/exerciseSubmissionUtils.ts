@@ -1,8 +1,9 @@
 
-import { ExerciseSubmission } from '@/types/exerciseSubmission';
+import { ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
+// Using the legacy type for now to maintain compatibility
 
 export const calculateSubmissionStatus = (
-  submission: ExerciseSubmission | undefined,
+  submission: ExerciseSubmissionLegacy | undefined,
   adjustedOpenDate: Date,
   adjustedCloseDate: Date
 ): 'not_started' | 'pending' | 'completed' | 'overdue' => {

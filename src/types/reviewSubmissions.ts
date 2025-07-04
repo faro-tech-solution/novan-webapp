@@ -18,5 +18,7 @@ export interface Submission {
     points?: number;
     form_structure: ExerciseForm | null;
     course_id?: string;
+    exercise_type?: 'form' | 'video' | 'audio' | 'simple';
+    auto_grade?: boolean;
   } | null;
 } 

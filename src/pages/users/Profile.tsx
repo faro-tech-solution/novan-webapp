@@ -57,6 +57,7 @@ const profileFormSchema = z.object({
     .optional(),
   telegram_id: z.string().optional(),
   whatsapp_id: z.string().optional(),
+  language_preference: z.enum(["fa", "en"]).optional(),
 });
 
 const passwordFormSchema = z
@@ -144,6 +145,7 @@ const Profile = () => {
         english_level: profile.english_level || undefined,
         telegram_id: profile.telegram_id || "",
         whatsapp_id: profile.whatsapp_id || "",
+        language_preference: profile.language_preference || "fa",
       });
     }
   }, [profile]);
@@ -151,12 +153,35 @@ const Profile = () => {
   const onProfileSubmit = async (data: ProfileFormData) => {
     if (!user) return;
     setLoading(true);
+
+    // Check if language preference has changed
+    const isLanguageChanged =
+      profile?.language_preference !== data.language_preference &&
+      data.language_preference;
+
     updateProfileMutation.mutate(data, {
       onSuccess: () => {
-        toast({
-          title: "پروفایل بروزرسانی شد",
-          description: "اطلاعات پروفایل شما با موفقیت بروزرسانی شد.",
-        });
+        // If language changed, reload the page to apply new language setting
+        if (isLanguageChanged) {
+          toast({
+            title:
+              data.language_preference === "fa"
+                ? "زبان به فارسی تغییر کرد"
+                : "Language changed to English",
+            description:
+              data.language_preference === "fa"
+                ? "در حال اعمال تغییرات..."
+                : "Applying changes...",
+          });
+
+          // Brief timeout to let the user see the toast before reload
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          toast({
+            title: "پروفایل بروزرسانی شد",
+            description: "اطلاعات پروفایل شما با موفقیت بروزرسانی شد.",
+          });
+        }
       },
       onError: (error: any) => {
         toast({
@@ -475,6 +500,37 @@ const Profile = () => {
                               <FormControl>
                                 <Input {...field} className="text-right" />
                               </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-span-6">
+                        <FormField
+                          control={profileForm.control}
+                          name="language_preference"
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormLabel>زبان (Language)</FormLabel>
+                              <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="انتخاب کنید (Choose)" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="fa">
+                                    فارسی (Farsi)
+                                  </SelectItem>
+                                  <SelectItem value="en">
+                                    English (انگلیسی)
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}

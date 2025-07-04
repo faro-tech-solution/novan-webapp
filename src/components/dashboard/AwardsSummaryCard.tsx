@@ -1,7 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Award, Trophy, Star, Crown } from 'lucide-react';
-import { StudentAward } from '@/types/student';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Award, Trophy, Star, Crown } from "lucide-react";
+import { StudentAward } from "@/types/student";
+import { useAwardTranslation } from "@/utils/awardTranslationUtils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AwardsSummaryCardProps {
   studentAwards: StudentAward[];
@@ -10,22 +12,28 @@ interface AwardsSummaryCardProps {
 
 const getRarityIcon = (rarity: string) => {
   switch (rarity) {
-    case 'common':
+    case "common":
       return <Award className="h-3 w-3" />;
-    case 'uncommon':
+    case "uncommon":
       return <Trophy className="h-3 w-3" />;
-    case 'rare':
+    case "rare":
       return <Star className="h-3 w-3" />;
-    case 'epic':
+    case "epic":
       return <Crown className="h-3 w-3" />;
-    case 'legendary':
+    case "legendary":
       return <Crown className="h-3 w-3 text-yellow-600" />;
     default:
       return <Award className="h-3 w-3" />;
   }
 };
 
-export const AwardsSummaryCard = ({ studentAwards, loading }: AwardsSummaryCardProps) => {
+export const AwardsSummaryCard = ({
+  studentAwards,
+  loading,
+}: AwardsSummaryCardProps) => {
+  const { language } = useLanguage();
+  const { translateAward } = useAwardTranslation();
+
   if (loading) {
     return (
       <Card>
@@ -42,7 +50,10 @@ export const AwardsSummaryCard = ({ studentAwards, loading }: AwardsSummaryCardP
   }
 
   const recentAwards = studentAwards.slice(0, 3);
-  const totalBonusPoints = studentAwards.reduce((sum, award) => sum + award.bonus_points, 0);
+  const totalBonusPoints = studentAwards.reduce(
+    (sum, award) => sum + award.bonus_points,
+    0
+  );
 
   return (
     <Card>
@@ -58,11 +69,14 @@ export const AwardsSummaryCard = ({ studentAwards, loading }: AwardsSummaryCardP
         ) : (
           <div className="space-y-3">
             {recentAwards.map((studentAward) => (
-              <div key={studentAward.id} className="flex items-center justify-between">
+              <div
+                key={studentAward.id}
+                className="flex items-center justify-between"
+              >
                 <div className="flex items-center space-x-2 space-x-reverse">
                   {getRarityIcon(studentAward.awards.rarity)}
                   <span className="text-sm font-medium truncate">
-                    {studentAward.awards.name}
+                    {translateAward(studentAward.awards.code as any).name}
                   </span>
                 </div>
                 <Badge variant="secondary" className="text-xs">
@@ -70,7 +84,7 @@ export const AwardsSummaryCard = ({ studentAwards, loading }: AwardsSummaryCardP
                 </Badge>
               </div>
             ))}
-            
+
             <div className="pt-2 border-t">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">مجموع جوایز:</span>
@@ -78,7 +92,9 @@ export const AwardsSummaryCard = ({ studentAwards, loading }: AwardsSummaryCardP
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">امتیاز اضافی:</span>
-                <span className="font-medium text-purple-600">+{totalBonusPoints}</span>
+                <span className="font-medium text-purple-600">
+                  +{totalBonusPoints}
+                </span>
               </div>
             </div>
           </div>

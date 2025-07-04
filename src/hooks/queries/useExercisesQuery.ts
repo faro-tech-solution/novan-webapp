@@ -1,19 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Exercise, Course } from '@/types/exercise';
+import { Exercise } from '@/types/exercise';
+import { Course } from '@/types/course';
 import { fetchCourses, fetchExercises, createExercise, updateExercise, deleteExercise } from '@/services/exerciseService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useStableAuth } from '@/hooks/useStableAuth';
 
-export const useExercisesQuery = () => {
-  const { user } = useAuth();
+export const useExercisesQuery = (courseId?: string) => {
+  const { user, isQueryEnabled } = useStableAuth();
   const queryClient = useQueryClient();
 
   const exercisesQuery = useQuery({
-    queryKey: ['exercises'],
+    queryKey: ['exercises', courseId],
     queryFn: async () => {
       if (!user) return [];
-      return await fetchExercises();
+      return await fetchExercises(courseId);
     },
-    enabled: !!user,
+    enabled: isQueryEnabled,
+    // Use global defaults from react-query.ts
   });
 
   const coursesQuery = useQuery({
@@ -21,6 +23,7 @@ export const useExercisesQuery = () => {
     queryFn: async () => {
       return await fetchCourses();
     },
+    // Use global defaults from react-query.ts
   });
 
   const createExerciseMutation = useMutation({
@@ -36,6 +39,9 @@ export const useExercisesQuery = () => {
         daysToOpen: exerciseData.days_to_open || 0,
         daysToDue: exerciseData.days_to_due || 0,
         daysToClose: exerciseData.days_to_close || 0,
+        exercise_type: exerciseData.exercise_type || 'form',
+        content_url: exerciseData.content_url,
+        auto_grade: exerciseData.auto_grade || false,
         formStructure: exerciseData.form_structure || { questions: [] }
       }, user.id);
     },
@@ -57,6 +63,9 @@ export const useExercisesQuery = () => {
         daysToOpen: data.days_to_open || 0,
         daysToDue: data.days_to_due || 0,
         daysToClose: data.days_to_close || 0,
+        exercise_type: data.exercise_type || 'form',
+        content_url: data.content_url,
+        auto_grade: data.auto_grade || false,
         formStructure: data.form_structure || { questions: [] }
       });
     },

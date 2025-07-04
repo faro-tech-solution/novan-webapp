@@ -117,12 +117,12 @@ export interface StudentAward {
   bonus_points: number;
   awards: {
     id: string;
-    name: string;
-    description: string;
+    code: string;
     icon: string;
     points_value: number;
     rarity: string;
     category: string;
+    created_at?: string;
   };
 }
 

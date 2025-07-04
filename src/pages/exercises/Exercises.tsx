@@ -7,11 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ExerciseStatsCards } from "@/components/exercises/ExerciseStatsCards";
 import { ExerciseFilters } from "@/components/exercises/ExerciseFilters";
 import { ExerciseTable } from "@/components/exercises/ExerciseTable";
-import {
-  useExercisesQuery,
-  useCoursesQuery,
-  useDeleteExerciseMutation,
-} from "@/hooks/useExercisesQuery";
+import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
 
 const Exercises = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,18 +17,19 @@ const Exercises = () => {
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
 
   const {
-    data: exercises = [],
-    isLoading: exercisesLoading,
+    exercises = [],
+    loading: exercisesLoading,
     error: exercisesError,
+    courses = [],
+    deleteExercise: handleDeleteExerciseRequest,
+    isDeleting,
   } = useExercisesQuery();
-  const { data: courses = [], isLoading: coursesLoading } = useCoursesQuery();
-  const deleteExerciseMutation = useDeleteExerciseMutation();
   const { toast } = useToast();
 
   const handleDeleteExercise = async (id: string) => {
     if (window.confirm("آیا از حذف این تمرین مطمئن هستید؟")) {
       try {
-        await deleteExerciseMutation.mutateAsync(id);
+        await handleDeleteExerciseRequest(id);
         toast({
           title: "حذف شد",
           description: "تمرین با موفقیت حذف شد",
@@ -78,7 +75,7 @@ const Exercises = () => {
     );
   });
 
-  if (exercisesLoading || coursesLoading) {
+  if (exercisesLoading) {
     return (
       <DashboardLayout title="مدیریت تمرین‌ها">
         <div className="flex justify-center items-center h-64">

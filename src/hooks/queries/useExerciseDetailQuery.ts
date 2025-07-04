@@ -25,19 +25,22 @@ export const useSubmitExerciseMutation = () => {
       studentEmail,
       studentName,
       answers,
+      feedback,
     }: {
       exerciseId: string;
       studentId: string;
       studentEmail: string;
       studentName: string;
       answers: FormAnswer[];
+      feedback?: string;
     }) => {
       const result = await submitExerciseSolution(
         exerciseId,
         studentId,
         studentEmail,
         studentName,
-        JSON.stringify(answers)
+        JSON.stringify(answers),
+        feedback
       );
 
       if (result.error) {

@@ -2,45 +2,58 @@ import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { queryClient } from "@/lib/react-query";
 
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import Dashboard from "@/pages/Dashboard";
-import TrainerDashboard from "@/pages/TrainerDashboard";
-import TraineeDashboard from "@/pages/TraineeDashboard";
-import Courses from "@/pages/Courses";
-import StudentCourses from "@/pages/StudentCourses";
-import Instructors from "@/pages/Instructors";
-import Exercises from "@/pages/Exercises";
-import MyExercises from "@/pages/MyExercises";
-import ExerciseDetail from "@/pages/ExerciseDetail";
-import Students from "@/pages/Students";
-import Progress from "@/pages/Progress";
-import CourseManagement from "@/pages/CourseManagement";
-import ReviewSubmissions from "@/pages/ReviewSubmissions";
-import NotFound from "@/pages/NotFound";
+// Import all pages from the restructured directories
+import {
+  // Auth pages
+  Login,
+  Register,
+  ForgetPassword,
+  // Dashboard pages
+  Dashboard,
+  AdminDashboard,
+  TrainerDashboard,
+  TraineeDashboard,
+  TeammatesDashboard,
+  // Exercise pages
+  Exercises,
+  ExerciseDetail,
+  MyExercises,
+  ReviewSubmissions,
+  // Course pages
+  Courses,
+  StudentCourses,
+  CourseManagement,
+  // Management pages
+  UserManagement,
+  GroupManagement,
+  TasksManagement,
+  DailyActivitiesManagement,
+  // Wiki pages
+  Wiki,
+  WikiArticle,
+  WikiCategory,
+  CreateWikiArticle,
+  WikiManagement,
+  // User pages
+  Students,
+  Instructors,
+  Profile,
+  Progress,
+  // Accounting pages
+  Accounting,
+  // Shared pages
+  NotFound,
+  TeammateTasks,
+} from "@/pages";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import AdminDashboard from "@/pages/AdminDashboard";
-import UserManagement from "@/pages/UserManagement";
-import GroupManagement from "@/pages/GroupManagement";
-import Profile from "@/pages/Profile";
-import Accounting from "@/pages/Accounting";
-import DailyActivitiesManagement from "./pages/DailyActivitiesManagement";
-import Wiki from "@/pages/Wiki";
-import WikiCategory from "@/pages/WikiCategory";
-import WikiArticle from "@/pages/WikiArticle";
-import CreateWikiArticle from "@/pages/CreateWikiArticle";
-import WikiManagement from "@/pages/WikiManagement";
-import TeammatesDashboard from "@/pages/TeammatesDashboard";
-import TasksManagement from "@/pages/TasksManagement";
-import TeammateTasks from "@/pages/TeammateTasks";
-import ForgetPassword from "@/pages/ForgetPassword";
 
-const queryClient = new QueryClient();
+// Use the queryClient from @/lib/react-query
 
 const AppRoutes = () => {
   const { profile } = useAuth();
@@ -287,11 +300,9 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
-          <AuthProvider>
-            <Suspense fallback={<div>Loading...</div>}>
-              <AppRoutes />
-            </Suspense>
-          </AuthProvider>
+          <Suspense fallback={<div>Loading...</div>}>
+            <AppRoutes />
+          </Suspense>
         </BrowserRouter>
         <Toaster />
         <Sonner />

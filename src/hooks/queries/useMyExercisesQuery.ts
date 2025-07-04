@@ -1,19 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useStableAuth } from '@/hooks/useStableAuth';
 import { Database } from '@/integrations/supabase/types';
-import { ExerciseWithSubmission, ExerciseData, ExerciseSubmission } from '@/types/exerciseSubmission';
+import { ExerciseWithSubmission, ExerciseData, ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
 import { CourseEnrollment } from '@/types/course';
 import { calculateAdjustedDates } from '@/utils/exerciseDateUtils';
 import { calculateSubmissionStatus } from '@/utils/exerciseSubmissionUtils';
 
-type Exercise = Database['public']['Tables']['exercises']['Row'] & {
+// Extended types to match the database schema with the new fields
+type ExerciseSubmissionExtended = Database['public']['Tables']['exercise_submissions']['Row'] & {
+  auto_graded?: boolean;
+  completion_percentage?: number;
+};
+
+type ExerciseExtended = Database['public']['Tables']['exercises']['Row'] & {
   courses: Database['public']['Tables']['courses']['Row'];
-  exercise_submissions: Database['public']['Tables']['exercise_submissions']['Row'][];
+  exercise_submissions: ExerciseSubmissionExtended[];
+  exercise_type?: string;
+  auto_grade?: boolean;
 };
 
 export const useMyExercisesQuery = () => {
-  const { user } = useAuth();
+  const { user, isQueryEnabled } = useStableAuth();
 
   return useQuery({
     queryKey: ['myExercises', user?.id],
@@ -94,15 +102,29 @@ export const useMyExercisesQuery = () => {
       const transformedExercises: ExerciseWithSubmission[] = exercises.map(exercise => {
         const submission = exercise.exercise_submissions?.[0];
         const enrollment = enrollments.find(e => e.course_id === exercise.course_id);
-        const dates = calculateAdjustedDates(exercise as ExerciseData, enrollment as CourseEnrollment);
+        // Cast the exercise to ExerciseData with the required fields
+        const exerciseData: ExerciseData = {
+          ...exercise,
+          exercise_type: (exercise as any).exercise_type || 'form',
+          auto_grade: (exercise as any).auto_grade || false
+        };
+        
+        const dates = calculateAdjustedDates(exerciseData, enrollment as CourseEnrollment);
+        
+        // Create submission object with all required fields
+        const submissionObj = submission ? {
+          exercise_id: exercise.id,
+          student_id: user.id,
+          score: submission.score,
+          submitted_at: submission.submitted_at,
+          feedback: submission.feedback,
+          auto_graded: (submission as any).auto_graded || false,
+          completion_percentage: (submission as any).completion_percentage || 0
+        } : undefined;
+        
+        // Cast to ExerciseSubmission
         const submissionStatus = calculateSubmissionStatus(
-          submission ? {
-            exercise_id: exercise.id,
-            student_id: user.id,
-            score: submission.score,
-            submitted_at: submission.submitted_at,
-            feedback: submission.feedback
-          } : undefined,
+          submissionObj as unknown as ExerciseSubmissionLegacy | undefined,
           dates.adjustedOpenDate,
           dates.adjustedCloseDate
         );
@@ -128,6 +150,7 @@ export const useMyExercisesQuery = () => {
 
       return transformedExercises;
     },
-    enabled: !!user,
+    enabled: isQueryEnabled,
+    // Use global defaults from react-query.ts
   });
 }; 

@@ -1,90 +1,73 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Exercise, Course } from '@/types/exercise';
-import { fetchCourses, fetchExercises, createExercise, updateExercise, deleteExercise } from '@/services/exerciseService';
-import { useAuth } from '@/contexts/AuthContext';
+/**
+ * @deprecated Use hooks from '@/hooks/queries/useExercisesQuery' instead
+ */
+import { 
+  useExercisesQuery as useExercisesQueryNew,
+} from './queries/useExercisesQuery';
 
+/**
+ * @deprecated Use hooks from '@/hooks/queries/useExercisesQuery' instead
+ */
 export const useExercisesQuery = (courseId?: string) => {
-  const { user } = useAuth();
-  
-  return useQuery({
-    queryKey: ['exercises', courseId],
-    queryFn: () => fetchExercises(courseId),
-    enabled: !!user,
-  });
+  console.warn('This hook is deprecated. Use the one from @/hooks/queries/useExercisesQuery instead');
+  // Return a consistent interface matching what's expected by consumers
+  const { exercises, loading, error } = useExercisesQueryNew(courseId);
+  return {
+    data: exercises,
+    isLoading: loading,
+    error
+  };
 };
 
+/**
+ * @deprecated Use hooks from '@/hooks/queries/useExercisesQuery' instead
+ */
 export const useCoursesQuery = () => {
-  return useQuery({
-    queryKey: ['courses'],
-    queryFn: fetchCourses,
-  });
+  console.warn('This hook is deprecated. Use useExercisesQuery().courses instead');
+  const { courses, loading } = useExercisesQueryNew();
+  return { data: courses, isLoading: loading };
 };
 
+/**
+ * @deprecated Use hooks from '@/hooks/queries/useExercisesQuery' instead
+ */
 export const useCreateExerciseMutation = () => {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-
-  return useMutation({
-    mutationFn: (exerciseData: Partial<Exercise>) => {
-      if (!user) throw new Error('کاربر وارد نشده است');
-      
-      return createExercise({
-        title: exerciseData.title || '',
-        description: exerciseData.description,
-        difficulty: exerciseData.difficulty || '',
-        estimatedTime: exerciseData.estimated_time || '',
-        points: exerciseData.points || 0,
-        courseId: exerciseData.course_id || '',
-        daysToOpen: exerciseData.days_to_open || 0,
-        daysToDue: exerciseData.days_to_due || 0,
-        daysToClose: exerciseData.days_to_close || 0,
-        formStructure: exerciseData.form_structure || { questions: [] }
-      }, user.id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['exercises'] });
-    },
-  });
+  console.warn('This hook is deprecated. Use useExercisesQuery().createExercise instead');
+  const { createExercise, isCreating } = useExercisesQueryNew();
+  return { 
+    mutateAsync: createExercise,
+    isPending: isCreating
+  };
 };
 
+/**
+ * @deprecated Use hooks from '@/hooks/queries/useExercisesQuery' instead
+ */
 export const useUpdateExerciseMutation = () => {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-
-  return useMutation({
-    mutationFn: ({ exerciseId, exerciseData }: { exerciseId: string; exerciseData: Partial<Exercise> }) => {
-      if (!user) throw new Error('کاربر وارد نشده است');
-      
-      return updateExercise(exerciseId, {
-        title: exerciseData.title || '',
-        description: exerciseData.description,
-        difficulty: exerciseData.difficulty || '',
-        estimatedTime: exerciseData.estimated_time || '',
-        points: exerciseData.points || 0,
-        courseId: exerciseData.course_id || '',
-        daysToOpen: exerciseData.days_to_open || 0,
-        daysToDue: exerciseData.days_to_due || 0,
-        daysToClose: exerciseData.days_to_close || 0,
-        formStructure: exerciseData.form_structure || { questions: [] }
+  console.warn('This hook is deprecated. Use useExercisesQuery().updateExercise instead');
+  // Get the reference to the hook result once during the hook execution
+  const { updateExercise } = useExercisesQueryNew();
+  
+  return { 
+    mutateAsync: async ({ exerciseId, exerciseData }: any) => {
+      // Transform the parameters to match the expected structure
+      return updateExercise({ 
+        id: exerciseId, 
+        data: exerciseData 
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['exercises'] });
-    },
-  });
+    isPending: useExercisesQueryNew().isUpdating
+  };
 };
 
+/**
+ * @deprecated Use hooks from '@/hooks/queries/useExercisesQuery' instead
+ */
 export const useDeleteExerciseMutation = () => {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-
-  return useMutation({
-    mutationFn: (id: string) => {
-      if (!user) throw new Error('کاربر وارد نشده است');
-      return deleteExercise(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['exercises'] });
-    },
-  });
-}; 
+  console.warn('This hook is deprecated. Use useExercisesQuery().deleteExercise instead');
+  const { deleteExercise, isDeleting } = useExercisesQueryNew();
+  return { 
+    mutateAsync: deleteExercise,
+    isPending: isDeleting
+  };
+};
