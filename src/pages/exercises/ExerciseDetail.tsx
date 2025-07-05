@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CheckCircle, AlertCircle } from "lucide-react";
+import { CheckCircle, AlertCircle, Info } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,6 +8,8 @@ import { ExerciseDetailHeader } from "@/components/exercises/ExerciseDetailHeade
 import { ExerciseInfoCard } from "@/components/exercises/ExerciseInfoCard";
 import { TraineeExerciseForm } from "@/components/exercises/TraineeExerciseForm";
 import { InstructorFormView } from "@/components/exercises/InstructorFormView";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useExerciseDetailQuery,
   useSubmitExerciseMutation,
@@ -102,15 +104,60 @@ const ExerciseDetail = () => {
           description={exercise.description}
         />
 
-        {profile?.role === "trainee" && (
-          <TraineeExerciseForm
-            exercise={exercise}
-            answers={answers}
-            onAnswersChange={setAnswers}
-            onSubmit={handleSubmit}
-            submitting={submitMutation.isPending}
-          />
+        {/* Submission Status Notification for Trainees */}
+        {profile?.role === "trainee" &&
+          exercise.submission_status === "completed" && (
+            <Alert className="border-green-200 bg-green-50">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-800">
+                تمرین قبلا ارسال شده است. شما این تمرین را با موفقیت تکمیل
+                کرده‌اید.
+                {exercise.score !== null && exercise.score !== undefined && (
+                  <span className="font-semibold">
+                    {" "}
+                    نمره دریافتی: {exercise.score}
+                  </span>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+
+        {/* Feedback Display for Trainees */}
+        {profile?.role === "trainee" && exercise.feedback && (
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle className="text-blue-800 flex items-center">
+                <Info className="h-5 w-5 mr-2" />
+                بازخورد استاد
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-white p-4 rounded-md border border-blue-200">
+                <p className="text-gray-800 whitespace-pre-wrap">
+                  {exercise.feedback}
+                </p>
+                {exercise.score !== null && exercise.score !== undefined && (
+                  <div className="mt-3 pt-3 border-t border-blue-200">
+                    <span className="text-blue-800 font-semibold">
+                      نمره: {exercise.score}/100
+                    </span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         )}
+
+        {profile?.role === "trainee" &&
+          exercise.submission_status !== "completed" && (
+            <TraineeExerciseForm
+              exercise={exercise}
+              answers={answers}
+              onAnswersChange={setAnswers}
+              onSubmit={handleSubmit}
+              submitting={submitMutation.isPending}
+            />
+          )}
 
         {(profile?.role === "trainer" || profile?.role === "admin") && (
           <>

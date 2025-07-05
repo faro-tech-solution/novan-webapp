@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { LanguageSwitch } from "./LanguageSwitch";
+import Header from "./Header";
 import { useTranslation } from "@/utils/translations";
 import {
   LayoutDashboard,
@@ -250,48 +250,14 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen bg-gray-50 w-full">
-        {/* Header */}
-        <header className="bg-white shadow-sm border-b">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex items-center space-x-4 space-x-reverse">
-              <Link
-                to="/"
-                className="flex items-center space-x-2 space-x-reverse"
-              >
-                <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">آ</span>
-                </div>
-                <span className="text-xl font-bold text-gray-900 font-peyda">
-                  {tCommon("portalName")}
-                </span>
-              </Link>
-              <span className="text-gray-400 hidden md:inline">|</span>
-              <h1 className="text-lg font-semibold text-gray-900 font-peyda hidden md:block">
-                {title}
-              </h1>
-            </div>
-
-            <div className="flex items-center space-x-4 space-x-reverse">
-              <LanguageSwitch />
-              <Button variant="ghost" size="icon" className="hidden md:flex">
-                <Bell className="h-5 w-5" />
-              </Button>
-              <div className="hidden md:flex items-center space-x-2 space-x-reverse">
-                <span className="text-sm text-gray-700">
-                  {profile?.first_name && profile?.last_name
-                    ? `${profile.first_name} ${profile.last_name}`
-                    : tCommon("user")}{" "}
-                  ({getRoleLabel(profile?.role)})
-                </span>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 ml-2" />
-                  {tCommon("logout")}
-                </Button>
-              </div>
-              <SidebarTrigger className="md:hidden" />
-            </div>
-          </div>
-        </header>
+        {/* Use the common Header component with dashboard-specific props */}
+        <Header
+          isDashboard={true}
+          title={title}
+          showRole={true}
+          onLogout={handleLogout}
+          sidebarTrigger={<SidebarTrigger className="md:hidden" />}
+        />
 
         <div className="flex min-h-[calc(100vh-theme(space.20))]">
           {/* Desktop Sidebar */}

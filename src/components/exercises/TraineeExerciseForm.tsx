@@ -140,23 +140,6 @@ export const TraineeExerciseForm = ({
                 <p>این تمرین هنوز محتوایی ندارد</p>{" "}
               </div>
             )}{" "}
-            {exercise.feedback && (
-              <div className="bg-blue-50 p-4 rounded-lg">
-                {" "}
-                <h5 className="font-semibold text-blue-800 mb-2">
-                  {" "}
-                  {exercise.auto_graded
-                    ? "نتیجه خودکار:"
-                    : "بازخورد استاد:"}{" "}
-                </h5>{" "}
-                <p className="text-blue-700">{exercise.feedback}</p>{" "}
-                {exercise.score !== null && (
-                  <p className="text-blue-800 font-semibold mt-2">
-                    نمره: {exercise.score}
-                  </p>
-                )}{" "}
-              </div>
-            )}{" "}
             {exercise.exercise_type === "form" &&
               exercise.form_structure &&
               exercise.form_structure.questions.length > 0 && (
