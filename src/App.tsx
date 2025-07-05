@@ -51,6 +51,7 @@ import {
   NotFound,
   TeammateTasks,
 } from "@/pages";
+import NotificationsPage from "@/pages/notifications";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 // Use the queryClient from @/lib/react-query
@@ -284,6 +285,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute requiredRole="teammate">
             <TeammateTasks />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <NotificationsPage />
           </ProtectedRoute>
         }
       />

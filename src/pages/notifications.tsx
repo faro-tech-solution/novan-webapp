@@ -4,6 +4,8 @@ import { NotificationService } from "@/services/notification.service";
 import { Notification } from "@/types/notification";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -78,19 +80,20 @@ export default function NotificationsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        Loading notifications...
-      </div>
+      <DashboardLayout title="اعلانات">
+        <div className="flex items-center justify-center min-h-[400px]">
+          در حال بارگذاری اعلانات...
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">Notifications</h1>
+    <DashboardLayout title="اعلانات">
       <div className="space-y-4">
         {notifications.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
-            No notifications
+            اعلانی وجود ندارد
           </div>
         ) : (
           notifications.map((notification) => (
@@ -121,6 +124,6 @@ export default function NotificationsPage() {
           ))
         )}
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
