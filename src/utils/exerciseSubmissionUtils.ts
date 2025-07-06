@@ -1,4 +1,3 @@
-
 import { ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
 // Using the legacy type for now to maintain compatibility
 
@@ -8,9 +7,19 @@ export const calculateSubmissionStatus = (
   adjustedCloseDate: Date
 ): 'not_started' | 'pending' | 'completed' | 'overdue' => {
   const today = new Date();
+  
+  console.log('Calculating submission status:', {
+    hasSubmission: !!submission,
+    submissionScore: submission?.score,
+    adjustedOpenDate,
+    adjustedCloseDate,
+    today,
+    isOpen: today >= adjustedOpenDate,
+    isClosed: today > adjustedCloseDate
+  });
 
   if (submission) {
-    if (submission.score !== null) {
+    if (submission.score !== null && submission.score !== undefined) {
       return 'completed';
     } else {
       return 'pending';
@@ -20,8 +29,9 @@ export const calculateSubmissionStatus = (
       return 'overdue';
     } else if (today >= adjustedOpenDate && today <= adjustedCloseDate) {
       return 'not_started';
+    } else {
+      // Exercise hasn't opened yet
+      return 'not_started';
     }
   }
-  
-  return 'not_started';
 };

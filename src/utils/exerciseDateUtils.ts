@@ -1,5 +1,5 @@
-
-import { CourseEnrollment, ExerciseData } from '@/types/exerciseSubmission';
+import { CourseEnrollment } from '@/types/course';
+import { ExerciseData } from '@/types/exerciseSubmission';
 
 export const calculateAdjustedDates = (
   exercise: ExerciseData,
@@ -20,14 +20,31 @@ export const calculateAdjustedDates = (
 
   // Calculate new dates based on reference start date and relative days
   const adjustedOpenDate = new Date(referenceStartDate);
-  adjustedOpenDate.setDate(adjustedOpenDate.getDate() + Math.max(0, exercise.days_to_open));
+  adjustedOpenDate.setDate(adjustedOpenDate.getDate() + Math.max(0, exercise.days_to_open || 0));
   
-  // Fix: Due date should be calculated as referenceStartDate + days_to_open + days_to_due
+  // Due date should be calculated as referenceStartDate + days_to_open + days_to_due
   const adjustedDueDate = new Date(referenceStartDate);
-  adjustedDueDate.setDate(adjustedDueDate.getDate() + Math.max(0, exercise.days_to_open + exercise.days_to_due));
+  adjustedDueDate.setDate(adjustedDueDate.getDate() + Math.max(0, (exercise.days_to_open || 0) + (exercise.days_to_due || 7)));
   
+  // Close date should be calculated as referenceStartDate + days_to_close
+  // If days_to_close is not set, default to due date + 7 days
   const adjustedCloseDate = new Date(referenceStartDate);
-  adjustedCloseDate.setDate(adjustedCloseDate.getDate() + Math.max(0, exercise.days_to_close));
+  if (exercise.days_to_close !== null && exercise.days_to_close !== undefined) {
+    adjustedCloseDate.setDate(adjustedCloseDate.getDate() + Math.max(0, exercise.days_to_close));
+  } else {
+    // Default to due date + 7 days if close date is not specified
+    adjustedCloseDate.setDate(adjustedDueDate.getDate() + 7);
+  }
+
+  console.log(`Exercise ${exercise.id} dates:`, {
+    referenceStartDate,
+    adjustedOpenDate,
+    adjustedDueDate,
+    adjustedCloseDate,
+    days_to_open: exercise.days_to_open,
+    days_to_due: exercise.days_to_due,
+    days_to_close: exercise.days_to_close
+  });
 
   return {
     adjustedOpenDate,
