@@ -1,0 +1,148 @@
+Migration Analysis Report
+Generated: Sun Jul  6 00:12:45 CEST 2025
+=========================
+
+Total migrations found:       68
+
+Migrations by date:
+==================
+   1 20250705160046-add-notifications-system.sql
+   1 20250705160045-f910a754-0f4a-40f0-a512-47448b1801a7.sql
+   1 20250705160045-e9785863-2633-477b-a01e-e56f0f44422f.sql
+   1 20250705160045-d01bf813-8a11-4c42-a74c-5d79360539c5.sql
+   1 20250705160045-c611637a-81f1-4264-8aa6-aae246fc144a.sql
+   1 20250705160045-bff62205-7ae4-4e04-a094-4e0cac631173.sql
+   1 20250705160045-bdc2030a-1169-4ed4-b403-2559a796a953.sql
+   1 20250705160045-6d3f45bb-ae38-4031-a0d6-2a550722fb22.sql
+   1 20250705160045-62885dba-8a8a-45ca-a1f6-27585cc7e52e.sql
+   1 20250705160045-42b0fd47-5245-438c-90d1-a73977e9cee2.sql
+   1 20250705160045-3e007979-e27e-4f53-a4f5-60fe431deaa2.sql
+   1 20250705160045-3d44ee5e-367b-467c-9d51-9c41e9aafe69.sql
+   1 20250705160045-390e6e4f-2216-48e6-b2ae-14cd45d943fc.sql
+   1 20250705160045-1e572c6c-fcb2-4c0d-9e3d-988582c34293.sql
+   1 20250705160045-060b452f-0de4-414f-a308-2ae8f85a2596.sql
+   1 20250702
+   1 20250616000021-create-groups-tables.sql
+   1 20250616000020-create-wiki-tables.sql
+   1 20250616000019-add-is-demo-to-profiles.sql
+   1 20250616000018-add-payment-type-to-accounting.sql
+   1 20250616000017-update-payment-status-enum.sql
+   1 20250616000017-fix-accounting-foreign-keys.sql
+   1 20250616000016-update-payment-type-enum.sql
+   1 20250616000016-update-exercises-estimated-time.sql
+   1 20250616000016-fix-course-enrollment-payment-trigger.sql
+   1 20250616000015-update-exercises-policies.sql
+   1 20250616000015-add-course-enrollment-accounting-trigger.sql
+   1 20250616000014-update-course-enrollments-schema.sql
+   1 20250616000013-create-updated-at-function.sql
+   1 20250616000012-update-course-enrollments-schema.sql
+   1 20250616000011-update-database-types.sql
+   1 20250616000010-update-course-enrollments-schema.sql
+   1 20250616000009-update-database-types.sql
+   1 20250616000008-update-course-enrollments.sql
+   1 20250616000007-update-database-types.sql
+   1 20250616000006-create-accounting-table.sql
+   1 20250616000005-update-exercise-submissions.sql
+   1 20250616000004-update-course-enrollments.sql
+   1 20250616000003-add-course-price.sql
+   1 20250616000002-add-profile-fields.sql
+   1 20250616000001-add-name-fields.sql
+   1 20250616000000-split-name-fields.sql
+   1 20250615141811-155ead9a-60d6-4669-a419-19eb776df0db.sql
+   1 20250615131858-f11c9d58-00a9-40c4-95c4-c85ccac1f9b8.sql
+   1 20250615130000-21a46f2e-69ae-4a6f-9594-6cb43050ccf8.sql
+   1 20250615103004-1a886c30-e57d-4d98-bd9f-6688d256f3c4.sql
+   1 20250615021557-fe92beaf-22af-4cf6-8153-77f1bd5c625c.sql
+   1 20250615015329-ca58e0a4-1d08-4c4d-9567-f2872e5d1fde.sql
+   1 20250615014846-f4e61853-dfb7-45e6-80a4-d821df68c6f6.sql
+   1 20250615012328-e5844915-5ed3-4abd-9536-1cd7701b1526.sql
+   1 20250615005932-27380dd3-11e3-4c8d-a6e6-49fd55175451.sql
+   1 20250615002027-41f5772e-3d3e-461e-a915-c9943e0b0362.sql
+   1 20250614235219-69e46356-56d4-4541-869f-b41511427f4a.sql
+   1 20250614234813-3a6acffd-9e98-47cb-9f4c-ed25190dcb1b.sql
+   1 20250614222549-50232e69-d344-41e9-9cc8-634540780b32.sql
+   1 20250614213903-3d07fec8-e6a6-4d19-a634-8754d6235579.sql
+   1 20250614205225-1c01d9e3-da07-457d-9f1d-2c1d41d85ebe.sql
+   1 20250614201346-091a5bbf-7578-486f-86c8-66dfd5ed029d.sql
+   1 20240705
+   1 20240622
+   1 20240621
+   1 20240620
+   1 20240619
+   1 20240618
+   1 20240617
+   1 20240616
+   1 20240615
+   1 20240614
+
+UUID-based migrations (potential duplicates):
+=============================================
+20250614201346-091a5bbf-7578-486f-86c8-66dfd5ed029d.sql
+20250614205225-1c01d9e3-da07-457d-9f1d-2c1d41d85ebe.sql
+20250614213903-3d07fec8-e6a6-4d19-a634-8754d6235579.sql
+20250614222549-50232e69-d344-41e9-9cc8-634540780b32.sql
+20250614234813-3a6acffd-9e98-47cb-9f4c-ed25190dcb1b.sql
+20250614235219-69e46356-56d4-4541-869f-b41511427f4a.sql
+20250615002027-41f5772e-3d3e-461e-a915-c9943e0b0362.sql
+20250615005932-27380dd3-11e3-4c8d-a6e6-49fd55175451.sql
+20250615012328-e5844915-5ed3-4abd-9536-1cd7701b1526.sql
+20250615014846-f4e61853-dfb7-45e6-80a4-d821df68c6f6.sql
+20250615015329-ca58e0a4-1d08-4c4d-9567-f2872e5d1fde.sql
+20250615021557-fe92beaf-22af-4cf6-8153-77f1bd5c625c.sql
+20250615103004-1a886c30-e57d-4d98-bd9f-6688d256f3c4.sql
+20250615130000-21a46f2e-69ae-4a6f-9594-6cb43050ccf8.sql
+20250615131858-f11c9d58-00a9-40c4-95c4-c85ccac1f9b8.sql
+20250615141811-155ead9a-60d6-4669-a419-19eb776df0db.sql
+20250705160045-060b452f-0de4-414f-a308-2ae8f85a2596.sql
+20250705160045-1e572c6c-fcb2-4c0d-9e3d-988582c34293.sql
+20250705160045-390e6e4f-2216-48e6-b2ae-14cd45d943fc.sql
+20250705160045-3d44ee5e-367b-467c-9d51-9c41e9aafe69.sql
+20250705160045-3e007979-e27e-4f53-a4f5-60fe431deaa2.sql
+20250705160045-42b0fd47-5245-438c-90d1-a73977e9cee2.sql
+20250705160045-62885dba-8a8a-45ca-a1f6-27585cc7e52e.sql
+20250705160045-6d3f45bb-ae38-4031-a0d6-2a550722fb22.sql
+20250705160045-bdc2030a-1169-4ed4-b403-2559a796a953.sql
+20250705160045-bff62205-7ae4-4e04-a094-4e0cac631173.sql
+20250705160045-c611637a-81f1-4264-8aa6-aae246fc144a.sql
+20250705160045-d01bf813-8a11-4c42-a74c-5d79360539c5.sql
+20250705160045-e9785863-2633-477b-a01e-e56f0f44422f.sql
+20250705160045-f910a754-0f4a-40f0-a512-47448b1801a7.sql
+
+Backup files (.bak):
+===================
+20240619_add_exercise_submission_activity_trigger.sql.bak
+20240620_add-is-completed-to-tasks.sql.bak
+20240620_add-teammate-role-to-profiles.sql.bak
+20240620_create-tasks-and-subtasks.sql.bak
+20240620_update-rls-tasks-subtasks-for-teammate.sql.bak
+
+Migrations by functionality:
+============================
+
+Profile-related:
+20240614_create_profiles.sql
+20250616000002-add-profile-fields.sql
+20250616000019-add-is-demo-to-profiles.sql
+
+Course-related:
+20250616000003-add-course-price.sql
+20250616000004-update-course-enrollments.sql
+20250616000008-update-course-enrollments.sql
+20250616000010-update-course-enrollments-schema.sql
+20250616000012-update-course-enrollments-schema.sql
+20250616000014-update-course-enrollments-schema.sql
+20250616000015-add-course-enrollment-accounting-trigger.sql
+20250616000016-fix-course-enrollment-payment-trigger.sql
+
+Exercise-related:
+20240620_add_exercise_types.sql
+20240621_remove-student-name-email-from-exercise-submissions.sql
+20240622_update_exercises_structure.sql
+20250616000005-update-exercise-submissions.sql
+20250616000015-update-exercises-policies.sql
+20250616000016-update-exercises-estimated-time.sql
+
+Notification-related:
+20240705_add_notifications_system.sql
+20250705160046-add-notifications-system.sql
+

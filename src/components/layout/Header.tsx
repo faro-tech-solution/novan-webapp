@@ -1,107 +1,176 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search, ShoppingCart, User, LogIn } from "lucide-react";
+import {
+  Search,
+  ShoppingCart,
+  User,
+  LogIn,
+  LogOut,
+  Menu,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { useTranslation } from "@/utils/translations";
 import { useLanguage } from "@/contexts/LanguageContext";
+import NotificationBell from "./NotificationBell";
 
-const Header = () => {
+interface HeaderProps {
+  isDashboard?: boolean;
+  title?: string;
+  showRole?: boolean;
+  sidebarTrigger?: React.ReactNode;
+  onLogout?: () => void;
+}
+
+const Header = ({
+  isDashboard,
+  title,
+  showRole,
+  sidebarTrigger,
+  onLogout,
+}: HeaderProps = {}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { profile, loading } = useAuth();
-  const { tCommon } = useTranslation();
+  const { tCommon, tSidebar } = useTranslation();
 
   return (
-    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+    <div className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 space-x-reverse">
-            <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">آ</span>
-            </div>
-            <span className="text-xl font-bold text-gray-900 font-peyda">
-              {tCommon("portalName")}
-            </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
+          <div className="flex items-center space-x-4 space-x-reverse">
             <Link
               to="/"
-              className="text-gray-700 hover:text-teal-600 transition-colors"
+              className="flex items-center space-x-2 space-x-reverse"
             >
-              {tCommon("home")}
+              <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">آ</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900 font-peyda">
+                {tCommon("portalName")}
+              </span>
             </Link>
-            <Link
-              to="/courses"
-              className="text-gray-700 hover:text-teal-600 transition-colors"
-            >
-              {tCommon("courses")}
-            </Link>
-            {(profile?.role === "trainer" || profile?.role === "admin") && (
+
+            {isDashboard && (
+              <>
+                <span className="text-gray-400 hidden md:inline">|</span>
+                <h1 className="text-lg font-semibold text-gray-900 font-peyda hidden md:block">
+                  {title}
+                </h1>
+              </>
+            )}
+          </div>
+
+          {/* Desktop Navigation */}
+          {!isDashboard && (
+            <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
               <Link
-                to="/students"
+                to="/"
                 className="text-gray-700 hover:text-teal-600 transition-colors"
               >
-                {tCommon("students")}
+                {tCommon("home")}
               </Link>
-            )}
-            <Link
-              to="/instructors"
-              className="text-gray-700 hover:text-teal-600 transition-colors"
-            >
-              {tCommon("instructors")}
-            </Link>
-            {profile && (
               <Link
-                to="/dashboard"
+                to="/courses"
                 className="text-gray-700 hover:text-teal-600 transition-colors"
               >
-                {tCommon("dashboard")}
+                {tCommon("courses")}
               </Link>
-            )}
-          </nav>
+              {(profile?.role === "trainer" || profile?.role === "admin") && (
+                <Link
+                  to="/students"
+                  className="text-gray-700 hover:text-teal-600 transition-colors"
+                >
+                  {tCommon("students")}
+                </Link>
+              )}
+              <Link
+                to="/instructors"
+                className="text-gray-700 hover:text-teal-600 transition-colors"
+              >
+                {tCommon("instructors")}
+              </Link>
+              {profile && (
+                <Link
+                  to="/dashboard"
+                  className="text-gray-700 hover:text-teal-600 transition-colors"
+                >
+                  {tCommon("dashboard")}
+                </Link>
+              )}
+            </nav>
+          )}
 
           {/* Right side actions */}
           <div className="flex items-center space-x-4 space-x-reverse">
-            <Button variant="ghost" size="icon" className="hidden md:flex">
-              <Search className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-teal-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
-            </Button>
-            <LanguageSwitch />
+            {!isDashboard && (
+              <>
+                <Button variant="ghost" size="icon" className="hidden md:flex">
+                  <Search className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="absolute -top-1 -right-1 bg-teal-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    0
+                  </span>
+                </Button>
+              </>
+            )}
 
-            {!loading &&
-              (profile ? (
-                <Link to="/dashboard">
-                  <Button variant="outline">
-                    <User className="h-4 w-4 ml-2" />
-                    {profile.first_name && profile.last_name
-                      ? `${profile.first_name} ${profile.last_name}`
-                      : tCommon("user")}
-                  </Button>
-                </Link>
-              ) : (
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <Link to="/">
-                    <Button variant="outline">
-                      <LogIn className="h-4 w-4 ml-2" />
-                      {tCommon("login")}
-                    </Button>
-                  </Link>
-                  <Link to="/register">
-                    <Button className="bg-teal-500 hover:bg-teal-600 text-white">
-                      {tCommon("register")}
-                    </Button>
-                  </Link>
-                </div>
-              ))}
+            <LanguageSwitch />
+            <NotificationBell />
+
+            {!loading && (
+              <>
+                {profile ? (
+                  isDashboard ? (
+                    <div className="hidden md:flex items-center space-x-2 space-x-reverse">
+                      <span className="text-sm text-gray-700">
+                        {profile.first_name && profile.last_name
+                          ? `${profile.first_name} ${profile.last_name}`
+                          : tCommon("user")}{" "}
+                        {showRole && `(${tSidebar(profile.role || "user")})`}
+                      </span>
+                      {onLogout && (
+                        <Button variant="ghost" size="sm" onClick={onLogout}>
+                          <LogOut className="h-4 w-4 ml-2" />
+                          {tCommon("logout")}
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    <Link to="/dashboard">
+                      <Button variant="outline">
+                        <User className="h-4 w-4 ml-2" />
+                        {profile.first_name && profile.last_name
+                          ? `${profile.first_name} ${profile.last_name}`
+                          : tCommon("user")}
+                      </Button>
+                    </Link>
+                  )
+                ) : (
+                  !isDashboard && (
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <Link to="/">
+                        <Button variant="outline">
+                          <LogIn className="h-4 w-4 ml-2" />
+                          {tCommon("login")}
+                        </Button>
+                      </Link>
+                      <Link to="/register">
+                        <Button className="bg-teal-500 hover:bg-teal-600 text-white">
+                          {tCommon("register")}
+                        </Button>
+                      </Link>
+                    </div>
+                  )
+                )}
+              </>
+            )}
+
+            {sidebarTrigger}
 
             {/* Mobile menu button */}
             <Button
@@ -180,7 +249,7 @@ const Header = () => {
           </div>
         )}
       </div>
-    </header>
+    </div>
   );
 };
 
