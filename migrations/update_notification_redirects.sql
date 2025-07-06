@@ -1,16 +1,14 @@
--- Notification System Functions
--- =============================
+-- Update Notification Redirect URLs and Translation Keys
+-- ======================================================
+-- This migration updates the notification creation functions to use the correct redirect URLs
+-- and translation keys instead of hardcoded English text:
+-- - award_achieved notifications should redirect to /progress
+-- - exercise_feedback notifications should redirect to /exercise/{exercise_id}
+-- - All notification titles and descriptions now use translation keys
 
--- Function to mark notification as read
-CREATE OR REPLACE FUNCTION mark_notification_as_read(notification_uuid UUID)
-RETURNS void AS $$
-BEGIN
-    UPDATE notifications
-    SET is_read = true,
-        read_at = now()
-    WHERE id = notification_uuid;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- Drop existing functions to ensure clean replacement
+DROP FUNCTION IF EXISTS create_feedback_notification() CASCADE;
+DROP FUNCTION IF EXISTS create_award_notification() CASCADE;
 
 -- Function to create notification for exercise feedback
 CREATE OR REPLACE FUNCTION create_feedback_notification()
@@ -71,46 +69,24 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to get latest notifications
-CREATE OR REPLACE FUNCTION get_latest_notifications(p_user_id UUID, p_limit INTEGER DEFAULT 5)
-RETURNS TABLE (
-    id UUID,
-    title TEXT,
-    description TEXT,
-    type notification_type,
-    created_at TIMESTAMPTZ,
-    is_read BOOLEAN,
-    link TEXT,
-    metadata JSONB,
-    sender_id UUID
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        n.id,
-        n.title,
-        n.description,
-        n.type,
-        n.created_at,
-        n.is_read,
-        n.link,
-        n.metadata,
-        n.sender_id
-    FROM notifications n
-    WHERE n.receiver_id = p_user_id
-    ORDER BY n.created_at DESC
-    LIMIT p_limit;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- Recreate the triggers
+DROP TRIGGER IF EXISTS trigger_feedback_notification ON exercise_submissions;
+CREATE TRIGGER trigger_feedback_notification
+  AFTER UPDATE ON exercise_submissions
+  FOR EACH ROW
+  EXECUTE FUNCTION create_feedback_notification();
 
--- Function to get unread notification count
-CREATE OR REPLACE FUNCTION get_unread_count(p_user_id UUID)
-RETURNS INTEGER AS $$
+DROP TRIGGER IF EXISTS trigger_award_notification ON student_awards;
+CREATE TRIGGER trigger_award_notification
+  AFTER INSERT ON student_awards
+  FOR EACH ROW
+  EXECUTE FUNCTION create_award_notification();
+
+-- Log the update
+DO $$
 BEGIN
-    RETURN (
-        SELECT COUNT(*)
-        FROM notifications
-        WHERE receiver_id = p_user_id AND is_read = false
-    );
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER; 
+    RAISE NOTICE 'Notification redirect URLs and translation keys updated successfully:';
+    RAISE NOTICE '- award_achieved notifications now redirect to /progress';
+    RAISE NOTICE '- exercise_feedback notifications now redirect to /exercise/{exercise_id}';
+    RAISE NOTICE '- All notification titles and descriptions now use translation keys';
+END $$; 

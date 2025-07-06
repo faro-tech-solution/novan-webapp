@@ -205,11 +205,11 @@ BEGIN
             metadata
         )
         VALUES (
-            'New Feedback Received',
+            'new_feedback_received',
             NEW.feedback,
             NEW.student_id,
             'exercise_feedback',
-            '/exercises/' || NEW.exercise_id,
+            '/exercise/' || NEW.exercise_id,
             NEW.graded_by,
             jsonb_build_object(
                 'exercise_id', NEW.exercise_id,
@@ -234,11 +234,11 @@ BEGIN
         metadata
     )
     VALUES (
-        'New Award Achieved: ' || (SELECT code FROM awards WHERE id = NEW.award_id),
-        'Congratulations! You have earned a new award.',
+        'new_award_achieved: ' || (SELECT code FROM awards WHERE id = NEW.award_id),
+        'congratulations_earned_new_award',
         NEW.student_id,
         'award_achieved',
-        '/profile/awards',
+        '/progress',
         jsonb_build_object(
             'award_id', NEW.award_id,
             'achievement_id', NEW.id

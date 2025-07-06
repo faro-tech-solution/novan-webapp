@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { useNotificationTranslation } from "@/utils/notificationTranslationUtils";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const translateNotification = useNotificationTranslation();
 
   useEffect(() => {
     fetchNotifications();
@@ -109,10 +111,12 @@ export default function NotificationsPage() {
                   {notification.icon || getNotificationIcon(notification.type)}
                 </span>
                 <div className="flex-1">
-                  <h3 className="font-medium text-lg">{notification.title}</h3>
+                  <h3 className="font-medium text-lg">
+                    {translateNotification(notification.title).title}
+                  </h3>
                   {notification.description && (
                     <p className="text-muted-foreground mt-1">
-                      {notification.description}
+                      {translateNotification(notification.description).title}
                     </p>
                   )}
                   <p className="text-sm text-muted-foreground mt-2">
