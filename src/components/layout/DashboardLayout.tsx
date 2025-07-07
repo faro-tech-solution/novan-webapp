@@ -251,18 +251,32 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen bg-gray-50 w-full">
         {/* Use the common Header component with dashboard-specific props */}
-        <Header
-          isDashboard={true}
-          title={title}
-          showRole={true}
-          onLogout={handleLogout}
-          sidebarTrigger={<SidebarTrigger className="md:hidden" />}
-        />
+        <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#f5f7fe' }}>
+          <Header
+            isDashboard={true}
+            title={title}
+            showRole={true}
+            onLogout={handleLogout}
+            sidebarTrigger={<SidebarTrigger className="md:hidden" />}
+          />
+        </div>
 
         <div className="flex min-h-[calc(100vh-theme(space.20))]">
           {/* Desktop Sidebar */}
-          <div className="hidden md:block w-64 bg-white border-l">
-            <div className="h-full py-4">
+          <div
+            className="hidden md:block w-64"
+            style={{
+              background: '#f5f7fe',
+              boxShadow: 'none',
+              border: 'none',
+              position: 'sticky',
+              top: '64px', // adjust if header height changes
+              zIndex: 40,
+              height: 'calc(100vh - 64px)',
+              minHeight: 0,
+            }}
+          >
+            <div className="h-full py-4" style={{ height: '100%' }}>
               <div className="px-4 mb-4">
                 <h2 className="text-lg font-semibold">{title}</h2>
               </div>
@@ -295,8 +309,20 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
           </div>
 
           {/* Mobile Sidebar */}
-          <div className="md:hidden">
-            <Sidebar variant="inset" collapsible="icon">
+          <div
+            className="md:hidden"
+            style={{
+              background: '#f5f7fe',
+              boxShadow: 'none',
+              border: 'none',
+              position: 'sticky',
+              top: '64px', // adjust if header height changes
+              zIndex: 40,
+              height: 'calc(100vh - 64px)',
+              minHeight: 0,
+            }}
+          >
+            <Sidebar variant="inset" collapsible="icon" style={{ background: '#f5f7fe', boxShadow: 'none', border: 'none', height: '100%' }}>
               <SidebarHeader>
                 <div className="flex items-center justify-between px-4 py-2">
                   <h2 className="text-lg font-semibold">{title}</h2>
@@ -332,7 +358,19 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
           </div>
 
           {/* Main Content */}
-          <main className="flex-1 p-6">{children}</main>
+          <main
+            className="flex-1 p-6"
+            style={{
+              minWidth: 0,
+              minHeight: 0,
+              overflow: 'auto',
+              backgroundColor: '#edeef5',
+              borderRadius: '24px',
+              margin: '0 0 10px 10px',
+            }}
+          >
+            {children}
+          </main>
         </div>
       </div>
     </SidebarProvider>
