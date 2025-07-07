@@ -9,9 +9,10 @@ interface ExerciseStats {
 
 interface TraineeStatsCardsProps {
   exercises: ExerciseStats[];
+  gridMode?: boolean;
 }
 
-export const TraineeStatsCards = ({ exercises }: TraineeStatsCardsProps) => {
+export const TraineeStatsCards = ({ exercises, gridMode }: TraineeStatsCardsProps) => {
   const stats = {
     completedExercises: exercises.filter(e => e.submission_status === 'completed').length,
     pendingExercises: exercises.filter(e => e.submission_status === 'pending').length,
@@ -22,7 +23,7 @@ export const TraineeStatsCards = ({ exercises }: TraineeStatsCardsProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className={gridMode ? 'grid grid-cols-2 grid-rows-2 gap-2' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'}>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">تکمیل شده</CardTitle>

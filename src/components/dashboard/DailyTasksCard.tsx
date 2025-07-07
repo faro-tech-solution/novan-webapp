@@ -63,7 +63,7 @@ export const DailyTasksCard = ({}: DailyTasksCardProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>وظایف روزانه</CardTitle>
+        <CardTitle>کارهای روزانه</CardTitle>
         <CardDescription>برنامه‌ریزی روزانه یادگیری</CardDescription>
       </CardHeader>
       <CardContent>

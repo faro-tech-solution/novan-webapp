@@ -1,19 +1,13 @@
-
-import { useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { useAuth } from '@/contexts/AuthContext';
 import { useMyExercises } from '@/hooks/useMyExercises';
 import { useStudentAwards } from '@/hooks/useStudentAwards';
 import { DailyTasksCard } from '@/components/dashboard/DailyTasksCard';
 import { TraineeStatsCards } from '@/components/dashboard/TraineeStatsCards';
 import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesCard';
-import { QuickActionsCard } from '@/components/dashboard/QuickActionsCard';
-import { AwardsSummaryCard } from '@/components/dashboard/AwardsSummaryCard';
+import WelcomeCard from '@/components/dashboard/WelcomeCard';
 
 const TraineeDashboard = () => {
-  const { profile } = useAuth();
   const { myExercises, loading, error, refetch } = useMyExercises();
   const { studentAwards, loading: awardsLoading } = useStudentAwards();
 
@@ -47,8 +41,8 @@ const TraineeDashboard = () => {
     return (
       <DashboardLayout title="داشبورد دانشجو">
         <div className="text-center py-8">
-          <p className="text-red-600">{error}</p>
-          <Button onClick={refetch} className="mt-4">
+          <p className="text-red-600">{error instanceof Error ? error.message : String(error)}</p>
+          <Button onClick={() => refetch()} className="mt-4">
             تلاش مجدد
           </Button>
         </div>
@@ -58,35 +52,26 @@ const TraineeDashboard = () => {
 
   return (
     <DashboardLayout title="داشبورد دانشجو">
-      <div className="space-y-6">
-        {/* Welcome Message */}
-        <div className="bg-gradient-to-r from-teal-500 to-blue-600 text-white p-6 rounded-lg">
-          <h2 className="text-2xl font-bold mb-2 font-peyda">خوش آمدید، {profile?.name}!</h2>
-          <p className="opacity-90">کلاس: {profile?.className || 'نامشخص'}</p>
-          <p className="opacity-90">
-            شما {upcomingExercises.length} تمرین برای تکمیل دارید
-          </p>
+      <div className="flex flex-row w-full p-2 md:p-4">
+        <div className="w-full md:w-2/3">
+          <WelcomeCard />
         </div>
-
-        {/* Stats Cards */}
-        <TraineeStatsCards exercises={currentExercises} />
-
+        <div className="hidden md:block md:w-1/3 pr-4">
+          <TraineeStatsCards exercises={currentExercises} gridMode />
+        </div>
+      </div>
+      <div className="space-y-6 px-2 md:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Upcoming Exercises */}
           <div className="lg:col-span-2">
             <UpcomingExercisesCard exercises={upcomingExercises} />
           </div>
 
-          {/* Awards Summary */}
-          <AwardsSummaryCard studentAwards={studentAwards} loading={awardsLoading} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Daily Tasks */}
           <DailyTasksCard />
-
-          {/* Quick Actions */}
-          <QuickActionsCard />
         </div>
       </div>
     </DashboardLayout>

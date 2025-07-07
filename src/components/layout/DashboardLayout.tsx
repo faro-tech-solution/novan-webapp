@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "./Header";
 import { useTranslation } from "@/utils/translations";
@@ -9,19 +8,11 @@ import {
   Users,
   BookOpen,
   FileText,
-  Settings,
   LogOut,
-  Bell,
   Award,
   UserCog,
   CheckCircle,
   Wallet,
-  Menu,
-  Home,
-  GraduationCap,
-  CheckSquare,
-  TrendingUp,
-  User,
   Edit,
   ListChecks,
 } from "lucide-react";
