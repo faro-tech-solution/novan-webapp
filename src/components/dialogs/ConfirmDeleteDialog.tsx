@@ -4,23 +4,40 @@ import { Course } from '@/types/course';
 interface ConfirmDeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  course: Course | null;
+  course?: Course | null;
+  item?: any;
+  title?: string;
+  description?: string;
   onConfirmDelete: () => void;
+  isLoading?: boolean;
 }
 
 const ConfirmDeleteDialog = ({ 
   open, 
   onOpenChange, 
   course, 
-  onConfirmDelete 
+  item,
+  title = "تأیید حذف",
+  description,
+  onConfirmDelete,
+  isLoading = false
 }: ConfirmDeleteDialogProps) => {
+  // Determine what to show based on props
+  const dialogTitle = title || (course ? "تأیید حذف درس" : "تأیید حذف");
+  const dialogDescription = description || (course ? 
+    `آیا مطمئن هستید که می‌خواهید درس "${course?.name}" را حذف کنید؟` :
+    `آیا مطمئن هستید که می‌خواهید این مورد را حذف کنید؟`
+  );
+  
+  const isDisabled = course?.student_count ? course.student_count > 0 : false;
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>تأیید حذف درس</AlertDialogTitle>
+          <AlertDialogTitle>{dialogTitle}</AlertDialogTitle>
           <AlertDialogDescription>
-            آیا مطمئن هستید که می‌خواهید درس "{course?.name}" را حذف کنید؟
+            {dialogDescription}
             {course?.student_count && course.student_count > 0 && (
               <span className="block mt-2 text-red-600 font-medium">
                 این درس {course.student_count} دانشجو دارد و قابل حذف نیست.
@@ -29,13 +46,13 @@ const ConfirmDeleteDialog = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>لغو</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>لغو</AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirmDelete}
-            disabled={course?.student_count ? course.student_count > 0 : false}
+            disabled={isDisabled || isLoading}
             className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300"
           >
-            حذف
+            {isLoading ? "در حال حذف..." : "حذف"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -3,13 +3,15 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import CreateCourseDialog from "@/components/dialogs/CreateCourseDialog";
 import EditCourseDialog from "@/components/dialogs/EditCourseDialog";
 import CourseStudentsDialog from "@/components/dialogs/CourseStudentsDialog";
+import ExerciseCategoriesDialog from "@/components/dialogs/ExerciseCategoriesDialog";
 import CourseManagementHeader from "@/components/courses/CourseManagementHeader";
 import CourseGrid from "@/components/courses/CourseGrid";
 import ConfirmDeleteDialog from "@/components/dialogs/ConfirmDeleteDialog";
 import TermsManagementModal from "@/components/dialogs/TermsManagementModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { useCoursesQuery, Course } from "@/hooks/queries/useCoursesQuery";
+import { useCoursesQuery } from "@/hooks/queries/useCoursesQuery";
+import { Course } from "@/types/course";
 import { useQueryClient } from "@tanstack/react-query";
 
 const CourseManagement = () => {
@@ -18,6 +20,7 @@ const CourseManagement = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [showStudentsDialog, setShowStudentsDialog] = useState(false);
+  const [showCategoriesDialog, setShowCategoriesDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const { profile } = useAuth();
   const { toast } = useToast();
@@ -42,6 +45,11 @@ const CourseManagement = () => {
   const handleViewStudents = (course: Course) => {
     setSelectedCourse(course);
     setShowStudentsDialog(true);
+  };
+
+  const handleManageCategories = (course: Course) => {
+    setSelectedCourse(course);
+    setShowCategoriesDialog(true);
   };
 
   const confirmDeleteCourse = async () => {
@@ -131,6 +139,7 @@ const CourseManagement = () => {
           isAdmin={isAdmin}
           onCreateCourse={() => setShowCreateDialog(true)}
           onManageTerms={handleManageTerms}
+          onManageCategories={handleManageCategories}
           onEditCourse={handleEditCourse}
           onDeleteCourse={handleDeleteCourse}
           onViewStudents={handleViewStudents}
@@ -170,6 +179,16 @@ const CourseManagement = () => {
           isOpen={showStudentsDialog}
           onClose={() => setShowStudentsDialog(false)}
           courseId={selectedCourse.id}
+        />
+      )}
+
+      {/* Exercise Categories Dialog */}
+      {selectedCourse && (
+        <ExerciseCategoriesDialog
+          open={showCategoriesDialog}
+          onOpenChange={setShowCategoriesDialog}
+          courseId={selectedCourse.id}
+          courseName={selectedCourse.name}
         />
       )}
 

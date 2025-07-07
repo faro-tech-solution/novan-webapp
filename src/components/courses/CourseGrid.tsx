@@ -11,6 +11,7 @@ interface CourseGridProps {
   isAdmin: boolean;
   onCreateCourse: () => void;
   onManageTerms: (course: Course) => void;
+  onManageCategories: (course: Course) => void;
   onEditCourse: (course: Course) => void;
   onDeleteCourse: (course: Course) => void;
   onViewStudents: (course: Course) => void;
@@ -24,6 +25,7 @@ const CourseGrid = ({
   isAdmin, 
   onCreateCourse, 
   onManageTerms, 
+  onManageCategories,
   onEditCourse, 
   onDeleteCourse, 
   onViewStudents 
@@ -59,6 +61,7 @@ const CourseGrid = ({
           userRole={userRole}
           userId={userId}
           onManageTerms={onManageTerms}
+          onManageCategories={onManageCategories}
           onEditCourse={onEditCourse}
           onDeleteCourse={onDeleteCourse}
           onViewStudents={onViewStudents}
