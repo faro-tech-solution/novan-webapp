@@ -13,7 +13,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const WikiArticle: React.FC = () => {
   const { articleId } = useParams<{ articleId: string }>();
-  const { user } = useAuth();
+  const { profile } = useAuth();
   const { data: article, isLoading, error } = useWikiArticleQuery(articleId!);
 
   if (isLoading) {
@@ -55,7 +55,7 @@ const WikiArticle: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <Button asChild variant="ghost" className="mb-4">
-          <Link to="/wiki">
+          <Link to={`/${profile?.role}/wiki`}>
             <ArrowLeft className="h-4 w-4 ml-2" />
             بازگشت به ویکی
           </Link>
@@ -104,7 +104,7 @@ const WikiArticle: React.FC = () => {
               </div>
             </div>
             
-            {(user?.role === 'admin' || user?.role === 'trainer') && (
+            {(profile?.role === 'admin' || profile?.role === 'trainer') && (
               <Button asChild variant="outline">
                 <Link to={`/wiki/article/${article.id}/edit`}>
                   <Edit className="h-4 w-4 ml-2" />
@@ -129,15 +129,15 @@ const WikiArticle: React.FC = () => {
       <div className="max-w-4xl mx-auto mt-8">
         <div className="flex justify-between items-center">
           <Button asChild variant="outline">
-            <Link to="/wiki">
+            <Link to={`/${profile?.role}/wiki`}>
               <FileText className="h-4 w-4 ml-2" />
               همه مقالات
             </Link>
           </Button>
           
-          {(user?.role === 'admin' || user?.role === 'trainer') && (
+          {(profile?.role === 'admin' || profile?.role === 'trainer') && (
             <Button asChild>
-              <Link to="/wiki/create-article">
+              <Link to={`/${profile?.role}/wiki/create-article`}>
                 <FileText className="h-4 w-4 ml-2" />
                 مقاله جدید
               </Link>

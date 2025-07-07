@@ -61,245 +61,68 @@ const AppRoutes = () => {
 
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
-      {/* Protected Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Specific dashboard routes */}
-      <Route
-        path="/dashboard/trainer"
-        element={
-          <ProtectedRoute requiredRole="trainer">
-            <TrainerDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/dashboard/trainee"
-        element={
-          <ProtectedRoute requiredRole="trainee">
-            <TraineeDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/dashboard/admin"
-        element={
-          <ProtectedRoute requiredRole="admin">
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* User Management - Admin only */}
-      <Route
-        path="/user-management"
-        element={
-          <ProtectedRoute requiredRole="admin">
-            <UserManagement />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Group Management - Admin only */}
-      <Route
-        path="/group-management"
-        element={
-          <ProtectedRoute requiredRole="admin">
-            <GroupManagement />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/courses"
-        element={
-          <ProtectedRoute>
-            {profile?.role === "trainer" ? <Courses /> : <StudentCourses />}
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Add the student-courses route */}
-      <Route
-        path="/student-courses"
-        element={
-          <ProtectedRoute requiredRole="trainee">
-            <StudentCourses />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Profile route - accessible to all authenticated users */}
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Course Management - Admin and Trainer */}
-      <Route
-        path="/courses-management"
-        element={
-          <ProtectedRoute>
-            {profile?.role === "trainer" || profile?.role === "admin" ? (
-              <CourseManagement />
-            ) : (
-              <NotFound />
-            )}
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Exercises routes */}
-      <Route
-        path="/exercises"
-        element={
-          <ProtectedRoute>
-            <Exercises />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/my-exercises"
-        element={
-          <ProtectedRoute requiredRole="trainee">
-            <MyExercises />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/exercise/:id"
-        element={
-          <ProtectedRoute>
-            <ExerciseDetail />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Review Submissions - Admin and Trainer */}
-      <Route
-        path="/review-submissions"
-        element={
-          <ProtectedRoute>
-            {profile?.role === "trainer" || profile?.role === "admin" ? (
-              <ReviewSubmissions />
-            ) : (
-              <NotFound />
-            )}
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Students - Admin and Trainer */}
-      <Route
-        path="/students"
-        element={
-          <ProtectedRoute>
-            {profile?.role === "trainer" || profile?.role === "admin" ? (
-              <Students />
-            ) : (
-              <NotFound />
-            )}
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Instructors - All authenticated users */}
-      <Route
-        path="/instructors"
-        element={
-          <ProtectedRoute>
-            <Instructors />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Progress - Trainee only */}
-      <Route
-        path="/progress"
-        element={
-          <ProtectedRoute requiredRole="trainee">
-            <Progress />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/accounting"
-        element={
-          <ProtectedRoute requiredRole="admin">
-            <Accounting />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/daily-activities-management"
-        element={<DailyActivitiesManagement />}
-      />
-
-      {/* Wiki Routes */}
-      <Route path="/wiki" element={<Wiki />} />
-      <Route path="/wiki/category/:categoryId" element={<WikiCategory />} />
-      <Route path="/wiki/article/:articleId" element={<WikiArticle />} />
-      <Route path="/wiki/create-article" element={<CreateWikiArticle />} />
-      <Route path="/wiki/manage" element={<WikiManagement />} />
-
-      <Route
-        path="/dashboard/teammate"
-        element={
-          <ProtectedRoute requiredRole="teammate">
-            <TeammatesDashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/tasks-management"
-        element={
-          <ProtectedRoute requiredRole="admin">
-            <TasksManagement />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/tasks"
-        element={
-          <ProtectedRoute requiredRole="teammate">
-            <TeammateTasks />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/notifications"
-        element={
-          <ProtectedRoute>
-            <NotificationsPage />
-          </ProtectedRoute>
-        }
-      />
-
       <Route path="/forget_password" element={<ForgetPassword />} />
 
+      {/* Trainee Routes */}
+      <Route path="/trainee/dashboard" element={<ProtectedRoute requiredRole="trainee"><TraineeDashboard /></ProtectedRoute>} />
+      <Route path="/trainee/my-exercises" element={<ProtectedRoute requiredRole="trainee"><MyExercises /></ProtectedRoute>} />
+      <Route path="/trainee/progress" element={<ProtectedRoute requiredRole="trainee"><Progress /></ProtectedRoute>} />
+      <Route path="/trainee/student-courses" element={<ProtectedRoute requiredRole="trainee"><StudentCourses /></ProtectedRoute>} />
+      <Route path="/trainee/profile" element={<ProtectedRoute requiredRole="trainee"><Profile /></ProtectedRoute>} />
+      <Route path="/trainee/exercises" element={<ProtectedRoute requiredRole="trainee"><Exercises /></ProtectedRoute>} />
+      <Route path="/trainee/exercise/:id" element={<ProtectedRoute requiredRole="trainee"><ExerciseDetail /></ProtectedRoute>} />
+      <Route path="/trainee/wiki" element={<ProtectedRoute requiredRole="trainee"><Wiki /></ProtectedRoute>} />
+      <Route path="/trainee/wiki/category/:categoryId" element={<ProtectedRoute requiredRole="trainee"><WikiCategory /></ProtectedRoute>} />
+      <Route path="/trainee/wiki/article/:articleId" element={<ProtectedRoute requiredRole="trainee"><WikiArticle /></ProtectedRoute>} />
+      <Route path="/trainee/wiki/create-article" element={<ProtectedRoute requiredRole="trainee"><CreateWikiArticle /></ProtectedRoute>} />
+      <Route path="/trainee/wiki/manage" element={<ProtectedRoute requiredRole="trainee"><WikiManagement /></ProtectedRoute>} />
+      <Route path="/trainee/notifications" element={<ProtectedRoute requiredRole="trainee"><NotificationsPage /></ProtectedRoute>} />
+
+      {/* Trainer Routes */}
+      <Route path="/trainer/dashboard" element={<ProtectedRoute requiredRole="trainer"><TrainerDashboard /></ProtectedRoute>} />
+      <Route path="/trainer/courses" element={<ProtectedRoute requiredRole="trainer"><Courses /></ProtectedRoute>} />
+      <Route path="/trainer/courses-management" element={<ProtectedRoute requiredRole="trainer"><CourseManagement /></ProtectedRoute>} />
+      <Route path="/trainer/review-submissions" element={<ProtectedRoute requiredRole="trainer"><ReviewSubmissions /></ProtectedRoute>} />
+      <Route path="/trainer/students" element={<ProtectedRoute requiredRole="trainer"><Students /></ProtectedRoute>} />
+      <Route path="/trainer/profile" element={<ProtectedRoute requiredRole="trainer"><Profile /></ProtectedRoute>} />
+      <Route path="/trainer/exercises" element={<ProtectedRoute requiredRole="trainer"><Exercises /></ProtectedRoute>} />
+      <Route path="/trainer/exercise/:id" element={<ProtectedRoute requiredRole="trainer"><ExerciseDetail /></ProtectedRoute>} />
+      <Route path="/trainer/wiki" element={<ProtectedRoute requiredRole="trainer"><Wiki /></ProtectedRoute>} />
+      <Route path="/trainer/wiki/category/:categoryId" element={<ProtectedRoute requiredRole="trainer"><WikiCategory /></ProtectedRoute>} />
+      <Route path="/trainer/wiki/article/:articleId" element={<ProtectedRoute requiredRole="trainer"><WikiArticle /></ProtectedRoute>} />
+      <Route path="/trainer/wiki/create-article" element={<ProtectedRoute requiredRole="trainer"><CreateWikiArticle /></ProtectedRoute>} />
+      <Route path="/trainer/wiki/manage" element={<ProtectedRoute requiredRole="trainer"><WikiManagement /></ProtectedRoute>} />
+      <Route path="/trainer/profile" element={<ProtectedRoute requiredRole="trainer"><Profile /></ProtectedRoute>} />
+      <Route path="/trainer/notifications" element={<ProtectedRoute requiredRole="trainer"><NotificationsPage /></ProtectedRoute>} />
+
+      {/* Admin Routes */}
+      <Route path="/admin/dashboard" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/user-management" element={<ProtectedRoute requiredRole="admin"><UserManagement /></ProtectedRoute>} />
+      <Route path="/admin/group-management" element={<ProtectedRoute requiredRole="admin"><GroupManagement /></ProtectedRoute>} />
+      <Route path="/admin/courses-management" element={<ProtectedRoute requiredRole="admin"><CourseManagement /></ProtectedRoute>} />
+      <Route path="/admin/students" element={<ProtectedRoute requiredRole="admin"><Students /></ProtectedRoute>} />
+      <Route path="/admin/exercises" element={<ProtectedRoute requiredRole="admin"><Exercises /></ProtectedRoute>} />
+      <Route path="/admin/exercise/:id" element={<ProtectedRoute requiredRole="admin"><ExerciseDetail /></ProtectedRoute>} />
+      <Route path="/admin/review-submissions" element={<ProtectedRoute requiredRole="admin"><ReviewSubmissions /></ProtectedRoute>} />
+      <Route path="/admin/accounting" element={<ProtectedRoute requiredRole="admin"><Accounting /></ProtectedRoute>} />
+      <Route path="/admin/wiki/manage" element={<ProtectedRoute requiredRole="admin"><WikiManagement /></ProtectedRoute>} />
+      <Route path="/admin/tasks-management" element={<ProtectedRoute requiredRole="admin"><TasksManagement /></ProtectedRoute>} />
+      <Route path="/admin/profile" element={<ProtectedRoute requiredRole="admin"><Profile /></ProtectedRoute>} />
+      <Route path="/admin/notifications" element={<ProtectedRoute requiredRole="admin"><NotificationsPage /></ProtectedRoute>} />
+
+      {/* Teammate Routes */}
+      <Route path="/teammate/dashboard" element={<ProtectedRoute requiredRole="teammate"><TeammatesDashboard /></ProtectedRoute>} />
+      <Route path="/teammate/tasks" element={<ProtectedRoute requiredRole="teammate"><TeammateTasks /></ProtectedRoute>} />
+      <Route path="/teammate/profile" element={<ProtectedRoute requiredRole="teammate"><Profile /></ProtectedRoute>} />
+      <Route path="/teammate/notifications" element={<ProtectedRoute requiredRole="teammate"><NotificationsPage /></ProtectedRoute>} />
+
+      {/* Shared/Other Routes (if any remain) */}
+      <Route path="/instructors" element={<ProtectedRoute><Instructors /></ProtectedRoute>} />
+      <Route path="/daily-activities-management" element={<DailyActivitiesManagement />} />
+      {/* NotFound fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

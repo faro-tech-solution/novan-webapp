@@ -51,7 +51,7 @@ const CreateWikiArticle: React.FC = () => {
       });
       
       toast.success('مقاله با موفقیت ایجاد شد');
-      navigate('/wiki');
+      navigate(`/${profile?.role}/wiki`);
     } catch (error) {
       toast.error('خطا در ایجاد مقاله');
     }
@@ -78,7 +78,7 @@ const CreateWikiArticle: React.FC = () => {
     <DashboardLayout title="ایجاد مقاله جدید">
       <div className="mb-6">
         <Button asChild variant="ghost" className="mb-4">
-          <button onClick={() => navigate('/wiki')}>
+          <button onClick={() => navigate(`/${profile?.role}/wiki`)}>
             <ArrowLeft className="h-4 w-4 ml-2" />
             بازگشت به ویکی
           </button>
@@ -201,7 +201,7 @@ const CreateWikiArticle: React.FC = () => {
               <Button 
                 type="button" 
                 variant="outline"
-                onClick={() => navigate('/wiki')}
+                onClick={() => navigate(`/${profile?.role}/wiki`)}
               >
                 انصراف
               </Button>

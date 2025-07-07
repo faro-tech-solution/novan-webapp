@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,13 +15,13 @@ const Dashboard = () => {
 
       // Redirect based on user role
       if (profile.role === 'trainer') {
-        navigate('/dashboard/trainer');
+        navigate('/trainer/dashboard');
       } else if (profile.role === 'trainee') {
-        navigate('/dashboard/trainee');
+        navigate('/trainee/dashboard');
       } else if (profile.role === 'admin') {
-        navigate('/dashboard/admin');
+        navigate('/admin/dashboard');
       } else if (profile.role === 'teammate') {
-        navigate('/dashboard/teammate');
+        navigate('/teammate/dashboard');
       }
     }
   }, [profile, loading, navigate]);

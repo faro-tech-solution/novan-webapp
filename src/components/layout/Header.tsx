@@ -72,14 +72,28 @@ const Header = ({
               {tCommon("home")}
             </Link>
             <Link
-              to="/courses"
+              to={profile?.role ? `/${profile.role}/dashboard` : "/"}
               className="text-gray-700 hover:text-teal-600 transition-colors"
             >
-              {tCommon("courses")}
+              {tCommon("dashboard")}
             </Link>
-            {(profile?.role === "trainer" || profile?.role === "admin") && (
+            <Link
+              to={profile?.role ? `/${profile.role}/profile` : "/"}
+              className="text-gray-700 hover:text-teal-600 transition-colors"
+            >
+              {tCommon("profile")}
+            </Link>
+            {profile?.role === "trainer" && (
               <Link
-                to="/students"
+                to="/trainer/students"
+                className="text-gray-700 hover:text-teal-600 transition-colors"
+              >
+                {tCommon("students")}
+              </Link>
+            )}
+            {profile?.role === "admin" && (
+              <Link
+                to="/admin/students"
                 className="text-gray-700 hover:text-teal-600 transition-colors"
               >
                 {tCommon("students")}
@@ -91,14 +105,6 @@ const Header = ({
             >
               {tCommon("instructors")}
             </Link>
-            {profile && (
-              <Link
-                to="/dashboard"
-                className="text-gray-700 hover:text-teal-600 transition-colors"
-              >
-                {tCommon("dashboard")}
-              </Link>
-            )}
           </nav>
         )}
 
@@ -140,7 +146,7 @@ const Header = ({
                     )}
                   </div>
                 ) : (
-                  <Link to="/dashboard">
+                  <Link to={profile?.role ? `/${profile.role}/dashboard` : "/"}>
                     <Button variant="outline">
                       <User className="h-4 w-4 ml-2" />
                       {profile.first_name && profile.last_name
@@ -218,7 +224,7 @@ const Header = ({
               </Link>
               {profile && (
                 <Link
-                  to="/dashboard"
+                  to={profile?.role ? `/${profile.role}/dashboard` : "/"}
                   className="text-gray-700 hover:text-teal-600 transition-colors"
                 >
                   {tCommon("dashboard")}

@@ -200,8 +200,12 @@ const WikiManagement: React.FC = () => {
     <DashboardLayout title="مدیریت ویکی">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">مدیریت ویکی</h1>
-          <p className="text-gray-600 mt-2">مدیریت دسته‌بندی‌ها، موضوعات و دسترسی‌ها</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            مدیریت ویکی
+          </h1>
+          <p className="text-gray-600 mt-2">
+            مدیریت دسته‌بندی‌ها، موضوعات و دسترسی‌ها
+          </p>
         </div>
         
         <div className="flex gap-2">
@@ -381,7 +385,7 @@ const WikiManagement: React.FC = () => {
             </DialogContent>
           </Dialog>
           <Button asChild variant="outline">
-            <Link to="/wiki/create-article">
+            <Link to={`/${profile?.role}/wiki/create-article`}>
               <Plus className="h-4 w-4 ml-2" />
               ایجاد مقاله
             </Link>
@@ -469,7 +473,7 @@ const WikiManagement: React.FC = () => {
                 )}
                 
                 <Button asChild className="w-full">
-                  <Link to={`/wiki/category/${category.id}`}>
+                  <Link to={`/${profile?.role}/wiki/category/${category.id}`}>
                     مشاهده محتوا
                   </Link>
                 </Button>

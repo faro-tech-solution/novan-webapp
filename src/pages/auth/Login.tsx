@@ -32,13 +32,13 @@ const Login = () => {
     if (profile) {
       console.log("Redirecting user with role:", profile.role);
       if (profile.role === "trainer") {
-        navigate("/dashboard/trainer");
+        navigate("/trainer/dashboard");
       } else if (profile.role === "trainee") {
-        navigate("/dashboard/trainee");
+        navigate("/trainee/dashboard");
       } else if (profile.role === "admin") {
-        navigate("/dashboard/admin");
+        navigate("/admin/dashboard");
       } else if (profile.role === "teammate") {
-        navigate("/dashboard/teammate");
+        navigate("/teammate/dashboard");
       }
     }
   }, [profile, navigate]);

@@ -34,7 +34,7 @@ const Wiki: React.FC = () => {
   };
 
   const hasAccess = (category: any) => {
-    if (user?.role === 'admin' || user?.role === 'trainer') {
+    if (profile?.role === 'admin' || profile?.role === 'trainer') {
       return true;
     }
     
@@ -79,17 +79,17 @@ const Wiki: React.FC = () => {
           <p className="text-gray-600 mt-2">منابع و راهنمای آموزشی</p>
         </div>
         
-        {(user?.role === 'admin' || user?.role === 'trainer') && (
+        {(profile?.role === 'admin' || profile?.role === 'trainer') && (
           <div className="flex gap-2">
             <Button asChild>
-              <Link to="/wiki/create-article">
+              <Link to={`/${profile?.role}/wiki/create-article`}>
                 <Plus className="h-4 w-4 ml-2" />
                 مقاله جدید
               </Link>
             </Button>
-            {user?.role === 'admin' && (
+            {profile?.role === 'admin' && (
               <Button asChild variant="outline">
-                <Link to="/wiki/manage">
+                <Link to={`/${profile?.role}/wiki/manage`}>
                   <Edit className="h-4 w-4 ml-2" />
                   مدیریت
                 </Link>
@@ -154,7 +154,7 @@ const Wiki: React.FC = () => {
 
                 {hasAccess(category) ? (
                   <Button asChild className="w-full">
-                    <Link to={`/wiki/category/${category.id}`}>
+                    <Link to={`/${profile?.role}/wiki/category/${category.id}`}>
                       مشاهده محتوا
                     </Link>
                   </Button>
@@ -167,10 +167,10 @@ const Wiki: React.FC = () => {
                 )}
 
                 {/* Admin actions */}
-                {user?.role === 'admin' && (
+                {profile?.role === 'admin' && (
                   <div className="flex gap-2 pt-2 border-t">
                     <Button asChild variant="outline" size="sm" className="flex-1">
-                      <Link to={`/wiki/category/${category.id}/edit`}>
+                      <Link to={`/${profile?.role}/wiki/category/${category.id}/edit`}>
                         <Edit className="h-3 w-3 ml-1" />
                         ویرایش
                       </Link>

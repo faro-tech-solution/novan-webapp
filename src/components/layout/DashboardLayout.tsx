@@ -55,43 +55,43 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const trainerNavItems = [
     {
-      href: "/dashboard/trainer",
+      href: "/trainer/dashboard",
       icon: LayoutDashboard,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
     {
-      href: "/courses-management",
+      href: "/trainer/courses-management",
       icon: Users,
       label: tSidebar("courseManagement"),
       key: "courseManagement",
     },
     {
-      href: "/exercises",
+      href: "/trainer/exercises",
       icon: FileText,
       label: tSidebar("exercises"),
       key: "exercises",
     },
     {
-      href: "/review-submissions",
+      href: "/trainer/review-submissions",
       icon: CheckCircle,
       label: tSidebar("reviewSubmissions"),
       key: "reviewSubmissions",
     },
     {
-      href: "/students",
+      href: "/trainer/students",
       icon: Award,
       label: tSidebar("students"),
       key: "students",
     },
     {
-      href: "/wiki/manage",
+      href: "/trainer/wiki/manage",
       icon: Edit,
       label: tSidebar("wikiManagement"),
       key: "wikiManagement",
     },
     {
-      href: "/profile",
+      href: "/trainer/profile",
       icon: UserCog,
       label: tSidebar("profile"),
       key: "profile",
@@ -100,101 +100,101 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const traineeNavItems = [
     {
-      href: "/dashboard/trainee",
+      href: "/trainee/dashboard",
       icon: LayoutDashboard,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
     {
-      href: "/my-exercises",
+      href: "/trainee/my-exercises",
       icon: FileText,
       label: tSidebar("myExercises"),
       key: "myExercises",
     },
     {
-      href: "/progress",
+      href: "/trainee/progress",
       icon: Award,
       label: tSidebar("progress"),
       key: "progress",
     },
     {
-      href: "/student-courses",
+      href: "/trainee/student-courses",
       icon: BookOpen,
       label: tSidebar("myCourses"),
       key: "myCourses",
     },
     {
-      href: "/profile",
+      href: "/trainee/profile",
       icon: UserCog,
       label: tSidebar("profile"),
       key: "profile",
     },
-    { href: "/wiki", icon: BookOpen, label: tSidebar("wiki"), key: "wiki" },
+    { href: "/trainee/wiki", icon: BookOpen, label: tSidebar("wiki"), key: "wiki" },
   ];
 
   const adminNavItems = [
     {
-      href: "/dashboard/admin",
+      href: "/admin/dashboard",
       icon: LayoutDashboard,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
     {
-      href: "/user-management",
+      href: "/admin/user-management",
       icon: UserCog,
       label: tSidebar("userManagement"),
       key: "userManagement",
     },
     {
-      href: "/group-management",
+      href: "/admin/group-management",
       icon: Users,
       label: tSidebar("groupManagement"),
       key: "groupManagement",
     },
     {
-      href: "/courses-management",
+      href: "/admin/courses-management",
       icon: BookOpen,
       label: tSidebar("courseManagement"),
       key: "courseManagement",
     },
     {
-      href: "/students",
+      href: "/admin/students",
       icon: Award,
       label: tSidebar("students"),
       key: "students",
     },
     {
-      href: "/exercises",
+      href: "/admin/exercises",
       icon: FileText,
       label: tSidebar("exercises"),
       key: "exercises",
     },
     {
-      href: "/review-submissions",
+      href: "/admin/review-submissions",
       icon: CheckCircle,
       label: tSidebar("reviewSubmissions"),
       key: "reviewSubmissions",
     },
     {
-      href: "/accounting",
+      href: "/admin/accounting",
       icon: Wallet,
       label: tSidebar("accounting"),
       key: "accounting",
     },
     {
-      href: "/wiki/manage",
+      href: "/admin/wiki/manage",
       icon: Edit,
       label: tSidebar("wikiManagement"),
       key: "wikiManagement",
     },
     {
-      href: "/tasks-management",
+      href: "/admin/tasks-management",
       icon: ListChecks,
       label: tSidebar("tasksManagement"),
       key: "tasksManagement",
     },
     {
-      href: "/profile",
+      href: "/admin/profile",
       icon: UserCog,
       label: tSidebar("profile"),
       key: "profile",
@@ -203,19 +203,19 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const teammateNavItems = [
     {
-      href: "/dashboard/teammate",
+      href: "/teammate/dashboard",
       icon: LayoutDashboard,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
     {
-      href: "/tasks",
+      href: "/teammate/tasks",
       icon: CheckCircle,
       label: tSidebar("myTasks"),
       key: "myTasks",
     },
     {
-      href: "/profile",
+      href: "/teammate/profile",
       icon: UserCog,
       label: tSidebar("profile"),
       key: "profile",

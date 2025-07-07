@@ -22,13 +22,13 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
       // If a specific role is required and user doesn't have it, redirect to their correct dashboard
       if (requiredRole && profile.role !== requiredRole) {
         if (profile.role === 'trainer') {
-          navigate('/dashboard/trainer');
+          navigate('/trainer/dashboard');
         } else if (profile.role === 'trainee') {
-          navigate('/dashboard/trainee');
+          navigate('/trainee/dashboard');
         } else if (profile.role === 'admin') {
-          navigate('/dashboard/admin');
+          navigate('/admin/dashboard');
         } else if (profile.role === 'teammate') {
-          navigate('/dashboard/teammate');
+          navigate('/teammate/dashboard');
         }
         return;
       }

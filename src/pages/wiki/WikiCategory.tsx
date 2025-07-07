@@ -16,7 +16,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const WikiCategory: React.FC = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
-  const { user } = useAuth();
+  const { profile } = useAuth();
   const { data: category, isLoading, error } = useWikiCategoryQuery(categoryId!);
   const deleteTopicMutation = useDeleteWikiTopicMutation();
   const deleteArticleMutation = useDeleteWikiArticleMutation();
@@ -53,7 +53,7 @@ const WikiCategory: React.FC = () => {
   const hasAccess = () => {
     if (!category) return false;
     
-    if (user?.role === 'admin' || user?.role === 'trainer') {
+    if (profile?.role === 'admin' || profile?.role === 'trainer') {
       return true;
     }
     
@@ -122,7 +122,7 @@ const WikiCategory: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <Button asChild variant="ghost" className="mb-4">
-          <Link to="/wiki">
+          <Link to={`/${profile?.role}/wiki`}>
             <ArrowLeft className="h-4 w-4 ml-2" />
             بازگشت به ویکی
           </Link>
@@ -141,16 +141,16 @@ const WikiCategory: React.FC = () => {
             </div>
           </div>
           
-          {(user?.role === 'admin' || user?.role === 'trainer') && (
+          {(profile?.role === 'admin' || profile?.role === 'trainer') && (
             <div className="flex gap-2">
               <Button asChild>
-                <Link to={`/wiki/category/${categoryId}/create-topic`}>
+                <Link to={`/${profile?.role}/wiki/category/${categoryId}/create-topic`}>
                   <Plus className="h-4 w-4 ml-2" />
                   موضوع جدید
                 </Link>
               </Button>
               <Button asChild>
-                <Link to="/wiki/create-article">
+                <Link to={`/${profile?.role}/wiki/create-article`}>
                   <FileText className="h-4 w-4 ml-2" />
                   مقاله جدید
                 </Link>
@@ -192,7 +192,7 @@ const WikiCategory: React.FC = () => {
                         </Badge>
                         
                         {/* Admin actions for topic */}
-                        {user?.role === 'admin' && (
+                        {profile?.role === 'admin' && (
                           <div className="flex gap-1">
                             <Button asChild variant="ghost" size="sm">
                               <Link to={`/wiki/topic/${topic.id}/edit`}>
@@ -263,7 +263,7 @@ const WikiCategory: React.FC = () => {
                               </Button>
                               
                               {/* Trainer/Admin actions for article */}
-                              {(user?.role === 'admin' || user?.role === 'trainer') && (
+                              {(profile?.role === 'admin' || profile?.role === 'trainer') && (
                                 <div className="flex gap-1">
                                   <Button asChild variant="ghost" size="sm">
                                     <Link to={`/wiki/article/${article.id}/edit`}>
@@ -304,11 +304,11 @@ const WikiCategory: React.FC = () => {
                       <div className="text-center py-6 text-gray-500">
                         <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                         <p>هنوز هیچ مقاله‌ای در این موضوع ایجاد نشده است.</p>
-                        {(user?.role === 'admin' || user?.role === 'trainer') && (
+                        {(profile?.role === 'admin' || profile?.role === 'trainer') && (
                           <Button asChild size="sm" className="mt-2">
-                            <Link to="/wiki/create-article">
+                            <Link to={`/${profile?.role}/wiki/category/${categoryId}/create-topic`}>
                               <Plus className="h-3 w-3 ml-1" />
-                              مقاله جدید
+                              موضوع جدید
                             </Link>
                           </Button>
                         )}
@@ -326,9 +326,9 @@ const WikiCategory: React.FC = () => {
             <p className="text-gray-600 mb-4">
               هنوز هیچ موضوعی در این دسته‌بندی ایجاد نشده است.
             </p>
-            {(user?.role === 'admin' || user?.role === 'trainer') && (
+            {(profile?.role === 'admin' || profile?.role === 'trainer') && (
               <Button asChild>
-                <Link to={`/wiki/category/${categoryId}/create-topic`}>
+                <Link to={`/${profile?.role}/wiki/category/${categoryId}/create-topic`}>
                   <Plus className="h-4 w-4 ml-2" />
                   ایجاد موضوع جدید
                 </Link>
