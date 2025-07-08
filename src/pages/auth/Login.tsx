@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { getDashboardPathForRole } from "@/utils";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -30,18 +31,16 @@ const Login = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (profile) {
-      console.log("Redirecting user with role:", profile.role);
-      if (profile.role === "trainer") {
-        navigate("/trainer/dashboard");
-      } else if (profile.role === "trainee") {
-        navigate("/trainee/dashboard");
-      } else if (profile.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (profile.role === "teammate") {
-        navigate("/teammate/dashboard");
+      // If redirected from a protected route, go back to that route
+      const from = location.state?.from;
+      if (from) {
+        navigate(from, { replace: true });
+        return;
       }
+      // Otherwise, go to dashboard by role
+      navigate(getDashboardPathForRole(profile.role));
     }
-  }, [profile, navigate]);
+  }, [profile, navigate, location.state]);
 
   // Redirect from /login to / for backward compatibility
   useEffect(() => {
@@ -68,7 +67,7 @@ const Login = () => {
         console.log("Login successful");
         toast({
           title: "ورود موفق",
-          description: "به داشبورد منتقل می‌شوید...",
+          description: "در حال انتقال...",
         });
         // Note: The redirect will happen automatically via the useEffect above
         // once the profile is loaded from the AuthContext

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useWikiCategoriesQuery } from '@/hooks/useWikiQuery';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const Wiki: React.FC = () => {
   const { user, profile } = useAuth();
+  const { courseId } = useParams();
   const { data: categories = [], isLoading, error } = useWikiCategoriesQuery();
   const deleteCategoryMutation = useDeleteWikiCategoryMutation();
   const [searchTerm, setSearchTerm] = useState('');
@@ -154,7 +155,7 @@ const Wiki: React.FC = () => {
 
                 {hasAccess(category) ? (
                   <Button asChild className="w-full">
-                    <Link to={`/${profile?.role}/wiki/category/${category.id}`}>
+                    <Link to={profile?.role === 'trainee' && courseId ? `/trainee/${courseId}/wiki/category/${category.id}` : `/${profile?.role}/wiki/category/${category.id}`}>
                       مشاهده محتوا
                     </Link>
                   </Button>

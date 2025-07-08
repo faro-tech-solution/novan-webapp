@@ -118,10 +118,10 @@ FOR UPDATE USING (
 );
 
 -- Policy 5: Public read access for submissions (needed for dashboards)
-CREATE POLICY "Public can view submissions" ON exercise_submissions
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
+-- CREATE POLICY "Public can view submissions" ON exercise_submissions
+-- FOR SELECT USING (
+--   auth.role() = 'authenticated'
+-- );
 
 -- ========================================
 -- TEACHER_COURSE_ASSIGNMENTS TABLE RLS POLICIES (SIMPLIFIED)

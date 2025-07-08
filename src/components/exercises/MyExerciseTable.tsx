@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ interface MyExerciseTableProps {
 }
 
 export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTableProps) => {
+  const { courseId } = useParams();
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
@@ -109,7 +110,7 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                 </TableCell>
                 <TableCell>{exercise.estimated_time}</TableCell>
                 <TableCell>
-                  <Link to={`/exercise/${exercise.id}`}>
+                  <Link to={courseId ? `/trainee/${courseId}/exercise/${exercise.id}` : `/exercise/${exercise.id}` }>
                     <Button size="sm" variant="outline">
                       {exercise.submission_status === 'completed' ? 'مشاهده' : 'شروع'}
                     </Button>

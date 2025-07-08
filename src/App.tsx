@@ -50,6 +50,7 @@ import {
   // Shared pages
   NotFound,
   TeammateTasks,
+  AllCoursesTrainee,
 } from "@/pages";
 import NotificationsPage from "@/pages/notifications";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -67,19 +68,20 @@ const AppRoutes = () => {
       <Route path="/forget_password" element={<ForgetPassword />} />
 
       {/* Trainee Routes */}
-      <Route path="/trainee/dashboard" element={<ProtectedRoute requiredRole="trainee"><TraineeDashboard /></ProtectedRoute>} />
-      <Route path="/trainee/my-exercises" element={<ProtectedRoute requiredRole="trainee"><MyExercises /></ProtectedRoute>} />
-      <Route path="/trainee/progress" element={<ProtectedRoute requiredRole="trainee"><Progress /></ProtectedRoute>} />
-      <Route path="/trainee/student-courses" element={<ProtectedRoute requiredRole="trainee"><StudentCourses /></ProtectedRoute>} />
-      <Route path="/trainee/profile" element={<ProtectedRoute requiredRole="trainee"><Profile /></ProtectedRoute>} />
-      <Route path="/trainee/exercises" element={<ProtectedRoute requiredRole="trainee"><Exercises /></ProtectedRoute>} />
-      <Route path="/trainee/exercise/:id" element={<ProtectedRoute requiredRole="trainee"><ExerciseDetail /></ProtectedRoute>} />
-      <Route path="/trainee/wiki" element={<ProtectedRoute requiredRole="trainee"><Wiki /></ProtectedRoute>} />
-      <Route path="/trainee/wiki/category/:categoryId" element={<ProtectedRoute requiredRole="trainee"><WikiCategory /></ProtectedRoute>} />
-      <Route path="/trainee/wiki/article/:articleId" element={<ProtectedRoute requiredRole="trainee"><WikiArticle /></ProtectedRoute>} />
-      <Route path="/trainee/wiki/create-article" element={<ProtectedRoute requiredRole="trainee"><CreateWikiArticle /></ProtectedRoute>} />
-      <Route path="/trainee/wiki/manage" element={<ProtectedRoute requiredRole="trainee"><WikiManagement /></ProtectedRoute>} />
-      <Route path="/trainee/notifications" element={<ProtectedRoute requiredRole="trainee"><NotificationsPage /></ProtectedRoute>} />
+      <Route path="/trainee/all-courses" element={<ProtectedRoute requiredRole="trainee"><AllCoursesTrainee /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/dashboard" element={<ProtectedRoute requiredRole="trainee"><TraineeDashboard /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/my-exercises" element={<ProtectedRoute requiredRole="trainee"><MyExercises /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/progress" element={<ProtectedRoute requiredRole="trainee"><Progress /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/student-courses" element={<ProtectedRoute requiredRole="trainee"><StudentCourses /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/profile" element={<ProtectedRoute requiredRole="trainee"><Profile /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/exercises" element={<ProtectedRoute requiredRole="trainee"><Exercises /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/exercise/:id" element={<ProtectedRoute requiredRole="trainee"><ExerciseDetail /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/wiki" element={<ProtectedRoute requiredRole="trainee"><Wiki /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/wiki/category/:categoryId" element={<ProtectedRoute requiredRole="trainee"><WikiCategory /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/wiki/article/:articleId" element={<ProtectedRoute requiredRole="trainee"><WikiArticle /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/wiki/create-article" element={<ProtectedRoute requiredRole="trainee"><CreateWikiArticle /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/wiki/manage" element={<ProtectedRoute requiredRole="trainee"><WikiManagement /></ProtectedRoute>} />
+      <Route path="/trainee/:courseId/notifications" element={<ProtectedRoute requiredRole="trainee"><NotificationsPage /></ProtectedRoute>} />
 
       {/* Trainer Routes */}
       <Route path="/trainer/dashboard" element={<ProtectedRoute requiredRole="trainer"><TrainerDashboard /></ProtectedRoute>} />

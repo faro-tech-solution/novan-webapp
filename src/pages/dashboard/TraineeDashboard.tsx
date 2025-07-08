@@ -6,8 +6,11 @@ import { DailyTasksCard } from '@/components/dashboard/DailyTasksCard';
 import { TraineeStatsCards } from '@/components/dashboard/TraineeStatsCards';
 import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesCard';
 import WelcomeCard from '@/components/dashboard/WelcomeCard';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const TraineeDashboard = () => {
+  const { courseId } = useParams();
+  const navigate = useNavigate();
   const { myExercises, loading, error, refetch } = useMyExercises();
   const { studentAwards, loading: awardsLoading } = useStudentAwards();
 
@@ -60,16 +63,13 @@ const TraineeDashboard = () => {
           <TraineeStatsCards exercises={currentExercises} gridMode />
         </div>
       </div>
-      <div className="space-y-6 px-2 md:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex flex-row w-full p-2 md:p-4 mt-0">
+        <div className="w-full md:w-1/3">
           {/* Upcoming Exercises */}
-          <div className="lg:col-span-2">
-            <UpcomingExercisesCard exercises={upcomingExercises} />
-          </div>
-
+          <UpcomingExercisesCard exercises={upcomingExercises} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="hidden md:block md:w-1/3 pr-4">
           {/* Daily Tasks */}
           <DailyTasksCard />
         </div>

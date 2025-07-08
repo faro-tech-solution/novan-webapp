@@ -1,8 +1,7 @@
 import React from 'react';
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
-  Search,
   ShoppingCart,
   User,
   LogIn,
@@ -34,6 +33,10 @@ const Header = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { profile, loading } = useAuth();
   const { tCommon, tSidebar } = useTranslation();
+  const location = useLocation();
+
+  // Only show NotificationBell on trainee dashboard URLs
+  const showNotificationBell = location.pathname.startsWith('/trainee/');
 
   return (
     <header style={{ width: '100vw', background: 'transparent', boxShadow: 'none', border: 'none', margin: 0, padding: 0 }}>
@@ -63,69 +66,13 @@ const Header = ({
         </div>
 
         {/* Desktop Navigation */}
-        {!isDashboard && (
-          <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
-            <Link
-              to="/"
-              className="text-gray-700 hover:text-teal-600 transition-colors"
-            >
-              {tCommon("home")}
-            </Link>
-            <Link
-              to={profile?.role ? `/${profile.role}/dashboard` : "/"}
-              className="text-gray-700 hover:text-teal-600 transition-colors"
-            >
-              {tCommon("dashboard")}
-            </Link>
-            <Link
-              to={profile?.role ? `/${profile.role}/profile` : "/"}
-              className="text-gray-700 hover:text-teal-600 transition-colors"
-            >
-              {tCommon("profile")}
-            </Link>
-            {profile?.role === "trainer" && (
-              <Link
-                to="/trainer/students"
-                className="text-gray-700 hover:text-teal-600 transition-colors"
-              >
-                {tCommon("students")}
-              </Link>
-            )}
-            {profile?.role === "admin" && (
-              <Link
-                to="/admin/students"
-                className="text-gray-700 hover:text-teal-600 transition-colors"
-              >
-                {tCommon("students")}
-              </Link>
-            )}
-            <Link
-              to="/instructors"
-              className="text-gray-700 hover:text-teal-600 transition-colors"
-            >
-              {tCommon("instructors")}
-            </Link>
-          </nav>
-        )}
+        {/* Removed navigation links for home, dashboard, profile, instructors */}
 
         {/* Right side actions */}
         <div className="flex items-center space-x-4 space-x-reverse">
-          {!isDashboard && (
-            <>
-              <Button variant="ghost" size="icon" className="hidden md:flex">
-                <Search className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-teal-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  0
-                </span>
-              </Button>
-            </>
-          )}
-
+          {/* Removed search button */}
           <LanguageSwitch />
-          <NotificationBell />
+          {showNotificationBell && <NotificationBell />}
 
           {!loading && (
             <>
@@ -135,7 +82,7 @@ const Header = ({
                     <span className="text-sm text-gray-700">
                       {profile.first_name && profile.last_name
                         ? `${profile.first_name} ${profile.last_name}`
-                        : tCommon("user")}{" "}
+                        : tCommon("user")}
                       {showRole && `(${tSidebar(profile.role || "user")})`}
                     </span>
                     {onLogout && (

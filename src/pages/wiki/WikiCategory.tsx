@@ -15,7 +15,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const WikiCategory: React.FC = () => {
-  const { categoryId } = useParams<{ categoryId: string }>();
+  const { categoryId, courseId } = useParams<{ categoryId: string; courseId?: string }>();
   const { profile } = useAuth();
   const { data: category, isLoading, error } = useWikiCategoryQuery(categoryId!);
   const deleteTopicMutation = useDeleteWikiTopicMutation();
@@ -122,7 +122,7 @@ const WikiCategory: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <Button asChild variant="ghost" className="mb-4">
-          <Link to={`/${profile?.role}/wiki`}>
+          <Link to={profile?.role === 'trainee' && courseId ? `/trainee/${courseId}/wiki` : `/${profile?.role}/wiki`}>
             <ArrowLeft className="h-4 w-4 ml-2" />
             بازگشت به ویکی
           </Link>

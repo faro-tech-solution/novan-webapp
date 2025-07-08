@@ -99,7 +99,7 @@ export const useMyExercisesQuery = () => {
       }
 
       // Transform the data to match the expected format
-      const transformedExercises: ExerciseWithSubmission[] = exercises.map(exercise => {
+      const transformedExercises = exercises.map(exercise => {
         const submission = exercise.exercise_submissions?.[0];
         const enrollment = enrollments.find(e => e.course_id === exercise.course_id);
         // Cast the exercise to ExerciseData with the required fields
@@ -140,11 +140,12 @@ export const useMyExercisesQuery = () => {
           estimated_time: exercise.estimated_time,
           open_date: dates.adjustedOpenDate.toISOString(),
           due_date: dates.adjustedDueDate.toISOString(),
-          close_date: dates.adjustedCloseDate.toISOString(),
           submission_status: submissionStatus,
-          submitted_at: submission?.submitted_at || null,
-          score: submission?.score || null,
-          feedback: submission?.feedback || null
+          exercise_type: (exercise as any).exercise_type || 'form',
+          auto_grade: (exercise as any).auto_grade || false,
+          content_url: (exercise as any).content_url || null,
+          completion_percentage: (submission as any)?.completion_percentage || 0,
+          auto_graded: (submission as any)?.auto_graded || false,
         };
       });
 

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { getDashboardPathForRole } from '@/utils';
 
 const Dashboard = () => {
   const { profile, loading } = useAuth();
@@ -14,15 +15,7 @@ const Dashboard = () => {
       }
 
       // Redirect based on user role
-      if (profile.role === 'trainer') {
-        navigate('/trainer/dashboard');
-      } else if (profile.role === 'trainee') {
-        navigate('/trainee/dashboard');
-      } else if (profile.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else if (profile.role === 'teammate') {
-        navigate('/teammate/dashboard');
-      }
+      navigate(getDashboardPathForRole(profile.role));
     }
   }, [profile, loading, navigate]);
 

@@ -10,7 +10,7 @@ const WelcomeCard: React.FC = () => {
   const { studentAwards, allAwards, loading: awardsLoading } = useStudentAwards();
 
   return (
-    <div className="flex flex-col md:flex-row items-center bg-white rounded-2xl shadow p-1 md:p-1 mb-6" style={{ minHeight: 260 }}>
+    <div className="flex flex-col md:flex-row items-center bg-white rounded-2xl shadow p-1" style={{ minHeight: 260 }}>
       {/* Left: Greeting and Awards */}
       <div className="flex-1 min-w-0 p-4 md:p-8">
         <h2 className="text-3xl font-bold mb-4 font-peyda text-gray-800">

@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "./Header";
 import { useTranslation } from "@/utils/translations";
@@ -37,6 +37,7 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   const { profile, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { tCommon, tSidebar } = useTranslation();
 
   const handleLogout = async () => {
@@ -89,38 +90,39 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     },
   ];
 
+  const { courseId } = useParams();
   const traineeNavItems = [
     {
-      href: "/trainee/dashboard",
+      href: `/trainee/${courseId}/dashboard`,
       icon: LayoutDashboard,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
     {
-      href: "/trainee/my-exercises",
+      href: `/trainee/${courseId}/my-exercises`,
       icon: FileText,
       label: tSidebar("myExercises"),
       key: "myExercises",
     },
     {
-      href: "/trainee/progress",
+      href: `/trainee/${courseId}/progress`,
       icon: Award,
       label: tSidebar("progress"),
       key: "progress",
     },
     {
-      href: "/trainee/student-courses",
+      href: `/trainee/${courseId}/student-courses`,
       icon: BookOpen,
       label: tSidebar("myCourses"),
       key: "myCourses",
     },
     {
-      href: "/trainee/profile",
+      href: `/trainee/${courseId}/profile`,
       icon: UserCog,
       label: tSidebar("profile"),
       key: "profile",
     },
-    { href: "/trainee/wiki", icon: BookOpen, label: tSidebar("wiki"), key: "wiki" },
+    { href: `/trainee/${courseId}/wiki`, icon: BookOpen, label: tSidebar("wiki"), key: "wiki" },
   ];
 
   const adminNavItems = [
@@ -268,26 +270,28 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
             }}
           >
             <div className="h-full py-4" style={{ height: '100%' }}>
-              <div className="px-4 mb-4">
-                <h2 className="text-lg font-semibold">{title}</h2>
-              </div>
               <nav className="space-y-1">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900 relative"
-                  >
-                    <item.icon className="h-5 w-5 ml-3" />
-                    <span>{item.label}</span>
-                    {item.href === "/review-submissions" &&
-                      pendingReviewCount > 0 && (
-                        <Badge className="absolute left-2 top-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                          {pendingReviewCount}
-                        </Badge>
-                      )}
-                  </Link>
-                ))}
+                {navItems.map((item) => {
+                  const isActive = location.pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className={`flex items-center px-4 py-2 relative transition
+                        ${isActive ? 'bg-[rgb(237,238,245)] text-gray-900 rounded-tr-[20px] rounded-br-[20px] mr-5' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}
+                      `}
+                    >
+                      <item.icon className="h-5 w-5 ml-3" />
+                      <span>{item.label}</span>
+                      {item.href === "/review-submissions" &&
+                        pendingReviewCount > 0 && (
+                          <Badge className="absolute left-2 top-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                            {pendingReviewCount}
+                          </Badge>
+                        )}
+                    </Link>
+                  );
+                })}
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
