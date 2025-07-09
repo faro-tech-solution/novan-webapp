@@ -1,18 +1,13 @@
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useMyExercises } from '@/hooks/useMyExercises';
-import { useStudentAwards } from '@/hooks/useStudentAwards';
 import { DailyTasksCard } from '@/components/dashboard/DailyTasksCard';
 import { TraineeStatsCards } from '@/components/dashboard/TraineeStatsCards';
 import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesCard';
 import WelcomeCard from '@/components/dashboard/WelcomeCard';
-import { useParams, useNavigate } from 'react-router-dom';
 
 const TraineeDashboard = () => {
-  const { courseId } = useParams();
-  const navigate = useNavigate();
   const { myExercises, loading, error, refetch } = useMyExercises();
-  const { studentAwards, loading: awardsLoading } = useStudentAwards();
 
   // Filter out exercises that will start in the future (same logic as MyExercises)
   const currentExercises = myExercises.filter(exercise => {

@@ -28,6 +28,8 @@ import {
 } from "@/components/ui/sidebar";
 import { useSubmissionsQuery } from "@/hooks/useReviewSubmissionsQuery";
 import { Badge } from "@/components/ui/badge";
+import ActiveCourseSelector from "../ActiveCourseSelector";
+import { DashboardPanelProvider } from '@/contexts/DashboardPanelContext';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -352,7 +354,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
             </Sidebar>
           </div>
 
-          {/* Main Content */}
           <main
             className="flex-1 p-6"
             style={{
@@ -362,8 +363,10 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
               backgroundColor: '#edeef5',
               borderRadius: '24px',
               margin: '0 0 10px 10px',
+              position: 'relative',
             }}
           >
+            <ActiveCourseSelector />
             {children}
           </main>
         </div>

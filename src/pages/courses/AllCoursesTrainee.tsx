@@ -4,11 +4,11 @@ import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { useCoursesQuery } from "@/hooks/queries/useCoursesQuery";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from 'react-router-dom';
+import { useGoToTraineeCourseDashboard } from '@/lib/navigation';
 
 const AllCoursesTrainee = () => {
   const { courses, loading, error, refetch } = useCoursesQuery();
-  const navigate = useNavigate();
+  const goToTraineeCourseDashboard = useGoToTraineeCourseDashboard();
 
   if (loading) {
     return (
@@ -32,6 +32,8 @@ const AllCoursesTrainee = () => {
     );
   }
 
+  const filteredCourses = courses.filter((c: any) => c.status === 'active');
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -42,16 +44,16 @@ const AllCoursesTrainee = () => {
           </CardHeader>
           <CardContent>
             <div className="mb-6" />
-            {courses.length > 0 ? (
+            {filteredCourses.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {courses.map((course) => (
+                {filteredCourses.map((course) => (
                   <div
                     key={course.id}
                     className="rounded-2xl bg-gradient-to-br from-blue-400 to-blue-300 shadow p-0 flex flex-col justify-between h-full relative overflow-hidden cursor-pointer transition-transform hover:scale-[1.03]"
-                    onClick={() => navigate(`/trainee/${course.id}/dashboard`)}
+                    onClick={() => goToTraineeCourseDashboard(course.id)}
                     tabIndex={0}
                     role="button"
-                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate(`/trainee/${course.id}/dashboard`); }}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') goToTraineeCourseDashboard(course.id); }}
                     aria-label={`مشاهده داشبورد دوره ${course.name}`}
                   >
                     {/* Illustration */}
@@ -61,23 +63,18 @@ const AllCoursesTrainee = () => {
                         <span role="img" aria-label="course" className="text-5xl">👩‍💻</span>
                       </div>
                     </div>
-                    {/* Chat bubbles (decorative) */}
-                    <div className="absolute top-4 right-4 flex flex-col gap-2">
-                      <div className="bg-white/80 rounded-lg px-3 py-1 text-xs text-blue-700 shadow">...</div>
-                      <div className="bg-white/80 rounded-lg px-3 py-1 text-xs text-blue-700 shadow">...</div>
-                    </div>
                     {/* Course Info */}
                     <div className="flex-1 flex flex-col justify-end px-6 pb-6 pt-4">
                       <h3 className="text-lg font-bold text-white mb-1">{course.name}</h3>
                       <div className="text-blue-100 text-xs mb-4">Create by Course Agency</div>
-                      <div className="flex gap-3 mt-2">
+                      {/* <div className="flex gap-3 mt-2">
                         <div className="flex items-center gap-1 bg-white/80 rounded-full px-3 py-1 text-xs text-blue-700 font-medium">
                           <span role="img" aria-label="files">📁</span> 17 Files
                         </div>
                         <div className="flex items-center gap-1 bg-white/80 rounded-full px-3 py-1 text-xs text-blue-700 font-medium">
                           <span role="img" aria-label="duration">⏰</span> 40 min
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 ))}

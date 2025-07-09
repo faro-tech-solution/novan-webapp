@@ -43,17 +43,14 @@ const Header = ({
       <div style={{ margin: '0 auto', padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logo */}
         <div className="flex items-center space-x-4 space-x-reverse">
-          <Link
-            to="/"
-            className="flex items-center space-x-2 space-x-reverse"
-          >
+          
             <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">آ</span>
             </div>
             <span className="text-xl font-bold text-gray-900 font-peyda">
               {tCommon("portalName")}
             </span>
-          </Link>
+          
 
           {isDashboard && (
             <>
@@ -77,7 +74,7 @@ const Header = ({
           {!loading && (
             <>
               {profile ? (
-                isDashboard ? (
+                isDashboard && (
                   <div className="hidden md:flex items-center space-x-2 space-x-reverse">
                     <span className="text-sm text-gray-700">
                       {profile.first_name && profile.last_name
@@ -92,15 +89,6 @@ const Header = ({
                       </Button>
                     )}
                   </div>
-                ) : (
-                  <Link to={profile?.role ? `/${profile.role}/dashboard` : "/"}>
-                    <Button variant="outline">
-                      <User className="h-4 w-4 ml-2" />
-                      {profile.first_name && profile.last_name
-                        ? `${profile.first_name} ${profile.last_name}`
-                        : tCommon("user")}
-                    </Button>
-                  </Link>
                 )
               ) : (
                 !isDashboard && (
