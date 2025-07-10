@@ -11,9 +11,7 @@
     "preview": "vite preview",
     "migrate:create": "node scripts/migrate.js create",
     "migrate:sync": "node scripts/migrate.js sync",
-    "migrate:list": "node scripts/migrate.js list",
-    "prepare": "husky install",
-    "husky:ls": "ls .husky | grep -v '^_' | xargs -I {} sh -c 'echo \"\\n--- .husky/{} ---\"; cat .husky/{}'"
+    "migrate:list": "node scripts/migrate.js list"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
