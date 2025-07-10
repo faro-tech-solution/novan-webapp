@@ -37,7 +37,7 @@ export const useProfileQuery = () => {
       return data as Profile;
     },
     enabled: !!user,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
   });
 };
 

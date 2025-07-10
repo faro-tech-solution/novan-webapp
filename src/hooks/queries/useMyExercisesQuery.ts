@@ -1,24 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStableAuth } from '@/hooks/useStableAuth';
-import { Database } from '@/integrations/supabase/types';
-import { ExerciseWithSubmission, ExerciseData, ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
+import { ExerciseData, ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
 import { CourseEnrollment } from '@/types/course';
 import { calculateAdjustedDates } from '@/utils/exerciseDateUtils';
 import { calculateSubmissionStatus } from '@/utils/exerciseSubmissionUtils';
-
-// Extended types to match the database schema with the new fields
-type ExerciseSubmissionExtended = Database['public']['Tables']['exercise_submissions']['Row'] & {
-  auto_graded?: boolean;
-  completion_percentage?: number;
-};
-
-type ExerciseExtended = Database['public']['Tables']['exercises']['Row'] & {
-  courses: Database['public']['Tables']['courses']['Row'];
-  exercise_submissions: ExerciseSubmissionExtended[];
-  exercise_type?: string;
-  auto_grade?: boolean;
-};
 
 export const useMyExercisesQuery = () => {
   const { user, isQueryEnabled } = useStableAuth();

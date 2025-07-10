@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { TableCell, TableRow } from '@/components/ui/table';
 import { ResponsiveTable } from '@/components/ui/responsive-table';
 import { CheckCircle, Clock, FileText, Award, Calendar } from 'lucide-react';
 import { MyExerciseWithSubmission } from '@/types/exercise';

@@ -54,21 +54,22 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
   if (submissionsError) throw submissionsError;
 
   // Then, fetch all relevant profiles
-  const studentIds = submissions?.map(s => s.student_id) || [];
-  const { data: profiles, error: profilesError } = await supabase
-    .from('profiles')
-    .select('id, first_name, last_name, email, is_demo')
-    .in('id', studentIds);
+  // const studentIds = submissions?.map(s => s.student_id) || [];
+  // const { data: profiles, error: profilesError } = await supabase
+  //   .from('profiles')
+  //   .select('id, first_name, last_name, email, is_demo')
+  //   .in('id', studentIds);
 
-  if (profilesError) throw profilesError;
+  // if (profilesError) throw profilesError;
 
   // Create a map of profiles for easy lookup
-  const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+  // const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
+    return [];
   // Combine the data
   return (submissions || []).map(submission => ({
     ...submission,
-    student: profileMap.get(submission.student_id) || undefined,
+    // student: profileMap.get(submission.student_id) || undefined,
     exercise: submission.exercise ? {
       id: submission.exercise.id,
       title: submission.exercise.title,

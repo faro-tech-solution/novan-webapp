@@ -237,11 +237,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   const { data: submissions = [] } = useSubmissionsQuery();
   const pendingReviewCount = submissions.filter((s) => s.score === null).length;
 
-  const getRoleLabel = (role?: string) => {
-    const roleKey = role || "user";
-    return tSidebar(roleKey);
-  };
-
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen bg-gray-50 w-full">

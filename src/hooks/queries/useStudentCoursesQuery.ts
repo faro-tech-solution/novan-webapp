@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { StudentCourse } from '@/types/course';
 
-const fetchStudentCourses = async (userId: string | undefined): Promise<StudentCourse[]> => {
+const fetchStudentCourses = async (userId: string | undefined, courseId?: string): Promise<StudentCourse[]> => {
   console.log('🔍 Fetching student courses for user:', userId);
   
   if (!userId) {
@@ -12,7 +12,7 @@ const fetchStudentCourses = async (userId: string | undefined): Promise<StudentC
   }
 
   console.log('📊 Querying course_enrollments table...');
-  const { data: enrollments, error: enrollmentsError } = await supabase
+  let query = supabase
     .from('course_enrollments')
     .select(`
       id,
@@ -27,6 +27,12 @@ const fetchStudentCourses = async (userId: string | undefined): Promise<StudentC
     `)
     .eq('student_id', userId)
     .eq('status', 'active');
+
+  if (courseId) {
+    query = query.eq('course_id', courseId);
+  }
+
+  const { data: enrollments, error: enrollmentsError } = await query;
 
   console.log('📋 Enrollments query result:', { 
     count: enrollments?.length || 0, 
@@ -77,7 +83,7 @@ const fetchStudentCourses = async (userId: string | undefined): Promise<StudentC
   return transformedCourses;
 };
 
-export const useStudentCoursesQuery = () => {
+export const useStudentCoursesQuery = (courseId?: string) => {
   const { user } = useAuth();
 
   console.log('👤 Current user in useStudentCoursesQuery:', { 
@@ -87,8 +93,8 @@ export const useStudentCoursesQuery = () => {
   });
 
   return useQuery({
-    queryKey: ['student-courses', user?.id],
-    queryFn: () => fetchStudentCourses(user?.id),
+    queryKey: ['student-courses', user?.id, courseId],
+    queryFn: () => fetchStudentCourses(user?.id, courseId),
     enabled: !!user,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 1

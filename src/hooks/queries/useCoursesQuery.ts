@@ -55,6 +55,7 @@ export const useCoursesQuery = () => {
       return coursesWithCounts;
     },
     enabled: !!profile,
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
   });
 
   const deleteCourseMutation = useMutation({
