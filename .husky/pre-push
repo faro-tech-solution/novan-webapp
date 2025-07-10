@@ -1,7 +1,6 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 
-node scripts/check-unused-ts-files.js
+node scripts/check-unused-ts-files.cjs
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "\n❌ Push blocked: Unused .ts/.tsx files detected. Please remove or use them before pushing."
