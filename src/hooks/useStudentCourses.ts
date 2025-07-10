@@ -28,7 +28,7 @@ export const useStudentCourses = () => {
             id,
             name,
             description,
-            instructor_name
+            instructor:profiles(id, first_name, last_name, avatar_url)
           )
         `)
         .eq('student_id', user.id)
@@ -55,7 +55,7 @@ export const useStudentCourses = () => {
           return {
             id: course.id,
             title: course.name,
-            instructor: course.instructor_name,
+            instructor: course.instructor ? `${course.instructor.first_name} ${course.instructor.last_name}` : 'نامشخص',
             progress: mockProgress,
             totalLessons: mockTotalLessons,
             completedLessons: mockCompletedLessons,

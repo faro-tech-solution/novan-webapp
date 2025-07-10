@@ -13,40 +13,49 @@ The RLS policies are designed to:
 
 ## Files
 
-### Dashboard RLS Policies (New - Required for Admin/Trainer Dashboards)
-- `04_dashboard_rls_policies.sql` - Comprehensive RLS policies for all dashboard tables (may cause infinite recursion)
-- `05_apply_dashboard_rls_policies.sql` - Master script to apply all dashboard RLS policies
-- `06_dashboard_rls_policies_simple.sql` - Simplified RLS policies for all dashboard tables (RECOMMENDED - avoids infinite recursion)
-- `07_apply_simple_dashboard_rls_policies.sql` - Master script to apply simplified dashboard RLS policies
-- `cleanup_dashboard_policies.sql` - Cleanup script to remove existing dashboard policies
+### Dashboard RLS Policies (Legacy - Now Minimal)
+- `04_dashboard_rls_policies.sql` - Legacy dashboard RLS policies (profiles only)
+- `06_dashboard_rls_policies_simple.sql` - Legacy simplified dashboard RLS policies (profiles only)
 - `test_dashboard_rls.sql` - Test script for dashboard RLS policies
 
-### Course RLS Policies
+### Consolidated RLS Policies
+- `01_profiles_rls.sql` - All profile-related RLS policies (consolidated)
+- `02_courses_rls.sql` - All course-related RLS policies (consolidated)
+- `03_exercises_rls.sql` - All exercise-related RLS policies (consolidated)
+- `04_wiki_rls.sql` - All wiki-related RLS policies (consolidated: wiki_articles, wiki_categories, wiki_category_course_access, wiki_topics)
+- `05_tasks_rls.sql` - All tasks-related RLS policies (consolidated: tasks, subtasks)
+- `06_groups_rls.sql` - All group-related RLS policies (consolidated: groups, group_members, group_courses)
+- `07_awards_rls.sql` - All awards-related RLS policies (consolidated: awards, student_awards)
+- `08_activities_logs_rls.sql` - All activities and logs RLS policies (consolidated: daily_activities, student_activity_logs)
+- `09_notifications_rls.sql` - All notifications RLS policies (consolidated: notifications)
+- `10_accounting_rls.sql` - All accounting RLS policies (consolidated: accounting)
+
+### Master Scripts
 - `00_apply_all_rls_policies.sql` - Master script that applies all RLS policies in the correct order.
 - `00_apply_simple_rls_policies.sql` - Master script that applies simplified RLS policies to avoid infinite recursion (RECOMMENDED).
 
-### `01_courses_rls_policies.sql`
-RLS policies for the `courses` table:
-- **Users can view courses**: All authenticated users can view courses (fixes API issue)
-- **Instructors can manage their own courses**: Full access for course creators
-- **Admins can manage all courses**: Full access for administrators
-- **Students can view enrolled courses**: Students can view courses they're enrolled in
-- **Public can view active courses**: Optional public access to active courses
-- **Trainers can view/update assigned courses**: Trainers can access courses they're assigned to
-- **Instructors can update/delete their courses**: Limited management for instructors
+### Cleanup Files (Removed)
+- ~~`cleanup_dashboard_policies.sql`~~ - Removed (no longer needed)
+- ~~`cleanup_existing_policies.sql`~~ - Removed (no longer needed)
+- ~~`check_existing_policies.sql`~~ - Removed (no longer needed)
 
-### `01_courses_rls_policies_simple.sql`
-Simplified RLS policies for the `courses` table (RECOMMENDED):
+### `02_courses_rls.sql`
+Consolidated RLS policies for course-related tables (`courses`, `course_enrollments`, `course_terms`, `teacher_course_assignments`, `teacher_term_assignments`):
+
+**Courses Table:**
 - **Users can view courses**: All authenticated users can view courses (fixes API issue)
 - **Instructors can manage their own courses**: Full access for course creators
-- **Admins can manage all courses**: Full access for administrators
-- **Public can view active courses**: Optional public access to active courses
-- **Instructors can delete their courses**: Limited management for instructors
 - **Admins can manage all courses**: Full access for administrators
 - **Students can view enrolled courses**: Students can view courses they're enrolled in
 - **Public can view active courses**: Optional public access to active courses
 - **Trainers can view/update assigned courses**: Trainers can access courses they're assigned to
-- **Instructors can update/delete their courses**: Limited management for instructors
+- **Instructors can delete their courses**: Limited management for instructors
+- **Admins can delete any course**: Full access for administrators
+
+**Teacher Assignments:**
+- **Teachers can view their assignments**: Teachers can view their own course and term assignments
+- **Admins can manage all assignments**: Admins have full access to all teacher assignments
+- **Public can view assignments**: Public read access for dashboard functionality
 
 ### Dashboard RLS Policies Details
 
@@ -111,22 +120,65 @@ The dashboard RLS policies cover all tables needed by admin and trainer dashboar
 - **Users**: Can view their own notifications
 - **Admins**: Can view all notifications
 
-### `02_course_enrollments_rls_policies.sql`
-RLS policies for the `course_enrollments` table:
-- **Users can view their own enrollments**: Students can view their enrollments
-- **Instructors can view course enrollments**: Course creators can view enrollments
-- **Admins can manage all enrollments**: Full access for administrators
-- **Students can manage their own enrollments**: Students can create/update their enrollments
-- **Trainers can view/update assigned course enrollments**: Trainers can access enrollments for assigned courses
-- **Users can create enrollments for available courses**: Enrollment creation with validation
+### `01_profiles_rls.sql` (Consolidated)
+This file contains all RLS policies for the profiles table:
 
-### `03_course_terms_rls_policies.sql`
-RLS policies for the `course_terms` table:
-- **Users can view course terms**: All authenticated users can view terms (fixes API issue)
-- **Instructors can manage course terms**: Course creators can manage terms
+#### Profiles Table Policies:
+- **Admins and Trainers can view all profiles**: Admins and trainers can view all user profiles
+- **Users can view their own profile**: Users can view their own profile
+- **Users can update their own profile**: Users can update their own profile
+- **Users can insert their own profile**: Users can create their own profile during signup
+
+### `02_courses_rls.sql` (Consolidated)
+This file now contains all RLS policies for course-related tables:
+
+#### Courses Table Policies:
+- **Admins can manage all courses**: Full access for administrators
+- **Admins can delete any course**: Full access for administrators
+- **Trainers can manage their own courses**: Full access for course creators
+- **Trainers can view assigned courses**: Trainers can access courses they're assigned to
+- **Trainees can view active courses**: Trainees can view active courses
+- **Trainees can view enrolled courses**: Trainees can view courses they're enrolled in
+- **Users can view courses**: All authenticated users can view courses (fixes API issue)
+- **Public can view active courses**: Optional public access to active courses
+
+#### Course Enrollments Table Policies:
+- **Admins can manage all enrollments**: Full access for administrators
+- **Trainers can view/update assigned course enrollments**: Trainers can access enrollments for assigned courses
+- **Trainees can view their own enrollments**: Trainees can view their own enrollments
+- **Trainees can manage their own enrollments**: Trainees can create/update their enrollments
+- **Trainees can create enrollments for available courses**: Enrollment creation with validation
+- **Trainers can view/update enrollments for their courses**: Trainers can access enrollments for courses they created
+
+#### Course Terms Table Policies:
 - **Admins can manage all course terms**: Full access for administrators
+- **Trainers can manage terms for their courses**: Course creators can manage terms
 - **Trainers can view/update assigned course terms**: Trainers can access terms for assigned courses
-- **Instructors can manage course terms**: Instructors can manage terms for their courses
+- **Users can view course terms**: All authenticated users can view terms (fixes API issue)
+
+### `03_exercises_rls.sql` (Consolidated)
+This file now contains all RLS policies for exercise-related tables:
+
+#### Exercises Table Policies:
+- **Admins can manage all exercises**: Full access for administrators
+- **Trainers can manage their exercises**: Full access for exercise creators
+- **Trainers can view assigned exercises**: Trainers can access exercises for courses they're assigned to
+- **Users can view exercises**: All authenticated users can view exercises (needed for dashboards)
+
+#### Exercise Submissions Table Policies:
+- **Admins can view all submissions**: Full access for administrators
+- **Admins can grade all submissions**: Full access for administrators
+- **Trainers can view submissions for their exercises**: Trainers can view submissions for exercises they created
+- **Trainers can grade submissions for their exercises**: Trainers can grade submissions for exercises they created
+- **Trainers can view assigned submissions**: Trainers can view submissions for courses they're assigned to
+- **Trainees can view their own submissions**: Trainees can view their own submissions
+- **Trainees can create submissions**: Trainees can create new submissions
+
+#### Exercise Categories Table Policies:
+- **Admins can manage all exercise categories**: Full access for administrators
+- **Trainers can manage exercise categories for their courses**: Course creators can manage categories
+- **Trainers can manage assigned exercise categories**: Trainers can manage categories for courses they're assigned to
+- **Users can view exercise categories**: All authenticated users can view categories
 
 ## Key Features
 
@@ -173,11 +225,11 @@ psql -d your_database -f migrations/rls/00_apply_simple_rls_policies.sql
 # Alternative: Use the original master script (may cause infinite recursion)
 psql -d your_database -f migrations/rls/00_apply_all_rls_policies.sql
 
-# Or run cleanup first, then apply simplified policies
+# Or run cleanup first, then apply consolidated policies
 psql -d your_database -f migrations/rls/cleanup_existing_policies.sql
-psql -d your_database -f migrations/rls/01_courses_rls_policies_simple.sql
-psql -d your_database -f migrations/rls/02_course_enrollments_rls_policies_simple.sql
-psql -d your_database -f migrations/rls/03_course_terms_rls_policies_simple.sql
+psql -d your_database -f migrations/rls/01_profiles_rls.sql
+psql -d your_database -f migrations/rls/02_courses_rls.sql
+psql -d your_database -f migrations/rls/03_exercises_rls.sql
 ```
 
 ### Apply Individual Policies
@@ -191,10 +243,10 @@ psql -d your_database -f migrations/rls/06_dashboard_rls_policies_simple.sql
 # Alternative: Apply comprehensive dashboard policies (may cause infinite recursion)
 psql -d your_database -f migrations/rls/04_dashboard_rls_policies.sql
 
-# Apply course policies for specific tables
-psql -d your_database -f migrations/rls/01_courses_rls_policies.sql
-psql -d your_database -f migrations/rls/02_course_enrollments_rls_policies.sql
-psql -d your_database -f migrations/rls/03_course_terms_rls_policies.sql
+# Apply consolidated profile, course and exercise policies
+psql -d your_database -f migrations/rls/01_profiles_rls.sql
+psql -d your_database -f migrations/rls/02_courses_rls.sql
+psql -d your_database -f migrations/rls/03_exercises_rls.sql
 ```
 
 ## Verification
@@ -209,10 +261,11 @@ SELECT
   rowsecurity
 FROM pg_tables 
 WHERE tablename IN (
-  'profiles', 'exercises', 'exercise_submissions', 'teacher_course_assignments',
+  'profiles', 'teacher_course_assignments',
   'awards', 'student_awards', 'daily_activities', 'tasks', 'subtasks',
   'groups', 'group_members', 'accounting', 'notifications',
-  'courses', 'course_enrollments', 'course_terms'
+  'courses', 'course_enrollments', 'course_terms',
+  'exercises', 'exercise_submissions', 'exercise_categories'
 );
 ```
 

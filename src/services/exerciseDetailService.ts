@@ -166,9 +166,8 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
 export const submitExerciseSolution = async (
   exerciseId: string,
   studentId: string,
-  studentEmail: string,
-  studentName: string,
   solution: string,
+  courseId: string,
   feedback?: string
 ): Promise<{ error: string | null }> => {
   console.log('Submitting solution for exercise:', exerciseId);
@@ -201,6 +200,7 @@ export const submitExerciseSolution = async (
   const submissionData: SubmissionData = {
     exercise_id: exerciseId,
     student_id: studentId,
+    course_id: courseId, // Set course_id from parameter
     solution: finalSolution,
     submitted_at: new Date().toISOString()
   };

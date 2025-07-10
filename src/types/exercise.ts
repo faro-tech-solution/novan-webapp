@@ -71,6 +71,7 @@ export interface SubmissionData {
   student_id: string;
   solution: string;
   submitted_at: string;
+  course_id: string;
 }
 
 // For upcoming exercises card

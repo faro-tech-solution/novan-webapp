@@ -69,7 +69,7 @@ CREATE TABLE public.exercises (
   exercise_type TEXT DEFAULT 'form' CHECK (exercise_type IN ('form', 'video', 'audio', 'simple')),
   content_url TEXT,                   -- URL for media content
   auto_grade BOOLEAN DEFAULT FALSE,   -- Whether exercise is auto-graded
-  course_id UUID,                     -- Foreign key to courses table
+  course_id UUID NOT NULL,                     -- Foreign key to courses table (mandatory)
   form_structure JSONB DEFAULT '{"questions": []}', -- JSON structure for form-based exercises
   days_to_open INTEGER DEFAULT 0,     -- Number of days after creation when exercise opens
   days_to_due INTEGER DEFAULT 7,      -- Number of days after creation when exercise is due
@@ -94,6 +94,7 @@ CREATE TABLE public.exercise_submissions (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   exercise_id UUID REFERENCES public.exercises(id) ON DELETE CASCADE NOT NULL,
   student_id UUID REFERENCES auth.users(id) NOT NULL,
+  course_id UUID REFERENCES public.courses(id), -- Foreign key to courses table
   solution TEXT NOT NULL,
   score INTEGER CHECK (score >= 0 AND score <= 100),
   feedback TEXT,

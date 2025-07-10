@@ -26,61 +26,7 @@ CREATE INDEX IF NOT EXISTS idx_exercise_categories_course_id ON exercise_categor
 CREATE INDEX IF NOT EXISTS idx_exercise_categories_order ON exercise_categories(order_index);
 CREATE INDEX IF NOT EXISTS idx_exercises_category_id ON exercises(category_id);
 
--- Enable RLS on exercise_categories table
-ALTER TABLE exercise_categories ENABLE ROW LEVEL SECURITY;
-
--- RLS Policies for exercise_categories
--- Policy 1: Users can view categories for courses they have access to
-CREATE POLICY "Users can view exercise categories" ON exercise_categories
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
-
--- Policy 2: Instructors can manage categories for their courses
-CREATE POLICY "Instructors can manage exercise categories" ON exercise_categories
-FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM courses c
-    WHERE c.id = exercise_categories.course_id
-    AND c.instructor_id = auth.uid()
-  )
-) WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM courses c
-    WHERE c.id = exercise_categories.course_id
-    AND c.instructor_id = auth.uid()
-  )
-);
-
--- Policy 3: Admins can manage all categories
-CREATE POLICY "Admins can manage all exercise categories" ON exercise_categories
-FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-);
-
--- Policy 4: Trainers can manage categories for courses they are assigned to
-CREATE POLICY "Trainers can manage assigned exercise categories" ON exercise_categories
-FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM teacher_course_assignments tca
-    JOIN profiles p ON tca.teacher_id = p.id
-    WHERE tca.course_id = exercise_categories.course_id
-    AND tca.teacher_id = auth.uid()
-    AND p.role = 'trainer'
-  )
-) WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM teacher_course_assignments tca
-    JOIN profiles p ON tca.teacher_id = p.id
-    WHERE tca.course_id = exercise_categories.course_id
-    AND tca.teacher_id = auth.uid()
-    AND p.role = 'trainer'
-  )
-);
+-- RLS policies for exercise_categories have been moved to 03_exercises_rls.sql
 
 -- Create trigger to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_exercise_categories_updated_at()

@@ -4,20 +4,22 @@ export interface Course {
   name: string;
   description: string | null;
   instructor_id: string;
-  instructor_name: string;
   status: string;
   max_students: number | null;
   created_at: string;
   student_count?: number;
   price?: number;
+  slug: string;
+  thumbnail?: string;
 }
 
 // Course interface for exercise-related contexts
 export interface ExerciseCourse {
   id: string;
   name: string;
-  instructor_name: string;
   status: string;
+  slug: string;
+  thumbnail?: string;
 }
 
 // Course interface for edit dialog
@@ -29,6 +31,8 @@ export interface EditableCourse {
   instructor_id: string;
   status: string;
   price?: number;
+  slug: string;
+  thumbnail?: string;
 }
 
 // Course interface for student enrollment context

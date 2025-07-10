@@ -5,6 +5,9 @@
 -- DASHBOARD RLS POLICIES APPLICATION
 -- ========================================
 
+-- Apply profiles RLS policies first (required for other policies)
+\i migrations/rls/01_profiles_rls.sql
+
 -- Apply the comprehensive dashboard RLS policies
 \i migrations/rls/04_dashboard_rls_policies.sql
 

@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useSubmissionsQuery } from "@/hooks/useReviewSubmissionsQuery";
 import { Badge } from "@/components/ui/badge";
-import ActiveCourseSelector from "../ActiveCourseSelector";
+import ActiveCourseSelector from "../courses/ActiveCourseSelector";
 import { DashboardPanelProvider } from '@/contexts/DashboardPanelContext';
 
 interface DashboardLayoutProps {

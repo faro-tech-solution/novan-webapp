@@ -1,243 +1,11 @@
 -- Dashboard RLS Policies
 -- This migration creates RLS policies for all tables needed by admin and trainer dashboards
 -- to ensure proper access control while allowing dashboard functionality
+-- Note: Profiles RLS policies are handled separately in 01_profiles_rls.sql
 
--- ========================================
--- PROFILES TABLE RLS POLICIES
--- ========================================
+-- Exercise-related RLS policies have been moved to 03_exercises_rls.sql
 
--- Enable RLS on profiles table if not already enabled
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Users can view their own profile" ON profiles;
-DROP POLICY IF EXISTS "Admins can view all profiles" ON profiles;
-DROP POLICY IF EXISTS "Trainers can view student profiles" ON profiles;
-DROP POLICY IF EXISTS "Users can update their own profile" ON profiles;
-DROP POLICY IF EXISTS "Admins can update all profiles" ON profiles;
-
--- Policy 1: Users can view their own profile
-CREATE POLICY "Users can view their own profile" ON profiles
-FOR SELECT USING (
-  auth.uid() = id
-);
-
--- Policy 2: Admins can view all profiles
-CREATE POLICY "Admins can view all profiles" ON profiles
-FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-);
-
--- Policy 3: Trainers can view student profiles for their assigned courses
-CREATE POLICY "Trainers can view student profiles" ON profiles
-FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM profiles p
-    WHERE p.id = auth.uid() 
-    AND p.role = 'trainer'
-  )
-  AND (
-    role = 'trainee' OR 
-    auth.uid() = id
-  )
-);
-
--- Policy 4: Users can update their own profile
-CREATE POLICY "Users can update their own profile" ON profiles
-FOR UPDATE USING (
-  auth.uid() = id
-) WITH CHECK (
-  auth.uid() = id
-);
-
--- Policy 5: Admins can update all profiles
-CREATE POLICY "Admins can update all profiles" ON profiles
-FOR UPDATE USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-) WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-);
-
--- ========================================
--- EXERCISES TABLE RLS POLICIES
--- ========================================
-
--- Enable RLS on exercises table if not already enabled
-ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Users can view exercises" ON exercises;
-DROP POLICY IF EXISTS "Instructors can manage their exercises" ON exercises;
-DROP POLICY IF EXISTS "Admins can manage all exercises" ON exercises;
-DROP POLICY IF EXISTS "Trainers can view assigned exercises" ON exercises;
-
--- Policy 1: Users can view exercises (needed for dashboards)
-CREATE POLICY "Users can view exercises" ON exercises
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
-
--- Policy 2: Instructors can manage their exercises
-CREATE POLICY "Instructors can manage their exercises" ON exercises
-FOR ALL USING (
-  created_by = auth.uid()
-) WITH CHECK (
-  created_by = auth.uid()
-);
-
--- Policy 3: Admins can manage all exercises
-CREATE POLICY "Admins can manage all exercises" ON exercises
-FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-);
-
--- Policy 4: Trainers can view exercises for their assigned courses
-CREATE POLICY "Trainers can view assigned exercises" ON exercises
-FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM teacher_course_assignments tca
-    JOIN profiles p ON tca.teacher_id = p.id
-    WHERE tca.course_id = exercises.course_id
-    AND tca.teacher_id = auth.uid()
-    AND p.role = 'trainer'
-  )
-);
-
--- ========================================
--- EXERCISE_SUBMISSIONS TABLE RLS POLICIES
--- ========================================
-
--- Enable RLS on exercise_submissions table if not already enabled
-ALTER TABLE exercise_submissions ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Students can view their submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Students can create submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Instructors can view course submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Admins can view all submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Trainers can view assigned submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Instructors can grade submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Admins can grade all submissions" ON exercise_submissions;
-
--- Policy 1: Students can view their own submissions
-CREATE POLICY "Students can view their submissions" ON exercise_submissions
-FOR SELECT USING (
-  student_id = auth.uid()
-);
-
--- Policy 2: Students can create submissions
-CREATE POLICY "Students can create submissions" ON exercise_submissions
-FOR INSERT WITH CHECK (
-  student_id = auth.uid()
-);
-
--- Policy 3: Instructors can view submissions for their exercises
-CREATE POLICY "Instructors can view course submissions" ON exercise_submissions
-FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM exercises e
-    WHERE e.id = exercise_submissions.exercise_id
-    AND e.created_by = auth.uid()
-  )
-);
-
--- Policy 4: Admins can view all submissions
-CREATE POLICY "Admins can view all submissions" ON exercise_submissions
-FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-);
-
--- Policy 5: Trainers can view submissions for their assigned courses
-CREATE POLICY "Trainers can view assigned submissions" ON exercise_submissions
-FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM teacher_course_assignments tca
-    JOIN profiles p ON tca.teacher_id = p.id
-    JOIN exercises e ON tca.course_id = e.course_id
-    WHERE e.id = exercise_submissions.exercise_id
-    AND tca.teacher_id = auth.uid()
-    AND p.role = 'trainer'
-  )
-);
-
--- Policy 6: Instructors can grade submissions for their exercises
-CREATE POLICY "Instructors can grade submissions" ON exercise_submissions
-FOR UPDATE USING (
-  EXISTS (
-    SELECT 1 FROM exercises e
-    WHERE e.id = exercise_submissions.exercise_id
-    AND e.created_by = auth.uid()
-  )
-) WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM exercises e
-    WHERE e.id = exercise_submissions.exercise_id
-    AND e.created_by = auth.uid()
-  )
-);
-
--- Policy 7: Admins can grade all submissions
-CREATE POLICY "Admins can grade all submissions" ON exercise_submissions
-FOR UPDATE USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-) WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-);
-
--- ========================================
--- TEACHER_COURSE_ASSIGNMENTS TABLE RLS POLICIES
--- ========================================
-
--- Enable RLS on teacher_course_assignments table if not already enabled
-ALTER TABLE teacher_course_assignments ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Teachers can view their assignments" ON teacher_course_assignments;
-DROP POLICY IF EXISTS "Admins can manage all assignments" ON teacher_course_assignments;
-
--- Policy 1: Teachers can view their own assignments
-CREATE POLICY "Teachers can view their assignments" ON teacher_course_assignments
-FOR SELECT USING (
-  teacher_id = auth.uid()
-);
-
--- Policy 2: Admins can manage all assignments
-CREATE POLICY "Admins can manage all assignments" ON teacher_course_assignments
-FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-);
+-- Teacher assignment RLS policies have been moved to 02_courses_rls.sql
 
 -- ========================================
 -- AWARDS TABLE RLS POLICIES
@@ -308,28 +76,8 @@ FOR SELECT USING (
 -- DAILY_ACTIVITIES TABLE RLS POLICIES
 -- ========================================
 
--- Enable RLS on daily_activities table if not already enabled
-ALTER TABLE daily_activities ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Users can view daily activities" ON daily_activities;
-DROP POLICY IF EXISTS "Admins can manage daily activities" ON daily_activities;
-
--- Policy 1: Users can view daily activities (needed for dashboards)
-CREATE POLICY "Users can view daily activities" ON daily_activities
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
-
--- Policy 2: Admins can manage daily activities
-CREATE POLICY "Admins can manage daily activities" ON daily_activities
-FOR ALL USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE id = auth.uid() 
-    AND role = 'admin'
-  )
-);
+-- Remove all ALTER TABLE and CREATE/DROP POLICY statements for:
+-- daily_activities, student_activity_logs, notifications, accounting
 
 -- ========================================
 -- TASKS TABLE RLS POLICIES
@@ -511,10 +259,7 @@ FOR SELECT USING (
 
 -- Create indexes to improve RLS policy performance
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles(role);
-CREATE INDEX IF NOT EXISTS idx_exercises_created_by ON exercises(created_by);
-CREATE INDEX IF NOT EXISTS idx_exercises_course_id ON exercises(course_id);
-CREATE INDEX IF NOT EXISTS idx_exercise_submissions_student_id ON exercise_submissions(student_id);
-CREATE INDEX IF NOT EXISTS idx_exercise_submissions_exercise_id ON exercise_submissions(exercise_id);
+-- Exercise-related indexes have been moved to 03_exercises_rls.sql
 CREATE INDEX IF NOT EXISTS idx_teacher_course_assignments_teacher_id ON teacher_course_assignments(teacher_id);
 CREATE INDEX IF NOT EXISTS idx_teacher_course_assignments_course_id ON teacher_course_assignments(course_id);
 CREATE INDEX IF NOT EXISTS idx_student_awards_student_id ON student_awards(student_id);
@@ -524,16 +269,14 @@ CREATE INDEX IF NOT EXISTS idx_group_members_user_id ON group_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_accounting_user_id ON accounting(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_receiver_id ON notifications(receiver_id);
 
--- Verify RLS is enabled for all tables
+-- Verify RLS is enabled for all dashboard tables
 SELECT 
   schemaname,
   tablename,
   rowsecurity
 FROM pg_tables 
 WHERE tablename IN (
-  'profiles', 'exercises', 'exercise_submissions', 'teacher_course_assignments',
-  'awards', 'student_awards', 'daily_activities', 'tasks', 'subtasks',
-  'groups', 'group_members', 'accounting', 'notifications'
+  'profiles'
 )
 ORDER BY tablename;
 
@@ -545,8 +288,6 @@ SELECT
   permissive
 FROM pg_policies 
 WHERE tablename IN (
-  'profiles', 'exercises', 'exercise_submissions', 'teacher_course_assignments',
-  'awards', 'student_awards', 'daily_activities', 'tasks', 'subtasks',
-  'groups', 'group_members', 'accounting', 'notifications'
+  'profiles'
 )
 ORDER BY tablename, policyname; 

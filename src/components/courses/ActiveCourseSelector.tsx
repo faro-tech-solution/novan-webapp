@@ -2,8 +2,8 @@ import { useCoursesQuery } from '@/hooks/queries/useCoursesQuery';
 import { useDashboardPanelContext } from '@/contexts/DashboardPanelContext';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useGoToTraineeCourseDashboard } from '@/lib/navigation';
+import CoursesBlock from './CoursesBlock';
 
 const ActiveCourseSelector = () => {
   const { courses, loading } = useCoursesQuery();
@@ -11,8 +11,9 @@ const ActiveCourseSelector = () => {
   const { trainee: { courseId: currentCourseId } } = useDashboardPanelContext();
   const goToTraineeCourseDashboard = useGoToTraineeCourseDashboard();
   const [showAll, setShowAll] = useState(false);
-  const filteredCourses = courses.filter((c: any) => c.status === 'active');
-  const activeCourse = filteredCourses.find((c: any) => c.id === currentCourseId);
+  const activeCourses = courses.filter((c: any) => c.status === 'active');
+  const otherCourses = courses.filter((c: any) => c.status !== 'active');
+  const activeCourse = [...activeCourses, ...otherCourses].find((c: any) => c.id === currentCourseId);
 
   const onChangeCourse = (id: string) => { 
     goToTraineeCourseDashboard(id);
@@ -29,21 +30,23 @@ const ActiveCourseSelector = () => {
         />
       )}
       <div
-        className="mb-4 absolute left-0 z-30 rounded-b-xl w-full flex flex-col items-center transition-all duration-300"
-        style={{ top: showAll ? 0 : -200 }}
+        className="mb-4 absolute left-0 z-30 rounded-b-none rounded-t-none rounded-b-xl w-full flex flex-col items-center transition-all duration-300"
+        style={{ top: showAll ? 0 : -220 }}
       >
-        <div className="bg-teal-600 rounded-xl p-4 flex flex-wrap gap-4 w-full" style={{ height: 200 }}>
-          {filteredCourses.map((course: any) => (
-            <div
-              key={course.id}
-              className={`bg-white rounded-xl shadow p-4 cursor-pointer min-w-[160px] text-center ${course.id === currentCourseId ? 'ring-2 ring-blue-500' : ''}`}
-              onClick={() => { onChangeCourse(course.id); setShowAll(false); }}
-            >
-              <div className="font-bold mb-2">{course.name}</div>
-              <div className="text-xs text-gray-500">{course.description || ''}</div>
-              {course.id === currentCourseId && <div className="mt-2 text-green-600 font-bold">فعال</div>}
-            </div>
-          ))}
+        <div className="bg-teal-600 rounded-xl p-4 flex gap-4 w-full" style={{ height: 220 }}>
+          {/* Active Courses Column */}
+          <CoursesBlock
+            title="دوره‌های فعال"
+            courses={activeCourses}
+            onChangeCourse={id => { onChangeCourse(id); setShowAll(false); }}
+            isActiveColumn
+          />
+          {/* Other Courses Column */}
+          <CoursesBlock
+            title="پیشنهاد دوره"
+            courses={otherCourses}
+            onChangeCourse={id => { onChangeCourse(id); setShowAll(false); }}
+          />
         </div>
         <div
           className="flex items-center gap-4 p-0 pr-4 bg-teal-50 rounded-b-xl justify-center inline-flex overflow-hidden transition-all duration-200 cursor-pointer"

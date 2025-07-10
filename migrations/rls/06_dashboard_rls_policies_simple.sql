@@ -1,150 +1,11 @@
 -- Simplified Dashboard RLS Policies
 -- This migration creates simplified RLS policies for all tables needed by admin and trainer dashboards
 -- These policies avoid infinite recursion by using simpler access patterns
+-- Note: Profiles RLS policies are handled separately in 01_profiles_rls.sql
 
--- ========================================
--- PROFILES TABLE RLS POLICIES (SIMPLIFIED)
--- ========================================
+-- Exercise-related RLS policies have been moved to 03_exercises_rls.sql
 
--- Enable RLS on profiles table if not already enabled
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Users can view their own profile" ON profiles;
-DROP POLICY IF EXISTS "Admins can view all profiles" ON profiles;
-DROP POLICY IF EXISTS "Trainers can view student profiles" ON profiles;
-DROP POLICY IF EXISTS "Users can update their own profile" ON profiles;
-DROP POLICY IF EXISTS "Admins can update all profiles" ON profiles;
-
--- Policy 1: Users can view their own profile
-CREATE POLICY "Users can view their own profile" ON profiles
-FOR SELECT USING (
-  auth.uid() = id
-);
-
--- Policy 2: Users can update their own profile
-CREATE POLICY "Users can update their own profile" ON profiles
-FOR UPDATE USING (
-  auth.uid() = id
-) WITH CHECK (
-  auth.uid() = id
-);
-
--- Policy 3: Public read access for basic profile info (needed for dashboards)
-CREATE POLICY "Public can view basic profiles" ON profiles
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
-
--- ========================================
--- EXERCISES TABLE RLS POLICIES (SIMPLIFIED)
--- ========================================
-
--- Enable RLS on exercises table if not already enabled
-ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Users can view exercises" ON exercises;
-DROP POLICY IF EXISTS "Instructors can manage their exercises" ON exercises;
-DROP POLICY IF EXISTS "Admins can manage all exercises" ON exercises;
-DROP POLICY IF EXISTS "Trainers can view assigned exercises" ON exercises;
-
--- Policy 1: Users can view exercises (needed for dashboards)
-CREATE POLICY "Users can view exercises" ON exercises
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
-
--- Policy 2: Instructors can manage their exercises
-CREATE POLICY "Instructors can manage their exercises" ON exercises
-FOR ALL USING (
-  created_by = auth.uid()
-) WITH CHECK (
-  created_by = auth.uid()
-);
-
--- ========================================
--- EXERCISE_SUBMISSIONS TABLE RLS POLICIES (SIMPLIFIED)
--- ========================================
-
--- Enable RLS on exercise_submissions table if not already enabled
-ALTER TABLE exercise_submissions ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Students can view their submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Students can create submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Instructors can view course submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Admins can view all submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Trainers can view assigned submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Instructors can grade submissions" ON exercise_submissions;
-DROP POLICY IF EXISTS "Admins can grade all submissions" ON exercise_submissions;
-
--- Policy 1: Students can view their own submissions
-CREATE POLICY "Students can view their submissions" ON exercise_submissions
-FOR SELECT USING (
-  student_id = auth.uid()
-);
-
--- Policy 2: Students can create submissions
-CREATE POLICY "Students can create submissions" ON exercise_submissions
-FOR INSERT WITH CHECK (
-  student_id = auth.uid()
-);
-
--- Policy 3: Instructors can view submissions for their exercises
-CREATE POLICY "Instructors can view course submissions" ON exercise_submissions
-FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM exercises e
-    WHERE e.id = exercise_submissions.exercise_id
-    AND e.created_by = auth.uid()
-  )
-);
-
--- Policy 4: Instructors can grade submissions for their exercises
-CREATE POLICY "Instructors can grade submissions" ON exercise_submissions
-FOR UPDATE USING (
-  EXISTS (
-    SELECT 1 FROM exercises e
-    WHERE e.id = exercise_submissions.exercise_id
-    AND e.created_by = auth.uid()
-  )
-) WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM exercises e
-    WHERE e.id = exercise_submissions.exercise_id
-    AND e.created_by = auth.uid()
-  )
-);
-
--- Policy 5: Public read access for submissions (needed for dashboards)
--- CREATE POLICY "Public can view submissions" ON exercise_submissions
--- FOR SELECT USING (
---   auth.role() = 'authenticated'
--- );
-
--- ========================================
--- TEACHER_COURSE_ASSIGNMENTS TABLE RLS POLICIES (SIMPLIFIED)
--- ========================================
-
--- Enable RLS on teacher_course_assignments table if not already enabled
-ALTER TABLE teacher_course_assignments ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Teachers can view their assignments" ON teacher_course_assignments;
-DROP POLICY IF EXISTS "Admins can manage all assignments" ON teacher_course_assignments;
-
--- Policy 1: Teachers can view their own assignments
-CREATE POLICY "Teachers can view their assignments" ON teacher_course_assignments
-FOR SELECT USING (
-  teacher_id = auth.uid()
-);
-
--- Policy 2: Public read access for assignments (needed for dashboards)
-CREATE POLICY "Public can view assignments" ON teacher_course_assignments
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
+-- Teacher assignment RLS policies have been moved to 02_courses_rls.sql
 
 -- ========================================
 -- AWARDS TABLE RLS POLICIES (SIMPLIFIED)
@@ -187,22 +48,7 @@ FOR SELECT USING (
   auth.role() = 'authenticated'
 );
 
--- ========================================
--- DAILY_ACTIVITIES TABLE RLS POLICIES (SIMPLIFIED)
--- ========================================
-
--- Enable RLS on daily_activities table if not already enabled
-ALTER TABLE daily_activities ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Users can view daily activities" ON daily_activities;
-DROP POLICY IF EXISTS "Admins can manage daily activities" ON daily_activities;
-
--- Policy 1: Users can view daily activities (needed for dashboards)
-CREATE POLICY "Users can view daily activities" ON daily_activities
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
+-- Daily activities RLS policies have been moved to 08_activities_logs_rls.sql
 
 -- ========================================
 -- TASKS TABLE RLS POLICIES (SIMPLIFIED)
@@ -295,58 +141,13 @@ FOR SELECT USING (
   auth.role() = 'authenticated'
 );
 
--- ========================================
--- ACCOUNTING TABLE RLS POLICIES (SIMPLIFIED)
--- ========================================
+-- Accounting RLS policies have been moved to 10_accounting_rls.sql
 
--- Enable RLS on accounting table if not already enabled
-ALTER TABLE accounting ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Users can view their accounting" ON accounting;
-DROP POLICY IF EXISTS "Admins can view all accounting" ON accounting;
-
--- Policy 1: Users can view their own accounting records
-CREATE POLICY "Users can view their accounting" ON accounting
-FOR SELECT USING (
-  user_id = auth.uid()
-);
-
--- Policy 2: Public read access for accounting (needed for dashboards)
-CREATE POLICY "Public can view accounting" ON accounting
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
-
--- ========================================
--- NOTIFICATIONS TABLE RLS POLICIES (SIMPLIFIED)
--- ========================================
-
--- Enable RLS on notifications table if not already enabled
-ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist
-DROP POLICY IF EXISTS "Users can view their notifications" ON notifications;
-DROP POLICY IF EXISTS "Admins can view all notifications" ON notifications;
-
--- Policy 1: Users can view their own notifications
-CREATE POLICY "Users can view their notifications" ON notifications
-FOR SELECT USING (
-  receiver_id = auth.uid()
-);
-
--- Policy 2: Public read access for notifications (needed for dashboards)
-CREATE POLICY "Public can view notifications" ON notifications
-FOR SELECT USING (
-  auth.role() = 'authenticated'
-);
+-- Notifications RLS policies have been moved to 09_notifications_rls.sql
 
 -- Create indexes to improve RLS policy performance
 CREATE INDEX IF NOT EXISTS idx_profiles_id ON profiles(id);
-CREATE INDEX IF NOT EXISTS idx_exercises_created_by ON exercises(created_by);
-CREATE INDEX IF NOT EXISTS idx_exercises_course_id ON exercises(course_id);
-CREATE INDEX IF NOT EXISTS idx_exercise_submissions_student_id ON exercise_submissions(student_id);
-CREATE INDEX IF NOT EXISTS idx_exercise_submissions_exercise_id ON exercise_submissions(exercise_id);
+-- Exercise-related indexes have been moved to 03_exercises_rls.sql
 CREATE INDEX IF NOT EXISTS idx_teacher_course_assignments_teacher_id ON teacher_course_assignments(teacher_id);
 CREATE INDEX IF NOT EXISTS idx_teacher_course_assignments_course_id ON teacher_course_assignments(course_id);
 CREATE INDEX IF NOT EXISTS idx_student_awards_student_id ON student_awards(student_id);
@@ -356,16 +157,14 @@ CREATE INDEX IF NOT EXISTS idx_group_members_user_id ON group_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_accounting_user_id ON accounting(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_receiver_id ON notifications(receiver_id);
 
--- Verify RLS is enabled for all tables
+-- Verify RLS is enabled for all dashboard tables
 SELECT 
   schemaname,
   tablename,
   rowsecurity
 FROM pg_tables 
 WHERE tablename IN (
-  'profiles', 'exercises', 'exercise_submissions', 'teacher_course_assignments',
-  'awards', 'student_awards', 'daily_activities', 'tasks', 'subtasks',
-  'groups', 'group_members', 'accounting', 'notifications'
+  'profiles'
 )
 ORDER BY tablename;
 
@@ -377,8 +176,6 @@ SELECT
   permissive
 FROM pg_policies 
 WHERE tablename IN (
-  'profiles', 'exercises', 'exercise_submissions', 'teacher_course_assignments',
-  'awards', 'student_awards', 'daily_activities', 'tasks', 'subtasks',
-  'groups', 'group_members', 'accounting', 'notifications'
+  'profiles'
 )
 ORDER BY tablename, policyname; 
