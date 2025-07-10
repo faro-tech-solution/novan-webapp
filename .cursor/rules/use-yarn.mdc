@@ -1,0 +1,5 @@
+---
+description: use "sudo yarn ..." to manage packages
+globs:
+alwaysApply: false
+---
