@@ -10,9 +10,7 @@ import { Award, Trophy, Star, Crown } from "lucide-react";
 import { StudentAward } from "@/types/student";
 import {
   useAwardTranslation,
-  enrichAwardWithTranslation,
 } from "@/utils/awardTranslationUtils";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AwardsCardProps {
   studentAwards: StudentAward[];
@@ -58,7 +56,6 @@ const formatDate = (dateString: string) => {
 };
 
 export const AwardsCard = ({ studentAwards, loading }: AwardsCardProps) => {
-  const { language } = useLanguage();
   const { translateAward } = useAwardTranslation();
 
   if (loading) {

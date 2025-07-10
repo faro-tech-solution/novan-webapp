@@ -5,12 +5,9 @@ import StudentsFilters from "@/components/students/StudentsFilters";
 import { StudentsTable } from "@/components/students/StudentsTable";
 import { useToast } from "@/hooks/use-toast";
 import { useStudentsQuery } from "@/hooks/queries/useStudentsQuery";
-import { useAuth } from "@/contexts/AuthContext";
 import { Student } from "@/types/student";
-import { Input } from "@/components/ui/input";
 
 const Students = () => {
-  const { profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [courseFilter, setCourseFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");

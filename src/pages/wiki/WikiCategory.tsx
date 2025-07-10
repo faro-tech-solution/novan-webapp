@@ -36,7 +36,7 @@ const WikiCategory: React.FC = () => {
     try {
       await deleteTopicMutation.mutateAsync(topicId);
       toast.success('موضوع با موفقیت حذف شد');
-    } catch (error) {
+    } catch {
       toast.error('خطا در حذف موضوع');
     }
   };
@@ -45,7 +45,7 @@ const WikiCategory: React.FC = () => {
     try {
       await deleteArticleMutation.mutateAsync(articleId);
       toast.success('مقاله با موفقیت حذف شد');
-    } catch (error) {
+    } catch {
       toast.error('خطا در حذف مقاله');
     }
   };

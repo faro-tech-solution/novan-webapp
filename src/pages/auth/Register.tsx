@@ -73,7 +73,7 @@ const Register = () => {
         });
         navigate("/");
       }
-    } catch (err) {
+    } catch {
       toast({
         title: "خطا",
         description: "ثبت نام ناموفق. لطفا دوباره تلاش کنید.",

@@ -34,8 +34,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Plus,
-  Calendar,
-  Users,
   MoreHorizontal,
   Pencil,
   Trash2,

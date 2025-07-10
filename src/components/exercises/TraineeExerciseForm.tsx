@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -7,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Send, Clock, Video, AudioLines, CheckCircle } from "lucide-react";
+import { Send, Clock } from "lucide-react";
 import { FormRenderer } from "./FormRenderer";
 import { ExerciseForm, FormAnswer } from "@/types/formBuilder";
 import { useToast } from "@/hooks/use-toast";

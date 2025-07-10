@@ -5,7 +5,6 @@ interface ConfirmDeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   course?: Course | null;
-  item?: any;
   title?: string;
   description?: string;
   onConfirmDelete: () => void;
@@ -16,7 +15,6 @@ const ConfirmDeleteDialog = ({
   open, 
   onOpenChange, 
   course, 
-  item,
   title = "تأیید حذف",
   description,
   onConfirmDelete,

@@ -14,16 +14,6 @@ export const SubmissionsList: React.FC<SubmissionsListProps> = ({
   submissions,
   onViewSubmission
 }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fa-IR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
   if (submissions.length === 0) {
     return (
       <Card>

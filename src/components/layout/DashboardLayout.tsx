@@ -29,7 +29,6 @@ import {
 import { useSubmissionsQuery } from "@/hooks/useReviewSubmissionsQuery";
 import { Badge } from "@/components/ui/badge";
 import ActiveCourseSelector from "../courses/ActiveCourseSelector";
-import { DashboardPanelProvider } from '@/contexts/DashboardPanelContext';
 
 interface DashboardLayoutProps {
   children: ReactNode;

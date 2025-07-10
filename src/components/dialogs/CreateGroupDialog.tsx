@@ -48,7 +48,7 @@ const CreateGroupDialog = ({ open, onOpenChange }: CreateGroupDialogProps) => {
       reset();
       onOpenChange(false);
     } catch (error) {
-      // Error is handled by the mutation
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }

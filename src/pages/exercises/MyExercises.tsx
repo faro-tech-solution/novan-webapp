@@ -5,11 +5,8 @@ import { MyExerciseStatsCards } from '@/components/exercises/MyExerciseStatsCard
 import { MyExerciseFilters } from '@/components/exercises/MyExerciseFilters';
 import { MyExerciseTable } from '@/components/exercises/MyExerciseTable';
 import { useMyExercisesQuery } from '@/hooks/queries/useMyExercisesQuery';
-import { useParams, useNavigate } from 'react-router-dom';
 
 const MyExercises = () => {
-  const { courseId } = useParams();
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [difficultyFilter, setDifficultyFilter] = useState('all');

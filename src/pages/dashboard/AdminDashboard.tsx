@@ -2,7 +2,6 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";

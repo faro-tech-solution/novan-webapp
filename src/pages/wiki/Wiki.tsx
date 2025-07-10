@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useWikiCategoriesQuery } from '@/hooks/useWikiQuery';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,11 +10,10 @@ import { BookOpen, Lock, Plus, Edit, Trash2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useDeleteWikiCategoryMutation } from '@/hooks/useWikiQuery';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const Wiki: React.FC = () => {
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const { courseId } = useParams();
   const { data: categories = [], isLoading, error } = useWikiCategoriesQuery();
   const deleteCategoryMutation = useDeleteWikiCategoryMutation();
@@ -29,7 +28,7 @@ const Wiki: React.FC = () => {
     try {
       await deleteCategoryMutation.mutateAsync(categoryId);
       toast.success('دسته‌بندی با موفقیت حذف شد');
-    } catch (error) {
+    } catch {
       toast.error('خطا در حذف دسته‌بندی');
     }
   };

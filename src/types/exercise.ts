@@ -1,5 +1,4 @@
 import { ExerciseForm, FormAnswer } from './formBuilder';
-import { ExerciseCourse } from './course';
 import { Json } from '@/integrations/supabase/types';
 
 export type ExerciseType = 'form' | 'video' | 'audio' | 'simple';
@@ -81,6 +80,7 @@ export interface UpcomingExercise {
   due_date: string;
   estimated_time: string;
   points: number;
+  difficulty: string;
 }
 
 // For my exercise table

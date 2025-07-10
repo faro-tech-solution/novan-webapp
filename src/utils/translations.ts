@@ -145,7 +145,6 @@ export function useTranslation() {
   
   // Function to translate a specific key
   const t = (section: keyof typeof translations, key: string) => {
-    // @ts-ignore - Dynamic access
     const translation = translations[section]?.[key];
     if (!translation) {
       console.warn(`Translation missing for key: ${section}.${key}`);

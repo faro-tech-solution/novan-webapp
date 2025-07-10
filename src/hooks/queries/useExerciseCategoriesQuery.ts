@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ExerciseCategory } from '@/types/exercise';
 import { 
   fetchExerciseCategories, 
   createExerciseCategory, 

@@ -54,7 +54,6 @@ export const UpcomingExercisesCard = ({ exercises, className = '' }: UpcomingExe
         ) : (
           <div className="flex flex-col gap-2">
             {exercises.map((exercise) => {
-              // @ts-ignore: difficulty may be missing in some types
               const { bg, text, icon } = getDifficultyStyles(exercise.difficulty);
               return (
                 <Link

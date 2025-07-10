@@ -22,7 +22,7 @@ const ConfirmDeleteGroupDialog = ({
       await deleteGroupMutation.mutateAsync(group.id);
       onOpenChange(false);
     } catch (error) {
-      // Error is handled by the mutation
+      console.error(error);
     }
   };
 

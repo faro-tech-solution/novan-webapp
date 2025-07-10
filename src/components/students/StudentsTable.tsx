@@ -14,15 +14,11 @@ import UserNameWithBadge from '@/components/ui/UserNameWithBadge';
 export interface StudentsTableProps {
   students: Student[];
   filteredStudents: Student[];
-  onUpdateStudent: (studentId: string, updates: Partial<Student>) => Promise<void>;
-  onDeleteStudent: (studentId: string) => Promise<void>;
 }
 
 export const StudentsTable = ({ 
   students, 
   filteredStudents,
-  onUpdateStudent,
-  onDeleteStudent
 }: StudentsTableProps) => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedStudentForCourses, setSelectedStudentForCourses] = useState<Student | null>(null);

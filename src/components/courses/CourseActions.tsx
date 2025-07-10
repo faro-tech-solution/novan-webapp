@@ -16,7 +16,6 @@ interface CourseActionsProps {
 const CourseActions = ({ 
   course, 
   userRole, 
-  userId, 
   onManageTerms, 
   onManageCategories,
   onEditCourse, 

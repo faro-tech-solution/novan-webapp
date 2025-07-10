@@ -2,7 +2,6 @@ import { useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useUsersQuery, User } from "@/hooks/queries/useUsersQuery";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,11 +24,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Plus, Search, Edit2, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import UserNameWithBadge from "@/components/ui/UserNameWithBadge";
 
 const UserManagement = () => {
@@ -38,7 +35,6 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const { profile } = useAuth();
   const { toast } = useToast();
   const { users, loading, error, updateUser, deleteUser } = useUsersQuery();
 

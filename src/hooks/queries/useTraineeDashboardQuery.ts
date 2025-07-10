@@ -10,19 +10,6 @@ interface DashboardStats {
   totalPoints: number;
 }
 
-interface UpcomingExercise {
-  id: string;
-  title: string;
-  description: string | null;
-  course_name: string;
-  difficulty: string;
-  due_date: string;
-  open_date: string;
-  estimated_time: string;
-  points: number;
-  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
-}
-
 export const useTraineeDashboardQuery = () => {
   const { user } = useAuth();
   const { data: myExercises = [], isLoading: exercisesLoading, error: exercisesError } = useMyExercisesQuery();

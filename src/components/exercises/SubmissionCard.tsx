@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, FileText, User, Calendar, Award } from 'lucide-react';
+import { Eye, FileText, User } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SubmissionViewer } from './SubmissionViewer';
-import { ExerciseForm, FormAnswer } from '@/types/formBuilder';
+import { FormAnswer } from '@/types/formBuilder';
 import { Submission } from '@/types/reviewSubmissions';
 
 interface SubmissionCardProps {
@@ -14,16 +14,6 @@ interface SubmissionCardProps {
 
 export const SubmissionCard: React.FC<SubmissionCardProps> = ({ submission }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fa-IR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const getScoreBadge = (score: number | null) => {
     if (score === null) {

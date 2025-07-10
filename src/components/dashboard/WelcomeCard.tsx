@@ -7,7 +7,7 @@ import { AchievementsDisplay } from '@/components/awards';
 const WelcomeCard: React.FC = () => {
   const { profile } = useAuth();
   const { tCommon } = useTranslation();
-  const { studentAwards, allAwards, loading: awardsLoading } = useStudentAwards();
+  const { studentAwards, allAwards } = useStudentAwards();
 
   return (
     <div className="flex flex-col md:flex-row items-center bg-white rounded-2xl shadow p-1" style={{ minHeight: 260 }}>

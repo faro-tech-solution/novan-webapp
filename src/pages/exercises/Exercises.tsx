@@ -25,7 +25,6 @@ const Exercises = () => {
     error: exercisesError,
     courses = [],
     deleteExercise: handleDeleteExerciseRequest,
-    isDeleting,
   } = useExercisesQuery(activeCourseId || undefined);
   const { toast } = useToast();
 

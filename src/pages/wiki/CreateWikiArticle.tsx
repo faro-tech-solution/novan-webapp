@@ -15,7 +15,7 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const CreateWikiArticle: React.FC = () => {
   const navigate = useNavigate();
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const createArticleMutation = useCreateWikiArticleMutation();
   const { data: categories = [] } = useWikiCategoriesQuery();
   
@@ -52,7 +52,7 @@ const CreateWikiArticle: React.FC = () => {
       
       toast.success('مقاله با موفقیت ایجاد شد');
       navigate(`/${profile?.role}/wiki`);
-    } catch (error) {
+    } catch {
       toast.error('خطا در ایجاد مقاله');
     }
   };

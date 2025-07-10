@@ -3,8 +3,6 @@ import { Star, Users, BookOpen } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { InstructorCard as InstructorCardType } from '@/types/instructor';
 
-interface InstructorCardProps extends InstructorCardType {}
-
 const InstructorCard = ({
   id,
   first_name,
@@ -15,7 +13,7 @@ const InstructorCard = ({
   students,
   courses,
   expertise
-}: InstructorCardProps) => {
+}: InstructorCardType) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 text-center">
       <CardContent className="p-6">

@@ -1,4 +1,3 @@
-import { supabase } from '@/integrations/supabase/client';
 import { ExerciseCategory } from '@/types/exercise';
 
 export interface CreateExerciseCategoryData {
@@ -17,7 +16,7 @@ export interface UpdateExerciseCategoryData {
 }
 
 // Fetch categories for a specific course
-export const fetchExerciseCategories = async (courseId: string): Promise<ExerciseCategory[]> => {
+export const fetchExerciseCategories = async (_courseId: string): Promise<ExerciseCategory[]> => {
   try {
     // TODO: Uncomment this after applying the migration
     // const { data, error } = await supabase
@@ -63,29 +62,29 @@ export const fetchExerciseCategories = async (courseId: string): Promise<Exercis
 
 // Create a new exercise category
 export const createExerciseCategory = async (
-  categoryData: CreateExerciseCategoryData, 
-  createdBy: string
+  _categoryData: CreateExerciseCategoryData, 
+  _createdBy: string
 ): Promise<ExerciseCategory> => {
   throw new Error('Exercise categories feature is not yet available. Please apply the migration first.');
 };
 
 // Update an exercise category
 export const updateExerciseCategory = async (
-  categoryId: string, 
-  categoryData: UpdateExerciseCategoryData
+  _categoryId: string, 
+  _categoryData: UpdateExerciseCategoryData
 ): Promise<ExerciseCategory> => {
   throw new Error('Exercise categories feature is not yet available. Please apply the migration first.');
 };
 
 // Delete an exercise category
-export const deleteExerciseCategory = async (categoryId: string): Promise<void> => {
+export const deleteExerciseCategory = async (_categoryId: string): Promise<void> => {
   throw new Error('Exercise categories feature is not yet available. Please apply the migration first.');
 };
 
 // Reorder categories
 export const reorderExerciseCategories = async (
-  courseId: string, 
-  categoryIds: string[]
+  _courseId: string, 
+  _categoryIds: string[]
 ): Promise<void> => {
   throw new Error('Exercise categories feature is not yet available. Please apply the migration first.');
 }; 

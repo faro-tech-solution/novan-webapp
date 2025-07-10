@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle } from 'lucide-react';
 import { fetchDailyActivities, DailyActivity } from '@/services/dailyActivitiesService';
@@ -7,11 +7,7 @@ import { useActivityLogger } from '@/hooks/useActivityLogger';
 import { useAuth } from '@/contexts/AuthContext';
 import { fetchStudentActivityLogs } from '@/services/activityLogService';
 
-interface DailyTasksCardProps {
-  // Optionally accept userId as prop, or get from context
-}
-
-export const DailyTasksCard = ({}: DailyTasksCardProps) => {
+export const DailyTasksCard = () => {
   const { user } = useAuth();
   const { logActivity } = useActivityLogger();
   const [dailyTasks, setDailyTasks] = useState<DailyActivity[]>([]);

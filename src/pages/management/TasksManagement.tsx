@@ -84,7 +84,6 @@ const TasksManagement = () => {
     data: tasks = [],
     isLoading: loadingTasks,
     error: errorTasks,
-    refetch,
   } = useQuery({
     queryKey: ["tasks"],
     queryFn: fetchTasks,
@@ -203,49 +202,6 @@ const TasksManagement = () => {
       toast({
         title: "خطا",
         description: "خطا در ایجاد کار زیر مجموعه",
-        variant: "destructive",
-      });
-    },
-  });
-  const updateSubtaskMutation = useMutation({
-    mutationFn: async ({ id, title }: { id: string; title: string }) => {
-      const { error } = await supabase
-        .from("subtasks")
-        .update({ title })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast({
-        title: "موفقیت",
-        description: "کار زیر مجموعه با موفقیت ویرایش شد.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "خطا",
-        description: "خطا در ویرایش کار زیر مجموعه",
-        variant: "destructive",
-      });
-    },
-  });
-  const deleteSubtaskMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("subtasks").delete().eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast({
-        title: "موفقیت",
-        description: "کار زیر مجموعه با موفقیت حذف شد.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "خطا",
-        description: "خطا در حذف کار زیر مجموعه",
         variant: "destructive",
       });
     },

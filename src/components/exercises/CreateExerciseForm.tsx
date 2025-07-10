@@ -7,7 +7,6 @@ import { CourseAndDifficultySection } from "./CourseAndDifficultySection";
 import { TimingAndPointsSection } from "./TimingAndPointsSection";
 import { ExerciseTypeSection } from "./ExerciseTypeSection";
 import { FormBuilder } from "./FormBuilder";
-import { ExerciseType } from "@/types/exercise";
 import { Course } from "@/types/course";
 import { ExerciseForm } from "@/types/formBuilder";
 import * as z from "zod";

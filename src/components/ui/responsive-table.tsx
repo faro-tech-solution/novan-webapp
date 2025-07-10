@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils"
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,

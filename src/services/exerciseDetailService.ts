@@ -1,10 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import { checkAndAwardAchievements } from '@/services/awardsService';
 import { FormAnswer, ExerciseForm } from '@/types/formBuilder';
-import { logStudentActivity, ACTIVITY_TYPES } from '@/services/activityLogService';
 import { 
   ExerciseDetail, 
-  ExerciseType, 
   SubmissionStatusType,
   ExerciseWithCourse,
   ExerciseSubmission,

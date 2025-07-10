@@ -3,7 +3,6 @@ import type {
   WikiCategory,
   WikiTopic,
   WikiArticle,
-  WikiCategoryCourseAccess,
   WikiCategoryWithTopics,
   CreateWikiCategoryData,
   CreateWikiTopicData,

@@ -5,17 +5,11 @@ interface TraineePanelData {
   setCourseId: (id: string | null) => void;
 }
 
-interface TrainerPanelData {
-  // Add trainer-specific global data here
-}
+type TrainerPanelData = Record<string, never>;
 
-interface AdminPanelData {
-  // Add admin-specific global data here
-}
+type AdminPanelData = Record<string, never>;
 
-interface TeammatePanelData {
-  // Add teammate-specific global data here
-}
+type TeammatePanelData = Record<string, never>;
 
 interface DashboardPanelContextType {
   trainee: TraineePanelData;

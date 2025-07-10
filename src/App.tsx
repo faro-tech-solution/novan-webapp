@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { queryClient } from "@/lib/react-query";
 
 // Import all pages from the restructured directories
@@ -14,8 +13,6 @@ import {
   Login,
   Register,
   ForgetPassword,
-  // Dashboard pages
-  Dashboard,
   AdminDashboard,
   TrainerDashboard,
   TraineeDashboard,
@@ -58,8 +55,6 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 // Use the queryClient from @/lib/react-query
 
 const AppRoutes = () => {
-  const { profile } = useAuth();
-
   return (
     <Routes>
       {/* Public Routes */}
