@@ -11,7 +11,9 @@
     "preview": "vite preview",
     "migrate:create": "node scripts/migrate.js create",
     "migrate:sync": "node scripts/migrate.js sync",
-    "migrate:list": "node scripts/migrate.js list"
+    "migrate:list": "node scripts/migrate.js list",
+    "prepare": "husky install",
+    "husky:ls": "ls .husky | grep -v '^_' | xargs -I {} sh -c 'echo \"\\n--- .husky/{} ---\"; cat .husky/{}'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -78,8 +80,10 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
+    "hysky": "^1.0.1",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
+    "ts-prune": "^0.10.3",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"
