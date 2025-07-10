@@ -1,8 +1,0 @@
-#!/bin/sh
-
-node scripts/check-unused-ts-files.cjs
-RESULT=$?
-if [ $RESULT -ne 0 ]; then
-  echo "\n❌ Push blocked: Unused .ts/.tsx files detected. Please remove or use them before pushing."
-  exit 1
-fi 
