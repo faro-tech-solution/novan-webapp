@@ -1,118 +1,196 @@
-# Database Migration Instructions
+# Exercise Categories Migration Instructions
 
-## Adding Instruction Field to Tasks Table
+## Overview
 
-This document explains how to add the `instruction` field to your tasks table in Supabase.
+The exercise categories feature requires a database migration to be applied before it can be used. This document provides step-by-step instructions for applying the migration.
 
-## Migration Files Created
+## Prerequisites
 
-1. **`add_instruction_to_tasks.sql`** - General SQL migration
-2. **`supabase_migration_add_instruction.sql`** - Supabase-specific migration format
-3. **`rollback_instruction_from_tasks.sql`** - Rollback migration
+1. **Supabase CLI** (recommended) or direct database access
+2. **Database credentials** for your Supabase project
+3. **Project ID**: `dynmgviifqrozsczabvz`
 
-## How to Apply the Migration
+## Method 1: Using Supabase CLI (Recommended)
 
-### Option 1: Using Supabase Dashboard (Recommended for Development)
+### Step 1: Install Supabase CLI
 
-1. Open your Supabase project dashboard
-2. Go to the SQL Editor
-3. Copy and paste the content from `supabase_migration_add_instruction.sql`
-4. Run the SQL query
+```bash
+# macOS (using Homebrew)
+brew install supabase/tap/supabase
 
-### Option 2: Using Supabase CLI (Recommended for Production)
+# Or download from: https://supabase.com/docs/guides/cli
+```
 
-1. If you haven't already, initialize migrations in your project:
+### Step 2: Login to Supabase
 
-   ```bash
-   supabase migration list
-   ```
+```bash
+supabase login
+```
 
-2. Create a new migration file:
+### Step 3: Link your project
 
-   ```bash
-   supabase migration new add_instruction_to_tasks
-   ```
+```bash
+supabase link --project-ref dynmgviifqrozsczabvz
+```
 
-3. Copy the content from `supabase_migration_add_instruction.sql` into the newly created migration file
+### Step 4: Apply the migration
 
-4. Apply the migration:
-   ```bash
-   supabase db push
-   ```
+```bash
+# Apply the migration directly
+supabase db push --include-all
 
-### Option 3: Direct SQL Execution
+# Or run the specific migration file
+supabase db push --file migrations/exercise_categories.sql
+```
 
-If you have direct database access, you can run the SQL from `add_instruction_to_tasks.sql` directly:
+## Method 2: Using Supabase Dashboard
 
-```sql
-ALTER TABLE tasks
-ADD COLUMN instruction TEXT;
+### Step 1: Access Supabase Dashboard
 
-COMMENT ON COLUMN tasks.instruction IS 'Detailed instructions for the task';
+1. Go to [https://supabase.com/dashboard](https://supabase.com/dashboard)
+2. Select your project: `dynmgviifqrozsczabvz`
+
+### Step 2: Open SQL Editor
+
+1. Navigate to **SQL Editor** in the left sidebar
+2. Click **New Query**
+
+### Step 3: Run the Migration
+
+1. Copy the contents of `migrations/exercise_categories.sql`
+2. Paste it into the SQL editor
+3. Click **Run** to execute the migration
+
+## Method 3: Using psql (Direct Database Access)
+
+### Step 1: Get Database Connection Details
+
+1. Go to Supabase Dashboard → Settings → Database
+2. Copy the connection string or individual credentials
+
+### Step 2: Connect and Run Migration
+
+```bash
+# Set environment variables
+export DATABASE_URL="your-connection-string"
+
+# Run the migration
+psql "$DATABASE_URL" -f migrations/exercise_categories.sql
 ```
 
 ## Verification
 
-After applying the migration, verify that the column was added successfully:
+After applying the migration, verify it was successful:
 
-```sql
-SELECT column_name, data_type, is_nullable
-FROM information_schema.columns
-WHERE table_name = 'tasks' AND column_name = 'instruction';
+### Option 1: Run the test script
+
+```bash
+psql "$DATABASE_URL" -f scripts/test_exercise_categories.sql
 ```
 
-Expected result: You should see a row with:
+### Option 2: Check manually in Supabase Dashboard
 
-- `column_name`: instruction
-- `data_type`: text
-- `is_nullable`: YES
+1. Go to **Table Editor**
+2. Look for the `exercise_categories` table
+3. Check that the `category_id` column was added to the `exercises` table
 
-## Testing the Feature
+### Option 3: Check via SQL
 
-1. After applying the migration, start your development server:
+```sql
+-- Check if table exists
+SELECT table_name FROM information_schema.tables 
+WHERE table_name = 'exercise_categories';
 
-   ```bash
-   npm run dev
-   ```
+-- Check if column was added
+SELECT column_name FROM information_schema.columns 
+WHERE table_name = 'exercises' AND column_name = 'category_id';
+```
 
-2. Navigate to the Tasks Management page
-3. Create a new task and add instructions in the instruction field
-4. Verify that you can view the instructions using the "مشاهده دستورالعمل" button
+## Post-Migration Steps
 
-## Rollback Instructions
+### Step 1: Update TypeScript Types
 
-If you need to rollback this migration:
+After the migration is applied, you need to regenerate the TypeScript types:
 
-1. **Using Supabase Dashboard**: Run the SQL from `rollback_instruction_from_tasks.sql`
-2. **Using direct SQL**:
-   ```sql
-   ALTER TABLE tasks DROP COLUMN IF EXISTS instruction;
-   ```
+```bash
+# If using Supabase CLI
+supabase gen types typescript --project-id dynmgviifqrozsczabvz > src/types/database.types.ts
 
-## Notes
+# Or manually update the types to include exercise_categories
+```
 
-- The `instruction` field is optional (nullable)
-- The field accepts unlimited text length
-- No default value is set
-- Existing tasks will have `NULL` for the instruction field until updated
-- The UI handles `NULL` values by showing a "-" placeholder
+### Step 2: Enable the Feature
 
-## Row Level Security (RLS)
+1. Uncomment the code in `src/services/exerciseCategoryService.ts`
+2. Remove the temporary error messages
+3. Test the feature in the application
 
-If you have Row Level Security enabled on your tasks table, the new column will inherit the same access patterns as other columns. No additional RLS policies are typically needed for adding a new column.
+### Step 3: Test the Feature
+
+1. Start the development server: `npm run dev`
+2. Go to Course Management
+3. Click on a course's three dots menu
+4. Select "دسته‌بندی تمرینات" (Exercise Categories)
+5. Try creating a category
 
 ## Troubleshooting
 
-### Common Issues:
+### Error: "relation does not exist"
 
-1. **Permission Error**: Make sure you have sufficient database privileges
-2. **Column Already Exists**: If you get an error that the column already exists, check if the migration was already applied
-3. **RLS Issues**: If you can't read/write the instruction field, check your RLS policies
+**Cause**: Migration not applied
+**Solution**: Apply the migration using one of the methods above
 
-### Support
+### Error: "permission denied"
 
-If you encounter any issues with the migration, you can:
+**Cause**: Insufficient database permissions
+**Solution**: 
+1. Check your database role permissions
+2. Ensure you're using the correct connection string
+3. Contact your database administrator
 
-1. Check the Supabase logs in your dashboard
-2. Verify your database schema
-3. Test with a simple query to ensure the column exists and is accessible
+### Error: "duplicate key value"
+
+**Cause**: Migration already applied
+**Solution**: This is normal - the migration uses `IF NOT EXISTS` clauses
+
+### Error: "foreign key constraint"
+
+**Cause**: Missing referenced table
+**Solution**: Ensure the `courses` table exists before applying the migration
+
+## Rollback (If Needed)
+
+If you need to rollback the migration:
+
+```sql
+-- Drop the exercise_categories table
+DROP TABLE IF EXISTS exercise_categories CASCADE;
+
+-- Remove the category_id column from exercises
+ALTER TABLE exercises DROP COLUMN IF EXISTS category_id;
+
+-- Drop related indexes
+DROP INDEX IF EXISTS idx_exercise_categories_course_id;
+DROP INDEX IF EXISTS idx_exercise_categories_order;
+DROP INDEX IF EXISTS idx_exercises_category_id;
+```
+
+## Support
+
+If you encounter issues:
+
+1. Check the Supabase logs in the dashboard
+2. Verify your database connection
+3. Ensure you have the correct permissions
+4. Check the migration file syntax
+
+## Next Steps
+
+Once the migration is successfully applied:
+
+1. ✅ The exercise categories feature will be fully functional
+2. ✅ You can create, edit, and delete categories
+3. ✅ Exercises can be assigned to categories
+4. ✅ The UI will show organized exercises by category
+
+The feature is designed to be backward compatible, so existing exercises will continue to work normally even without categories assigned. 

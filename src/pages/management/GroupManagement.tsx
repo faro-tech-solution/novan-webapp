@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Users,
@@ -28,7 +27,6 @@ import {
   Calendar,
   MessageCircle,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import CreateGroupDialog from "@/components/dialogs/CreateGroupDialog";
 import EditGroupDialog from "@/components/dialogs/EditGroupDialog";
 import GroupDetailsDialog from "@/components/dialogs/GroupDetailsDialog";

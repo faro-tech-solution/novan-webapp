@@ -1,55 +1,77 @@
+import { BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Play, Calendar } from 'lucide-react';
 import { UpcomingExercise } from '@/types/exercise';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface UpcomingExercisesCardProps {
   exercises: UpcomingExercise[];
+  className?: string;
 }
 
-export const UpcomingExercisesCard = ({ exercises }: UpcomingExercisesCardProps) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fa-IR');
-  };
+const getDifficultyStyles = (difficulty: string) => {
+  switch (difficulty) {
+    case 'آسان':
+      return {
+        bg: 'bg-green-100',
+        text: 'text-green-800',
+        icon: <BookOpen className="h-4 w-4 text-green-400" />,
+      };
+    case 'متوسط':
+      return {
+        bg: 'bg-yellow-100',
+        text: 'text-yellow-800',
+        icon: <BookOpen className="h-4 w-4 text-yellow-400" />,
+      };
+    case 'سخت':
+      return {
+        bg: 'bg-red-100',
+        text: 'text-red-800',
+        icon: <BookOpen className="h-4 w-4 text-red-400" />,
+      };
+    default:
+      return {
+        bg: 'bg-gray-100',
+        text: 'text-gray-800',
+        icon: <BookOpen className="h-4 w-4 text-gray-400" />,
+      };
+  }
+};
+
+export const UpcomingExercisesCard = ({ exercises, className = '' }: UpcomingExercisesCardProps) => {
+  const { profile } = useAuth();
+  const role = profile?.role || 'trainee';
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>تمرین‌های پیش رو</CardTitle>
-        <CardDescription>تکالیف فعلی و آینده شما</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <div className={`min-w-0 ${className}`}>
+      <div className="bg-white rounded-2xl shadow p-4">
+        <div className="mb-3">
+          <h3 className="text-base font-medium">تمرین‌های پیش رو</h3>
+        </div>
         {exercises.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-6 text-gray-500 text-sm">
             تمرین جدیدی برای انجام وجود ندارد
           </div>
         ) : (
-          <div className="space-y-4">
-            {exercises.map((exercise) => (
-              <div key={exercise.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="flex-1">
-                  <h4 className="font-medium mb-2">{exercise.title}</h4>
-                  <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600">
-                    <span className="flex items-center space-x-1 space-x-reverse">
-                      <Calendar className="h-3 w-3" />
-                      <span>موعد: {formatDate(exercise.due_date)}</span>
-                    </span>
-                    <span>{exercise.estimated_time}</span>
-                    <span className="text-purple-600">{exercise.points} امتیاز</span>
+          <div className="flex flex-col gap-2">
+            {exercises.map((exercise) => {
+              const { bg, text, icon } = getDifficultyStyles(exercise.difficulty);
+              return (
+                <Link
+                  to={`/${role}/exercise/${exercise.id}`}
+                  key={exercise.id}
+                  className={`flex items-center rounded-xl px-3 py-2 ${bg} ${text} shadow-sm transition hover:scale-[1.02] hover:shadow-md focus:outline-none text-sm`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div className="flex-shrink-0 ml-2 flex items-center justify-center">{icon}</div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <div className="truncate leading-tight text-sm">{exercise.title}</div>
                   </div>
-                </div>
-                <Link to={`/exercise/${exercise.id}`}>
-                  <Button size="sm" className="mr-4">
-                    <Play className="h-4 w-4 ml-2" />
-                    شروع
-                  </Button>
                 </Link>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };

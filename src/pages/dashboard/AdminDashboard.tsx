@@ -2,7 +2,6 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -41,7 +40,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">مدیریت</div>
               <p className="text-xs text-muted-foreground">کاربران و نقش‌ها</p>
-              <Link to="/user-management">
+              <Link to="/admin/user-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -61,7 +60,7 @@ const AdminDashboard = () => {
               <p className="text-xs text-muted-foreground">
                 ایجاد و مدیریت گروه‌ها
               </p>
-              <Link to="/group-management">
+              <Link to="/admin/group-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -79,7 +78,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">دوره‌ها</div>
               <p className="text-xs text-muted-foreground">ایجاد و مدیریت</p>
-              <Link to="/courses-management">
+              <Link to="/admin/courses-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -95,7 +94,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">لیست</div>
               <p className="text-xs text-muted-foreground">مشاهده دانشجویان</p>
-              <Link to="/students">
+              <Link to="/admin/students">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -113,7 +112,7 @@ const AdminDashboard = () => {
               <p className="text-xs text-muted-foreground">
                 تمرین‌ها و آزمون‌ها
               </p>
-              <Link to="/exercises">
+              <Link to="/admin/exercises">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -153,7 +152,7 @@ const AdminDashboard = () => {
               <p className="text-xs text-muted-foreground">
                 تعریف و مدیریت وظایف تیم
               </p>
-              <Link to="/tasks-management">
+              <Link to="/admin/tasks-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>

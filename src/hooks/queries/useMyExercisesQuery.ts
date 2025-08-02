@@ -1,24 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStableAuth } from '@/hooks/useStableAuth';
-import { Database } from '@/integrations/supabase/types';
-import { ExerciseWithSubmission, ExerciseData, ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
+import { ExerciseData, ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
 import { CourseEnrollment } from '@/types/course';
 import { calculateAdjustedDates } from '@/utils/exerciseDateUtils';
 import { calculateSubmissionStatus } from '@/utils/exerciseSubmissionUtils';
-
-// Extended types to match the database schema with the new fields
-type ExerciseSubmissionExtended = Database['public']['Tables']['exercise_submissions']['Row'] & {
-  auto_graded?: boolean;
-  completion_percentage?: number;
-};
-
-type ExerciseExtended = Database['public']['Tables']['exercises']['Row'] & {
-  courses: Database['public']['Tables']['courses']['Row'];
-  exercise_submissions: ExerciseSubmissionExtended[];
-  exercise_type?: string;
-  auto_grade?: boolean;
-};
 
 export const useMyExercisesQuery = () => {
   const { user, isQueryEnabled } = useStableAuth();
@@ -99,7 +85,7 @@ export const useMyExercisesQuery = () => {
       }
 
       // Transform the data to match the expected format
-      const transformedExercises: ExerciseWithSubmission[] = exercises.map(exercise => {
+      const transformedExercises = exercises.map(exercise => {
         const submission = exercise.exercise_submissions?.[0];
         const enrollment = enrollments.find(e => e.course_id === exercise.course_id);
         // Cast the exercise to ExerciseData with the required fields
@@ -140,11 +126,12 @@ export const useMyExercisesQuery = () => {
           estimated_time: exercise.estimated_time,
           open_date: dates.adjustedOpenDate.toISOString(),
           due_date: dates.adjustedDueDate.toISOString(),
-          close_date: dates.adjustedCloseDate.toISOString(),
           submission_status: submissionStatus,
-          submitted_at: submission?.submitted_at || null,
-          score: submission?.score || null,
-          feedback: submission?.feedback || null
+          exercise_type: (exercise as any).exercise_type || 'form',
+          auto_grade: (exercise as any).auto_grade || false,
+          content_url: (exercise as any).content_url || null,
+          completion_percentage: (submission as any)?.completion_percentage || 0,
+          auto_graded: (submission as any)?.auto_graded || false,
         };
       });
 

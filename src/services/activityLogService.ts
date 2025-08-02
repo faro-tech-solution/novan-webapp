@@ -166,8 +166,8 @@ export const calculateActivityStreak = async (studentId: string): Promise<number
     yesterdayDate.setDate(today.getDate() - 1);
     const yesterdayKey = yesterdayDate.toISOString().split('T')[0];
     
-    let startFromToday = activitiesByDate.has(todayKey);
-    let startFromYesterday = activitiesByDate.has(yesterdayKey);
+    const startFromToday = activitiesByDate.has(todayKey);
+    const startFromYesterday = activitiesByDate.has(yesterdayKey);
     
     if (!startFromToday && !startFromYesterday) {
       return 0; // No recent activity, streak is broken

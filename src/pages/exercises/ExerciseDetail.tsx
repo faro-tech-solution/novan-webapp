@@ -42,16 +42,18 @@ const ExerciseDetail = () => {
       {
         exerciseId: exercise.id,
         studentId: user.id,
-        studentEmail: user.email || "",
-        studentName: profile.first_name
-          ? `${profile.first_name} ${profile.last_name || ""}`
-          : "",
         answers,
+        courseId: exercise.course_id, // Pass courseId from hook
         feedback: feedback || "", // Include feedback in submission
       },
       {
         onSuccess: () => {
-          navigate("/my-exercises");
+          // Navigate to the correct trainee URL structure
+          if (profile?.role === "trainee" && exercise.course_id) {
+            navigate(`/trainee/${exercise.course_id}/my-exercises`);
+          } else {
+            navigate("/my-exercises");
+          }
         },
       }
     );

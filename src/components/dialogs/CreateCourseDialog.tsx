@@ -80,16 +80,12 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
 
     setLoading(true);
     try {
-      // Get selected instructor details
-      const selectedInstructor = instructors.find(inst => inst.id === data.instructorId);
-      
       const { error } = await supabase
         .from('courses')
         .insert({
           name: data.name,
           description: data.description,
           instructor_id: data.instructorId,
-          instructor_name: selectedInstructor ? `${selectedInstructor.first_name} ${selectedInstructor.last_name}` : 'Unknown',
           max_students: data.maxStudents,
           status: data.status,
           price: data.price,

@@ -11,12 +11,10 @@ import {
 } from "@/components/ui/table";
 import { StudentAccountDetailsDialog } from "@/components/students/StudentAccountDetailsDialog";
 import CreatePaymentDialog from "@/components/dialogs/CreatePaymentDialog";
-import { useToast } from "@/hooks/use-toast";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useAccountingRecordsQuery } from "@/hooks/useAccountingQuery";
-import { Badge } from "@/components/ui/badge";
 import UserNameWithBadge from "@/components/ui/UserNameWithBadge";
 
 interface SelectedStudent {
@@ -30,7 +28,6 @@ const Accounting = () => {
   const [selectedStudent, setSelectedStudent] =
     useState<SelectedStudent | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const { toast } = useToast();
   const [showDemoUsers, setShowDemoUsers] = useState(false);
 
   const { data, isLoading, error } = useAccountingRecordsQuery();

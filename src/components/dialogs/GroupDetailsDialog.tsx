@@ -8,7 +8,6 @@ import {
   Users, 
   BookOpen, 
   Plus, 
-  Trash2, 
   MessageCircle,
   Calendar,
   User,
@@ -19,9 +18,6 @@ import { useUsersQuery } from '@/hooks/queries/useUsersQuery';
 import { useCoursesQuery } from '@/hooks/queries/useCoursesQuery';
 import { useAddGroupMembersMutation, useRemoveGroupMembersMutation } from '@/hooks/queries/useGroupsQuery';
 import { useAddGroupCoursesMutation, useRemoveGroupCoursesMutation } from '@/hooks/queries/useGroupsQuery';
-import { GroupMember, GroupCourse } from '@/types/group';
-import { User as UserType } from '@/hooks/queries/useUsersQuery';
-import { Course } from '@/types/course';
 
 interface GroupDetailsDialogProps {
   open: boolean;
@@ -41,9 +37,9 @@ const GroupDetailsDialog = ({ open, onOpenChange, groupId }: GroupDetailsDialogP
 
   // Mutations
   const addMembersMutation = useAddGroupMembersMutation();
-  const removeMembersMutation = useRemoveGroupMembersMutation();
+  const _removeMembersMutation = useRemoveGroupMembersMutation();
   const addCoursesMutation = useAddGroupCoursesMutation();
-  const removeCoursesMutation = useRemoveGroupCoursesMutation();
+  const _removeCoursesMutation = useRemoveGroupCoursesMutation();
 
   if (isLoading) {
     return (
@@ -79,21 +75,7 @@ const GroupDetailsDialog = ({ open, onOpenChange, groupId }: GroupDetailsDialogP
       });
       setSelectedMembers([]);
     } catch (error) {
-      // Error handled by mutation
-    }
-  };
-
-  const handleRemoveMembers = async () => {
-    if (selectedMembers.length === 0) return;
-    
-    try {
-      await removeMembersMutation.mutateAsync({
-        groupId,
-        userIds: selectedMembers,
-      });
-      setSelectedMembers([]);
-    } catch (error) {
-      // Error handled by mutation
+      console.error(error);
     }
   };
 
@@ -107,21 +89,7 @@ const GroupDetailsDialog = ({ open, onOpenChange, groupId }: GroupDetailsDialogP
       });
       setSelectedCourses([]);
     } catch (error) {
-      // Error handled by mutation
-    }
-  };
-
-  const handleRemoveCourses = async () => {
-    if (selectedCourses.length === 0) return;
-    
-    try {
-      await removeCoursesMutation.mutateAsync({
-        groupId,
-        courseIds: selectedCourses,
-      });
-      setSelectedCourses([]);
-    } catch (error) {
-      // Error handled by mutation
+      console.error(error);
     }
   };
 

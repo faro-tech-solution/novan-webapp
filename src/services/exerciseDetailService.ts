@@ -1,10 +1,8 @@
 import { supabase } from '@/integrations/supabase/client';
 import { checkAndAwardAchievements } from '@/services/awardsService';
 import { FormAnswer, ExerciseForm } from '@/types/formBuilder';
-import { logStudentActivity, ACTIVITY_TYPES } from '@/services/activityLogService';
 import { 
   ExerciseDetail, 
-  ExerciseType, 
   SubmissionStatusType,
   ExerciseWithCourse,
   ExerciseSubmission,
@@ -166,9 +164,8 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
 export const submitExerciseSolution = async (
   exerciseId: string,
   studentId: string,
-  studentEmail: string,
-  studentName: string,
   solution: string,
+  courseId: string,
   feedback?: string
 ): Promise<{ error: string | null }> => {
   console.log('Submitting solution for exercise:', exerciseId);
@@ -201,6 +198,7 @@ export const submitExerciseSolution = async (
   const submissionData: SubmissionData = {
     exercise_id: exerciseId,
     student_id: studentId,
+    course_id: courseId, // Set course_id from parameter
     solution: finalSolution,
     submitted_at: new Date().toISOString()
   };

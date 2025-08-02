@@ -59,7 +59,7 @@ const EditGroupDialog = ({ open, onOpenChange, group }: EditGroupDialogProps) =>
       await updateGroupMutation.mutateAsync({ id: group.id, data: groupData });
       onOpenChange(false);
     } catch (error) {
-      // Error is handled by the mutation
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }

@@ -26,15 +26,15 @@ const TrainerDashboard = () => {
   };
 
   const handleManageCourses = () => {
-    navigate("/courses-management");
+    navigate("/trainer/courses-management");
   };
 
   const handleReviewSubmissions = () => {
-    navigate("/review-submissions");
+    navigate("/trainer/review-submissions");
   };
 
   const handleViewSubmission = (submissionId: string) => {
-    navigate(`/review-submissions?submission=${submissionId}`);
+    navigate(`/trainer/review-submissions?submission=${submissionId}`);
   };
 
   return (

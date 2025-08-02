@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Exercise } from '@/types/exercise';
-import { Course } from '@/types/course';
 import { fetchCourses, fetchExercises, createExercise, updateExercise, deleteExercise } from '@/services/exerciseService';
 import { useStableAuth } from '@/hooks/useStableAuth';
 

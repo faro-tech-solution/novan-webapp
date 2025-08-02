@@ -2,9 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { wikiService } from '@/services/wikiService';
 import { useAuth } from '@/contexts/AuthContext';
 import type {
-  WikiCategory,
-  WikiTopic,
-  WikiArticle,
   CreateWikiCategoryData,
   CreateWikiTopicData,
   CreateWikiArticleData,
@@ -126,7 +123,7 @@ export const useCreateWikiArticleMutation = () => {
   
   return useMutation({
     mutationFn: (data: CreateWikiArticleData) => wikiService.createArticle(data),
-    onSuccess: (_, { topic_id }) => {
+    onSuccess: () => {
       // Invalidate all category queries since we don't know which category this topic belongs to
       queryClient.invalidateQueries({ queryKey: wikiKeys.categories() });
     },

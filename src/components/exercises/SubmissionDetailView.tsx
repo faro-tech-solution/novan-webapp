@@ -15,16 +15,6 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
   submission,
   onBack,
 }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("fa-IR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const parseFormStructure = (form_structure: any): ExerciseForm => {
     if (!form_structure) {
       return { questions: [] };

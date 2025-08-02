@@ -22,24 +22,21 @@ export const useSubmitExerciseMutation = () => {
     mutationFn: async ({
       exerciseId,
       studentId,
-      studentEmail,
-      studentName,
       answers,
+      courseId,
       feedback,
     }: {
       exerciseId: string;
       studentId: string;
-      studentEmail: string;
-      studentName: string;
       answers: FormAnswer[];
+      courseId: string;
       feedback?: string;
     }) => {
       const result = await submitExerciseSolution(
         exerciseId,
         studentId,
-        studentEmail,
-        studentName,
         JSON.stringify(answers),
+        courseId,
         feedback
       );
 

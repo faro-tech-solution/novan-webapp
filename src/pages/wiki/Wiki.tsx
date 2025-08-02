@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useWikiCategoriesQuery } from '@/hooks/useWikiQuery';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,11 +10,11 @@ import { BookOpen, Lock, Plus, Edit, Trash2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useDeleteWikiCategoryMutation } from '@/hooks/useWikiQuery';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const Wiki: React.FC = () => {
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
+  const { courseId } = useParams();
   const { data: categories = [], isLoading, error } = useWikiCategoriesQuery();
   const deleteCategoryMutation = useDeleteWikiCategoryMutation();
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,13 +28,13 @@ const Wiki: React.FC = () => {
     try {
       await deleteCategoryMutation.mutateAsync(categoryId);
       toast.success('دسته‌بندی با موفقیت حذف شد');
-    } catch (error) {
+    } catch {
       toast.error('خطا در حذف دسته‌بندی');
     }
   };
 
   const hasAccess = (category: any) => {
-    if (user?.role === 'admin' || user?.role === 'trainer') {
+    if (profile?.role === 'admin' || profile?.role === 'trainer') {
       return true;
     }
     
@@ -79,17 +79,17 @@ const Wiki: React.FC = () => {
           <p className="text-gray-600 mt-2">منابع و راهنمای آموزشی</p>
         </div>
         
-        {(user?.role === 'admin' || user?.role === 'trainer') && (
+        {(profile?.role === 'admin' || profile?.role === 'trainer') && (
           <div className="flex gap-2">
             <Button asChild>
-              <Link to="/wiki/create-article">
+              <Link to={`/${profile?.role}/wiki/create-article`}>
                 <Plus className="h-4 w-4 ml-2" />
                 مقاله جدید
               </Link>
             </Button>
-            {user?.role === 'admin' && (
+            {profile?.role === 'admin' && (
               <Button asChild variant="outline">
-                <Link to="/wiki/manage">
+                <Link to={`/${profile?.role}/wiki/manage`}>
                   <Edit className="h-4 w-4 ml-2" />
                   مدیریت
                 </Link>
@@ -154,7 +154,7 @@ const Wiki: React.FC = () => {
 
                 {hasAccess(category) ? (
                   <Button asChild className="w-full">
-                    <Link to={`/wiki/category/${category.id}`}>
+                    <Link to={profile?.role === 'trainee' && courseId ? `/trainee/${courseId}/wiki/category/${category.id}` : `/${profile?.role}/wiki/category/${category.id}`}>
                       مشاهده محتوا
                     </Link>
                   </Button>
@@ -167,10 +167,10 @@ const Wiki: React.FC = () => {
                 )}
 
                 {/* Admin actions */}
-                {user?.role === 'admin' && (
+                {profile?.role === 'admin' && (
                   <div className="flex gap-2 pt-2 border-t">
                     <Button asChild variant="outline" size="sm" className="flex-1">
-                      <Link to={`/wiki/category/${category.id}/edit`}>
+                      <Link to={`/${profile?.role}/wiki/category/${category.id}/edit`}>
                         <Edit className="h-3 w-3 ml-1" />
                         ویرایش
                       </Link>

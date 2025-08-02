@@ -1,13 +1,13 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { Course } from '@/types/exercise';
+import { Course } from '@/types/course';
 
 export const fetchCourses = async (): Promise<Course[]> => {
   console.log('Fetching courses...');
 
   const { data, error } = await supabase
     .from('courses')
-    .select('id, name, instructor_name, status')
+    .select('id, name, instructor_id, status, slug, thumbnail')
     .order('name');
 
   if (error) {

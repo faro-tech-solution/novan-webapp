@@ -24,7 +24,7 @@ export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({
     return answer?.answer || '';
   };
 
-  const formatAnswer = (answer: string | string[], questionType: string): string => {
+  const formatAnswer = (answer: string | string[]): string => {
     if (Array.isArray(answer)) {
       return answer.join('، ');
     }

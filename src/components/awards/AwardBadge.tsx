@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  useAwardTranslation,
   Award,
   enrichAwardWithTranslation,
 } from "@/utils/awardTranslationUtils";

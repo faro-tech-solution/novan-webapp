@@ -120,8 +120,6 @@ export async function debugAchievements(studentId: string) {
 }
 
 // Make it available in the window object for easy console access
-// @ts-ignore
 if (typeof window !== 'undefined') {
-  // @ts-ignore
-  window.debugAchievements = debugAchievements;
+  (window as any).debugAchievements = debugAchievements;
 }

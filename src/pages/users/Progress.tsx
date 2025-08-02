@@ -1,26 +1,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress as ProgressBar } from '@/components/ui/progress';
 import { 
-  TrendingUp, 
-  TrendingDown, 
   Award, 
-  Target, 
-  Calendar, 
-  Clock,
-  CheckCircle,
-  BarChart3,
-  PieChart,
+  Calendar,
   Activity
 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, BarChart, Bar } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { useAuth } from '@/contexts/AuthContext';
 import { useProgressStatsQuery, useStudentAwardsQuery, useAllAwardsQuery } from '@/hooks/queries/useProgressQuery';
 import { AchievementsDisplay } from '@/components/awards/AchievementsDisplay';
 
 const Progress = () => {
-  const { profile } = useAuth();
   const { data: stats, isLoading: statsLoading, error: statsError } = useProgressStatsQuery();
   const { data: studentAwards = [], isLoading: awardsLoading } = useStudentAwardsQuery();
   const { data: allAwards = [], isLoading: allAwardsLoading } = useAllAwardsQuery();

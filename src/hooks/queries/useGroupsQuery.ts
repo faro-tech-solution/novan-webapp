@@ -13,14 +13,8 @@ import {
   getGroupStats
 } from '@/services/groupService';
 import { 
-  Group, 
-  CreateGroupData, 
-  UpdateGroupData, 
-  GroupWithDetails,
-  GroupMemberAssignment,
-  GroupCourseAssignment,
-  GroupFilters,
-  GroupStats
+  UpdateGroupData,
+  GroupFilters
 } from '@/types/group';
 import { toast } from 'sonner';
 

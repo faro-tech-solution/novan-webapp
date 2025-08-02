@@ -125,7 +125,7 @@ export const useTraineeDashboard = () => {
       const now = new Date();
       const processedExercises: UpcomingExercise[] = [];
       let completedCount = 0;
-      let pendingCount = 0;
+      const pendingCount = 0;
       let overdueCount = 0;
       let totalPoints = 0;
 

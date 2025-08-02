@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useWikiCategoriesQuery, useCreateWikiCategoryMutation, useCreateWikiTopicMutation, useDeleteWikiCategoryMutation, useDeleteWikiTopicMutation, useUpdateWikiCategoryMutation } from '@/hooks/useWikiQuery';
+import { useWikiCategoriesQuery, useCreateWikiCategoryMutation, useCreateWikiTopicMutation, useDeleteWikiCategoryMutation, useUpdateWikiCategoryMutation } from '@/hooks/useWikiQuery';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,19 +12,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { BookOpen, Plus, Edit, Trash2, FileText, Users, Lock } from 'lucide-react';
+import { BookOpen, Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCoursesQuery } from '@/hooks/queries/useCoursesQuery';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const WikiManagement: React.FC = () => {
-  const { user, profile, loading } = useAuth();
+  const { profile, loading } = useAuth();
   const { data: categories = [], isLoading, error } = useWikiCategoriesQuery();
   const { courses = [] } = useCoursesQuery();
   const createCategoryMutation = useCreateWikiCategoryMutation();
   const createTopicMutation = useCreateWikiTopicMutation();
   const deleteCategoryMutation = useDeleteWikiCategoryMutation();
-  const deleteTopicMutation = useDeleteWikiTopicMutation();
   const updateCategoryMutation = useUpdateWikiCategoryMutation();
   
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,7 +63,7 @@ const WikiManagement: React.FC = () => {
       toast.success('دسته‌بندی با موفقیت ایجاد شد');
       setShowCreateCategory(false);
       setCategoryForm({ title: '', description: '', access_type: 'all_students', course_ids: [] });
-    } catch (error) {
+    } catch {
       toast.error('خطا در ایجاد دسته‌بندی');
     }
   };
@@ -82,7 +81,7 @@ const WikiManagement: React.FC = () => {
       setShowCreateTopic(false);
       setTopicForm({ title: '', description: '', order_index: 0 });
       setSelectedCategoryForTopic('');
-    } catch (error) {
+    } catch {
       toast.error('خطا در ایجاد موضوع');
     }
   };
@@ -91,17 +90,8 @@ const WikiManagement: React.FC = () => {
     try {
       await deleteCategoryMutation.mutateAsync(categoryId);
       toast.success('دسته‌بندی با موفقیت حذف شد');
-    } catch (error) {
+    } catch {
       toast.error('خطا در حذف دسته‌بندی');
-    }
-  };
-
-  const handleDeleteTopic = async (topicId: string) => {
-    try {
-      await deleteTopicMutation.mutateAsync(topicId);
-      toast.success('موضوع با موفقیت حذف شد');
-    } catch (error) {
-      toast.error('خطا در حذف موضوع');
     }
   };
 
@@ -134,7 +124,7 @@ const WikiManagement: React.FC = () => {
         setShowCreateCategory(false);
         setEditCategoryId(null);
         setCategoryForm({ title: '', description: '', access_type: 'all_students', course_ids: [] });
-      } catch (error) {
+      } catch {
         toast.error('خطا در ویرایش دسته‌بندی');
       }
     } else {
@@ -200,8 +190,12 @@ const WikiManagement: React.FC = () => {
     <DashboardLayout title="مدیریت ویکی">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">مدیریت ویکی</h1>
-          <p className="text-gray-600 mt-2">مدیریت دسته‌بندی‌ها، موضوعات و دسترسی‌ها</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            مدیریت ویکی
+          </h1>
+          <p className="text-gray-600 mt-2">
+            مدیریت دسته‌بندی‌ها، موضوعات و دسترسی‌ها
+          </p>
         </div>
         
         <div className="flex gap-2">
@@ -381,7 +375,7 @@ const WikiManagement: React.FC = () => {
             </DialogContent>
           </Dialog>
           <Button asChild variant="outline">
-            <Link to="/wiki/create-article">
+            <Link to={`/${profile?.role}/wiki/create-article`}>
               <Plus className="h-4 w-4 ml-2" />
               ایجاد مقاله
             </Link>
@@ -469,7 +463,7 @@ const WikiManagement: React.FC = () => {
                 )}
                 
                 <Button asChild className="w-full">
-                  <Link to={`/wiki/category/${category.id}`}>
+                  <Link to={`/${profile?.role}/wiki/category/${category.id}`}>
                     مشاهده محتوا
                   </Link>
                 </Button>

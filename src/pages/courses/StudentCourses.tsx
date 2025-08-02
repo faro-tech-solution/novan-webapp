@@ -5,22 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   BookOpen, 
-  Clock, 
   Users, 
   Play,
-  Calendar,
   Award,
   Filter,
   Loader2
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { useAuth } from '@/contexts/AuthContext';
 import { useStudentCoursesQuery } from '@/hooks/queries/useStudentCoursesQuery';
 import { useToast } from '@/hooks/use-toast';
 
 const StudentCourses = () => {
-  const { profile } = useAuth();
   const [filter, setFilter] = useState('all');
   const { toast } = useToast();
   const { data: courses = [], isLoading, error, refetch } = useStudentCoursesQuery();
@@ -57,7 +53,7 @@ const StudentCourses = () => {
         title: 'بروزرسانی',
         description: 'دوره‌ها با موفقیت بروزرسانی شدند',
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'خطا',
         description: 'خطا در بروزرسانی دوره‌ها',

@@ -10,21 +10,6 @@ interface StudentDetailsDialogProps {
   student: StudentDetails | null;
 }
 
-const educationLevels = [
-  { value: 'diploma', label: 'دیپلم' },
-  { value: 'associate', label: 'کاردانی' },
-  { value: 'bachelor', label: 'کارشناسی' },
-  { value: 'master', label: 'کارشناسی ارشد' },
-  { value: 'phd', label: 'دکترا' },
-  { value: 'other', label: 'سایر' }
-];
-
-const genders = [
-  { value: 'male', label: 'مرد' },
-  { value: 'female', label: 'زن' },
-  { value: 'other', label: 'سایر' }
-];
-
 export function StudentDetailsDialog({ open, onOpenChange, student }: StudentDetailsDialogProps) {
   if (!student) return null;
 

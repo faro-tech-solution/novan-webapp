@@ -1,23 +1,3 @@
-import { ExerciseCourse } from './course';
-
-export interface ExerciseWithSubmission {
-  id: string;
-  title: string;
-  description: string | null;
-  course_id: string;
-  course_name?: string;
-  difficulty: string;
-  due_date: string;
-  open_date: string;
-  close_date: string;
-  points: number;
-  estimated_time: string;
-  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
-  submitted_at: string | null;
-  score: number | null;
-  feedback: string | null;
-}
-
 export interface ExerciseData {
   id: string;
   title: string;
@@ -41,8 +21,6 @@ export interface ExerciseData {
   } | null;
 }
 
-// This type is being migrated to types/exercise.ts
-// Please import ExerciseSubmission from '@/types/exercise' instead
 export interface ExerciseSubmission {
   exercise_id: string;
   student_id: string;

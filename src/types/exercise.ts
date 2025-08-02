@@ -1,10 +1,23 @@
 import { ExerciseForm, FormAnswer } from './formBuilder';
-import { ExerciseCourse } from './course';
 import { Json } from '@/integrations/supabase/types';
 
 export type ExerciseType = 'form' | 'video' | 'audio' | 'simple';
 export type SubmissionStatusType = 'not_started' | 'pending' | 'completed' | 'overdue';
 export type ExerciseStatusType = 'upcoming' | 'active' | 'overdue' | 'closed';
+
+// Exercise category interface
+export interface ExerciseCategory {
+  id: string;
+  name: string;
+  description: string | null;
+  course_id: string;
+  order_index: number;
+  is_active: boolean;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  exercise_count?: number;
+}
 
 // Base exercise interface for database records
 export interface Exercise {
@@ -12,6 +25,7 @@ export interface Exercise {
   title: string;
   description: string | null;
   course_id: string;
+  category_id?: string | null;
   difficulty: string;
   days_to_due: number;
   days_to_open: number;
@@ -29,6 +43,7 @@ export interface Exercise {
   total_students?: number;
   exercise_status?: ExerciseStatusType;
   course_name?: string;
+  category_name?: string;
 }
 
 // Exercise with course information from database
@@ -55,6 +70,7 @@ export interface SubmissionData {
   student_id: string;
   solution: string;
   submitted_at: string;
+  course_id: string;
 }
 
 // For upcoming exercises card
@@ -64,6 +80,7 @@ export interface UpcomingExercise {
   due_date: string;
   estimated_time: string;
   points: number;
+  difficulty: string;
 }
 
 // For my exercise table

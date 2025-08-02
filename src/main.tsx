@@ -5,6 +5,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { DashboardPanelProvider } from './contexts/DashboardPanelContext';
 
 // Initialize the query client
 const queryClient = new QueryClient({
@@ -24,7 +25,9 @@ createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <LanguageProvider>
-        <App />
+        <DashboardPanelProvider>
+          <App />
+        </DashboardPanelProvider>
       </LanguageProvider>
     </AuthProvider>
     <ReactQueryDevtools initialIsOpen={false} />

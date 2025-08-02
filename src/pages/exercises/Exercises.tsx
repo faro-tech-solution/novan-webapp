@@ -8,6 +8,7 @@ import { ExerciseStatsCards } from "@/components/exercises/ExerciseStatsCards";
 import { ExerciseFilters } from "@/components/exercises/ExerciseFilters";
 import { ExerciseTable } from "@/components/exercises/ExerciseTable";
 import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
+import { useDashboardPanelContext } from "@/contexts/DashboardPanelContext";
 
 const Exercises = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,14 +17,15 @@ const Exercises = () => {
   const [exerciseStatusFilter, setExerciseStatusFilter] = useState("all");
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
 
+  const { trainee: { courseId: activeCourseId } } = useDashboardPanelContext();
+
   const {
     exercises = [],
     loading: exercisesLoading,
     error: exercisesError,
     courses = [],
     deleteExercise: handleDeleteExerciseRequest,
-    isDeleting,
-  } = useExercisesQuery();
+  } = useExercisesQuery(activeCourseId || undefined);
   const { toast } = useToast();
 
   const handleDeleteExercise = async (id: string) => {
@@ -74,6 +76,16 @@ const Exercises = () => {
       matchesExerciseStatus
     );
   });
+
+  if (!activeCourseId) {
+    return (
+      <DashboardLayout title="مدیریت تمرین‌ها">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-600">لطفاً یک دوره فعال انتخاب کنید.</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (exercisesLoading) {
     return (

@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { useNotificationTranslation } from "@/utils/notificationTranslationUtils";
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -24,6 +25,7 @@ export default function NotificationBell() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { isInitialized, user } = useAuth();
+  const translateNotification = useNotificationTranslation();
 
   // Use a ref to track if the component is mounted
   const isMounted = useRef(true);
@@ -208,10 +210,12 @@ export default function NotificationBell() {
                       getNotificationIcon(notification.type)}
                   </span>
                   <div className="flex-1">
-                    <p className="font-medium">{notification.title}</p>
+                    <p className="font-medium">
+                      {translateNotification(notification.title).title}
+                    </p>
                     {notification.description && (
                       <p className="text-sm text-muted-foreground">
-                        {notification.description}
+                        {translateNotification(notification.description).title}
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground mt-1">

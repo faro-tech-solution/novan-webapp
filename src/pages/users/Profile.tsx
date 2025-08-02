@@ -22,7 +22,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import {
@@ -96,7 +95,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   // React Query hooks
-  const { data: profile, isLoading: profileLoading } = useProfileQuery();
+  const { data: profile } = useProfileQuery();
   const updateProfileMutation = useUpdateProfileMutation();
   const changePasswordMutation = useChangePasswordMutation();
 

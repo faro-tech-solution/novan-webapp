@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Course } from '@/types/course';
 
 export const useCoursesQuery = () => {
   const { profile } = useAuth();
@@ -55,6 +54,7 @@ export const useCoursesQuery = () => {
       return coursesWithCounts;
     },
     enabled: !!profile,
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
   });
 
   const deleteCourseMutation = useMutation({
