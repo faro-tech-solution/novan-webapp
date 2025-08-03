@@ -1,17 +1,9 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { MyExerciseStatsCards } from '@/components/exercises/MyExerciseStatsCards';
-import { MyExerciseFilters } from '@/components/exercises/MyExerciseFilters';
 import { MyExerciseTable } from '@/components/exercises/MyExerciseTable';
 import { useMyExercisesQuery } from '@/hooks/queries/useMyExercisesQuery';
 
 const MyExercises = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [difficultyFilter, setDifficultyFilter] = useState('all');
-  const [courseFilter, setCourseFilter] = useState('all');
-  
   const { data: myExercises = [], isLoading, error, refetch } = useMyExercisesQuery();
 
   // Filter out exercises that will start in the future
@@ -19,26 +11,6 @@ const MyExercises = () => {
     const today = new Date();
     const openDate = new Date(exercise.open_date);
     return openDate <= today;
-  });
-
-  // Get unique courses for the filter dropdown
-  const availableCourses = Array.from(
-    new Map(
-      currentExercises
-        .filter(exercise => exercise.course_name)
-        .map(exercise => [exercise.course_id, { id: exercise.course_id, name: exercise.course_name! }])
-    ).values()
-  );
-
-  // Filter exercises based on search and filters
-  const filteredExercises = currentExercises.filter(exercise => {
-    const matchesSearch = exercise.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (exercise.description && exercise.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus = statusFilter === 'all' || exercise.submission_status === statusFilter;
-    const matchesDifficulty = difficultyFilter === 'all' || exercise.difficulty === difficultyFilter;
-    const matchesCourse = courseFilter === 'all' || exercise.course_id === courseFilter;
-    
-    return matchesSearch && matchesStatus && matchesDifficulty && matchesCourse;
   });
 
   if (isLoading) {
@@ -70,26 +42,9 @@ const MyExercises = () => {
   return (
     <DashboardLayout title="تمرین‌های من">
       <div className="space-y-6">
-        {/* Stats Cards */}
-        <MyExerciseStatsCards exercises={currentExercises} />
-
-        {/* Filters */}
-        <MyExerciseFilters
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          difficultyFilter={difficultyFilter}
-          setDifficultyFilter={setDifficultyFilter}
-          courseFilter={courseFilter}
-          setCourseFilter={setCourseFilter}
-          availableCourses={availableCourses}
-        />
-
         {/* Exercises Table */}
         <MyExerciseTable 
           exercises={currentExercises}
-          filteredExercises={filteredExercises}
         />
       </div>
     </DashboardLayout>

@@ -12,8 +12,7 @@ export { FormBuilder } from './FormBuilder';
 export { FormRenderer } from './FormRenderer';
 export { GradingSection } from './GradingSection';
 export { InstructorFormView } from './InstructorFormView';
-export { MyExerciseFilters } from './MyExerciseFilters';
-export { MyExerciseStatsCards } from './MyExerciseStatsCards';
+
 export { MyExerciseTable } from './MyExerciseTable';
 export { ReviewSubmissionsHeader } from './ReviewSubmissionsHeader';
 export { SubmissionCard } from './SubmissionCard';

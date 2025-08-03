@@ -12,10 +12,9 @@ import { MyExerciseWithSubmission } from '@/types/exercise';
 
 interface MyExerciseTableProps {
   exercises: MyExerciseWithSubmission[];
-  filteredExercises: MyExerciseWithSubmission[];
 }
 
-export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTableProps) => {
+export const MyExerciseTable = ({ exercises }: MyExerciseTableProps) => {
   const params = useParams();
   const courseId = params?.courseId as string;
   const getStatusBadge = (status: string) => {
@@ -78,17 +77,17 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
       <CardHeader>
         <CardTitle>لیست تمرین‌ها</CardTitle>
         <CardDescription>
-          {filteredExercises.length} تمرین از {exercises.length} تمرین
+          {exercises.length} تمرین
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {filteredExercises.length === 0 ? (
+        {exercises.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            {exercises.length === 0 ? 'هیچ تمرینی برای شما تعریف نشده است.' : 'هیچ تمرینی با فیلترهای انتخابی یافت نشد.'}
+            هیچ تمرینی برای شما تعریف نشده است.
           </div>
         ) : (
           <ResponsiveTable headers={tableHeaders}>
-            {filteredExercises.map((exercise) => (
+            {exercises.map((exercise) => (
               <TableRow key={exercise.id}>
                 <TableCell>
                   <div className="flex items-center space-x-2 space-x-reverse">
