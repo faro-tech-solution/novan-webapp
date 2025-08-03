@@ -11,7 +11,7 @@ import {
 } from '@/types/group';
 
 // Get all groups with optional filters
-export const getGroups = async (filters?: GroupFilters): Promise<Group[]> => {
+export const getGroups = async (filters?: GroupFilters): Promise<Group[] | any[]> => {
   let query = supabase
     .from('groups')
     .select(`
@@ -54,7 +54,7 @@ export const getGroup = async (id: string): Promise<Group> => {
 };
 
 // Get group with details (members and courses)
-export const getGroupWithDetails = async (id: string): Promise<GroupWithDetails> => {
+export const getGroupWithDetails = async (id: string): Promise<GroupWithDetails | any> => {
   const { data, error } = await supabase
     .from('groups')
     .select(`

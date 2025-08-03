@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+
 import { useWikiCategoriesQuery, useCreateWikiCategoryMutation, useCreateWikiTopicMutation, useDeleteWikiCategoryMutation, useUpdateWikiCategoryMutation } from '@/hooks/useWikiQuery';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -375,7 +378,7 @@ const WikiManagement: React.FC = () => {
             </DialogContent>
           </Dialog>
           <Button asChild variant="outline">
-            <Link to={`/${profile?.role}/wiki/create-article`}>
+            <Link href={`/${profile?.role}/wiki/create-article`}>
               <Plus className="h-4 w-4 ml-2" />
               ایجاد مقاله
             </Link>
@@ -453,7 +456,7 @@ const WikiManagement: React.FC = () => {
                 {category.access_type === 'course_specific' && category.course_access && (
                   <div className="text-xs text-gray-500">
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {category.course_access.map((access) => (
+                      {category.course_access.map((access: any) => (
                         <Badge key={access.id} variant="outline" className="text-xs">
                           {access.course?.name || 'نامشخص'}
                         </Badge>
@@ -463,7 +466,7 @@ const WikiManagement: React.FC = () => {
                 )}
                 
                 <Button asChild className="w-full">
-                  <Link to={`/${profile?.role}/wiki/category/${category.id}`}>
+                  <Link href={`/${profile?.role}/wiki/category/${category.id}`}>
                     مشاهده محتوا
                   </Link>
                 </Button>

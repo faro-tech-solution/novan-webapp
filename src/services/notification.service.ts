@@ -2,10 +2,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Notification } from '@/types/notification';
 
 export const NotificationService = {
-    async getLatestNotifications(limit: number = 5): Promise<Notification[]> {
+    async getLatestNotifications(limit: number = 5): Promise<Notification[] | any[]> {
         console.log('Fetching notifications with limit:', limit);
         const { data, error } = await supabase
-            .from('notifications')
+            .from('notifications' as any)
             .select('*')
             .order('created_at', { ascending: false })
             .limit(limit);
@@ -21,7 +21,7 @@ export const NotificationService = {
     async markAsRead(notificationId: string): Promise<void> {
         console.log('Marking notification as read:', notificationId);
         const { error } = await supabase
-            .from('notifications')
+            .from('notifications' as any)
             .update({ is_read: true, read_at: new Date().toISOString() })
             .eq('id', notificationId);
         
@@ -35,7 +35,7 @@ export const NotificationService = {
     async getUnreadCount(): Promise<number> {
         console.log('Fetching unread count');
         const { count, error } = await supabase
-            .from('notifications')
+            .from('notifications' as any)
             .select('*', { count: 'exact', head: true })
             .eq('is_read', false);
         

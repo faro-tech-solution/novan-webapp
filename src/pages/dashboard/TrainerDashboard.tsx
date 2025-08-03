@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from 'next/navigation';
+
 import {
   Card,
   CardContent,
@@ -16,7 +19,7 @@ import { useRecentSubmissions } from "@/hooks/useRecentSubmissions";
 import { useTrainerStats } from "@/hooks/useTrainerStats";
 
 const TrainerDashboard = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [showCreateExercise, setShowCreateExercise] = useState(false);
   const { submissions, loading: submissionsLoading } = useRecentSubmissions();
   const { stats, loading: statsLoading } = useTrainerStats();
@@ -26,15 +29,15 @@ const TrainerDashboard = () => {
   };
 
   const handleManageCourses = () => {
-    navigate("/trainer/courses-management");
+    router.push("/trainer/courses-management");
   };
 
   const handleReviewSubmissions = () => {
-    navigate("/trainer/review-submissions");
+    router.push("/trainer/review-submissions");
   };
 
   const handleViewSubmission = (submissionId: string) => {
-    navigate(`/trainer/review-submissions?submission=${submissionId}`);
+    router.push(`/trainer/review-submissions?submission=${submissionId}`);
   };
 
   return (

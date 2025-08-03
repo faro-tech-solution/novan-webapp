@@ -1,23 +1,26 @@
+'use client';
+
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+
 import { useAuth } from '@/contexts/AuthContext';
 import { getDashboardPathForRole } from '@/utils';
 
 const Dashboard = () => {
   const { profile, loading } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     if (!loading) {
       if (!profile) {
-        navigate('/');
+        router.push('/');
         return;
       }
 
       // Redirect based on user role
-      navigate(getDashboardPathForRole(profile.role));
+      router.push(getDashboardPathForRole(profile.role));
     }
-  }, [profile, loading, navigate]);
+  }, [profile, loading, router]);
 
   if (loading) {
     return (

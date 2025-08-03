@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -97,7 +100,7 @@ const StudentCourses = () => {
           <p className="text-gray-600 mb-4">
             در این بخش دوره‌ای وجود ندارد
           </p>
-          <Link to="/courses">
+          <Link href="/courses">
             <Button>
               مشاهده دوره‌های موجود
             </Button>

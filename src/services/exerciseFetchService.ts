@@ -47,7 +47,8 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
       ...exercise,
       course_name: exercise.courses.name,
       form_structure: parseFormStructure(exercise.form_structure)
-    })) as Exercise[];
+    })) as any[];
+    // })) as Exercise[];
   } catch (error) {
     console.error('Error in fetchExercises:', error);
     throw error;

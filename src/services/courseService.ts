@@ -2,7 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Course } from '@/types/course';
 
-export const fetchCourses = async (): Promise<Course[]> => {
+export const fetchCourses = async (): Promise<Course[] | any[]> => {
   console.log('Fetching courses...');
 
   const { data, error } = await supabase

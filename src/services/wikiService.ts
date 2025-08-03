@@ -14,7 +14,7 @@ import type {
 
 export const wikiService = {
   // Get all categories with access control
-  async getCategories(userId: string, userRole: string): Promise<WikiCategory[]> {
+  async getCategories(userId: string, userRole: string): Promise<WikiCategory[] | any[]> {
     console.log('getCategories called with:', { userId, userRole });
     
     const { data, error } = await supabase
@@ -59,7 +59,7 @@ export const wikiService = {
 
     // For trainees, filter based on access
     const accessibleCategories = await Promise.all(
-      categories.map(async (category) => {
+      categories.map(async (category: any) => {
         console.log('Checking category:', category.title, 'access_type:', category.access_type);
         
         if (category.access_type === 'all_students') {
@@ -96,13 +96,13 @@ export const wikiService = {
       })
     );
 
-    const filteredCategories = accessibleCategories.filter(Boolean) as WikiCategory[];
+    const filteredCategories = accessibleCategories.filter(Boolean) as WikiCategory[] | any[];
     console.log('Final accessible categories:', filteredCategories.length);
     return filteredCategories;
   },
 
   // Get category with topics and articles
-  async getCategoryWithContent(categoryId: string): Promise<WikiCategoryWithTopics | null> {
+  async getCategoryWithContent(categoryId: string): Promise<WikiCategoryWithTopics | null | any> {
     const { data, error } = await supabase
       .from('wiki_categories')
       .select(`
@@ -138,7 +138,7 @@ export const wikiService = {
     const articlesWithAuthors = await Promise.all(
       (data.topics || []).map(async (topic) => {
         const articlesWithAuthors = await Promise.all(
-          (topic.articles || []).map(async (article) => {
+          (topic.articles || []).map(async (article: any) => {
             if (article.created_by) {
               const { data: authorData } = await supabase
                 .from('profiles')
@@ -179,7 +179,7 @@ export const wikiService = {
   },
 
   // Get single article
-  async getArticle(articleId: string): Promise<WikiArticle | null> {
+  async getArticle(articleId: string): Promise<WikiArticle | null | any> {
     const { data, error } = await supabase
       .from('wiki_articles')
       .select('*')
@@ -370,7 +370,7 @@ export const wikiService = {
     }));
 
     const { error } = await supabase
-      .from('wiki_category_course_access')
+      .from('wiki_category_course_access' as any)
       .insert(accessRecords);
 
     if (error) throw error;
@@ -380,7 +380,7 @@ export const wikiService = {
   async updateCategoryCourseAccess(categoryId: string, courseIds: string[]): Promise<void> {
     // First remove existing access
     await supabase
-      .from('wiki_category_course_access')
+      .from('wiki_category_course_access' as any)
       .delete()
       .eq('category_id', categoryId);
 
@@ -391,7 +391,7 @@ export const wikiService = {
   },
 
   // Check if user has access to category
-  async checkCategoryAccess(categoryId: string, userId: string): Promise<boolean> {
+  async checkCategoryAccess(categoryId: string, userId: string): Promise<boolean  | any> {
     const { data: category, error } = await supabase
       .from('wiki_categories')
       .select('access_type')
@@ -419,7 +419,7 @@ export const wikiService = {
       const userCourseIds = enrollments.map(e => e.course_id);
       
       const { data: access } = await supabase
-        .from('wiki_category_course_access')
+        .from('wiki_category_course_access' as any)
         .select('course_id')
         .eq('category_id', categoryId)
         .in('course_id', userCourseIds);

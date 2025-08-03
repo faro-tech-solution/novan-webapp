@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import { format } from "date-fns";
@@ -12,7 +14,7 @@ import {
 import { NotificationService } from "@/services/notification.service";
 import { Notification } from "@/types/notification";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from 'next/navigation';
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useNotificationTranslation } from "@/utils/notificationTranslationUtils";
@@ -23,7 +25,7 @@ export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const router = useRouter();
   const { isInitialized, user } = useAuth();
   const translateNotification = useNotificationTranslation();
 
@@ -144,7 +146,7 @@ export default function NotificationBell() {
       }
 
       if (notification.link) {
-        navigate(notification.link);
+        router.push(notification.link);
       }
 
       setIsOpen(false);
@@ -231,7 +233,7 @@ export default function NotificationBell() {
           variant="ghost"
           className="w-full h-10 border-t rounded-none"
           onClick={() => {
-            navigate("/notifications");
+            router.push("/notifications");
             setIsOpen(false);
           }}
         >

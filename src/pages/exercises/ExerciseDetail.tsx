@@ -1,6 +1,9 @@
+'use client';
+
 import React, { useState } from "react";
 import { CheckCircle, AlertCircle } from "lucide-react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useRouter } from 'next/navigation';
+
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { FormAnswer } from "@/types/formBuilder";
@@ -16,8 +19,9 @@ import {
 } from "@/hooks/queries/useExerciseDetailQuery";
 
 const ExerciseDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const params = useParams();
+  const id = params?.id as string;
+  const router = useRouter();
   const { profile, user } = useAuth();
   const [answers, setAnswers] = useState<FormAnswer[]>([]);
 
@@ -50,9 +54,9 @@ const ExerciseDetail = () => {
         onSuccess: () => {
           // Navigate to the correct trainee URL structure
           if (profile?.role === "trainee" && exercise.course_id) {
-            navigate(`/trainee/${exercise.course_id}/my-exercises`);
+            router.push(`/trainee/${exercise.course_id}/my-exercises`);
           } else {
-            navigate("/my-exercises");
+            router.push("/my-exercises");
           }
         },
       }
@@ -79,7 +83,7 @@ const ExerciseDetail = () => {
           <p className="text-red-600">
             {error instanceof Error ? error.message : "تمرین یافت نشد"}
           </p>
-          <button onClick={() => navigate(-1)} className="mt-4">
+          <button onClick={() => router.back()} className="mt-4">
             بازگشت
           </button>
         </div>
@@ -91,7 +95,7 @@ const ExerciseDetail = () => {
     <DashboardLayout title="جزئیات تمرین">
       <div className="max-w-4xl mx-auto space-y-6">
         <ExerciseDetailHeader
-          onBack={() => navigate(-1)}
+          onBack={() => router.back()}
           difficulty={exercise.difficulty}
           estimatedTime={exercise.estimated_time}
           points={exercise.points}

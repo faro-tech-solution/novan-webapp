@@ -28,7 +28,7 @@ export interface CreatePaymentData {
   course_id?: string;
   amount: number;
   payment_type: 'buy_course' | 'discount' | 'installment' | 'refund';
-  payment_status?: 'completed' | 'waiting' | 'cancelled';
+  payment_status?: PaymentStatus;
   description?: string;
 }
 

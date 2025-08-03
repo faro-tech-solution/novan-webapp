@@ -14,7 +14,7 @@ import {
   ListChecks,
   UserCog,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from 'next/link';
 
 const AdminDashboard = () => {
   return (
@@ -40,7 +40,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">مدیریت</div>
               <p className="text-xs text-muted-foreground">کاربران و نقش‌ها</p>
-              <Link to="/admin/user-management">
+              <Link href="/admin/user-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -60,7 +60,7 @@ const AdminDashboard = () => {
               <p className="text-xs text-muted-foreground">
                 ایجاد و مدیریت گروه‌ها
               </p>
-              <Link to="/admin/group-management">
+              <Link href="/admin/group-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -78,7 +78,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">دوره‌ها</div>
               <p className="text-xs text-muted-foreground">ایجاد و مدیریت</p>
-              <Link to="/admin/courses-management">
+              <Link href="/admin/courses-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -94,7 +94,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">لیست</div>
               <p className="text-xs text-muted-foreground">مشاهده دانشجویان</p>
-              <Link to="/admin/students">
+              <Link href="/admin/students">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
               <p className="text-xs text-muted-foreground">
                 تمرین‌ها و آزمون‌ها
               </p>
-              <Link to="/admin/exercises">
+              <Link href="/admin/exercises">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -132,7 +132,7 @@ const AdminDashboard = () => {
               <p className="text-xs text-muted-foreground">
                 مدیریت وظایف روزانه
               </p>
-              <Link to="/daily-activities-management">
+              <Link href="/daily-activities-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -152,7 +152,7 @@ const AdminDashboard = () => {
               <p className="text-xs text-muted-foreground">
                 تعریف و مدیریت وظایف تیم
               </p>
-              <Link to="/admin/tasks-management">
+              <Link href="/admin/tasks-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>

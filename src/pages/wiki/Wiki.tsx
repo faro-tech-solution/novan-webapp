@@ -1,5 +1,9 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+
 import { useWikiCategoriesQuery } from '@/hooks/useWikiQuery';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +18,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const Wiki: React.FC = () => {
   const { profile } = useAuth();
-  const { courseId } = useParams();
+  const params = useParams();
+  const courseId = params?.courseId as string;
   const { data: categories = [], isLoading, error } = useWikiCategoriesQuery();
   const deleteCategoryMutation = useDeleteWikiCategoryMutation();
   const [searchTerm, setSearchTerm] = useState('');
@@ -82,14 +87,14 @@ const Wiki: React.FC = () => {
         {(profile?.role === 'admin' || profile?.role === 'trainer') && (
           <div className="flex gap-2">
             <Button asChild>
-              <Link to={`/${profile?.role}/wiki/create-article`}>
+              <Link href={`/${profile?.role}/wiki/create-article`}>
                 <Plus className="h-4 w-4 ml-2" />
                 مقاله جدید
               </Link>
             </Button>
             {profile?.role === 'admin' && (
               <Button asChild variant="outline">
-                <Link to={`/${profile?.role}/wiki/manage`}>
+                <Link href={`/${profile?.role}/wiki/manage`}>
                   <Edit className="h-4 w-4 ml-2" />
                   مدیریت
                 </Link>
@@ -154,7 +159,7 @@ const Wiki: React.FC = () => {
 
                 {hasAccess(category) ? (
                   <Button asChild className="w-full">
-                    <Link to={profile?.role === 'trainee' && courseId ? `/trainee/${courseId}/wiki/category/${category.id}` : `/${profile?.role}/wiki/category/${category.id}`}>
+                    <Link href={profile?.role === 'trainee' && courseId ? `/trainee/${courseId}/wiki/category/${category.id}` : `/${profile?.role}/wiki/category/${category.id}`}>
                       مشاهده محتوا
                     </Link>
                   </Button>
@@ -170,7 +175,7 @@ const Wiki: React.FC = () => {
                 {profile?.role === 'admin' && (
                   <div className="flex gap-2 pt-2 border-t">
                     <Button asChild variant="outline" size="sm" className="flex-1">
-                      <Link to={`/${profile?.role}/wiki/category/${category.id}/edit`}>
+                      <Link href={`/${profile?.role}/wiki/category/${category.id}/edit`}>
                         <Edit className="h-3 w-3 ml-1" />
                         ویرایش
                       </Link>

@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+'use client';
+
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { NotificationService } from "@/services/notification.service";
 import { Notification } from "@/types/notification";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "next/navigation";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useNotificationTranslation } from "@/utils/notificationTranslationUtils";
@@ -10,7 +12,7 @@ import { useNotificationTranslation } from "@/utils/notificationTranslationUtils
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const router = useRouter();
   const translateNotification = useNotificationTranslation();
 
   useEffect(() => {
@@ -61,7 +63,7 @@ export default function NotificationsPage() {
       }
 
       if (notification.link) {
-        navigate(notification.link);
+        router.push(notification.link);
       }
     } catch (error) {
       console.error("Error marking notification as read:", error);

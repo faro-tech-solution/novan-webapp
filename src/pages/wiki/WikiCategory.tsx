@@ -1,5 +1,9 @@
+'use client';
+
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+
 import { useWikiCategoryQuery } from '@/hooks/useWikiQuery';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +19,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const WikiCategory: React.FC = () => {
-  const { categoryId, courseId } = useParams<{ categoryId: string; courseId?: string }>();
+  const { categoryId, courseId }: any = useParams<{ categoryId: string; courseId?: string }>();
   const { profile } = useAuth();
   const { data: category, isLoading, error } = useWikiCategoryQuery(categoryId!);
   const deleteTopicMutation = useDeleteWikiTopicMutation();
@@ -122,7 +126,7 @@ const WikiCategory: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <Button asChild variant="ghost" className="mb-4">
-          <Link to={profile?.role === 'trainee' && courseId ? `/trainee/${courseId}/wiki` : `/${profile?.role}/wiki`}>
+          <Link href={profile?.role === 'trainee' && courseId ? `/trainee/${courseId}/wiki` : `/${profile?.role}/wiki`}>
             <ArrowLeft className="h-4 w-4 ml-2" />
             بازگشت به ویکی
           </Link>
@@ -144,13 +148,13 @@ const WikiCategory: React.FC = () => {
           {(profile?.role === 'admin' || profile?.role === 'trainer') && (
             <div className="flex gap-2">
               <Button asChild>
-                <Link to={`/${profile?.role}/wiki/category/${categoryId}/create-topic`}>
+                <Link href={`/${profile?.role}/wiki/category/${categoryId}/create-topic`}>
                   <Plus className="h-4 w-4 ml-2" />
                   موضوع جدید
                 </Link>
               </Button>
               <Button asChild>
-                <Link to={`/${profile?.role}/wiki/create-article`}>
+                <Link href={`/${profile?.role}/wiki/create-article`}>
                   <FileText className="h-4 w-4 ml-2" />
                   مقاله جدید
                 </Link>
@@ -163,7 +167,7 @@ const WikiCategory: React.FC = () => {
       {/* Topics */}
       <div className="space-y-4">
         {category.topics && category.topics.length > 0 ? (
-          category.topics.map((topic) => (
+          category.topics.map((topic: any) => (
             <Card key={topic.id}>
               <Collapsible open={expandedTopics.has(topic.id)} onOpenChange={() => toggleTopic(topic.id)}>
                 <CollapsibleTrigger asChild>
@@ -195,7 +199,7 @@ const WikiCategory: React.FC = () => {
                         {profile?.role === 'admin' && (
                           <div className="flex gap-1">
                             <Button asChild variant="ghost" size="sm">
-                              <Link to={`/wiki/topic/${topic.id}/edit`}>
+                              <Link href={`/wiki/topic/${topic.id}/edit`}>
                                 <Edit className="h-3 w-3" />
                               </Link>
                             </Button>
@@ -235,7 +239,7 @@ const WikiCategory: React.FC = () => {
                   <CardContent className="pt-0">
                     {topic.articles && topic.articles.length > 0 ? (
                       <div className="space-y-3">
-                        {topic.articles.map((article) => (
+                        {topic.articles.map((article: any) => (
                           <div key={article.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                             <div className="flex items-center gap-3">
                               <FileText className="h-4 w-4 text-gray-600" />
@@ -257,7 +261,7 @@ const WikiCategory: React.FC = () => {
                               )}
                               
                               <Button asChild size="sm">
-                                <Link to={`/wiki/article/${article.id}`}>
+                                <Link href={`/wiki/article/${article.id}`}>
                                   مشاهده
                                 </Link>
                               </Button>
@@ -266,7 +270,7 @@ const WikiCategory: React.FC = () => {
                               {(profile?.role === 'admin' || profile?.role === 'trainer') && (
                                 <div className="flex gap-1">
                                   <Button asChild variant="ghost" size="sm">
-                                    <Link to={`/wiki/article/${article.id}/edit`}>
+                                    <Link href={`/wiki/article/${article.id}/edit`}>
                                       <Edit className="h-3 w-3" />
                                     </Link>
                                   </Button>
@@ -306,7 +310,7 @@ const WikiCategory: React.FC = () => {
                         <p>هنوز هیچ مقاله‌ای در این موضوع ایجاد نشده است.</p>
                         {(profile?.role === 'admin' || profile?.role === 'trainer') && (
                           <Button asChild size="sm" className="mt-2">
-                            <Link to={`/${profile?.role}/wiki/category/${categoryId}/create-topic`}>
+                            <Link href={`/${profile?.role}/wiki/category/${categoryId}/create-topic`}>
                               <Plus className="h-3 w-3 ml-1" />
                               موضوع جدید
                             </Link>
@@ -328,7 +332,7 @@ const WikiCategory: React.FC = () => {
             </p>
             {(profile?.role === 'admin' || profile?.role === 'trainer') && (
               <Button asChild>
-                <Link to={`/${profile?.role}/wiki/category/${categoryId}/create-topic`}>
+                <Link href={`/${profile?.role}/wiki/category/${categoryId}/create-topic`}>
                   <Plus className="h-4 w-4 ml-2" />
                   ایجاد موضوع جدید
                 </Link>

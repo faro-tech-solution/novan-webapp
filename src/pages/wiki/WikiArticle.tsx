@@ -1,5 +1,9 @@
+'use client';
+
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+
 import { useWikiArticleQuery } from '@/hooks/useWikiQuery';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +16,8 @@ import { faIR } from 'date-fns/locale';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 
 const WikiArticle: React.FC = () => {
-  const { articleId } = useParams<{ articleId: string }>();
+  const params = useParams<{ articleId: string }>();
+  const articleId = params?.articleId;
   const { profile } = useAuth();
   const { data: article, isLoading, error } = useWikiArticleQuery(articleId!);
 
@@ -55,7 +60,7 @@ const WikiArticle: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <Button asChild variant="ghost" className="mb-4">
-          <Link to={`/${profile?.role}/wiki`}>
+          <Link href={`/${profile?.role}/wiki`}>
             <ArrowLeft className="h-4 w-4 ml-2" />
             بازگشت به ویکی
           </Link>
@@ -106,7 +111,7 @@ const WikiArticle: React.FC = () => {
             
             {(profile?.role === 'admin' || profile?.role === 'trainer') && (
               <Button asChild variant="outline">
-                <Link to={`/wiki/article/${article.id}/edit`}>
+                <Link href={`/wiki/article/${article.id}/edit`}>
                   <Edit className="h-4 w-4 ml-2" />
                   ویرایش
                 </Link>
@@ -129,7 +134,7 @@ const WikiArticle: React.FC = () => {
       <div className="max-w-4xl mx-auto mt-8">
         <div className="flex justify-between items-center">
           <Button asChild variant="outline">
-            <Link to={`/${profile?.role}/wiki`}>
+            <Link href={`/${profile?.role}/wiki`}>
               <FileText className="h-4 w-4 ml-2" />
               همه مقالات
             </Link>
@@ -137,7 +142,7 @@ const WikiArticle: React.FC = () => {
           
           {(profile?.role === 'admin' || profile?.role === 'trainer') && (
             <Button asChild>
-              <Link to={`/${profile?.role}/wiki/create-article`}>
+              <Link href={`/${profile?.role}/wiki/create-article`}>
                 <FileText className="h-4 w-4 ml-2" />
                 مقاله جدید
               </Link>

@@ -1,4 +1,7 @@
-import { Link, useParams } from 'react-router-dom';
+'use client';
+
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +16,8 @@ interface MyExerciseTableProps {
 }
 
 export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTableProps) => {
-  const { courseId } = useParams();
+  const params = useParams();
+  const courseId = params?.courseId as string;
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
@@ -110,7 +114,7 @@ export const MyExerciseTable = ({ exercises, filteredExercises }: MyExerciseTabl
                 </TableCell>
                 <TableCell>{exercise.estimated_time}</TableCell>
                 <TableCell>
-                  <Link to={courseId ? `/trainee/${courseId}/exercise/${exercise.id}` : `/exercise/${exercise.id}` }>
+                  <Link href={courseId ? `/trainee/${courseId}/exercise/${exercise.id}` : `/exercise/${exercise.id}` }>
                     <Button size="sm" variant="outline">
                       {exercise.submission_status === 'completed' ? 'مشاهده' : 'شروع'}
                     </Button>
