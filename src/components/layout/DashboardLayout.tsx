@@ -17,7 +17,6 @@ import {
   CheckCircle,
   Wallet,
   Edit,
-  ListChecks,
 } from "lucide-react";
 import {
   Sidebar,
@@ -81,12 +80,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       key: "students",
     },
     {
-      href: "/trainer/wiki/manage",
-      icon: Edit,
-      label: tSidebar("wikiManagement"),
-      key: "wikiManagement",
-    },
-    {
       href: "/trainer/profile",
       icon: UserCog,
       label: tSidebar("profile"),
@@ -126,7 +119,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       label: tSidebar("profile"),
       key: "profile",
     },
-    { href: `/trainee/${courseId}/wiki`, icon: BookOpen, label: tSidebar("wiki"), key: "wiki" },
+
   ];
 
   const adminNavItems = [
@@ -141,12 +134,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       icon: UserCog,
       label: tSidebar("userManagement"),
       key: "userManagement",
-    },
-    {
-      href: "/admin/group-management",
-      icon: Users,
-      label: tSidebar("groupManagement"),
-      key: "groupManagement",
     },
     {
       href: "/admin/courses-management",
@@ -179,40 +166,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       key: "accounting",
     },
     {
-      href: "/admin/wiki/manage",
-      icon: Edit,
-      label: tSidebar("wikiManagement"),
-      key: "wikiManagement",
-    },
-    {
-      href: "/admin/tasks-management",
-      icon: ListChecks,
-      label: tSidebar("tasksManagement"),
-      key: "tasksManagement",
-    },
-    {
       href: "/admin/profile",
-      icon: UserCog,
-      label: tSidebar("profile"),
-      key: "profile",
-    },
-  ];
-
-  const teammateNavItems = [
-    {
-      href: "/teammate/dashboard",
-      icon: LayoutDashboard,
-      label: tSidebar("dashboard"),
-      key: "dashboard",
-    },
-    {
-      href: "/teammate/tasks",
-      icon: CheckCircle,
-      label: tSidebar("myTasks"),
-      key: "myTasks",
-    },
-    {
-      href: "/teammate/profile",
       icon: UserCog,
       label: tSidebar("profile"),
       key: "profile",
@@ -227,8 +181,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
         return traineeNavItems;
       case "admin":
         return adminNavItems;
-      case "teammate":
-        return teammateNavItems;
       default:
         return traineeNavItems;
     }

@@ -13,8 +13,7 @@ export * from '../../pages/courses';
 // Management Pages
 export * from '../../pages/management';
 
-// Wiki Pages
-export * from '../../pages/wiki';
+
 
 // User Pages
 export * from '../../pages/users';

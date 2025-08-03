@@ -75,10 +75,6 @@ const translations = {
       fa: 'دانشجویان',
       en: 'Students'
     },
-    wikiManagement: {
-      fa: 'مدیریت ویکی',
-      en: 'Wiki Management'
-    },
     profile: {
       fa: 'پروفایل',
       en: 'Profile'
@@ -87,29 +83,13 @@ const translations = {
       fa: 'پیشرفت',
       en: 'Progress'
     },
-    wiki: {
-      fa: 'ویکی',
-      en: 'Wiki'
-    },
     userManagement: {
       fa: 'مدیریت کاربران',
       en: 'User Management'
     },
-    groupManagement: {
-      fa: 'مدیریت گروه‌ها',
-      en: 'Group Management'
-    },
     accounting: {
       fa: 'حسابداری',
       en: 'Accounting'
-    },
-    tasksManagement: {
-      fa: 'مدیریت وظایف',
-      en: 'Tasks Management'
-    },
-    myTasks: {
-      fa: 'کارهای من',
-      en: 'My Tasks'
     },
     // User roles
     trainer: {
@@ -123,10 +103,6 @@ const translations = {
     admin: {
       fa: 'مدیر',
       en: 'Admin'
-    },
-    teammate: {
-      fa: 'هم‌تیمی',
-      en: 'Teammate'
     },
     user: {
       fa: 'کاربر',

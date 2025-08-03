@@ -35,13 +35,7 @@ src/pages/
 │   ├── TasksManagement.tsx
 │   ├── DailyActivitiesManagement.tsx
 │   └── index.ts
-├── wiki/                  # Wiki system pages
-│   ├── Wiki.tsx
-│   ├── WikiArticle.tsx
-│   ├── WikiCategory.tsx
-│   ├── CreateWikiArticle.tsx
-│   ├── WikiManagement.tsx
-│   └── index.ts
+
 ├── users/                 # User-related pages
 │   ├── Students.tsx
 │   ├── Instructors.tsx

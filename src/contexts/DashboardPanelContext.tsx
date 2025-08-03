@@ -9,13 +9,10 @@ type TrainerPanelData = Record<string, never>;
 
 type AdminPanelData = Record<string, never>;
 
-type TeammatePanelData = Record<string, never>;
-
 interface DashboardPanelContextType {
   trainee: TraineePanelData;
   trainer: TrainerPanelData;
   admin: AdminPanelData;
-  teammate: TeammatePanelData;
 }
 
 const DashboardPanelContext = createContext<DashboardPanelContextType | undefined>(undefined);
@@ -24,17 +21,15 @@ export const DashboardPanelProvider: React.FC<{ children: React.ReactNode }> = (
   // Trainee state
   const [courseId, setCourseId] = useState<string | null>(null);
 
-  // Trainer, Admin, Teammate state can be added here as needed
+  // Trainer, Admin state can be added here as needed
   const trainer: TrainerPanelData = {};
   const admin: AdminPanelData = {};
-  const teammate: TeammatePanelData = {};
 
   return (
     <DashboardPanelContext.Provider value={{
       trainee: { courseId, setCourseId },
       trainer,
       admin,
-      teammate,
     }}>
       {children}
     </DashboardPanelContext.Provider>
