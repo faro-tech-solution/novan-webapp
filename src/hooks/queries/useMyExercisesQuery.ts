@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStableAuth } from '@/hooks/useStableAuth';
-import { ExerciseData, ExerciseSubmission as ExerciseSubmissionLegacy } from '@/types/exerciseSubmission';
-import { CourseEnrollment } from '@/types/course';
-import { calculateAdjustedDates } from '@/utils/exerciseDateUtils';
-import { calculateSubmissionStatus } from '@/utils/exerciseSubmissionUtils';
+
+
 
 export const useMyExercisesQuery = () => {
   const { user, isQueryEnabled } = useStableAuth();
@@ -62,6 +60,11 @@ export const useMyExercisesQuery = () => {
             id,
             name
           ),
+          exercise_categories (
+            id,
+            name,
+            description
+          ),
           exercise_submissions (
             id,
             score,
@@ -87,33 +90,8 @@ export const useMyExercisesQuery = () => {
       // Transform the data to match the expected format
       const transformedExercises = exercises.map(exercise => {
         const submission = exercise.exercise_submissions?.[0];
-        const enrollment = enrollments.find(e => e.course_id === exercise.course_id);
-        // Cast the exercise to ExerciseData with the required fields
-        const exerciseData: ExerciseData = {
-          ...exercise,
-          exercise_type: (exercise as any).exercise_type || 'form',
-          auto_grade: (exercise as any).auto_grade || false
-        };
-        
-        const dates = calculateAdjustedDates(exerciseData, enrollment as CourseEnrollment);
-        
-        // Create submission object with all required fields
-        const submissionObj = submission ? {
-          exercise_id: exercise.id,
-          student_id: user.id,
-          score: submission.score,
-          submitted_at: submission.submitted_at,
-          feedback: submission.feedback,
-          auto_graded: (submission as any).auto_graded || false,
-          completion_percentage: (submission as any).completion_percentage || 0
-        } : undefined;
-        
-        // Cast to ExerciseSubmission
-        const submissionStatus = calculateSubmissionStatus(
-          submissionObj as unknown as ExerciseSubmissionLegacy | undefined,
-          dates.adjustedOpenDate,
-          dates.adjustedCloseDate
-        );
+        // Determine submission status
+        const submissionStatus: 'not_started' | 'pending' | 'completed' | 'overdue' = submission ? 'completed' : 'not_started';
 
         return {
           id: exercise.id,
@@ -121,11 +99,12 @@ export const useMyExercisesQuery = () => {
           description: exercise.description,
           course_id: exercise.course_id,
           course_name: exercise.courses?.name,
+          category_id: (exercise as any).category_id,
+          category_name: (exercise as any).exercise_categories?.name,
           difficulty: exercise.difficulty,
           points: exercise.points,
           estimated_time: exercise.estimated_time,
-          open_date: dates.adjustedOpenDate.toISOString(),
-          due_date: dates.adjustedDueDate.toISOString(),
+
           submission_status: submissionStatus,
           exercise_type: (exercise as any).exercise_type || 'form',
           auto_grade: (exercise as any).auto_grade || false,

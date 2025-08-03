@@ -44,8 +44,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         points,
         estimated_time,
         created_at,
-        days_to_open,
-        days_to_due,
+
         exercise_type,
         content_url,
         auto_grade,
@@ -68,16 +67,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
 
     const typedExercise = exercise as unknown as ExerciseWithCourse;
 
-    // Calculate dates dynamically based on created_at + days_to_open/days_to_due
-    const createdDate = new Date(typedExercise.created_at);
-    const daysToOpen = typedExercise.days_to_open || 0;
-    const daysToDue = typedExercise.days_to_due || 7;
-    
-    const openDate = new Date(createdDate);
-    openDate.setDate(openDate.getDate() + daysToOpen);
-    
-    const dueDate = new Date(createdDate);
-    dueDate.setDate(dueDate.getDate() + daysToDue);
+
 
     // Get submission if exists
     const { data: submission, error: submissionError } = await supabase
@@ -94,7 +84,6 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     const typedSubmission = submission as unknown as ExerciseSubmission | null;
 
     // Determine submission status
-    const now = new Date();
     let submissionStatus: SubmissionStatusType = 'not_started';
     
     if (typedSubmission) {
@@ -103,8 +92,6 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       } else {
         submissionStatus = 'pending';
       }
-    } else if (now > dueDate) {
-      submissionStatus = 'overdue';
     }
 
     // Parse submission answers if they exist
@@ -142,8 +129,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       difficulty: typedExercise.difficulty,
       points: typedExercise.points,
       estimated_time: typedExercise.estimated_time,
-      open_date: openDate.toISOString(),
-      due_date: dueDate.toISOString(),
+
       submission_status: submissionStatus,
       exercise_type: typedExercise.exercise_type,
       content_url: typedExercise.content_url,

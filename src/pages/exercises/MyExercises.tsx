@@ -1,17 +1,13 @@
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { MyExerciseTable } from '@/components/exercises/MyExerciseTable';
+import { CategorizedMyExercises } from '@/components/exercises/CategorizedMyExercises';
 import { useMyExercisesQuery } from '@/hooks/queries/useMyExercisesQuery';
 
 const MyExercises = () => {
   const { data: myExercises = [], isLoading, error, refetch } = useMyExercisesQuery();
 
-  // Filter out exercises that will start in the future
-  const currentExercises = myExercises.filter(exercise => {
-    const today = new Date();
-    const openDate = new Date(exercise.open_date);
-    return openDate <= today;
-  });
+  // Show all exercises (no date filtering)
+  const currentExercises = myExercises;
 
   if (isLoading) {
     return (
@@ -42,8 +38,8 @@ const MyExercises = () => {
   return (
     <DashboardLayout title="تمرین‌های من">
       <div className="space-y-6">
-        {/* Exercises Table */}
-        <MyExerciseTable 
+        {/* Categorized Exercises */}
+        <CategorizedMyExercises 
           exercises={currentExercises}
         />
       </div>

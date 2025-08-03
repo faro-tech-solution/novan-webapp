@@ -35,9 +35,7 @@ export const useExercisesQuery = (courseId?: string) => {
         estimatedTime: exerciseData.estimated_time || '',
         points: exerciseData.points || 0,
         courseId: exerciseData.course_id || '',
-        daysToOpen: exerciseData.days_to_open || 0,
-        daysToDue: exerciseData.days_to_due || 0,
-        daysToClose: exerciseData.days_to_close || 0,
+
         exercise_type: exerciseData.exercise_type || 'form',
         content_url: exerciseData.content_url,
         auto_grade: exerciseData.auto_grade || false,
@@ -59,9 +57,7 @@ export const useExercisesQuery = (courseId?: string) => {
         estimatedTime: data.estimated_time || '',
         points: data.points || 0,
         courseId: data.course_id || '',
-        daysToOpen: data.days_to_open || 0,
-        daysToDue: data.days_to_due || 0,
-        daysToClose: data.days_to_close || 0,
+
         exercise_type: data.exercise_type || 'form',
         content_url: data.content_url,
         auto_grade: data.auto_grade || false,

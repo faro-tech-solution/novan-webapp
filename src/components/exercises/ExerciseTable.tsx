@@ -7,8 +7,7 @@ import {
   Edit, 
   Trash2, 
   Clock, 
-  Award,
-  Calendar
+  Award
 } from 'lucide-react';
 import { Exercise } from '@/types/exercise';
 import { getExerciseStatusBadge, getDifficultyBadge } from './ExerciseStatusBadges';
@@ -31,12 +30,7 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
     }
   };
 
-  const formatRelativeDays = (days: number) => {
-    if (days === 0) return 'امروز';
-    if (days === 1) return 'فردا';
-    if (days > 0) return `${days} روز بعد`;
-    return `${Math.abs(days)} روز قبل`;
-  };
+
 
   return (
     <Card>
@@ -54,8 +48,7 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
               <TableHead className="text-right">دوره</TableHead>
               <TableHead className="text-right">سطح</TableHead>
               {isStudent && <TableHead className="text-right">وضعیت تمرین</TableHead>}
-              {isStudent && <TableHead className="text-right">تاریخ باز شدن</TableHead>}
-              {isStudent && <TableHead className="text-right">مهلت تحویل</TableHead>}
+
               <TableHead className="text-right">ارسال‌ها</TableHead>
               <TableHead className="text-right">عملیات</TableHead>
             </TableRow>
@@ -81,22 +74,7 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
                 {isStudent && (
                   <TableCell>{getExerciseStatusBadge(exercise.exercise_status || 'active')}</TableCell>
                 )}
-                {isStudent && (
-                  <TableCell>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span>{formatRelativeDays(exercise.days_to_open)}</span>
-                    </div>
-                  </TableCell>
-                )}
-                {isStudent && (
-                  <TableCell>
-                    <div className="flex items-center space-x-2 space-x-reverse">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span>{formatRelativeDays(exercise.days_to_due)}</span>
-                    </div>
-                  </TableCell>
-                )}
+
                 <TableCell>
                   <div className="text-center">
                     <div className="font-medium">{exercise.submissions || 0}/{exercise.total_students || 0}</div>

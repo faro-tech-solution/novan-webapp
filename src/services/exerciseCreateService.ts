@@ -9,9 +9,7 @@ export interface CreateExerciseData {
   estimatedTime: string;
   points: number;
   courseId: string;
-  daysToOpen: number;
-  daysToDue: number;
-  daysToClose: number;
+
   exercise_type: 'form' | 'video' | 'audio' | 'simple';
   content_url?: string | null;
   auto_grade: boolean;
@@ -45,9 +43,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       estimated_time: exerciseData.estimatedTime || '-',
       points: exerciseData.points,
       course_id: exerciseData.courseId,
-      days_to_open: exerciseData.daysToOpen,
-      days_to_due: exerciseData.daysToDue,
-      days_to_close: exerciseData.daysToClose,
+
       exercise_type: exerciseData.exercise_type,
       content_url: exerciseData.content_url,
       auto_grade: exerciseData.auto_grade,
@@ -59,7 +55,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
 
     const { data, error } = await supabase
       .from('exercises')
-      .insert(requestData)
+      .insert(requestData as any)
       .select()
       .single();
 
@@ -75,7 +71,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
     return {
       ...data,
       form_structure: parseFormStructure(data.form_structure)
-    } as Exercise;
+    } as unknown as Exercise;
   } catch (error) {
     console.error('Error in createExercise:', error);
     throw error;

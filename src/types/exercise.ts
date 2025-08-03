@@ -27,9 +27,7 @@ export interface Exercise {
   course_id: string;
   category_id?: string | null;
   difficulty: string;
-  days_to_due: number;
-  days_to_open: number;
-  days_to_close: number;
+
   points: number;
   estimated_time: string;
   created_by: string;
@@ -77,10 +75,10 @@ export interface SubmissionData {
 export interface UpcomingExercise {
   id: string;
   title: string;
-  due_date: string;
   estimated_time: string;
   points: number;
   difficulty: string;
+  submission_status: SubmissionStatusType;
 }
 
 // For my exercise table
@@ -88,10 +86,11 @@ export interface MyExerciseWithSubmission {
   id: string;
   title: string;
   description: string | null;
+  course_id: string;
   course_name?: string;
+  category_id?: string | null;
+  category_name?: string;
   difficulty: string;
-  due_date: string;
-  open_date: string;
   points: number;
   estimated_time: string;
   exercise_type: ExerciseType;
@@ -112,8 +111,6 @@ export interface ExerciseDetail {
   difficulty: string;
   points: number;
   estimated_time: string;
-  open_date: string;
-  due_date: string;
   submission_status: SubmissionStatusType;
   exercise_type: ExerciseType;
   content_url?: string | null;

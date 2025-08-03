@@ -9,18 +9,21 @@ import WelcomeCard from '@/components/dashboard/WelcomeCard';
 const TraineeDashboard = () => {
   const { myExercises, loading, error, refetch } = useMyExercises();
 
-  // Filter out exercises that will start in the future (same logic as MyExercises)
-  const currentExercises = myExercises.filter(exercise => {
-    const today = new Date();
-    const openDate = new Date(exercise.open_date);
-    return openDate <= today;
-  });
+  // Show all exercises (no date filtering)
+  const currentExercises = myExercises;
 
-  // Get upcoming exercises (not started, due soon) - limit to 3
+  // Get upcoming exercises (not started) - limit to 3
   const upcomingExercises = currentExercises
     .filter(ex => ex.submission_status === 'not_started')
-    .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
-    .slice(0, 3);
+    .slice(0, 3)
+    .map(ex => ({
+      id: ex.id,
+      title: ex.title,
+      estimated_time: ex.estimated_time,
+      points: ex.points,
+      difficulty: ex.difficulty,
+      submission_status: ex.submission_status
+    }));
 
   if (loading) {
     return (

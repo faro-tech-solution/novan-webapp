@@ -28,17 +28,13 @@ export const useTraineeDashboardQuery = () => {
     enabled: !!user,
   });
 
-  // Filter out exercises that will start in the future
-  const currentExercises = myExercises.filter(exercise => {
-    const today = new Date();
-    const openDate = new Date(exercise.open_date);
-    return openDate <= today;
-  });
+  // Show all exercises (no date filtering)
+  const currentExercises = myExercises;
 
   // Get upcoming exercises (not started, due soon) - limit to 3
   const upcomingExercises = currentExercises
     .filter(ex => ex.submission_status === 'not_started')
-    .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
+            .sort((a, b) => a.id.localeCompare(b.id))
     .slice(0, 3);
 
   // Calculate stats

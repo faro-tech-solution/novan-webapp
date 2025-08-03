@@ -17,8 +17,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   course_id: z.string().min(1, "انتخاب دوره الزامی است"),
   difficulty: z.string().min(1, "انتخاب سطح دشواری الزامی است"),
-  days_to_open: z.number().min(0, "روز شروع باید 0 یا بیشتر باشد"),
-  days_duration: z.number().min(1, "مدت زمان باید حداقل 1 روز باشد"),
+
   points: z.number().min(0, "امتیاز باید 0 یا بیشتر باشد"),
   estimated_time: z.string().min(1, "زمان تخمینی الزامی است"),
   exercise_type: z.enum(["form", "video", "audio", "simple"] as const),
@@ -60,8 +59,7 @@ export const CreateExerciseForm = ({
       description: "",
       course_id: "",
       difficulty: "",
-      days_to_open: 1,
-      days_duration: 7,
+
       points: 100,
       estimated_time: "",
       exercise_type: "form",

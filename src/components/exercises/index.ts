@@ -14,6 +14,8 @@ export { GradingSection } from './GradingSection';
 export { InstructorFormView } from './InstructorFormView';
 
 export { MyExerciseTable } from './MyExerciseTable';
+export { ExerciseCard } from './ExerciseCard';
+export { CategorizedMyExercises } from './CategorizedMyExercises';
 export { ReviewSubmissionsHeader } from './ReviewSubmissionsHeader';
 export { SubmissionCard } from './SubmissionCard';
 export { SubmissionDetailView } from './SubmissionDetailView';

@@ -1,4 +1,5 @@
 import { ExerciseCategory } from '@/types/exercise';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface CreateExerciseCategoryData {
   name: string;
@@ -16,47 +17,43 @@ export interface UpdateExerciseCategoryData {
 }
 
 // Fetch categories for a specific course
-export const fetchExerciseCategories = async (_courseId: string): Promise<ExerciseCategory[]> => {
+export const fetchExerciseCategories = async (courseId: string): Promise<ExerciseCategory[]> => {
   try {
-    // TODO: Uncomment this after applying the migration
-    // const { data, error } = await supabase
-    //   .from('exercise_categories' as any)
-    //   .select('*')
-    //   .eq('course_id', courseId)
-    //   .eq('is_active', true)
-    //   .order('order_index', { ascending: true })
-    //   .order('created_at', { ascending: true });
+    const { data, error } = await supabase
+      .from('exercise_categories' as any)
+      .select('*')
+      .eq('course_id', courseId)
+      .eq('is_active', true)
+      .order('order_index', { ascending: true })
+      .order('created_at', { ascending: true });
 
-    // if (error) {
-    //   if (error.message.includes('relation "exercise_categories" does not exist')) {
-    //     console.warn('Exercise categories table does not exist. Please run the migration first.');
-    //     return [];
-    //   }
-    //   throw new Error(`Error fetching exercise categories: ${error.message}`);
-    // }
+    if (error) {
+      if (error.message.includes('relation "exercise_categories" does not exist')) {
+        console.warn('Exercise categories table does not exist. Please run the migration first.');
+        return [];
+      }
+      throw new Error(`Error fetching exercise categories: ${error.message}`);
+    }
 
-    // const categoriesWithCounts = await Promise.all(
-    //   (data || []).map(async (category: any) => {
-    //     const { count } = await supabase
-    //       .from('exercises')
-    //       .select('*', { count: 'exact', head: true })
-    //       .eq('category_id', category.id);
+    const categoriesWithCounts = await Promise.all(
+      (data || []).map(async (category: any) => {
+        const { count } = await supabase
+          .from('exercises')
+          .select('*', { count: 'exact', head: true })
+          .eq('category_id', category.id);
 
-    //     return {
-    //       ...category,
-    //       exercise_count: count || 0
-    //     };
-    //   })
-    // );
+        return {
+          ...category,
+          exercise_count: count || 0
+        };
+      })
+    );
 
-    // return categoriesWithCounts as ExerciseCategory[];
-
-    // Temporary: Return empty array until migration is applied
-    console.warn('Exercise categories feature is not yet available. Please apply the migration first.');
-    return [];
+    return categoriesWithCounts as ExerciseCategory[];
   } catch (error) {
     console.error('Error in fetchExerciseCategories:', error);
-    throw error;
+    // Return empty array in case of error to prevent breaking the UI
+    return [];
   }
 };
 

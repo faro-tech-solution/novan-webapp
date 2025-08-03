@@ -42,9 +42,7 @@ export const EditExerciseDialog = ({
           description: data.description,
           course_id: data.course_id,
           difficulty: data.difficulty,
-          days_to_due: data.days_to_open + data.days_duration,
-          days_to_open: data.days_to_open,
-          days_to_close: data.days_to_open + data.days_duration,
+
           points: data.points,
           estimated_time: data.estimated_time,
           exercise_type: data.exercise_type,
@@ -87,24 +85,18 @@ export const EditExerciseDialog = ({
     | undefined => {
     if (!exercise) return undefined;
 
-    const daysDuration = Math.max(
-      1,
-      exercise.days_to_close - exercise.days_to_open
-    );
-
     return {
       title: exercise.title,
       description: exercise.description || "",
       course_id: exercise.course_id || "",
       difficulty: exercise.difficulty,
-      days_to_open: exercise.days_to_open,
-      days_duration: daysDuration,
+
       points: exercise.points,
       estimated_time: exercise.estimated_time,
       exercise_type: exercise.exercise_type || "form",
       content_url: exercise.content_url || null,
       auto_grade: exercise.auto_grade || false,
-      form_structure: exercise.form_structure || { questions: [] },
+      form_structure: (typeof exercise.form_structure === 'object' && exercise.form_structure !== null ? exercise.form_structure : { questions: [] }) as any,
     };
   }, [exercise]);
 

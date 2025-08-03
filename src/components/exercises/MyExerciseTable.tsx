@@ -66,7 +66,6 @@ export const MyExerciseTable = ({ exercises }: MyExerciseTableProps) => {
     'وضعیت',
     'عنوان',
     'سطح',
-    'موعد تحویل',
     'امتیاز',
     'زمان تخمینی',
     'عملیات'
@@ -99,12 +98,7 @@ export const MyExerciseTable = ({ exercises }: MyExerciseTableProps) => {
                   <div className="font-medium">{exercise.title}</div>
                 </TableCell>
                 <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2 space-x-reverse">
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    <span>{formatDate(exercise.due_date)}</span>
-                  </div>
-                </TableCell>
+
                 <TableCell>
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <Award className="h-4 w-4 text-yellow-500" />
