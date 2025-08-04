@@ -1,109 +1,86 @@
 'use client'
 
-import React, { useMemo } from 'react'
-import dynamic from 'next/dynamic'
-import { cn } from '@/lib/utils'
+import React from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
-// Dynamically import ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill'), {
-  ssr: false,
-  loading: () => <div className="h-32 w-full animate-pulse bg-muted rounded-md" />
-})
-
-// Import Quill styles
-import 'react-quill/dist/quill.snow.css'
-
-export interface RichTextEditorProps {
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
-  className?: string
-  readOnly?: boolean
-  modules?: any
-  formats?: string[]
-  theme?: 'snow' | 'bubble'
-  height?: string | number
-  error?: boolean
-  disabled?: boolean
+interface RichTextEditorProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  readOnly?: boolean;
+  height?: string;
+  className?: string;
+  toolbar?: any[];
+  formats?: string[];
 }
 
-const RichTextEditor: React.FC<RichTextEditorProps> = ({
+export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
-  placeholder = 'Start writing...',
-  className,
+  placeholder = "متن خود را بنویسید...",
   readOnly = false,
-  modules,
-  formats,
-  theme = 'snow',
-  height = '200px',
-  error = false,
-  disabled = false
-}) => {
-  // Default modules configuration
-  const defaultModules = useMemo(() => ({
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
-      [{ 'align': [] }],
-      ['link', 'image', 'video'],
-      ['clean']
-    ],
-    clipboard: {
-      matchVisual: false,
-    },
-  }), [])
-
-  // Default formats
-  const defaultFormats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike',
-    'color', 'background',
-    'list', 'bullet',
-    'indent',
-    'align',
-    'link', 'image', 'video'
+  height = '120px',
+  className = '',
+  toolbar = [
+    ['bold', 'italic', 'underline', 'code'],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    ['code-block'],
+    ['clean']
+  ],
+  formats = [
+    'bold', 'italic', 'underline', 'code',
+    'list', 'bullet', 'code-block'
   ]
-
-  const editorModules = modules || defaultModules
-  const editorFormats = formats || defaultFormats
+}) => {
+  const quillModules = {
+    toolbar,
+  };
 
   return (
-    <div className={cn('w-full', className)}>
-      <div
-        className={cn(
-          'border rounded-md transition-colors',
-          error 
-            ? 'border-destructive focus-within:border-destructive' 
-            : 'border-input focus-within:border-ring',
-          disabled && 'opacity-50 cursor-not-allowed'
-        )}
-      >
+    <div className="h-[165px] bg-white border-gray-300 border rounded-md overflow-hidden">
+      <div className={`${className}`}>
+        <style>
+          {`
+            .ql-editor {
+              font-family: 'Peyda', sans-serif !important;
+            }
+            .ql-container {
+              font-family: 'Peyda', sans-serif !important;
+            }
+            .ql-toolbar {
+              border-top: none !important;
+              border-left: none !important;
+              border-right: none !important;
+              border-bottom: 1px solid #e5e7eb !important;
+            }
+            .ql-container {
+              border: none !important;
+            }
+            .ql-syntax {
+              background: #f5f5f5;
+              color: #333;
+              font-family: 'Fira Mono', 'Consolas', 'Monaco', monospace;
+              font-size: 0.95em;
+              padding: 0.5em 1em;
+              border-radius: 4px;
+              direction: ltr;
+              overflow-x: auto;
+              text-align: left;
+            }
+          `}
+        </style>
         <ReactQuill
-          theme={theme}
+          theme="snow"
           value={value}
           onChange={onChange}
+          modules={quillModules}
+          formats={formats}
           placeholder={placeholder}
-          readOnly={readOnly || disabled}
-          modules={editorModules}
-          formats={editorFormats}
+          readOnly={readOnly}
           style={{ height }}
-          className={cn(
-            'rich-text-editor',
-            error && 'border-destructive'
-          )}
         />
       </div>
-      {error && (
-        <p className="text-sm text-destructive mt-1">
-          This field is required
-        </p>
-      )}
     </div>
-  )
-}
-
-export default RichTextEditor 
+  );
+}; 

@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 interface GradingSectionProps {
   score: string;
@@ -52,11 +52,11 @@ export const GradingSection: React.FC<GradingSectionProps> = ({
         </div>
         <div>
           <label className="block text-sm font-medium mb-2">بازخورد</label>
-          <Textarea
+          <RichTextEditor
             value={feedback}
-            onChange={(e) => onFeedbackChange(e.target.value)}
+            onChange={onFeedbackChange}
             placeholder="بازخورد خود را وارد کنید..."
-            rows={4}
+            height="120px"
           />
         </div>
         <Button onClick={onSubmitGrade} disabled={grading || !isScoreValid}>

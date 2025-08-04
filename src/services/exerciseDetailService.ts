@@ -73,7 +73,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     // Get submission if exists
     const { data: submission, error: submissionError } = await supabase
       .from('exercise_submissions')
-              .select('solution, feedback, score, submitted_at')
+              .select('id, solution, feedback, score, submitted_at')
       .eq('exercise_id', exerciseId)
       .eq('student_id', userId)
       .maybeSingle(); // Use maybeSingle instead of single to handle cases where no submission exists
@@ -140,6 +140,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       submission_answers: submissionAnswers,
       feedback: submissionFeedback || typedSubmission?.feedback || undefined,
       score: typedSubmission?.score || undefined,
+      submission_id: typedSubmission?.id || undefined,
       metadata: typedExercise.metadata,
       spotplayer_course_id: (typedExercise.metadata as any)?.spotplayer_course_id,
       spotplayer_item_id: (typedExercise.metadata as any)?.spotplayer_item_id
@@ -228,4 +229,19 @@ export const submitExerciseSolution = async (
 
   console.log('Solution submitted successfully');
   return { error: null };
+};
+
+/**
+ * Fetch conversation messages for a given exercise submission.
+ * @param submissionId The ID of the exercise submission
+ * @returns Array of conversation messages sorted by created_at ascending
+ */
+export const fetchSubmissionConversation = async (submissionId: string) => {
+  const { data, error } = await supabase
+    .from('exercise_submissions_conversation')
+    .select(`id, submission_id, sender_id, message, meta_data, created_at, sender:profiles(id, first_name, last_name, role)`)
+    .eq('submission_id', submissionId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
 };

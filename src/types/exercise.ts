@@ -61,6 +61,7 @@ export interface ExerciseWithCourse extends Omit<Exercise, 'form_structure'> {
 
 // Exercise submission in database
 export interface ExerciseSubmission {
+  id?: string;
   solution: string;
   feedback: string | null;
   score: number | null;
@@ -125,6 +126,7 @@ export interface ExerciseDetail {
   submission_answers?: FormAnswer[];
   feedback?: string;
   score?: number;
+  submission_id?: string;
   metadata?: any;
   spotplayer_course_id?: string;
   spotplayer_item_id?: string;

@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useMyExercises } from '@/hooks/useMyExercises';
-// import { DailyTasksCard } from '@/components/dashboard/DailyTasksCard';
+
 import { TraineeStatsCards } from '@/components/dashboard/TraineeStatsCards';
 import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesCard';
 import WelcomeCard from '@/components/dashboard/WelcomeCard';
@@ -67,9 +67,7 @@ const TraineeDashboard = () => {
           <UpcomingExercisesCard exercises={upcomingExercises} />
         </div>
 
-        {/* <div className="hidden md:block md:w-1/3 pr-4">
-          <DailyTasksCard />
-        </div> */}
+
       </div>
     </DashboardLayout>
   );

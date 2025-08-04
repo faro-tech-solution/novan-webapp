@@ -5,7 +5,7 @@ import * as z from 'zod';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { supabase } from '@/integrations/supabase/client';
@@ -146,10 +146,11 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
                 <FormItem>
                   <FormLabel>توضیحات</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <RichTextEditor 
+                      value={field.value}
+                      onChange={field.onChange}
                       placeholder="توضیحات درس را وارد کنید"
-                      rows={3}
-                      {...field}
+                      height="120px"
                     />
                   </FormControl>
                   <FormMessage />

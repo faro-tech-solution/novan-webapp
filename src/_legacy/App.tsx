@@ -27,7 +27,6 @@ import {
   CourseManagement,
   // Management pages
   UserManagement,
-  DailyActivitiesManagement,
 
   // User pages
   Students,
@@ -90,7 +89,6 @@ const AppRoutes = () => {
 
       {/* Shared/Other Routes (if any remain) */}
       <Route path="/instructors" element={<ProtectedRoute><Instructors /></ProtectedRoute>} />
-      <Route path="/daily-activities-management" element={<DailyActivitiesManagement />} />
       {/* NotFound fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>

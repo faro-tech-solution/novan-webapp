@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare, Send } from "lucide-react";
@@ -50,16 +50,15 @@ export const FeedbackForm = ({
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="feedback">بازخورد شما</Label>
-          <Textarea
-            id="feedback"
+          <RichTextEditor
             value={feedback}
-            onChange={(e) => {
-              setFeedback(e.target.value);
+            onChange={(value) => {
+              setFeedback(value);
               if (error) setError("");
             }}
             placeholder={placeholder}
-            className="min-h-[120px] resize-none"
-            disabled={isSubmitting}
+            height="120px"
+            readOnly={isSubmitting}
           />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <p className="text-xs text-gray-500">

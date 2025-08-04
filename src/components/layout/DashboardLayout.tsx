@@ -28,7 +28,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useSubmissionsQuery } from "@/hooks/useReviewSubmissionsQuery";
+import { useSubmissionsQuery } from "@/hooks/queries/useReviewSubmissionsQuery";
 import { Badge } from "@/components/ui/badge";
 import ActiveCourseSelector from "../courses/ActiveCourseSelector";
 
@@ -188,8 +188,8 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const navItems = getNavItems();
 
-  const { data: submissions = [] } = useSubmissionsQuery();
-  const pendingReviewCount = submissions.filter((s) => s.score === null).length;
+  const { data: submissionsData } = useSubmissionsQuery({ status: 'pending' });
+  const pendingReviewCount = submissionsData?.totalCount || 0;
 
   return (
     <SidebarProvider defaultOpen={true}>

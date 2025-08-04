@@ -12,11 +12,14 @@ import { ExerciseInfoCard } from "@/components/exercises/ExerciseInfoCard";
 import { TraineeExerciseForm } from "@/components/exercises/TraineeExerciseForm";
 import { TraineeFeedbackDisplay } from "@/components/exercises/TraineeFeedbackDisplay";
 import { InstructorFormView } from "@/components/exercises/InstructorFormView";
+import { ExerciseConversation } from "@/components/exercises/ExerciseConversation";
+import { StorageTest } from "@/components/debug/StorageTest";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   useExerciseDetailQuery,
   useSubmitExerciseMutation,
 } from "@/hooks/queries/useExerciseDetailQuery";
+import { Submission } from "@/types/reviewSubmissions";
 
 const ExerciseDetail = () => {
   const params = useParams();
@@ -38,6 +41,37 @@ const ExerciseDetail = () => {
       setAnswers(exercise.submission_answers);
     }
   }, [exercise?.submission_answers]);
+
+  // Create submission object for conversation component
+  const createSubmissionObject = (): Submission | null => {
+    if (!exercise || !exercise.submission_id || !user) return null;
+    
+    return {
+      id: exercise.submission_id,
+      exercise_id: exercise.id,
+      student_id: user.id,
+      submitted_at: new Date().toISOString(), // This would ideally come from the submission data
+      score: exercise.score || null,
+      feedback: exercise.feedback || null,
+      graded_at: null,
+      graded_by: null,
+      solution: JSON.stringify(exercise.submission_answers || []),
+      student: {
+        first_name: profile?.first_name || '',
+        last_name: profile?.last_name || '',
+        email: profile?.email || ''
+      },
+      exercise: {
+        id: exercise.id,
+        title: exercise.title,
+        points: exercise.points,
+        form_structure: exercise.form_structure || null,
+        course_id: exercise.course_id,
+        exercise_type: exercise.exercise_type as 'form' | 'video' | 'audio' | 'simple',
+        auto_grade: exercise.auto_grade
+      }
+    };
+  };
 
   const handleSubmit = async (feedback?: string) => {
     if (!exercise || !user || !profile) return;
@@ -267,6 +301,17 @@ const ExerciseDetail = () => {
               </p>
             </div>
           </>
+        )}
+
+        {/* Storage Test (Temporary) */}
+        <StorageTest />
+        
+        {/* Exercise Conversation */}
+        {exercise.submission_id && createSubmissionObject() && (
+          <ExerciseConversation
+            submission={createSubmissionObject()!}
+            variant="full"
+          />
         )}
       </div>
     </DashboardLayout>

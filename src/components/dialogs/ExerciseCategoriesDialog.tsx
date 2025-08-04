@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -230,12 +230,11 @@ const ExerciseCategoriesDialog = ({
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="category-description">توضیحات</Label>
-                    <Textarea
-                      id="category-description"
+                    <RichTextEditor
                       value={formData.description}
-                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
                       placeholder="توضیحات اختیاری برای دسته‌بندی"
-                      rows={3}
+                      height="80px"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -275,12 +274,11 @@ const ExerciseCategoriesDialog = ({
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-category-description">توضیحات</Label>
-                    <Textarea
-                      id="edit-category-description"
+                    <RichTextEditor
                       value={formData.description}
-                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
                       placeholder="توضیحات اختیاری برای دسته‌بندی"
-                      rows={3}
+                      height="80px"
                     />
                   </div>
                   <div className="flex gap-2">

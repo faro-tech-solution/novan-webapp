@@ -1,7 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchExerciseDetail, submitExerciseSolution } from '@/services/exerciseDetailService';
+import { fetchExerciseDetail, submitExerciseSolution, fetchSubmissionConversation } from '@/services/exerciseDetailService';
 import { useToast } from '@/hooks/use-toast';
 import { FormAnswer } from '@/types/formBuilder';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+
+import type { Database } from '@/types/database.types';
+
+export type ConversationMessage = Database['public']['Tables']['exercise_submissions_conversation']['Row'] & {
+  sender?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+  }
+};
 
 export const useExerciseDetailQuery = (exerciseId: string, userId: string | undefined) => {
   return useQuery({
@@ -63,6 +76,43 @@ export const useSubmitExerciseMutation = () => {
         description: error instanceof Error ? error.message : "خطا در ارسال پاسخ",
         variant: "destructive",
       });
+    },
+  });
+};
+
+export const useSubmissionConversation = (submissionId: string | undefined) => {
+  return useQuery<ConversationMessage[], Error>({
+    queryKey: ['submissionConversation', submissionId],
+    queryFn: () => {
+      if (!submissionId) throw new Error('No submissionId');
+      return fetchSubmissionConversation(submissionId);
+    },
+    enabled: !!submissionId,
+    refetchInterval: 5000, // Poll for new messages every 5s
+  });
+};
+
+export const useSendConversationMessage = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ submissionId, message }: { submissionId: string; message: string }) => {
+      if (!user) throw new Error('User not authenticated');
+      const { error } = await supabase
+        .from('exercise_submissions_conversation')
+        .insert([
+          {
+            submission_id: submissionId,
+            sender_id: user.id,
+            message,
+            meta_data: { type: 'trainer_reply' },
+            created_at: new Date().toISOString(),
+          },
+        ]);
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries(['submissionConversation', variables.submissionId]);
     },
   });
 }; 

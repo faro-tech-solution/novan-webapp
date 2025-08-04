@@ -11,6 +11,7 @@ export interface Submission {
   graded_at: string | null;
   graded_by: string | null;
   solution: string;
+  latest_answer?: string;
   student?: SubmissionStudent;
   exercise: {
     id: string;
