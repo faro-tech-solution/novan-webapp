@@ -105,8 +105,6 @@ const ExerciseDetail = () => {
         <ExerciseInfoCard
           title={exercise.title}
           courseName={exercise.course_name}
-          openDate={exercise.open_date}
-          dueDate={exercise.due_date}
           description={exercise.description}
         />
 
@@ -144,6 +142,7 @@ const ExerciseDetail = () => {
               onAnswersChange={setAnswers}
               onSubmit={handleSubmit}
               submitting={submitMutation.isPending}
+              userId={user?.id}
             />
           )}
 
@@ -204,6 +203,25 @@ const ExerciseDetail = () => {
                   <p>
                     این یک تمرین ساده است که دانشجویان با کلیک روی دکمه «تکمیل
                     تمرین» آن را تکمیل می‌کنند.
+                  </p>
+                </div>
+              </div>
+            ) : exercise.exercise_type === "spotplayer" ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">محتوای تمرین SpotPlayer</h3>
+                <div className="bg-gray-50 p-4 rounded-md space-y-3">
+                  <div>
+                    <p className="font-medium text-sm text-gray-700">شناسه دوره SpotPlayer:</p>
+                    <p className="text-gray-900 font-mono">{exercise.metadata?.spotplayer_course_id || 'تعریف نشده'}</p>
+                  </div>
+                  {exercise.metadata?.spotplayer_item_id && (
+                    <div>
+                      <p className="font-medium text-sm text-gray-700">شناسه آیتم SpotPlayer:</p>
+                      <p className="text-gray-900 font-mono">{exercise.metadata.spotplayer_item_id}</p>
+                    </div>
+                  )}
+                  <p className="text-sm text-gray-600">
+                    این تمرین از پلتفرم SpotPlayer استفاده می‌کند. دانشجویان برای مشاهده ویدیو نیاز به لایسنس معتبر دارند.
                   </p>
                 </div>
               </div>

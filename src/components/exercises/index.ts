@@ -1,7 +1,6 @@
 export { BasicInfoSection } from './BasicInfoSection';
 export { CourseAndDifficultySection } from './CourseAndDifficultySection';
 export { CreateExerciseForm } from './CreateExerciseForm';
-export { EditExerciseDialog } from './EditExerciseDialog';
 export { ExerciseDetailHeader } from './ExerciseDetailHeader';
 export { ExerciseFilters } from './ExerciseFilters';
 export { ExerciseInfoCard } from './ExerciseInfoCard';
@@ -27,4 +26,5 @@ export { TraineeFeedbackDisplay } from './TraineeFeedbackDisplay';
 export { VideoPlayer } from './VideoPlayer';
 export { AudioPlayer } from './AudioPlayer';
 export { SimpleExerciseCompletion } from './SimpleExerciseCompletion';
+export { SpotPlayerVideo } from './SpotPlayerVideo';
 export { ExerciseTypeSection } from './ExerciseTypeSection';

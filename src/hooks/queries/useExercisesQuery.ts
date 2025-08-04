@@ -26,7 +26,7 @@ export const useExercisesQuery = (courseId?: string) => {
   });
 
   const createExerciseMutation = useMutation({
-    mutationFn: async (exerciseData: Partial<Exercise>) => {
+    mutationFn: async (exerciseData: Partial<Exercise> & { spotplayer_course_id?: string; spotplayer_item_id?: string }) => {
       if (!user) throw new Error('کاربر وارد نشده است');
       return await createExercise({
         title: exerciseData.title || '',
@@ -39,7 +39,9 @@ export const useExercisesQuery = (courseId?: string) => {
         exercise_type: exerciseData.exercise_type || 'form',
         content_url: exerciseData.content_url,
         auto_grade: exerciseData.auto_grade || false,
-        formStructure: exerciseData.form_structure || { questions: [] }
+        formStructure: exerciseData.form_structure || { questions: [] },
+        spotplayer_course_id: exerciseData.spotplayer_course_id,
+        spotplayer_item_id: exerciseData.spotplayer_item_id
       }, user.id);
     },
     onSuccess: () => {
@@ -48,7 +50,7 @@ export const useExercisesQuery = (courseId?: string) => {
   });
 
   const updateExerciseMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Exercise> }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Exercise> & { spotplayer_course_id?: string; spotplayer_item_id?: string } }) => {
       if (!user) throw new Error('کاربر وارد نشده است');
       return await updateExercise(id, {
         title: data.title || '',
@@ -61,7 +63,9 @@ export const useExercisesQuery = (courseId?: string) => {
         exercise_type: data.exercise_type || 'form',
         content_url: data.content_url,
         auto_grade: data.auto_grade || false,
-        formStructure: data.form_structure || { questions: [] }
+        formStructure: data.form_structure || { questions: [] },
+        spotplayer_course_id: data.spotplayer_course_id,
+        spotplayer_item_id: data.spotplayer_item_id
       });
     },
     onSuccess: () => {

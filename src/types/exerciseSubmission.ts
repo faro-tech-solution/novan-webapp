@@ -10,7 +10,7 @@ export interface ExerciseData {
   created_at: string;
   updated_at: string;
   created_by: string;
-  exercise_type: 'form' | 'video' | 'audio' | 'simple';
+  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'spotplayer';
   content_url?: string | null;
   auto_grade: boolean;
   courses: {
@@ -26,6 +26,4 @@ export interface ExerciseSubmission {
   submitted_at: string;
   feedback: string | null;
   solution?: string;
-  auto_graded: boolean;
-  completion_percentage: number;
 }

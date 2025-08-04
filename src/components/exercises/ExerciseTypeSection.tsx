@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UseFormReturn } from "react-hook-form";
 import { CreateExerciseFormData } from "./CreateExerciseForm";
-import { FileText, Video, AudioLines, ListChecks } from "lucide-react";
+import { FileText, Video, AudioLines, ListChecks, Play } from "lucide-react";
 
 interface ExerciseTypeSectionProps {
   form: UseFormReturn<CreateExerciseFormData>;
@@ -24,124 +24,193 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
   return (
     <Card>
       <CardContent className="pt-6">
-        <FormField
-          control={form.control}
-          name="exercise_type"
-          render={({ field }) => (
-            <FormItem className="space-y-4">
-              <FormLabel>نوع تمرین</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  value={field.value}
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-                >
-                  <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-4 cursor-pointer hover:border-primary transition-colors">
-                    <RadioGroupItem value="form" id="form" />
-                    <Label
-                      htmlFor="form"
-                      className="flex items-center cursor-pointer"
-                    >
-                      <FileText className="h-5 w-5 ml-2" />
-                      <div>
-                        <div className="font-medium">فرم‌های متنوع</div>
-                      </div>
-                    </Label>
+        <div className="grid grid-cols-12 gap-6">
+          {/* Left Column - Exercise Forms (9/12) */}
+          <div className="col-span-12 lg:col-span-9 space-y-6">
+            <FormField
+              control={form.control}
+              name="auto_grade"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-x-reverse bg-gray-100">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>نمره‌دهی خودکار</FormLabel>
+                    <p className="text-sm text-muted-foreground">
+                      دانشجو بلافاصله پس از تکمیل تمرین، نمره خود را دریافت می‌کند و
+                      نیازی به بررسی مدرس نیست
+                    </p>
                   </div>
+                </FormItem>
+              )}
+            />
 
-                  <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-4 cursor-pointer hover:border-primary transition-colors">
-                    <RadioGroupItem value="video" id="video" />
-                    <Label
-                      htmlFor="video"
-                      className="flex items-center cursor-pointer"
-                    >
-                      <Video className="h-5 w-5 ml-2" />
-                      <div>
-                        <div className="font-medium">تمرین ویدیویی</div>
-                      </div>
-                    </Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-4 cursor-pointer hover:border-primary transition-colors">
-                    <RadioGroupItem value="audio" id="audio" />
-                    <Label
-                      htmlFor="audio"
-                      className="flex items-center cursor-pointer"
-                    >
-                      <AudioLines className="h-5 w-5 ml-2" />
-                      <div>
-                        <div className="font-medium">تمرین صوتی</div>
-                      </div>
-                    </Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-4 cursor-pointer hover:border-primary transition-colors">
-                    <RadioGroupItem value="simple" id="simple" />
-                    <Label
-                      htmlFor="simple"
-                      className="flex items-center cursor-pointer"
-                    >
-                      <ListChecks className="h-5 w-5 ml-2" />
-                      <div>
-                        <div className="font-medium">تمرین ساده</div>
-                      </div>
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {(exerciseType === "video" || exerciseType === "audio") && (
-          <FormField
-            control={form.control}
-            name="content_url"
-            render={({ field }) => (
-              <FormItem className="mt-6">
-                <FormLabel>
-                  آدرس {exerciseType === "video" ? "ویدیو" : "فایل صوتی"}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder={
-                      exerciseType === "video"
-                        ? "https://example.com/video.mp4"
-                        : "https://example.com/audio.mp3"
-                    }
-                    {...field}
-                    value={field.value || ""}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            {(exerciseType === "video" || exerciseType === "audio") && (
+              <FormField
+                control={form.control}
+                name="content_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      آدرس {exerciseType === "video" ? "ویدیو" : "فایل صوتی"}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={
+                          exerciseType === "video"
+                            ? "https://example.com/video.mp4"
+                            : "https://example.com/audio.mp3"
+                        }
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
-          />
-        )}
 
-        <FormField
-          control={form.control}
-          name="auto_grade"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-x-reverse mt-6">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+            {exerciseType === "spotplayer" && (
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="spotplayer_course_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>شناسه دوره SpotPlayer *</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="5d2ee35bcddc092a304ae5eb"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <p className="text-sm text-muted-foreground">
+                        شناسه دوره در سیستم SpotPlayer
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>نمره‌دهی خودکار</FormLabel>
-                <p className="text-sm text-muted-foreground">
-                  دانشجو بلافاصله پس از تکمیل تمرین، نمره خود را دریافت می‌کند و
-                  نیازی به بررسی مدرس نیست
-                </p>
+                
+                <FormField
+                  control={form.control}
+                  name="spotplayer_item_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>شناسه آیتم SpotPlayer (اختیاری)</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="item_123"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <p className="text-sm text-muted-foreground">
+                        شناسه آیتم خاص در دوره (در صورت عدم وارد کردن، کل دوره در دسترس خواهد بود)
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            </FormItem>
-          )}
-        />
+            )}
+
+            
+          </div>
+
+          {/* Right Column - Exercise Type Selection (3/12) */}
+          <div className="col-span-12 lg:col-span-3 bg-gray">
+            <FormField
+              control={form.control}
+              name="exercise_type"
+              render={({ field }) => (
+                <FormItem className="space-y-4">
+                  <FormLabel>نوع تمرین</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                      className="space-y-3"
+                    >
+                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="form" id="form" />
+                        <Label
+                          htmlFor="form"
+                          className="flex items-center cursor-pointer text-sm"
+                        >
+                          <FileText className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">فرم‌های متنوع</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="video" id="video" />
+                        <Label
+                          htmlFor="video"
+                          className="flex items-center cursor-pointer text-sm"
+                        >
+                          <Video className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">تمرین ویدیویی</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="audio" id="audio" />
+                        <Label
+                          htmlFor="audio"
+                          className="flex items-center cursor-pointer text-sm"
+                        >
+                          <AudioLines className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">تمرین صوتی</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="simple" id="simple" />
+                        <Label
+                          htmlFor="simple"
+                          className="flex items-center cursor-pointer text-sm"
+                        >
+                          <ListChecks className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">تمرین ساده</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="spotplayer" id="spotplayer" />
+                        <Label
+                          htmlFor="spotplayer"
+                          className="flex items-center cursor-pointer text-sm"
+                        >
+                          <Play className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">SpotPlayer</div>
+                          </div>
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

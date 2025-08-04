@@ -14,6 +14,8 @@ import { ExerciseType } from "@/types/exercise";
 import { VideoPlayer } from "./VideoPlayer";
 import { AudioPlayer } from "./AudioPlayer";
 import { SimpleExerciseCompletion } from "./SimpleExerciseCompletion";
+import { SpotPlayerVideo } from "./SpotPlayerVideo";
+import { extractSpotPlayerData } from "@/utils/spotplayerExerciseUtils";
 interface TraineeExerciseFormProps {
   exercise: {
     id: string;
@@ -23,17 +25,16 @@ interface TraineeExerciseFormProps {
     auto_grade: boolean;
     form_structure?: ExerciseForm;
     submission_status: string;
-    open_date: string;
-    due_date: string;
     feedback?: string;
     score?: number;
-    completion_percentage?: number;
-    auto_graded?: boolean;
+    course_id?: string;
+    metadata?: any;
   };
   answers: FormAnswer[];
   onAnswersChange: (answers: FormAnswer[]) => void;
   onSubmit: (feedback?: string) => void;
   submitting: boolean;
+  userId?: string;
 }
 export const TraineeExerciseForm = ({
   exercise,
@@ -41,6 +42,7 @@ export const TraineeExerciseForm = ({
   onAnswersChange,
   onSubmit,
   submitting,
+  userId,
 }: TraineeExerciseFormProps) => {
   const { toast } = useToast();
   const formatDate = (dateString: string) => {
@@ -77,15 +79,15 @@ export const TraineeExerciseForm = ({
     }
     onSubmit();
   };
-  const handleMediaSubmit = (feedback: string) => {
+  const handleMediaSubmit = (feedback?: string) => {
     onSubmit(feedback);
   };
   const isSubmitted =
     exercise.submission_status === "completed" ||
     exercise.submission_status === "pending";
   const canSubmit =
-    exercise.submission_status !== "overdue" &&
-    new Date() >= new Date(exercise.open_date);
+    exercise.submission_status !== "overdue";
+
   return (
     <Card>
       {" "}
@@ -133,6 +135,31 @@ export const TraineeExerciseForm = ({
                 isCompleted={isSubmitted}
                 disabled={submitting || exercise.score !== undefined}
               />
+            ) : exercise.exercise_type === "spotplayer" && 
+               exercise.course_id && 
+               userId ? (
+              (() => {
+                const spotplayerData = extractSpotPlayerData(exercise);
+                if (!spotplayerData || !spotplayerData.spotplayer_course_id) {
+                  return (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>این تمرین هنوز محتوایی ندارد</p>
+                    </div>
+                  );
+                }
+                return (
+                  <SpotPlayerVideo
+                    exerciseId={exercise.id}
+                    courseId={exercise.course_id}
+                    spotplayerCourseId={spotplayerData.spotplayer_course_id}
+                    spotplayerItemId={spotplayerData.spotplayer_item_id}
+                    userId={userId}
+                    onComplete={handleMediaSubmit}
+                    isCompleted={isSubmitted}
+                    disabled={submitting || exercise.score !== undefined}
+                  />
+                );
+              })()
             ) : (
               <div className="text-center py-8 text-gray-500">
                 {" "}
@@ -176,9 +203,7 @@ export const TraineeExerciseForm = ({
               {" "}
               {exercise.submission_status === "overdue"
                 ? "متأسفانه مهلت ارسال این تمرین به پایان رسیده است."
-                : `این تمرین در تاریخ ${formatDate(
-                    exercise.open_date
-                  )} شروع خواهد شد.`}{" "}
+                : "این تمرین هنوز شروع نشده است."}{" "}
             </p>{" "}
           </div>
         )}{" "}

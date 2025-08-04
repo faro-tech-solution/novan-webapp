@@ -107,10 +107,8 @@ export const useMyExercisesQuery = () => {
 
           submission_status: submissionStatus,
           exercise_type: (exercise as any).exercise_type || 'form',
-          auto_grade: (exercise as any).auto_grade || false,
+                    auto_grade: (exercise as any).auto_grade || false,
           content_url: (exercise as any).content_url || null,
-          completion_percentage: (submission as any)?.completion_percentage || 0,
-          auto_graded: (submission as any)?.auto_graded || false,
         };
       });
 

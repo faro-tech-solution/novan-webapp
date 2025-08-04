@@ -37,8 +37,6 @@ const fetchSubmissions = async (): Promise<Submission[]> => {
       graded_at,
       graded_by,
       solution,
-      auto_graded,
-      completion_percentage,
       exercise:exercises (
         id,
         title,

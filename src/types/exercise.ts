@@ -1,7 +1,7 @@
 import { ExerciseForm, FormAnswer } from './formBuilder';
 import { Json } from '@/integrations/supabase/types';
 
-export type ExerciseType = 'form' | 'video' | 'audio' | 'simple';
+export type ExerciseType = 'form' | 'video' | 'audio' | 'simple' | 'spotplayer';
 export type SubmissionStatusType = 'not_started' | 'pending' | 'completed' | 'overdue';
 export type ExerciseStatusType = 'upcoming' | 'active' | 'overdue' | 'closed';
 
@@ -37,16 +37,20 @@ export interface Exercise {
   content_url?: string | null;
   auto_grade: boolean;
   form_structure?: ExerciseForm | Json | null;
+  metadata?: Json | null;
   submissions?: number;
   total_students?: number;
   exercise_status?: ExerciseStatusType;
   course_name?: string;
   category_name?: string;
+  spotplayer_course_id?: string;
+  spotplayer_item_id?: string;
 }
 
 // Exercise with course information from database
 export interface ExerciseWithCourse extends Omit<Exercise, 'form_structure'> {
   form_structure: Json | null;
+  metadata: Json | null;
   courses: {
     name: string;
   } | null;
@@ -58,8 +62,6 @@ export interface ExerciseSubmission {
   feedback: string | null;
   score: number | null;
   submitted_at: string;
-  auto_graded: boolean;
-  completion_percentage: number;
 }
 
 // For submitting a new submission
@@ -97,8 +99,6 @@ export interface MyExerciseWithSubmission {
   content_url?: string | null;
   auto_grade: boolean;
   submission_status: SubmissionStatusType;
-  completion_percentage?: number;
-  auto_graded?: boolean;
 }
 
 // For exercise detail service
@@ -119,6 +119,7 @@ export interface ExerciseDetail {
   submission_answers?: FormAnswer[];
   feedback?: string;
   score?: number;
-  completion_percentage?: number;
-  auto_graded?: boolean;
+  metadata?: any;
+  spotplayer_course_id?: string;
+  spotplayer_item_id?: string;
 }

@@ -23,6 +23,20 @@ const parseFormStructure = (form_structure: any): ExerciseForm => {
 
 export const updateExercise = async (exerciseId: string, exerciseData: CreateExerciseData): Promise<Exercise> => {
   try {
+    const metadata: any = {};
+    
+    // Add SpotPlayer metadata if it's a SpotPlayer exercise
+    if (exerciseData.exercise_type === 'spotplayer') {
+      if (exerciseData.spotplayer_course_id) {
+        metadata.spotplayer_course_id = exerciseData.spotplayer_course_id;
+      }
+      if (exerciseData.spotplayer_item_id) {
+        metadata.spotplayer_item_id = exerciseData.spotplayer_item_id;
+      }
+    }
+
+
+
     const { data, error } = await supabase
       .from('exercises')
       .update({
@@ -37,6 +51,7 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
         content_url: exerciseData.content_url,
         auto_grade: exerciseData.auto_grade,
         form_structure: JSON.stringify(exerciseData.formStructure),
+        metadata: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null,
         updated_at: new Date().toISOString(),
       } as any)
       .eq('id', exerciseId)

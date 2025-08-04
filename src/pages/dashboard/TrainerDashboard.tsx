@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from "react";
 import { useRouter } from 'next/navigation';
 
 import {
@@ -14,18 +13,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, FileText, Award, Plus, Eye } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import CreateExerciseDialog from "@/components/dialogs/CreateExerciseDialog";
 import { useRecentSubmissions } from "@/hooks/useRecentSubmissions";
 import { useTrainerStats } from "@/hooks/useTrainerStats";
 
 const TrainerDashboard = () => {
   const router = useRouter();
-  const [showCreateExercise, setShowCreateExercise] = useState(false);
   const { submissions, loading: submissionsLoading } = useRecentSubmissions();
   const { stats, loading: statsLoading } = useTrainerStats();
 
   const handleCreateExercise = () => {
-    setShowCreateExercise(true);
+    router.push("/trainer/exercises/create");
   };
 
   const handleManageCourses = () => {
@@ -192,14 +189,6 @@ const TrainerDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Create Exercise Dialog */}
-      {showCreateExercise && (
-        <CreateExerciseDialog
-          open={showCreateExercise}
-          onOpenChange={setShowCreateExercise}
-        />
-      )}
     </DashboardLayout>
   );
 };

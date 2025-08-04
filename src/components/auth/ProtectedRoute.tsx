@@ -20,7 +20,7 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     if (!loading) {
       // If user is not authenticated, redirect to login and preserve intended destination
       if (!profile) {
-        const currentPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '');
+        const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
         router.push(`/?from=${encodeURIComponent(currentPath)}`);
         return;
       }

@@ -44,11 +44,11 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         points,
         estimated_time,
         created_at,
-
         exercise_type,
         content_url,
         auto_grade,
         form_structure,
+        metadata,
         courses (
           name
         )
@@ -72,7 +72,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     // Get submission if exists
     const { data: submission, error: submissionError } = await supabase
       .from('exercise_submissions')
-      .select('solution, feedback, score, submitted_at, auto_graded, completion_percentage')
+              .select('solution, feedback, score, submitted_at')
       .eq('exercise_id', exerciseId)
       .eq('student_id', userId)
       .maybeSingle(); // Use maybeSingle instead of single to handle cases where no submission exists
@@ -138,8 +138,9 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       submission_answers: submissionAnswers,
       feedback: submissionFeedback || typedSubmission?.feedback || undefined,
       score: typedSubmission?.score || undefined,
-      completion_percentage: typedSubmission?.completion_percentage || 0,
-      auto_graded: typedSubmission?.auto_graded || false
+      metadata: typedExercise.metadata,
+      spotplayer_course_id: (typedExercise.metadata as any)?.spotplayer_course_id,
+      spotplayer_item_id: (typedExercise.metadata as any)?.spotplayer_item_id
     };
   } catch (error) {
     console.error('Error in fetchExerciseDetail:', error);

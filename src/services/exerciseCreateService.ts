@@ -10,10 +10,12 @@ export interface CreateExerciseData {
   points: number;
   courseId: string;
 
-  exercise_type: 'form' | 'video' | 'audio' | 'simple';
+  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'spotplayer';
   content_url?: string | null;
   auto_grade: boolean;
   formStructure: ExerciseForm;
+  spotplayer_course_id?: string;
+  spotplayer_item_id?: string;
 }
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
@@ -36,6 +38,20 @@ const parseFormStructure = (form_structure: any): ExerciseForm => {
 
 export const createExercise = async (exerciseData: CreateExerciseData, createdBy: string): Promise<Exercise> => {
   try {
+    const metadata: any = {};
+    
+    // Add SpotPlayer metadata if it's a SpotPlayer exercise
+    if (exerciseData.exercise_type === 'spotplayer') {
+      if (exerciseData.spotplayer_course_id) {
+        metadata.spotplayer_course_id = exerciseData.spotplayer_course_id;
+      }
+      if (exerciseData.spotplayer_item_id) {
+        metadata.spotplayer_item_id = exerciseData.spotplayer_item_id;
+      }
+    }
+
+
+
     const requestData = {
       title: exerciseData.title,
       description: exerciseData.description || null,
@@ -48,6 +64,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       content_url: exerciseData.content_url,
       auto_grade: exerciseData.auto_grade,
       form_structure: JSON.stringify(exerciseData.formStructure || { questions: [] }),
+      metadata: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null,
       created_by: createdBy,
     };
 
