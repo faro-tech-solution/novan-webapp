@@ -1,7 +1,7 @@
 import { ExerciseForm, FormAnswer } from './formBuilder';
 import { Json } from '@/integrations/supabase/types';
 
-export type ExerciseType = 'form' | 'video' | 'audio' | 'simple' | 'spotplayer';
+export type ExerciseType = 'form' | 'video' | 'audio' | 'simple' | 'spotplayer' | 'iframe';
 export type SubmissionStatusType = 'not_started' | 'pending' | 'completed' | 'overdue';
 export type ExerciseStatusType = 'upcoming' | 'active' | 'overdue' | 'closed';
 
@@ -35,9 +35,11 @@ export interface Exercise {
   updated_at: string;
   exercise_type: ExerciseType;
   content_url?: string | null;
+  iframe_html?: string | null;
   auto_grade: boolean;
   form_structure?: ExerciseForm | Json | null;
   metadata?: Json | null;
+  sort: number;
   submissions?: number;
   total_students?: number;
   exercise_status?: ExerciseStatusType;
@@ -54,6 +56,7 @@ export interface ExerciseWithCourse extends Omit<Exercise, 'form_structure'> {
   courses: {
     name: string;
   } | null;
+  iframe_html?: string | null;
 }
 
 // Exercise submission in database
@@ -69,6 +72,8 @@ export interface SubmissionData {
   exercise_id: string;
   student_id: string;
   solution: string;
+  latest_answer: string;
+  submission_status: string;
   submitted_at: string;
   course_id: string;
 }
@@ -114,6 +119,7 @@ export interface ExerciseDetail {
   submission_status: SubmissionStatusType;
   exercise_type: ExerciseType;
   content_url?: string | null;
+  iframe_html?: string | null;
   auto_grade: boolean;
   form_structure?: ExerciseForm;
   submission_answers?: FormAnswer[];

@@ -46,6 +46,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         created_at,
         exercise_type,
         content_url,
+        iframe_html,
         auto_grade,
         form_structure,
         metadata,
@@ -133,6 +134,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       submission_status: submissionStatus,
       exercise_type: typedExercise.exercise_type,
       content_url: typedExercise.content_url,
+      iframe_html: typedExercise.iframe_html,
       auto_grade: typedExercise.auto_grade,
       form_structure: form_structure,
       submission_answers: submissionAnswers,
@@ -187,6 +189,8 @@ export const submitExerciseSolution = async (
     student_id: studentId,
     course_id: courseId, // Set course_id from parameter
     solution: finalSolution,
+    latest_answer: finalSolution, // Set latest_answer to the same value as solution
+    submission_status: 'pending', // Set default submission status
     submitted_at: new Date().toISOString()
   };
 

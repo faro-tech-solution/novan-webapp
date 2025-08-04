@@ -140,6 +140,50 @@ export type Database = {
           },
         ]
       }
+      exercise_categories: {
+        Row: {
+          course_id: string
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          order_index: number | null
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          order_index?: number | null
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          order_index?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_categories_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           id: string
@@ -169,39 +213,55 @@ export type Database = {
       }
       exercise_submissions: {
         Row: {
+          course_id: string | null
           exercise_id: string
           feedback: string | null
           graded_at: string | null
           graded_by: string | null
           id: string
+          latest_answer: string
           score: number | null
           solution: string
           student_id: string
+          submission_status: string
           submitted_at: string
         }
         Insert: {
+          course_id?: string | null
           exercise_id: string
           feedback?: string | null
           graded_at?: string | null
           graded_by?: string | null
           id?: string
+          latest_answer?: string
           score?: number | null
           solution: string
           student_id: string
+          submission_status?: string
           submitted_at?: string
         }
         Update: {
+          course_id?: string | null
           exercise_id?: string
           feedback?: string | null
           graded_at?: string | null
           graded_by?: string | null
           id?: string
+          latest_answer?: string
           score?: number | null
           solution?: string
           student_id?: string
+          submission_status?: string
           submitted_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "exercise_submissions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "exercise_submissions_exercise_id_fkey"
             columns: ["exercise_id"]
@@ -209,10 +269,20 @@ export type Database = {
             referencedRelation: "exercises"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "exercise_submissions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       exercises: {
         Row: {
+          auto_grade: boolean | null
+          category_id: string | null
+          content_url: string | null
           course_id: string
           created_at: string
           created_by: string
@@ -222,13 +292,20 @@ export type Database = {
           description: string | null
           difficulty: string
           estimated_time: string
+          exercise_type: string
           form_structure: Json | null
           id: string
+          iframe_html: string | null
+          metadata: Json | null
           points: number
+          sort: number
           title: string
           updated_at: string
         }
         Insert: {
+          auto_grade?: boolean | null
+          category_id?: string | null
+          content_url?: string | null
           course_id: string
           created_at?: string
           created_by: string
@@ -237,14 +314,21 @@ export type Database = {
           days_to_open: number
           description?: string | null
           difficulty: string
-          estimated_time: string
+          estimated_time?: string
+          exercise_type?: string
           form_structure?: Json | null
           id?: string
+          iframe_html?: string | null
+          metadata?: Json | null
           points?: number
+          sort?: number
           title: string
           updated_at?: string
         }
         Update: {
+          auto_grade?: boolean | null
+          category_id?: string | null
+          content_url?: string | null
           course_id?: string
           created_at?: string
           created_by?: string
@@ -254,13 +338,24 @@ export type Database = {
           description?: string | null
           difficulty?: string
           estimated_time?: string
+          exercise_type?: string
           form_structure?: Json | null
           id?: string
+          iframe_html?: string | null
+          metadata?: Json | null
           points?: number
+          sort?: number
           title?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "exercises_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "exercise_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "exercises_course_id_fkey"
             columns: ["course_id"]

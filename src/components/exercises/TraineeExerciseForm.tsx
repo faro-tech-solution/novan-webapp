@@ -15,6 +15,7 @@ import { VideoPlayer } from "./VideoPlayer";
 import { AudioPlayer } from "./AudioPlayer";
 import { SimpleExerciseCompletion } from "./SimpleExerciseCompletion";
 import { SpotPlayerVideo } from "./SpotPlayerVideo";
+import { IframePlayer } from "./IframePlayer";
 import { extractSpotPlayerData } from "@/utils/spotplayerExerciseUtils";
 interface TraineeExerciseFormProps {
   exercise: {
@@ -22,6 +23,7 @@ interface TraineeExerciseFormProps {
     title: string;
     exercise_type: ExerciseType;
     content_url?: string | null;
+    iframe_html?: string | null;
     auto_grade: boolean;
     form_structure?: ExerciseForm;
     submission_status: string;
@@ -45,6 +47,17 @@ export const TraineeExerciseForm = ({
   userId,
 }: TraineeExerciseFormProps) => {
   const { toast } = useToast();
+  
+  // Debug log for iframe exercises
+  if (exercise.exercise_type === 'iframe') {
+    console.log('Iframe exercise data:', {
+      exercise_type: exercise.exercise_type,
+      iframe_html: exercise.iframe_html,
+      has_iframe_html: !!exercise.iframe_html,
+      iframe_html_length: exercise.iframe_html?.length || 0
+    });
+  }
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("fa-IR");
   };
@@ -125,6 +138,13 @@ export const TraineeExerciseForm = ({
             ) : exercise.exercise_type === "audio" && exercise.content_url ? (
               <AudioPlayer
                 audioUrl={exercise.content_url}
+                onComplete={handleMediaSubmit}
+                isCompleted={isSubmitted}
+                disabled={submitting || exercise.score !== undefined}
+              />
+            ) : exercise.exercise_type === "iframe" && exercise.iframe_html ? (
+              <IframePlayer
+                iframeHtml={exercise.iframe_html}
                 onComplete={handleMediaSubmit}
                 isCompleted={isSubmitted}
                 disabled={submitting || exercise.score !== undefined}

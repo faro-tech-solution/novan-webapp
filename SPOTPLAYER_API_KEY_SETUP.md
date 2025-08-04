@@ -55,7 +55,22 @@ After setting up the API key, you can test it by:
 2. Attempting to view the exercise as a student
 3. Checking the browser console for any API-related errors
 
-### 6. Fallback Behavior
+### 6. Web Version Integration
+
+The implementation follows the official SpotPlayer documentation for "قرار دادن نسخه وب در سایت":
+
+#### Server-Side Cookie Synchronization
+- **Endpoint**: `/api/spotplayer/cookie`
+- **Purpose**: Synchronizes the X cookie with SpotPlayer servers
+- **Methods**: GET (for cookie refresh) and POST (for new cookie creation)
+- **Features**: Automatic cookie validation and refresh
+
+#### Client-Side Integration
+- **Script**: Loads from `https://app.spotplayer.ir/assets/js/app-api.js`
+- **Player**: Uses `new SpotPlayer(element, '/api/spotplayer/cookie', false, 'X')`
+- **License**: Created via official API with proper watermark and device settings
+
+### 7. Fallback Behavior
 
 If the API key is not configured or the API call fails, the system will:
 
@@ -68,9 +83,13 @@ If the API key is not configured or the API call fails, the system will:
 The current implementation:
 
 - ✅ Checks for API key configuration
-- ✅ Makes API calls to SpotPlayer when key is available
+- ✅ Makes API calls to SpotPlayer using official API endpoints
+- ✅ Implements proper license creation with watermark and device settings
+- ✅ Provides cookie synchronization endpoint at `/api/spotplayer/cookie`
+- ✅ Handles cookie refresh and validation
 - ✅ Provides fallback behavior when API is unavailable
 - ✅ Logs stream access (currently to console)
+- ✅ Implements web version integration as per official documentation
 - ❌ Does not persist licenses/cookies to database (tables not created yet)
 
 ## Next Steps

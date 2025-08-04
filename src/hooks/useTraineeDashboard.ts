@@ -101,7 +101,8 @@ export const useTraineeDashboard = () => {
           )
         `)
         .in('course_id', enrolledCourseIds)
-        .order('created_at', { ascending: false });
+        .order('sort', { ascending: true })
+        .order('created_at', { ascending: true });
 
       if (exercisesError) {
         console.error('Error fetching exercises:', exercisesError);

@@ -77,7 +77,8 @@ export const useMyExercisesQuery = () => {
           )
         `)
         .in('course_id', enrolledCourseIds)
-        .order('created_at', { ascending: false });
+        .order('sort', { ascending: true })
+        .order('created_at', { ascending: true });
 
       if (exercisesError) {
         throw new Error('خطا در دریافت تمرین‌ها: ' + exercisesError.message);

@@ -10,8 +10,9 @@ export interface CreateExerciseData {
   points: number;
   courseId: string;
 
-  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'spotplayer';
+  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'spotplayer' | 'iframe';
   content_url?: string | null;
+  iframe_html?: string | null;
   auto_grade: boolean;
   formStructure: ExerciseForm;
   spotplayer_course_id?: string;
@@ -62,6 +63,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
 
       exercise_type: exerciseData.exercise_type,
       content_url: exerciseData.content_url,
+      iframe_html: exerciseData.iframe_html,
       auto_grade: exerciseData.auto_grade,
       form_structure: JSON.stringify(exerciseData.formStructure || { questions: [] }),
       metadata: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null,

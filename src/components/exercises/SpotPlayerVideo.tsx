@@ -117,7 +117,7 @@ export const SpotPlayerVideo: React.FC<SpotPlayerVideoProps> = ({
         // Create SpotPlayer instance
         const spotPlayer = new window.SpotPlayer(
           playerRef.current,
-          '', // We handle cookie management manually through SpotPlayerService
+          '/api/spotplayer/cookie', // Cookie synchronization endpoint
           false, // side panel
           'X' // cookie name
         );

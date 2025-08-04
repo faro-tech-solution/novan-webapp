@@ -76,7 +76,8 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
           name
         )
       `)
-      .order('created_at', { ascending: false });
+      .order('sort', { ascending: true })
+      .order('created_at', { ascending: true });
 
     if (courseId) {
       query = query.eq('course_id', courseId);

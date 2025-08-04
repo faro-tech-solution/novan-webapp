@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UseFormReturn } from "react-hook-form";
 import { CreateExerciseFormData } from "./CreateExerciseForm";
-import { FileText, Video, AudioLines, ListChecks, Play } from "lucide-react";
+import { FileText, Video, AudioLines, ListChecks, Play, ExternalLink } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ExerciseTypeSectionProps {
   form: UseFormReturn<CreateExerciseFormData>;
@@ -69,6 +70,30 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                         value={field.value || ""}
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {exerciseType === "iframe" && (
+              <FormField
+                control={form.control}
+                name="iframe_html"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>کد HTML iframe</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="کد HTML کامل iframe را اینجا وارد کنید..."
+                        className="min-h-[200px] font-mono text-sm"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <p className="text-sm text-muted-foreground">
+                      کد HTML کامل iframe شامل تگ‌های style و div را وارد کنید
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -200,6 +225,19 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                           <Play className="h-4 w-4 ml-1" />
                           <div>
                             <div className="font-medium">SpotPlayer</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="iframe" id="iframe" />
+                        <Label
+                          htmlFor="iframe"
+                          className="flex items-center cursor-pointer text-sm"
+                        >
+                          <ExternalLink className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">iframe</div>
                           </div>
                         </Label>
                       </div>

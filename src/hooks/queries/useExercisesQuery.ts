@@ -38,6 +38,7 @@ export const useExercisesQuery = (courseId?: string) => {
 
         exercise_type: exerciseData.exercise_type || 'form',
         content_url: exerciseData.content_url,
+        iframe_html: exerciseData.iframe_html,
         auto_grade: exerciseData.auto_grade || false,
         formStructure: exerciseData.form_structure || { questions: [] },
         spotplayer_course_id: exerciseData.spotplayer_course_id,
@@ -62,6 +63,7 @@ export const useExercisesQuery = (courseId?: string) => {
 
         exercise_type: data.exercise_type || 'form',
         content_url: data.content_url,
+        iframe_html: data.iframe_html,
         auto_grade: data.auto_grade || false,
         formStructure: data.form_structure || { questions: [] },
         spotplayer_course_id: data.spotplayer_course_id,

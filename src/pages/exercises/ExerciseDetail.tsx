@@ -196,6 +196,25 @@ const ExerciseDetail = () => {
                   />
                 </div>
               </div>
+            ) : exercise.exercise_type === "iframe" && exercise.iframe_html ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">محتوای تمرین iframe</h3>
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <div className="mb-4">
+                    <h4 className="font-medium text-sm text-gray-700 mb-2">کد HTML iframe:</h4>
+                    <div className="bg-white p-3 rounded border">
+                      <pre className="text-xs overflow-x-auto whitespace-pre-wrap break-all max-h-32 overflow-y-auto">
+                        {exercise.iframe_html}
+                      </pre>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-md overflow-hidden border">
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: exercise.iframe_html }}
+                    />
+                  </div>
+                </div>
+              </div>
             ) : exercise.exercise_type === "simple" ? (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">محتوای تمرین ساده</h3>

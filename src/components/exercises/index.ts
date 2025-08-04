@@ -27,4 +27,5 @@ export { VideoPlayer } from './VideoPlayer';
 export { AudioPlayer } from './AudioPlayer';
 export { SimpleExerciseCompletion } from './SimpleExerciseCompletion';
 export { SpotPlayerVideo } from './SpotPlayerVideo';
+export { IframePlayer } from './IframePlayer';
 export { ExerciseTypeSection } from './ExerciseTypeSection';

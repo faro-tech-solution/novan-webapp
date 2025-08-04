@@ -49,6 +49,7 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
 
         exercise_type: exerciseData.exercise_type,
         content_url: exerciseData.content_url,
+        iframe_html: exerciseData.iframe_html,
         auto_grade: exerciseData.auto_grade,
         form_structure: JSON.stringify(exerciseData.formStructure),
         metadata: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null,

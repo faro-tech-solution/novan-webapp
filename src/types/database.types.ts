@@ -450,6 +450,7 @@ export type Database = {
           id: string
           metadata: Json | null
           points: number
+          sort: number
           title: string
           updated_at: string
         }
@@ -471,6 +472,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           points?: number
+          sort?: number
           title: string
           updated_at?: string
         }
@@ -492,6 +494,7 @@ export type Database = {
           id?: string
           metadata?: Json | null
           points?: number
+          sort?: number
           title?: string
           updated_at?: string
         }
