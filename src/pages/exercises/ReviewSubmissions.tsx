@@ -359,10 +359,9 @@ const ReviewSubmissions = () => {
           <div className="overflow-y-auto flex-1 pr-2">
             {selectedSubmission && selectedSubmission.exercise && (
               <>
-
-
                 <RateAndConversation
                   selectedSubmission={selectedSubmission}
+                  onClose={() => setIsDialogOpen(false)}
                 />
               </>
             )}

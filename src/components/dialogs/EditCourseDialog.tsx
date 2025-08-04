@@ -158,7 +158,7 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
                   <FormLabel>توضیحات</FormLabel>
                   <FormControl>
                     <RichTextEditor 
-                      value={field.value}
+                      value={field.value || ''}
                       onChange={field.onChange}
                       placeholder="توضیحات درس را وارد کنید"
                       height="120px"

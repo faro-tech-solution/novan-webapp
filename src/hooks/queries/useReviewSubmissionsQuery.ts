@@ -178,22 +178,58 @@ export const useGradeSubmissionMutation = () => {
   return useMutation({
     mutationFn: async ({ 
       submissionId, 
-      score, 
-      feedback 
+      score
     }: { 
       submissionId: string; 
       score: number | null; 
-      feedback: string | null 
     }) => {
       if (!user) throw new Error('کاربر وارد نشده است');
+      
+      // Determine the role for latest_answer
+      const userRole = user.role || 'admin';
+      const latestAnswer = userRole === 'trainer' ? 'trainer' : 'admin';
       
       const { error } = await supabase
         .from('exercise_submissions')
         .update({
           score: score,
-          feedback: feedback,
+          feedback: null, // Always set to null, don't use feedback field
           graded_at: new Date().toISOString(),
-          graded_by: user.id
+          graded_by: user.id,
+          latest_answer: latestAnswer
+        })
+        .eq('id', submissionId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      queryClient.invalidateQueries({ queryKey: ['myExercises'] });
+      queryClient.invalidateQueries({ queryKey: ['submissionConversation'] });
+    },
+  });
+};
+
+export const useMarkAsViewedMutation = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ 
+      submissionId 
+    }: { 
+      submissionId: string; 
+    }) => {
+      if (!user) throw new Error('کاربر وارد نشده است');
+      
+      // Determine the role for latest_answer
+      const userRole = user.role || 'admin';
+      const latestAnswer = userRole === 'trainer' ? 'trainer' : 'admin';
+      
+      const { error } = await supabase
+        .from('exercise_submissions')
+        .update({
+          latest_answer: latestAnswer
         })
         .eq('id', submissionId);
 

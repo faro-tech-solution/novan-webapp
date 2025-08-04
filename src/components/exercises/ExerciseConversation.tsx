@@ -11,18 +11,18 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { uploadFileToSupabase } from '@/utils/uploadImageToSupabase';
 import { Submission } from "@/types/reviewSubmissions";
 import { useSubmissionConversation, useSendConversationMessage, ConversationMessage } from "@/hooks/queries/useExerciseDetailQuery";
-import { useGradeSubmissionMutation } from "@/hooks/queries/useReviewSubmissionsQuery";
-
-
+import { useGradeSubmissionMutation, useMarkAsViewedMutation } from "@/hooks/queries/useReviewSubmissionsQuery";
 
 interface ExerciseConversationProps {
   submission: Submission;
   variant?: 'full' | 'compact';
+  onClose?: () => void; // Add onClose prop
 }
 
 export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
   submission,
   variant = 'full',
+  onClose,
 }) => {
   const submissionId = submission.id;
   const score = submission.score;
@@ -64,10 +64,13 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
 
   const sendMessageMutation = useSendConversationMessage();
   const gradeSubmissionMutation = useGradeSubmissionMutation();
+  const markAsViewedMutation = useMarkAsViewedMutation();
 
   // Use appropriate mutation based on user role
   const isTrainerOrAdmin = profile?.role === "trainer" || profile?.role === "admin";
-  const activeMutation = isTrainerOrAdmin ? gradeSubmissionMutation : sendMessageMutation;
+  
+  // Shared loading state
+  const isLoading = sendMessageMutation.isPending || gradeSubmissionMutation.isPending || markAsViewedMutation.isPending || uploading;
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -142,29 +145,65 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
       }
     }
     
-    if (isTrainerOrAdmin) {
-      const scoreValue = scoreInput > 0 ? scoreInput : null;
-      gradeSubmissionMutation.mutate({
-        submissionId,
-        score: scoreValue,
-        feedback: messageToSend.trim() || null,
-      }, {
+          if (isTrainerOrAdmin) {
+        const scoreValue = scoreInput > 0 ? scoreInput : null;
+        gradeSubmissionMutation.mutate({
+          submissionId,
+          score: scoreValue,
+        }, {
         onSuccess: () => {
           setNewMessage("");
           setSelectedFiles([]);
           setResetKey(prev => prev + 1); // Force reset of FileUpload component after successful submit
+          
+          // Send message to conversation if there's a message
+          if (messageToSend.trim()) {
+            sendMessageMutation.mutate({ submissionId, message: messageToSend }, {
+              onSuccess: () => {
+                // Close popup after successful operation
+                if (onClose) {
+                  onClose();
+                }
+              }
+            });
+          } else {
+            // Close popup after successful operation
+            if (onClose) {
+              onClose();
+            }
+          }
         }
       });
     } else {
       if (!messageToSend.trim()) return;
-      sendMessageMutation.mutate({ submissionId, message: messageToSend       }, {
+      sendMessageMutation.mutate({ submissionId, message: messageToSend }, {
         onSuccess: () => {
           setNewMessage("");
           setSelectedFiles([]);
           setResetKey(prev => prev + 1); // Force reset of FileUpload component after successful submit
+          
+          // Close popup after successful operation
+          if (onClose) {
+            onClose();
+          }
         }
       });
     }
+  };
+
+  const handleMarkAsViewed = async () => {
+    if (!submissionId) return;
+    
+    markAsViewedMutation.mutate({
+      submissionId,
+    }, {
+      onSuccess: () => {
+        // Close popup after successful operation
+        if (onClose) {
+          onClose();
+        }
+      }
+    });
   };
 
   if (!submissionId) {
@@ -306,12 +345,12 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
             value={newMessage}
             onChange={setNewMessage}
             placeholder="پیام خود را بنویسید..."
-            readOnly={activeMutation.isPending || uploading}
+            readOnly={isLoading}
             height="120px"
           />
           <FileUpload
             onFileChange={setSelectedFiles}
-            disabled={activeMutation.isPending || uploading}
+            disabled={isLoading}
             label={uploading ? 'در حال آپلود...' : 'افزودن فایل'}
             resetKey={resetKey}
           />
@@ -328,24 +367,33 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
         </div>
         <div className="flex flex-col gap-2 w-40"> {/* Stack buttons vertically */}
           {isTrainerOrAdmin && (
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 w-full"
-              onClick={() => handleSendMessage(true)}
-              disabled={activeMutation.isPending || uploading}
-            >
-              {activeMutation.isPending || uploading
-                ? 'در حال ارسال...'
-                : score
-                  ? 'بروزرسانی نمره'
-                  : 'ارسال و تکمیل'}
-            </button>
+            <>
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded disabled:opacity-50 w-full"
+                onClick={handleMarkAsViewed}
+                disabled={isLoading}
+              >
+                {isLoading ? 'در حال بروزرسانی...' : 'مشاهده شد'}
+              </button>
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 w-full"
+                onClick={() => handleSendMessage(true)}
+                disabled={isLoading}
+              >
+                {isLoading
+                  ? 'در حال ارسال...'
+                  : score
+                    ? 'بروزرسانی نمره'
+                    : 'ارسال و تکمیل'}
+              </button>
+            </>
           )}
           <button
             className="bg-teal-600 text-white px-4 py-2 rounded disabled:opacity-50 w-full"
             onClick={() => handleSendMessage(false)}
-            disabled={(!newMessage.trim() && !isTrainerOrAdmin) || activeMutation.isPending || uploading}
+            disabled={(!newMessage.trim() && !isTrainerOrAdmin) || isLoading}
           >
-            {activeMutation.isPending || uploading ? 'در حال ارسال...' : 'ارسال پاسخ'}
+            {isLoading ? 'در حال ارسال...' : 'ارسال پاسخ'}
           </button>
         </div>
       </div>

@@ -5,6 +5,7 @@ import React from "react";
 
 interface RateAndConversationProps {
   selectedSubmission: Submission | null;
+  onClose?: () => void; // Add onClose prop
 }
 
 // Helper function to parse submission solution based on exercise type
@@ -43,7 +44,7 @@ const parseSubmissionSolution = (
   }
 };
 
-const RateAndConversation: React.FC<RateAndConversationProps> = ({ selectedSubmission }) => {
+const RateAndConversation: React.FC<RateAndConversationProps> = ({ selectedSubmission, onClose }) => {
   if (!selectedSubmission || !selectedSubmission.exercise) return null;
   return (
     <>
@@ -71,6 +72,7 @@ const RateAndConversation: React.FC<RateAndConversationProps> = ({ selectedSubmi
       <ExerciseConversation
         submission={selectedSubmission}
         variant="compact"
+        onClose={onClose}
       />
     </>
   );
