@@ -53,7 +53,7 @@ const CourseCardComponent = ({
           <div>
             <CardTitle className="text-lg">{course.name}</CardTitle>
             <CardDescription>
-              مربی: {course.instructor_name}
+              مربی: {course.instructor_id}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">

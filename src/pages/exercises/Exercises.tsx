@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import CreateExerciseDialog from "@/components/dialogs/CreateExerciseDialog";
-import { EditExerciseDialog } from "@/components/exercises/EditExerciseDialog";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { Exercise } from "@/types/exercise";
 import { useToast } from "@/hooks/use-toast";
 import { ExerciseStatsCards } from "@/components/exercises/ExerciseStatsCards";
@@ -9,13 +10,15 @@ import { ExerciseFilters } from "@/components/exercises/ExerciseFilters";
 import { ExerciseTable } from "@/components/exercises/ExerciseTable";
 import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
 import { useDashboardPanelContext } from "@/contexts/DashboardPanelContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Exercises = () => {
+  const router = useRouter();
+  const { profile } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("all");
   const [courseFilter, setCourseFilter] = useState("all");
   const [exerciseStatusFilter, setExerciseStatusFilter] = useState("all");
-  const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
 
   const { trainee: { courseId: activeCourseId } } = useDashboardPanelContext();
 
@@ -48,11 +51,17 @@ const Exercises = () => {
   };
 
   const handleEditExercise = (exercise: Exercise) => {
-    setEditingExercise(exercise);
+    const editPath = profile?.role === "admin" 
+      ? `/admin/exercises/${exercise.id}` 
+      : `/trainer/exercises/${exercise.id}`;
+    router.push(editPath);
   };
 
-  const handleEditDialogClose = () => {
-    setEditingExercise(null);
+  const handleCreateExercise = () => {
+    const createPath = profile?.role === "admin" 
+      ? "/admin/exercises/create" 
+      : "/trainer/exercises/create";
+    router.push(createPath);
   };
 
   // Filter exercises
@@ -118,12 +127,15 @@ const Exercises = () => {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 font-peyda">
+            <h2 className="text-2xl font-bold text-gray-900 font-yekanbakh">
               مدیریت تمرین‌ها
             </h2>
             <p className="text-gray-600">ایجاد و مدیریت تمرین‌های دانشجویان</p>
           </div>
-          <CreateExerciseDialog />
+          <Button onClick={handleCreateExercise}>
+            <Plus className="h-4 w-4 ml-2" />
+            تمرین جدید
+          </Button>
         </div>
 
         {/* Stats Cards */}
@@ -150,12 +162,7 @@ const Exercises = () => {
           onEditExercise={handleEditExercise}
         />
 
-        {/* Edit Exercise Dialog */}
-        <EditExerciseDialog
-          exercise={editingExercise}
-          open={!!editingExercise}
-          onOpenChange={handleEditDialogClose}
-        />
+
       </div>
     </DashboardLayout>
   );

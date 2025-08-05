@@ -1,7 +1,7 @@
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { UseFormReturn } from 'react-hook-form';
 import { CreateExerciseFormData } from './CreateExerciseForm';
 
@@ -36,10 +36,11 @@ export const BasicInfoSection = ({ form }: BasicInfoSectionProps) => {
           <FormItem>
             <FormLabel>توضیحات</FormLabel>
             <FormControl>
-              <Textarea 
+              <RichTextEditor 
+                value={field.value}
+                onChange={field.onChange}
                 placeholder="توضیحات کاملی از تمرین ارائه دهید..."
-                className="min-h-[100px]"
-                {...field}
+                height="120px"
               />
             </FormControl>
             <FormMessage />

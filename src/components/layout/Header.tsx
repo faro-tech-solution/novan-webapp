@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from 'next/link';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   LogIn,
   LogOut,
@@ -31,10 +34,11 @@ const Header = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { profile, loading } = useAuth();
   const { tCommon, tSidebar } = useTranslation();
-  const location = useLocation();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // Only show NotificationBell on trainee dashboard URLs
-  const showNotificationBell = location.pathname.startsWith('/trainee/');
+  const showNotificationBell = pathname?.startsWith('/trainee/') || false;
 
   return (
     <header style={{ width: '100vw', background: 'transparent', boxShadow: 'none', border: 'none', margin: 0, padding: 0 }}>
@@ -45,7 +49,7 @@ const Header = ({
             <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">آ</span>
             </div>
-            <span className="text-xl font-bold text-gray-900 font-peyda">
+            <span className="text-xl font-bold text-gray-900 font-yekanbakh">
               {tCommon("portalName")}
             </span>
           
@@ -53,7 +57,7 @@ const Header = ({
           {isDashboard && (
             <>
               <span className="text-gray-400 hidden md:inline">|</span>
-              <h1 className="text-lg font-semibold text-gray-900 font-peyda hidden md:block">
+              <h1 className="text-lg font-semibold text-gray-900 font-yekanbakh hidden md:block">
                 {title}
               </h1>
             </>
@@ -91,13 +95,13 @@ const Header = ({
               ) : (
                 !isDashboard && (
                   <div className="flex items-center space-x-2 space-x-reverse">
-                    <Link to="/">
+                    <Link href="/">
                       <Button variant="outline">
                         <LogIn className="h-4 w-4 ml-2" />
                         {tCommon("login")}
                       </Button>
                     </Link>
-                    <Link to="/register">
+                    <Link href="/register">
                       <Button className="bg-teal-500 hover:bg-teal-600 text-white">
                         {tCommon("register")}
                       </Button>
@@ -130,55 +134,55 @@ const Header = ({
           <div className="md:hidden py-4 border-t">
             <nav className="flex flex-col space-y-4">
               <Link
-                to="/"
+                href="/"
                 className="text-gray-700 hover:text-teal-600 transition-colors"
-              >
-                {tCommon("home")}
-              </Link>
-              <Link
-                to="/courses"
-                className="text-gray-700 hover:text-teal-600 transition-colors"
-              >
-                {tCommon("courses")}
-              </Link>
-              {(profile?.role === "trainer" || profile?.role === "admin") && (
+                              >
+                  {tCommon("home")}
+                </Link>
                 <Link
-                  to="/students"
+                  href="/courses"
                   className="text-gray-700 hover:text-teal-600 transition-colors"
                 >
-                  {tCommon("students")}
+                  {tCommon("courses")}
                 </Link>
-              )}
-              <Link
-                to="/instructors"
-                className="text-gray-700 hover:text-teal-600 transition-colors"
-              >
-                {tCommon("instructors")}
-              </Link>
-              {profile && (
+                {(profile?.role === "trainer" || profile?.role === "admin") && (
+                  <Link
+                    href="/students"
+                    className="text-gray-700 hover:text-teal-600 transition-colors"
+                  >
+                    {tCommon("students")}
+                  </Link>
+                )}
                 <Link
-                  to={profile?.role ? `/${profile.role}/dashboard` : "/"}
+                  href="/instructors"
                   className="text-gray-700 hover:text-teal-600 transition-colors"
                 >
-                  {tCommon("dashboard")}
+                  {tCommon("instructors")}
                 </Link>
-              )}
-              {!profile && (
-                <>
+                {profile && (
                   <Link
-                    to="/"
+                    href={profile?.role ? `/${profile.role}/dashboard` : "/"}
                     className="text-gray-700 hover:text-teal-600 transition-colors"
                   >
-                    {tCommon("login")}
+                    {tCommon("dashboard")}
                   </Link>
-                  <Link
-                    to="/register"
-                    className="text-gray-700 hover:text-teal-600 transition-colors"
-                  >
-                    {tCommon("register")}
-                  </Link>
-                </>
-              )}
+                )}
+                {!profile && (
+                  <>
+                    <Link
+                      href="/"
+                      className="text-gray-700 hover:text-teal-600 transition-colors"
+                    >
+                      {tCommon("login")}
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="text-gray-700 hover:text-teal-600 transition-colors"
+                    >
+                      {tCommon("register")}
+                    </Link>
+                  </>
+                )}
               <div className="mt-2 pt-2 border-t">
                 <LanguageSwitch />
               </div>

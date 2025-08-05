@@ -54,7 +54,7 @@ export function StudentDetailsDialog({ open, onOpenChange, student }: StudentDet
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">تاریخ ثبت‌نام</div>
-                  <div className="font-medium">{formatDate(student.joinDate)}</div>
+                  <div className="font-medium">{formatDate({dateString: student.joinDate})}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">وضعیت</div>
@@ -68,11 +68,11 @@ export function StudentDetailsDialog({ open, onOpenChange, student }: StudentDet
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">تاریخ ایجاد</div>
-                  <div className="font-medium">{student.created_at ? formatDate(student.created_at) : 'نامشخص'}</div>
+                  <div className="font-medium">{student.created_at ? formatDate({dateString: student.created_at}) : 'نامشخص'}</div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-500">آخرین بروزرسانی</div>
-                  <div className="font-medium">{student.updated_at ? formatDate(student.updated_at) : 'نامشخص'}</div>
+                  <div className="font-medium">{student.updated_at ? formatDate({dateString: student.updated_at}) : 'نامشخص'}</div>
                 </div>
               </div>
             </CardContent>

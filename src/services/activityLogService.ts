@@ -30,10 +30,10 @@ export const logStudentActivity = async (activityData: StudentActivityLog): Prom
     const { data, error } = await supabase.rpc('log_student_activity', {
       p_student_id: activityData.student_id,
       p_activity_type: activityData.activity_type,
-      p_activity_data: activityData.activity_data || null,
-      p_points_earned: activityData.points_earned || 0,
-      p_session_id: activityData.session_id || null,
-      p_duration_minutes: activityData.duration_minutes || 0
+      p_activity_data: activityData.activity_data ?? undefined,
+      p_points_earned: activityData.points_earned ?? 0,
+      p_session_id: activityData.session_id ?? undefined,
+      p_duration_minutes: activityData.duration_minutes ?? 0
     });
 
     if (error) {
@@ -54,7 +54,7 @@ export const fetchStudentActivityLogs = async (
   startDate?: Date, 
   endDate?: Date,
   activityType?: string
-): Promise<ActivityLog[]> => {
+): Promise<ActivityLog[] | any[]> => {
   try {
     let query = supabase
       .from('student_activity_logs')

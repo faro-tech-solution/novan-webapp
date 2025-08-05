@@ -16,7 +16,6 @@ src/pages/
 │   ├── AdminDashboard.tsx
 │   ├── TraineeDashboard.tsx
 │   ├── TrainerDashboard.tsx
-│   ├── TeammatesDashboard.tsx
 │   └── index.ts
 ├── exercises/              # Exercise management and interaction pages
 │   ├── Exercises.tsx
@@ -31,17 +30,8 @@ src/pages/
 │   └── index.ts
 ├── management/            # Administrative management pages
 │   ├── UserManagement.tsx
-│   ├── GroupManagement.tsx
-│   ├── TasksManagement.tsx
-│   ├── DailyActivitiesManagement.tsx
 │   └── index.ts
-├── wiki/                  # Wiki system pages
-│   ├── Wiki.tsx
-│   ├── WikiArticle.tsx
-│   ├── WikiCategory.tsx
-│   ├── CreateWikiArticle.tsx
-│   ├── WikiManagement.tsx
-│   └── index.ts
+
 ├── users/                 # User-related pages
 │   ├── Students.tsx
 │   ├── Instructors.tsx
@@ -53,7 +43,6 @@ src/pages/
 │   └── index.ts
 ├── shared/                # Shared/utility pages
 │   ├── NotFound.tsx
-│   ├── TeammateTasks.tsx
 │   └── index.ts
 └── index.ts              # Main exports for all pages
 ```

@@ -1,7 +1,6 @@
 # Database Schema Documentation
 
-## Overview
-This document describes the complete database schema for the screenshot-showcase-tutorials application. The database uses PostgreSQL with Supabase and includes tables for user management, exercises, courses, achievements, notifications, and more.
+This document describes the complete database schema for the novan-webapp application. The database uses PostgreSQL with Supabase and includes tables for user management, exercises, courses, achievements, notifications, and more.
 
 ## Table Structure
 
@@ -248,114 +247,7 @@ CREATE TABLE accounting (
 - `idx_accounting_course_id`
 - `idx_accounting_transaction_date`
 
-### 6. Group Management
-
-#### `groups` Table
-**Purpose**: Manages student groups.
-
-```sql
-CREATE TABLE groups (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  description TEXT,
-  telegram_channels TEXT, -- Comma-separated channel IDs
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
-);
-```
-
-#### `group_members` Table
-**Purpose**: Junction table for group membership.
-
-```sql
-CREATE TABLE group_members (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  group_id UUID REFERENCES groups(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  joined_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(group_id, user_id)
-);
-```
-
-#### `group_courses` Table
-**Purpose**: Junction table for group-course assignments.
-
-```sql
-CREATE TABLE group_courses (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  group_id UUID REFERENCES groups(id) ON DELETE CASCADE,
-  course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
-  assigned_at TIMESTAMPTZ DEFAULT NOW(),
-  assigned_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  UNIQUE(group_id, course_id)
-);
-```
-
-### 7. Wiki System
-
-#### `wiki_categories` Table
-**Purpose**: Organizes wiki content into categories.
-
-```sql
-CREATE TABLE wiki_categories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title VARCHAR(255) NOT NULL,
-  description TEXT,
-  access_type VARCHAR(50) NOT NULL DEFAULT 'all_students', -- 'all_students', 'course_specific'
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
-);
-```
-
-#### `wiki_topics` Table
-**Purpose**: Topics within wiki categories.
-
-```sql
-CREATE TABLE wiki_topics (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  category_id UUID NOT NULL REFERENCES wiki_categories(id) ON DELETE CASCADE,
-  title VARCHAR(255) NOT NULL,
-  description TEXT,
-  order_index INTEGER DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
-);
-```
-
-#### `wiki_articles` Table
-**Purpose**: Individual wiki articles.
-
-```sql
-CREATE TABLE wiki_articles (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  topic_id UUID NOT NULL REFERENCES wiki_topics(id) ON DELETE CASCADE,
-  title VARCHAR(255) NOT NULL,
-  content TEXT NOT NULL,
-  order_index INTEGER DEFAULT 0,
-  is_published BOOLEAN DEFAULT true,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
-);
-```
-
-#### `wiki_category_course_access` Table
-**Purpose**: Controls course-specific access to wiki categories.
-
-```sql
-CREATE TABLE wiki_category_course_access (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  category_id UUID NOT NULL REFERENCES wiki_categories(id) ON DELETE CASCADE,
-  course_id UUID NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(category_id, course_id)
-);
-```
-
-### 8. Notifications System
+### 6. Notifications System
 
 #### `notifications` Table
 **Purpose**: Stores user notifications.
@@ -408,46 +300,7 @@ CREATE TABLE public.daily_activities (
 **Indexes**:
 - `idx_daily_activities_active`
 
-### 10. Task Management
-
-#### `tasks` Table
-**Purpose**: Manages tasks assigned to teammates/users.
-
-```sql
-CREATE TABLE tasks (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title TEXT NOT NULL,
-  description TEXT,
-  instruction TEXT,                    -- Detailed instructions for the task
-  priority TEXT CHECK (priority IN ('low', 'medium', 'high')) NOT NULL DEFAULT 'medium',
-  due_date TIMESTAMP WITH TIME ZONE,
-  assigned_to UUID REFERENCES profiles(id) ON DELETE SET NULL, -- teammate user id
-  created_by UUID REFERENCES profiles(id) ON DELETE SET NULL, -- admin user id
-  is_completed BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-```
-
-#### `subtasks` Table
-**Purpose**: Manages subtasks within main tasks.
-
-```sql
-CREATE TABLE subtasks (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  is_completed BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-);
-```
-
-**RLS Policies**:
-- **Admins**: Can manage all tasks and subtasks
-- **Teammates**: Can view their own assigned tasks and related subtasks
-
-### 11. Teacher Assignment System
+### 10. Teacher Assignment System
 
 #### `teacher_course_assignments` Table
 **Purpose**: Manages teacher assignments to courses.
@@ -516,11 +369,11 @@ All tables have RLS enabled with appropriate policies:
 - **Exercise Submissions**: Students can view their own, trainers can view all
 - **Awards**: Everyone can view awards, students can only see their own achievements
 - **Courses**: Varies by role
-- **Groups**: Admin-only access
-- **Wiki**: Public read access, role-based write access
+
+
 - **Notifications**: Users can only access their own notifications
 - **Accounting**: Admin-only access
-- **Tasks**: Admin management, teammate view of assigned tasks
+
 - **Teacher Assignments**: Admin management, teacher view of own assignments
 
 ## Data Types and Constraints
@@ -547,9 +400,9 @@ The database has evolved through multiple migrations:
 2. **Name Field Evolution** (20250616000000-20250616000001): Split name into first_name/last_name
 3. **Exercise System Enhancement** (20250616000005): Remove name fields, update achievement system
 4. **Course & Accounting** (20250616000006-20250616000018): Add course management and accounting
-5. **Wiki System** (20250616000020): Add wiki functionality
-6. **Groups** (20250616000021): Add group management
-7. **Tasks System** (20240620): Add tasks and subtasks management
+
+
+
 8. **Teacher Assignment System** (20250615): Add teacher-course and teacher-term assignments
 9. **Notifications** (20250705160046): Add notification system
 

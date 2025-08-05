@@ -45,9 +45,7 @@ const CreateExerciseDialog = ({
           description: data.description || null,
           course_id: data.course_id,
           difficulty: data.difficulty,
-          days_to_open: data.days_to_open,
-          days_to_due: data.days_to_open + data.days_duration,
-          days_to_close: data.days_to_open + data.days_duration,
+
           points: data.points,
           estimated_time: data.estimated_time || "-",
           exercise_type: data.exercise_type,

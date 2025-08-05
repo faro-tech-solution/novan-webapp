@@ -1,5 +1,8 @@
+'use client';
+
 import { ReactNode } from "react";
-import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
+import Link from 'next/link';
+import { useRouter, usePathname, useParams } from 'next/navigation';
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "./Header";
 import { useTranslation } from "@/utils/translations";
@@ -14,7 +17,6 @@ import {
   CheckCircle,
   Wallet,
   Edit,
-  ListChecks,
 } from "lucide-react";
 import {
   Sidebar,
@@ -26,7 +28,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useSubmissionsQuery } from "@/hooks/useReviewSubmissionsQuery";
+import { useSubmissionsQuery } from "@/hooks/queries/useReviewSubmissionsQuery";
 import { Badge } from "@/components/ui/badge";
 import ActiveCourseSelector from "../courses/ActiveCourseSelector";
 
@@ -37,13 +39,13 @@ interface DashboardLayoutProps {
 
 const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   const { profile, logout } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname() as any;
   const { tCommon, tSidebar } = useTranslation();
 
   const handleLogout = async () => {
     await logout();
-    navigate("/");
+    router.push("/");
   };
 
   const trainerNavItems = [
@@ -78,12 +80,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       key: "students",
     },
     {
-      href: "/trainer/wiki/manage",
-      icon: Edit,
-      label: tSidebar("wikiManagement"),
-      key: "wikiManagement",
-    },
-    {
       href: "/trainer/profile",
       icon: UserCog,
       label: tSidebar("profile"),
@@ -91,7 +87,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     },
   ];
 
-  const { courseId } = useParams();
+  const { courseId }: any = useParams();
   const traineeNavItems = [
     {
       href: `/trainee/${courseId}/dashboard`,
@@ -123,7 +119,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       label: tSidebar("profile"),
       key: "profile",
     },
-    { href: `/trainee/${courseId}/wiki`, icon: BookOpen, label: tSidebar("wiki"), key: "wiki" },
+
   ];
 
   const adminNavItems = [
@@ -138,12 +134,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       icon: UserCog,
       label: tSidebar("userManagement"),
       key: "userManagement",
-    },
-    {
-      href: "/admin/group-management",
-      icon: Users,
-      label: tSidebar("groupManagement"),
-      key: "groupManagement",
     },
     {
       href: "/admin/courses-management",
@@ -176,40 +166,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       key: "accounting",
     },
     {
-      href: "/admin/wiki/manage",
-      icon: Edit,
-      label: tSidebar("wikiManagement"),
-      key: "wikiManagement",
-    },
-    {
-      href: "/admin/tasks-management",
-      icon: ListChecks,
-      label: tSidebar("tasksManagement"),
-      key: "tasksManagement",
-    },
-    {
       href: "/admin/profile",
-      icon: UserCog,
-      label: tSidebar("profile"),
-      key: "profile",
-    },
-  ];
-
-  const teammateNavItems = [
-    {
-      href: "/teammate/dashboard",
-      icon: LayoutDashboard,
-      label: tSidebar("dashboard"),
-      key: "dashboard",
-    },
-    {
-      href: "/teammate/tasks",
-      icon: CheckCircle,
-      label: tSidebar("myTasks"),
-      key: "myTasks",
-    },
-    {
-      href: "/teammate/profile",
       icon: UserCog,
       label: tSidebar("profile"),
       key: "profile",
@@ -224,8 +181,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
         return traineeNavItems;
       case "admin":
         return adminNavItems;
-      case "teammate":
-        return teammateNavItems;
       default:
         return traineeNavItems;
     }
@@ -233,8 +188,8 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const navItems = getNavItems();
 
-  const { data: submissions = [] } = useSubmissionsQuery();
-  const pendingReviewCount = submissions.filter((s) => s.score === null).length;
+  const { data: submissionsData } = useSubmissionsQuery({ status: 'pending' });
+  const pendingReviewCount = submissionsData?.totalCount || 0;
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -268,11 +223,11 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
             <div className="h-full py-4" style={{ height: '100%' }}>
               <nav className="space-y-1">
                 {navItems.map((item) => {
-                  const isActive = location.pathname.startsWith(item.href);
+                  const isActive = pathname.startsWith(item.href);
                   return (
                     <Link
                       key={item.href}
-                      to={item.href}
+                      href={item.href}
                       className={`flex items-center px-4 py-2 relative transition
                         ${isActive ? 'bg-[rgb(237,238,245)] text-gray-900 rounded-tr-[20px] rounded-br-[20px] mr-5' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}
                       `}
@@ -324,7 +279,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
                   {navItems.map((item) => (
                     <SidebarMenuItem key={item.href}>
                       <SidebarMenuButton asChild>
-                        <Link to={item.href} className="flex items-center">
+                        <Link href={item.href} className="flex items-center">
                           <item.icon className="h-5 w-5" />
                           <span>{item.label}</span>
                           {item.href === "/review-submissions" &&

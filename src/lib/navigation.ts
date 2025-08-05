@@ -1,12 +1,14 @@
-import { useNavigate } from 'react-router-dom';
+'use client';
+
+import { useRouter } from 'next/navigation';
 import { useDashboardPanelContext } from '@/contexts/DashboardPanelContext';
 
 export function useGoToTraineeCourseDashboard() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { trainee: { setCourseId } } = useDashboardPanelContext();
 
   return (courseId: string) => {
     setCourseId(courseId);
-    navigate(`/trainee/${courseId}/dashboard`);
+    router.push(`/trainee/${courseId}/dashboard`);
   };
 } 

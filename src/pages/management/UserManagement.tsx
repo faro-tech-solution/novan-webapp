@@ -147,7 +147,7 @@ const UserManagement = () => {
                 <SelectItem value="admin">مدیر</SelectItem>
                 <SelectItem value="trainer">مدرس</SelectItem>
                 <SelectItem value="trainee">دانشجو</SelectItem>
-                <SelectItem value="teammate">هم‌تیمی</SelectItem>
+
               </SelectContent>
             </Select>
           </div>
@@ -188,8 +188,7 @@ const UserManagement = () => {
                             return "bg-purple-100 text-purple-800";
                           case "trainer":
                             return "bg-blue-100 text-blue-800";
-                          case "teammate":
-                            return "bg-teal-100 text-teal-800";
+
                           case "trainee":
                             return "bg-green-100 text-green-800";
                           default:
@@ -203,8 +202,7 @@ const UserManagement = () => {
                             return "مدیر";
                           case "trainer":
                             return "مدرس";
-                          case "teammate":
-                            return "هم‌تیمی";
+
                           case "trainee":
                             return "دانشجو";
                           default:
@@ -305,7 +303,7 @@ const UserManagement = () => {
                     <SelectItem value="admin">مدیر</SelectItem>
                     <SelectItem value="trainer">مدرس</SelectItem>
                     <SelectItem value="trainee">دانشجو</SelectItem>
-                    <SelectItem value="teammate">هم‌تیمی</SelectItem>
+
                   </SelectContent>
                 </Select>
               </div>

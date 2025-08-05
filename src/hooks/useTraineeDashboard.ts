@@ -16,8 +16,7 @@ interface UpcomingExercise {
   description: string | null;
   course_name: string;
   difficulty: string;
-  due_date: string;
-  open_date: string;
+
   estimated_time: string;
   points: number;
   submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
@@ -92,9 +91,7 @@ export const useTraineeDashboard = () => {
           description,
           course_id,
           difficulty,
-          days_to_due,
-          days_to_open,
-          days_to_close,
+
           points,
           estimated_time,
           created_at,
@@ -104,7 +101,8 @@ export const useTraineeDashboard = () => {
           )
         `)
         .in('course_id', enrolledCourseIds)
-        .order('days_to_due', { ascending: true });
+        .order('sort', { ascending: true })
+        .order('created_at', { ascending: true });
 
       if (exercisesError) {
         console.error('Error fetching exercises:', exercisesError);
@@ -130,16 +128,6 @@ export const useTraineeDashboard = () => {
       let totalPoints = 0;
 
       exercises?.forEach(exercise => {
-        const enrollment = enrollments.find(enr => enr.course_id === exercise.course_id);
-        if (!enrollment?.course_terms?.start_date) return;
-
-        const termStartDate = new Date(enrollment.course_terms.start_date);
-        const openDate = new Date(termStartDate.getTime() + exercise.days_to_open * 24 * 60 * 60 * 1000);
-        const dueDate = new Date(termStartDate.getTime() + exercise.days_to_due * 24 * 60 * 60 * 1000);
-        const closeDate = new Date(termStartDate.getTime() + exercise.days_to_close * 24 * 60 * 60 * 1000);
-
-        // Only include exercises that have started
-        if (openDate > now) return;
 
         const submission = submissions?.find(sub => sub.exercise_id === exercise.id);
         
@@ -149,12 +137,7 @@ export const useTraineeDashboard = () => {
           completedCount++;
           totalPoints += exercise.points;
         } else {
-          if (closeDate < now) {
-            submissionStatus = 'overdue';
-            overdueCount++;
-          } else {
-            submissionStatus = 'not_started';
-          }
+          submissionStatus = 'not_started';
         }
 
         processedExercises.push({
@@ -163,8 +146,7 @@ export const useTraineeDashboard = () => {
           description: exercise.description,
           course_name: exercise.courses?.name || 'نامشخص',
           difficulty: exercise.difficulty,
-          due_date: dueDate.toISOString().split('T')[0],
-          open_date: openDate.toISOString().split('T')[0],
+
           estimated_time: exercise.estimated_time,
           points: exercise.points,
           submission_status: submissionStatus
@@ -174,7 +156,7 @@ export const useTraineeDashboard = () => {
       // Get upcoming exercises (not started, due soon)
       const upcoming = processedExercises
         .filter(ex => ex.submission_status === 'not_started')
-        .sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
+        .sort((a, b) => new Date(a.id).getTime() - new Date(b.id).getTime())
         .slice(0, 3);
 
       setStats({

@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+'use client';
+
+import { useRouter } from 'next/navigation';
+
 import {
   Card,
   CardContent,
@@ -11,30 +13,28 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, FileText, Award, Plus, Eye } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import CreateExerciseDialog from "@/components/dialogs/CreateExerciseDialog";
 import { useRecentSubmissions } from "@/hooks/useRecentSubmissions";
 import { useTrainerStats } from "@/hooks/useTrainerStats";
 
 const TrainerDashboard = () => {
-  const navigate = useNavigate();
-  const [showCreateExercise, setShowCreateExercise] = useState(false);
+  const router = useRouter();
   const { submissions, loading: submissionsLoading } = useRecentSubmissions();
   const { stats, loading: statsLoading } = useTrainerStats();
 
   const handleCreateExercise = () => {
-    setShowCreateExercise(true);
+    router.push("/trainer/exercises/create");
   };
 
   const handleManageCourses = () => {
-    navigate("/trainer/courses-management");
+    router.push("/trainer/courses-management");
   };
 
   const handleReviewSubmissions = () => {
-    navigate("/trainer/review-submissions");
+    router.push("/trainer/review-submissions");
   };
 
   const handleViewSubmission = (submissionId: string) => {
-    navigate(`/trainer/review-submissions?submission=${submissionId}`);
+    router.push(`/trainer/review-submissions?submission=${submissionId}`);
   };
 
   return (
@@ -189,14 +189,6 @@ const TrainerDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Create Exercise Dialog */}
-      {showCreateExercise && (
-        <CreateExerciseDialog
-          open={showCreateExercise}
-          onOpenChange={setShowCreateExercise}
-        />
-      )}
     </DashboardLayout>
   );
 };

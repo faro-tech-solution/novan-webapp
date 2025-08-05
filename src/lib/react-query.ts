@@ -18,7 +18,7 @@ export const queryClient = new QueryClient({
 });
 
 // Add debugging for development
-if (import.meta.env.DEV) {
+if (process.env.NODE_ENV === 'development') {
   queryClient.getQueryCache().subscribe((event) => {
     if (event.type === 'added' || event.type === 'updated') {
       console.log(`%c[React Query] ${event.type.toUpperCase()}`, 'color: #10b981; font-weight: bold;', {

@@ -2,7 +2,9 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UseFormReturn } from 'react-hook-form';
 import { CreateExerciseFormData } from './CreateExerciseForm';
-import { Course } from '@/types/exercise';
+import { Course } from '@/types/course';
+import { useExerciseCategoriesQuery } from '@/hooks/queries/useExerciseCategoriesQuery';
+import { useEffect } from 'react';
 
 interface CourseAndDifficultySectionProps {
   form: UseFormReturn<CreateExerciseFormData>;
@@ -10,6 +12,14 @@ interface CourseAndDifficultySectionProps {
 }
 
 export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficultySectionProps) => {
+  const selectedCourseId = form.watch("course_id");
+  const { categories = [] } = useExerciseCategoriesQuery(selectedCourseId);
+  
+  // Reset category when course changes
+  useEffect(() => {
+    form.setValue("category_id", "no-category");
+  }, [selectedCourseId, form]);
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormField
@@ -33,6 +43,38 @@ export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficult
                   courses.map((course) => (
                     <SelectItem key={course.id} value={course.id}>
                       {course.name}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="category_id"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>دسته‌بندی</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value || 'no-category'}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="انتخاب دسته‌بندی (اختیاری)" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="no-category">بدون دسته‌بندی</SelectItem>
+                {categories.length === 0 ? (
+                  <SelectItem value="no-categories" disabled>
+                    هیچ دسته‌بندی برای این دوره یافت نشد
+                  </SelectItem>
+                ) : (
+                  categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
                     </SelectItem>
                   ))
                 )}

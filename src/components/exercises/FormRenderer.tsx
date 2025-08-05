@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -67,12 +67,12 @@ export const FormRenderer: React.FC<FormRendererProps> = ({
           )}
 
           {question.type === 'textbox' && (
-            <Textarea
+            <RichTextEditor
               value={answer as string}
-              onChange={(e) => updateAnswer(question.id, e.target.value)}
+              onChange={(value) => updateAnswer(question.id, value)}
               placeholder={question.placeholder}
-              rows={4}
-              disabled={disabled}
+              height="120px"
+              readOnly={disabled}
             />
           )}
 

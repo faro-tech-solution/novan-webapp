@@ -25,7 +25,7 @@ export const StudentsTable = ({
 
   const formatJoinDate = (dateString: string) => {
     try {
-      return formatDate(dateString);
+      return formatDate({dateString});
     } catch (error) {
       console.error('Error formatting date:', error);
       return dateString;

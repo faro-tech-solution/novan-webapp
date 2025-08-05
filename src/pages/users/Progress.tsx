@@ -46,7 +46,7 @@ const Progress = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 font-peyda">گزارش پیشرفت</h2>
+            <h2 className="text-2xl font-bold text-gray-900 font-yekanbakh">گزارش پیشرفت</h2>
             <p className="text-gray-600">تحلیل عملکرد و پیشرفت یادگیری شما (مادام‌العمر)</p>
           </div>
         </div>

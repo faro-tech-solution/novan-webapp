@@ -25,9 +25,9 @@ import { Tables } from "@/integrations/supabase/types";
 
 type CourseEnrollment = Tables<"course_enrollments"> & {
   profiles?: {
-    first_name: string;
-    last_name: string;
-    email: string;
+    first_name: string | null;
+    last_name: string | null;
+    email: string | null;
   };
 };
 

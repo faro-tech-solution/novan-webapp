@@ -1,5 +1,9 @@
+'use client';
+
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +29,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [isPasswordStrong, setIsPasswordStrong] = useState(false);
   const { register } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,7 +75,7 @@ const Register = () => {
           description:
             "لطفا ایمیل خود را بررسی کنید و حساب کاربری را تایید کنید.",
         });
-        navigate("/");
+        router.push("/");
       }
     } catch {
       toast({
@@ -91,7 +95,7 @@ const Register = () => {
       <div className="flex items-center justify-center py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="font-peyda">ثبت نام</CardTitle>
+            <CardTitle className="font-yekanbakh">ثبت نام</CardTitle>
             <CardDescription>در پلتفرم یادگیری ما عضو شوید</CardDescription>
           </CardHeader>
           <CardContent>
@@ -168,7 +172,7 @@ const Register = () => {
             <div className="mt-4 text-center text-sm">
               <span className="text-gray-600">قبلا ثبت نام کرده‌اید؟ </span>
               <Link
-                to="/"
+                href={"/"}
                 className="text-teal-600 hover:text-teal-700 font-medium"
               >
                 ورود

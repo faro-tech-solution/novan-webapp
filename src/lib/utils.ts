@@ -1,17 +1,26 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import moment from "moment";
+import "moment/locale/fa";
+import jMoment from "moment-jalaali";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDate(dateString: string, locale = 'fa-IR') {
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date)
+export function formatDate({
+  dateString,
+  format = 'jYYYY/jMM/jDD - HH:mm',
+  locale = 'fa',
+}: {
+  dateString: string;
+  format?: string;
+  locale?: string;
+}) {
+  if (locale === 'fa') {
+    return jMoment(dateString).locale('fa').format(format);
+  }
+  return moment(dateString).format('LLL');
 }
 
 export function formatNumber(number: number, locale = 'fa-IR') {

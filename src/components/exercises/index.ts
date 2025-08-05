@@ -1,7 +1,6 @@
 export { BasicInfoSection } from './BasicInfoSection';
 export { CourseAndDifficultySection } from './CourseAndDifficultySection';
 export { CreateExerciseForm } from './CreateExerciseForm';
-export { EditExerciseDialog } from './EditExerciseDialog';
 export { ExerciseDetailHeader } from './ExerciseDetailHeader';
 export { ExerciseFilters } from './ExerciseFilters';
 export { ExerciseInfoCard } from './ExerciseInfoCard';
@@ -12,9 +11,10 @@ export { FormBuilder } from './FormBuilder';
 export { FormRenderer } from './FormRenderer';
 export { GradingSection } from './GradingSection';
 export { InstructorFormView } from './InstructorFormView';
-export { MyExerciseFilters } from './MyExerciseFilters';
-export { MyExerciseStatsCards } from './MyExerciseStatsCards';
+
 export { MyExerciseTable } from './MyExerciseTable';
+export { ExerciseCard } from './ExerciseCard';
+export { CategorizedMyExercises } from './CategorizedMyExercises';
 export { ReviewSubmissionsHeader } from './ReviewSubmissionsHeader';
 export { SubmissionCard } from './SubmissionCard';
 export { SubmissionDetailView } from './SubmissionDetailView';
@@ -26,4 +26,7 @@ export { TraineeFeedbackDisplay } from './TraineeFeedbackDisplay';
 export { VideoPlayer } from './VideoPlayer';
 export { AudioPlayer } from './AudioPlayer';
 export { SimpleExerciseCompletion } from './SimpleExerciseCompletion';
+export { SpotPlayerVideo } from './SpotPlayerVideo';
+export { IframePlayer } from './IframePlayer';
 export { ExerciseTypeSection } from './ExerciseTypeSection';
+export { ExerciseConversation } from './ExerciseConversation';

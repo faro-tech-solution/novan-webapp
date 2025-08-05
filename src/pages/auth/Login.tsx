@@ -1,5 +1,9 @@
+'use client';
+
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import Link from 'next/link';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,8 +25,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { login, profile } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   // Add debugging logs
@@ -32,22 +37,22 @@ const Login = () => {
   useEffect(() => {
     if (profile) {
       // If redirected from a protected route, go back to that route
-      const from = location.state?.from;
+      const from = searchParams?.get('from');
       if (from) {
-        navigate(from, { replace: true });
+        router.replace(decodeURIComponent(from));
         return;
       }
       // Otherwise, go to dashboard by role
-      navigate(getDashboardPathForRole(profile.role));
+      router.push(getDashboardPathForRole(profile.role));
     }
-  }, [profile, navigate, location.state]);
+  }, [profile, router, searchParams]);
 
   // Redirect from /login to / for backward compatibility
   useEffect(() => {
-    if (location.pathname === "/") {
-      navigate("/", { replace: true });
+    if (pathname === "/") {
+      router.replace("/");
     }
-  }, [location.pathname, navigate]);
+  }, [pathname, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +96,7 @@ const Login = () => {
       <div className="flex items-center justify-center py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="font-peyda">ورود</CardTitle>
+            <CardTitle className="font-yekanbakh">ورود</CardTitle>
             <CardDescription>
               اطلاعات خود را وارد کنید تا به داشبورد دسترسی پیدا کنید
             </CardDescription>
@@ -120,7 +125,7 @@ const Login = () => {
                 />
                 <div className="text-left mt-1">
                   <Link
-                    to="/forget_password"
+                    href="/forget_password"
                     className="text-xs text-teal-600 hover:text-teal-700 underline"
                   >
                     رمز عبور را فراموش کرده‌اید؟
@@ -136,7 +141,7 @@ const Login = () => {
             <div className="mt-4 text-center text-sm">
               <span className="text-gray-600">حساب ندارید؟ </span>
               <Link
-                to="/register"
+                href="/register"
                 className="text-teal-600 hover:text-teal-700 font-medium"
               >
                 ثبت نام

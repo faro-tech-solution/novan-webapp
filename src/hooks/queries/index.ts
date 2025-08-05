@@ -15,8 +15,7 @@ export * from './useProfileQuery';
 export * from './useProgressQuery';
 export * from './useTraineeDashboardQuery';
 
-// Groups and Courses
-export * from './useGroupsQuery';
+// Courses
 export * from './useCoursesQuery';
 export * from './useStudentCoursesQuery';
 

@@ -14,7 +14,7 @@ import {
   ListChecks,
   UserCog,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from 'next/link';
 
 const AdminDashboard = () => {
   return (
@@ -22,7 +22,7 @@ const AdminDashboard = () => {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 font-peyda">
+          <h2 className="text-2xl font-bold text-gray-900 font-yekanbakh">
             پنل مدیریت سیستم
           </h2>
           <p className="text-gray-600">مدیریت سیستم آموزشی</p>
@@ -40,27 +40,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">مدیریت</div>
               <p className="text-xs text-muted-foreground">کاربران و نقش‌ها</p>
-              <Link to="/admin/user-management">
-                <Button variant="outline" size="sm" className="mt-2">
-                  مشاهده
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                مدیریت گروه‌ها
-              </CardTitle>
-              <UserCog className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">گروه‌ها</div>
-              <p className="text-xs text-muted-foreground">
-                ایجاد و مدیریت گروه‌ها
-              </p>
-              <Link to="/admin/group-management">
+              <Link href="/admin/user-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -78,7 +58,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">دوره‌ها</div>
               <p className="text-xs text-muted-foreground">ایجاد و مدیریت</p>
-              <Link to="/admin/courses-management">
+              <Link href="/admin/courses-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -94,7 +74,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">لیست</div>
               <p className="text-xs text-muted-foreground">مشاهده دانشجویان</p>
-              <Link to="/admin/students">
+              <Link href="/admin/students">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -112,7 +92,7 @@ const AdminDashboard = () => {
               <p className="text-xs text-muted-foreground">
                 تمرین‌ها و آزمون‌ها
               </p>
-              <Link to="/admin/exercises">
+              <Link href="/admin/exercises">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -120,45 +100,9 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                وظایف روزانه
-              </CardTitle>
-              <ListChecks className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">مدیریت</div>
-              <p className="text-xs text-muted-foreground">
-                مدیریت وظایف روزانه
-              </p>
-              <Link to="/daily-activities-management">
-                <Button variant="outline" size="sm" className="mt-2">
-                  مشاهده
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                مدیریت وظایف
-              </CardTitle>
-              <ListChecks className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">وظایف</div>
-              <p className="text-xs text-muted-foreground">
-                تعریف و مدیریت وظایف تیم
-              </p>
-              <Link to="/admin/tasks-management">
-                <Button variant="outline" size="sm" className="mt-2">
-                  مشاهده
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+
+
         </div>
       </div>
     </DashboardLayout>

@@ -23,6 +23,20 @@ const parseFormStructure = (form_structure: any): ExerciseForm => {
 
 export const updateExercise = async (exerciseId: string, exerciseData: CreateExerciseData): Promise<Exercise> => {
   try {
+    const metadata: any = {};
+    
+    // Add SpotPlayer metadata if it's a SpotPlayer exercise
+    if (exerciseData.exercise_type === 'spotplayer') {
+      if (exerciseData.spotplayer_course_id) {
+        metadata.spotplayer_course_id = exerciseData.spotplayer_course_id;
+      }
+      if (exerciseData.spotplayer_item_id) {
+        metadata.spotplayer_item_id = exerciseData.spotplayer_item_id;
+      }
+    }
+
+
+
     const { data, error } = await supabase
       .from('exercises')
       .update({
@@ -32,15 +46,15 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
         estimated_time: exerciseData.estimatedTime,
         points: exerciseData.points,
         course_id: exerciseData.courseId,
-        days_to_open: exerciseData.daysToOpen,
-        days_to_due: exerciseData.daysToDue,
-        days_to_close: exerciseData.daysToClose,
+
         exercise_type: exerciseData.exercise_type,
         content_url: exerciseData.content_url,
+        iframe_html: exerciseData.iframe_html,
         auto_grade: exerciseData.auto_grade,
         form_structure: JSON.stringify(exerciseData.formStructure),
+        metadata: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null,
         updated_at: new Date().toISOString(),
-      })
+      } as any)
       .eq('id', exerciseId)
       .select()
       .single();
@@ -57,7 +71,7 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
     return {
       ...data,
       form_structure: parseFormStructure(data.form_structure)
-    } as Exercise;
+    } as unknown as Exercise;
   } catch (error) {
     console.error('Error in updateExercise:', error);
     throw error;

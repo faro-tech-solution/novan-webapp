@@ -13,7 +13,7 @@ const WelcomeCard: React.FC = () => {
     <div className="flex flex-col md:flex-row items-center bg-white rounded-2xl shadow p-1" style={{ minHeight: 260 }}>
       {/* Left: Greeting and Awards */}
       <div className="flex-1 min-w-0 p-4 md:p-8">
-        <h2 className="text-3xl font-bold mb-4 font-peyda text-gray-800">
+        <h2 className="text-3xl font-bold mb-4 font-yekanbakh text-gray-800">
           {tCommon('hi')}, {profile ? `${profile.first_name} ${profile.last_name}` : 'Student'}!
         </h2>
         {/* Awards Section */}

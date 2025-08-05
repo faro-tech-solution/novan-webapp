@@ -1,6 +1,9 @@
+'use client';
+
 import React, { useState } from "react";
 import { CheckCircle, AlertCircle } from "lucide-react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useRouter } from 'next/navigation';
+
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { FormAnswer } from "@/types/formBuilder";
@@ -9,15 +12,19 @@ import { ExerciseInfoCard } from "@/components/exercises/ExerciseInfoCard";
 import { TraineeExerciseForm } from "@/components/exercises/TraineeExerciseForm";
 import { TraineeFeedbackDisplay } from "@/components/exercises/TraineeFeedbackDisplay";
 import { InstructorFormView } from "@/components/exercises/InstructorFormView";
+import { ExerciseConversation } from "@/components/exercises/ExerciseConversation";
+import { StorageTest } from "@/components/debug/StorageTest";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   useExerciseDetailQuery,
   useSubmitExerciseMutation,
 } from "@/hooks/queries/useExerciseDetailQuery";
+import { Submission } from "@/types/reviewSubmissions";
 
 const ExerciseDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const params = useParams();
+  const id = params?.id as string;
+  const router = useRouter();
   const { profile, user } = useAuth();
   const [answers, setAnswers] = useState<FormAnswer[]>([]);
 
@@ -35,6 +42,37 @@ const ExerciseDetail = () => {
     }
   }, [exercise?.submission_answers]);
 
+  // Create submission object for conversation component
+  const createSubmissionObject = (): Submission | null => {
+    if (!exercise || !exercise.submission_id || !user) return null;
+    
+    return {
+      id: exercise.submission_id,
+      exercise_id: exercise.id,
+      student_id: user.id,
+      submitted_at: new Date().toISOString(), // This would ideally come from the submission data
+      score: exercise.score || null,
+      feedback: exercise.feedback || null,
+      graded_at: null,
+      graded_by: null,
+      solution: JSON.stringify(exercise.submission_answers || []),
+      student: {
+        first_name: profile?.first_name || '',
+        last_name: profile?.last_name || '',
+        email: profile?.email || ''
+      },
+      exercise: {
+        id: exercise.id,
+        title: exercise.title,
+        points: exercise.points,
+        form_structure: exercise.form_structure || null,
+        course_id: exercise.course_id,
+        exercise_type: exercise.exercise_type as 'form' | 'video' | 'audio' | 'simple',
+        auto_grade: exercise.auto_grade
+      }
+    };
+  };
+
   const handleSubmit = async (feedback?: string) => {
     if (!exercise || !user || !profile) return;
 
@@ -50,9 +88,9 @@ const ExerciseDetail = () => {
         onSuccess: () => {
           // Navigate to the correct trainee URL structure
           if (profile?.role === "trainee" && exercise.course_id) {
-            navigate(`/trainee/${exercise.course_id}/my-exercises`);
+            router.push(`/trainee/${exercise.course_id}/my-exercises`);
           } else {
-            navigate("/my-exercises");
+            router.push("/my-exercises");
           }
         },
       }
@@ -79,7 +117,7 @@ const ExerciseDetail = () => {
           <p className="text-red-600">
             {error instanceof Error ? error.message : "تمرین یافت نشد"}
           </p>
-          <button onClick={() => navigate(-1)} className="mt-4">
+          <button onClick={() => router.back()} className="mt-4">
             بازگشت
           </button>
         </div>
@@ -91,7 +129,7 @@ const ExerciseDetail = () => {
     <DashboardLayout title="جزئیات تمرین">
       <div className="max-w-4xl mx-auto space-y-6">
         <ExerciseDetailHeader
-          onBack={() => navigate(-1)}
+          onBack={() => router.back()}
           difficulty={exercise.difficulty}
           estimatedTime={exercise.estimated_time}
           points={exercise.points}
@@ -101,8 +139,6 @@ const ExerciseDetail = () => {
         <ExerciseInfoCard
           title={exercise.title}
           courseName={exercise.course_name}
-          openDate={exercise.open_date}
-          dueDate={exercise.due_date}
           description={exercise.description}
         />
 
@@ -140,6 +176,7 @@ const ExerciseDetail = () => {
               onAnswersChange={setAnswers}
               onSubmit={handleSubmit}
               submitting={submitMutation.isPending}
+              userId={user?.id}
             />
           )}
 
@@ -193,6 +230,25 @@ const ExerciseDetail = () => {
                   />
                 </div>
               </div>
+            ) : exercise.exercise_type === "iframe" && exercise.iframe_html ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">محتوای تمرین iframe</h3>
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <div className="mb-4">
+                    <h4 className="font-medium text-sm text-gray-700 mb-2">کد HTML iframe:</h4>
+                    <div className="bg-white p-3 rounded border">
+                      <pre className="text-xs overflow-x-auto whitespace-pre-wrap break-all max-h-32 overflow-y-auto">
+                        {exercise.iframe_html}
+                      </pre>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-md overflow-hidden border">
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: exercise.iframe_html }}
+                    />
+                  </div>
+                </div>
+              </div>
             ) : exercise.exercise_type === "simple" ? (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">محتوای تمرین ساده</h3>
@@ -200,6 +256,25 @@ const ExerciseDetail = () => {
                   <p>
                     این یک تمرین ساده است که دانشجویان با کلیک روی دکمه «تکمیل
                     تمرین» آن را تکمیل می‌کنند.
+                  </p>
+                </div>
+              </div>
+            ) : exercise.exercise_type === "spotplayer" ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">محتوای تمرین SpotPlayer</h3>
+                <div className="bg-gray-50 p-4 rounded-md space-y-3">
+                  <div>
+                    <p className="font-medium text-sm text-gray-700">شناسه دوره SpotPlayer:</p>
+                    <p className="text-gray-900 font-mono">{exercise.metadata?.spotplayer_course_id || 'تعریف نشده'}</p>
+                  </div>
+                  {exercise.metadata?.spotplayer_item_id && (
+                    <div>
+                      <p className="font-medium text-sm text-gray-700">شناسه آیتم SpotPlayer:</p>
+                      <p className="text-gray-900 font-mono">{exercise.metadata.spotplayer_item_id}</p>
+                    </div>
+                  )}
+                  <p className="text-sm text-gray-600">
+                    این تمرین از پلتفرم SpotPlayer استفاده می‌کند. دانشجویان برای مشاهده ویدیو نیاز به لایسنس معتبر دارند.
                   </p>
                 </div>
               </div>
@@ -226,6 +301,17 @@ const ExerciseDetail = () => {
               </p>
             </div>
           </>
+        )}
+
+        {/* Storage Test (Temporary) */}
+        <StorageTest />
+        
+        {/* Exercise Conversation */}
+        {exercise.submission_id && createSubmissionObject() && (
+          <ExerciseConversation
+            submission={createSubmissionObject()!}
+            variant="full"
+          />
         )}
       </div>
     </DashboardLayout>

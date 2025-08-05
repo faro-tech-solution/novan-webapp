@@ -44,12 +44,12 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         points,
         estimated_time,
         created_at,
-        days_to_open,
-        days_to_due,
         exercise_type,
         content_url,
+        iframe_html,
         auto_grade,
         form_structure,
+        metadata,
         courses (
           name
         )
@@ -68,21 +68,12 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
 
     const typedExercise = exercise as unknown as ExerciseWithCourse;
 
-    // Calculate dates dynamically based on created_at + days_to_open/days_to_due
-    const createdDate = new Date(typedExercise.created_at);
-    const daysToOpen = typedExercise.days_to_open || 0;
-    const daysToDue = typedExercise.days_to_due || 7;
-    
-    const openDate = new Date(createdDate);
-    openDate.setDate(openDate.getDate() + daysToOpen);
-    
-    const dueDate = new Date(createdDate);
-    dueDate.setDate(dueDate.getDate() + daysToDue);
+
 
     // Get submission if exists
     const { data: submission, error: submissionError } = await supabase
       .from('exercise_submissions')
-      .select('solution, feedback, score, submitted_at, auto_graded, completion_percentage')
+              .select('id, solution, feedback, score, submitted_at')
       .eq('exercise_id', exerciseId)
       .eq('student_id', userId)
       .maybeSingle(); // Use maybeSingle instead of single to handle cases where no submission exists
@@ -94,7 +85,6 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     const typedSubmission = submission as unknown as ExerciseSubmission | null;
 
     // Determine submission status
-    const now = new Date();
     let submissionStatus: SubmissionStatusType = 'not_started';
     
     if (typedSubmission) {
@@ -103,8 +93,6 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       } else {
         submissionStatus = 'pending';
       }
-    } else if (now > dueDate) {
-      submissionStatus = 'overdue';
     }
 
     // Parse submission answers if they exist
@@ -142,18 +130,20 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       difficulty: typedExercise.difficulty,
       points: typedExercise.points,
       estimated_time: typedExercise.estimated_time,
-      open_date: openDate.toISOString(),
-      due_date: dueDate.toISOString(),
+
       submission_status: submissionStatus,
       exercise_type: typedExercise.exercise_type,
       content_url: typedExercise.content_url,
+      iframe_html: typedExercise.iframe_html,
       auto_grade: typedExercise.auto_grade,
       form_structure: form_structure,
       submission_answers: submissionAnswers,
       feedback: submissionFeedback || typedSubmission?.feedback || undefined,
       score: typedSubmission?.score || undefined,
-      completion_percentage: typedSubmission?.completion_percentage || 0,
-      auto_graded: typedSubmission?.auto_graded || false
+      submission_id: typedSubmission?.id || undefined,
+      metadata: typedExercise.metadata,
+      spotplayer_course_id: (typedExercise.metadata as any)?.spotplayer_course_id,
+      spotplayer_item_id: (typedExercise.metadata as any)?.spotplayer_item_id
     };
   } catch (error) {
     console.error('Error in fetchExerciseDetail:', error);
@@ -200,6 +190,8 @@ export const submitExerciseSolution = async (
     student_id: studentId,
     course_id: courseId, // Set course_id from parameter
     solution: finalSolution,
+    latest_answer: finalSolution, // Set latest_answer to the same value as solution
+    submission_status: 'pending', // Set default submission status
     submitted_at: new Date().toISOString()
   };
 
@@ -237,4 +229,19 @@ export const submitExerciseSolution = async (
 
   console.log('Solution submitted successfully');
   return { error: null };
+};
+
+/**
+ * Fetch conversation messages for a given exercise submission.
+ * @param submissionId The ID of the exercise submission
+ * @returns Array of conversation messages sorted by created_at ascending
+ */
+export const fetchSubmissionConversation = async (submissionId: string) => {
+  const { data, error } = await supabase
+    .from('exercise_submissions_conversation')
+    .select(`id, submission_id, sender_id, message, meta_data, created_at, sender:profiles(id, first_name, last_name, role)`)
+    .eq('submission_id', submissionId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
 };

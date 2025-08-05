@@ -3,7 +3,7 @@ import type { AccountingRecord, AccountingWithDetails, CreatePaymentData, Update
 
 export const accountingService = {
   // Get all accounting records with user and course details
-  async getAllRecords(): Promise<AccountingWithDetails[]> {
+  async getAllRecords(): Promise<AccountingWithDetails[] | any[]> {
     const { data, error } = await supabase
       .from('accounting')
       .select(`
@@ -18,7 +18,7 @@ export const accountingService = {
   },
 
   // Get accounting records for a specific user
-  async getUserRecords(userId: string): Promise<AccountingWithDetails[]> {
+  async getUserRecords(userId: string): Promise<AccountingWithDetails[] | any[]> {
     const { data, error } = await supabase
       .from('accounting')
       .select(`
@@ -45,10 +45,10 @@ export const accountingService = {
   },
 
   // Create a new payment record
-  async createPayment(paymentData: CreatePaymentData): Promise<AccountingRecord> {
+  async createPayment(paymentData: CreatePaymentData): Promise<AccountingRecord | any> {
     const { data, error } = await supabase
       .from('accounting')
-      .insert([paymentData])
+      .insert(paymentData)
       .select()
       .single();
 
@@ -58,7 +58,7 @@ export const accountingService = {
   },
 
   // Update a payment record
-  async updatePayment(id: string, paymentData: UpdatePaymentData): Promise<AccountingRecord> {
+  async updatePayment(id: string, paymentData: UpdatePaymentData): Promise<AccountingRecord | any> {
     const { data, error } = await supabase
       .from('accounting')
       .update(paymentData)
@@ -72,7 +72,7 @@ export const accountingService = {
   },
 
   // Get payment record by ID
-  async getPaymentById(id: string): Promise<AccountingWithDetails> {
+  async getPaymentById(id: string): Promise<AccountingWithDetails | any> {
     const { data, error } = await supabase
       .from('accounting')
       .select(`
@@ -89,7 +89,7 @@ export const accountingService = {
   },
 
   // Get payment records by course ID
-  async getCoursePayments(courseId: string): Promise<AccountingWithDetails[]> {
+  async getCoursePayments(courseId: string): Promise<AccountingWithDetails[] | any[]> {
     const { data, error } = await supabase
       .from('accounting')
       .select(`
@@ -105,7 +105,7 @@ export const accountingService = {
   },
 
   // Get student records for a specific student
-  async getStudentRecords(userId: string): Promise<AccountingWithDetails[]> {
+  async getStudentRecords(userId: string): Promise<AccountingWithDetails[] | any[]> {
     const { data, error } = await supabase
       .from('accounting')
       .select(`

@@ -1,5 +1,9 @@
+'use client';
+
 import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import Link from 'next/link';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,8 +25,9 @@ const ForgetPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const { resetPassword } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   // Password reset state
@@ -214,7 +219,7 @@ const ForgetPassword = () => {
         setStoredRefreshToken(null);
         // Clear the hash from URL and redirect to login
         window.history.replaceState(null, "", "/");
-        navigate("/");
+        router.push("/");
       }
     } finally {
       setUpdatePasswordLoading(false);
@@ -230,7 +235,7 @@ const ForgetPassword = () => {
         <div className="flex items-center justify-center py-12">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle className="font-peyda">تغییر رمز عبور</CardTitle>
+              <CardTitle className="font-yekanbakh">تغییر رمز عبور</CardTitle>
               <CardDescription>رمز عبور جدید خود را وارد کنید</CardDescription>
             </CardHeader>
             <CardContent>
@@ -287,7 +292,7 @@ const ForgetPassword = () => {
         <div className="flex items-center justify-center py-12">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle className="font-peyda">ایمیل ارسال شد</CardTitle>
+              <CardTitle className="font-yekanbakh">ایمیل ارسال شد</CardTitle>
               <CardDescription>
                 لینک بازیابی رمز عبور به ایمیل شما ارسال شد
               </CardDescription>
@@ -308,7 +313,7 @@ const ForgetPassword = () => {
                   درخواست مجدد
                 </Button>
                 <div className="text-sm">
-                  <Link to="/" className="text-teal-600 hover:text-teal-700">
+                  <Link href="/" className="text-teal-600 hover:text-teal-700">
                     بازگشت به صفحه ورود
                   </Link>
                 </div>
@@ -329,7 +334,7 @@ const ForgetPassword = () => {
       <div className="flex items-center justify-center py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="font-peyda">بازیابی رمز عبور</CardTitle>
+            <CardTitle className="font-yekanbakh">بازیابی رمز عبور</CardTitle>
             <CardDescription>
               ایمیل خود را وارد کنید تا لینک بازیابی رمز عبور برای شما ارسال شود
             </CardDescription>
@@ -354,7 +359,7 @@ const ForgetPassword = () => {
             </form>
 
             <div className="mt-4 text-center text-sm">
-              <Link to="/" className="text-teal-600 hover:text-teal-700">
+              <Link href="/" className="text-teal-600 hover:text-teal-700">
                 بازگشت به صفحه ورود
               </Link>
             </div>

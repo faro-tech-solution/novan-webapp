@@ -16,12 +16,12 @@ const formSchema = z.object({
   title: z.string().min(1, "عنوان تمرین الزامی است"),
   description: z.string().optional(),
   course_id: z.string().min(1, "انتخاب دوره الزامی است"),
+  category_id: z.string().optional(),
   difficulty: z.string().min(1, "انتخاب سطح دشواری الزامی است"),
-  days_to_open: z.number().min(0, "روز شروع باید 0 یا بیشتر باشد"),
-  days_duration: z.number().min(1, "مدت زمان باید حداقل 1 روز باشد"),
+
   points: z.number().min(0, "امتیاز باید 0 یا بیشتر باشد"),
   estimated_time: z.string().min(1, "زمان تخمینی الزامی است"),
-  exercise_type: z.enum(["form", "video", "audio", "simple"] as const),
+  exercise_type: z.enum(["form", "video", "audio", "simple", "spotplayer", "iframe"] as const),
   content_url: z
     .string()
     .url("آدرس محتوا باید URL معتبر باشد")
@@ -33,6 +33,9 @@ const formSchema = z.object({
       questions: z.array(z.any()),
     })
     .transform((val) => val as ExerciseForm),
+  spotplayer_course_id: z.string().optional(),
+  spotplayer_item_id: z.string().optional(),
+  iframe_html: z.string().optional(),
 });
 
 export type CreateExerciseFormData = z.infer<typeof formSchema>;
@@ -59,15 +62,18 @@ export const CreateExerciseForm = ({
       title: "",
       description: "",
       course_id: "",
+      category_id: "no-category",
       difficulty: "",
-      days_to_open: 1,
-      days_duration: 7,
+
       points: 100,
       estimated_time: "",
       exercise_type: "form",
       content_url: null,
       auto_grade: false,
       form_structure: { questions: [] },
+      spotplayer_course_id: "",
+      spotplayer_item_id: "",
+      iframe_html: "",
     },
   });
 

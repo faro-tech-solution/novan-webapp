@@ -1,9 +1,9 @@
 // Basic Instructor interface used in most components
 export interface Instructor {
   id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
 }
 
 // Instructor interface for card display

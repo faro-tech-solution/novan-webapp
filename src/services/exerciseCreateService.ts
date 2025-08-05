@@ -9,13 +9,14 @@ export interface CreateExerciseData {
   estimatedTime: string;
   points: number;
   courseId: string;
-  daysToOpen: number;
-  daysToDue: number;
-  daysToClose: number;
-  exercise_type: 'form' | 'video' | 'audio' | 'simple';
+
+  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'spotplayer' | 'iframe';
   content_url?: string | null;
+  iframe_html?: string | null;
   auto_grade: boolean;
   formStructure: ExerciseForm;
+  spotplayer_course_id?: string;
+  spotplayer_item_id?: string;
 }
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
@@ -38,6 +39,20 @@ const parseFormStructure = (form_structure: any): ExerciseForm => {
 
 export const createExercise = async (exerciseData: CreateExerciseData, createdBy: string): Promise<Exercise> => {
   try {
+    const metadata: any = {};
+    
+    // Add SpotPlayer metadata if it's a SpotPlayer exercise
+    if (exerciseData.exercise_type === 'spotplayer') {
+      if (exerciseData.spotplayer_course_id) {
+        metadata.spotplayer_course_id = exerciseData.spotplayer_course_id;
+      }
+      if (exerciseData.spotplayer_item_id) {
+        metadata.spotplayer_item_id = exerciseData.spotplayer_item_id;
+      }
+    }
+
+
+
     const requestData = {
       title: exerciseData.title,
       description: exerciseData.description || null,
@@ -45,13 +60,13 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       estimated_time: exerciseData.estimatedTime || '-',
       points: exerciseData.points,
       course_id: exerciseData.courseId,
-      days_to_open: exerciseData.daysToOpen,
-      days_to_due: exerciseData.daysToDue,
-      days_to_close: exerciseData.daysToClose,
+
       exercise_type: exerciseData.exercise_type,
       content_url: exerciseData.content_url,
+      iframe_html: exerciseData.iframe_html,
       auto_grade: exerciseData.auto_grade,
       form_structure: JSON.stringify(exerciseData.formStructure || { questions: [] }),
+      metadata: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null,
       created_by: createdBy,
     };
 
@@ -59,7 +74,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
 
     const { data, error } = await supabase
       .from('exercises')
-      .insert(requestData)
+      .insert(requestData as any)
       .select()
       .single();
 
@@ -75,7 +90,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
     return {
       ...data,
       form_structure: parseFormStructure(data.form_structure)
-    } as Exercise;
+    } as unknown as Exercise;
   } catch (error) {
     console.error('Error in createExercise:', error);
     throw error;

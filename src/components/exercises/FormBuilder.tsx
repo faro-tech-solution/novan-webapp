@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
@@ -205,11 +205,11 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({
 
         <div>
           <Label>توضیحات (اختیاری)</Label>
-          <Textarea
+          <RichTextEditor
             value={question.description || ''}
-            onChange={(e) => updateField('description', e.target.value)}
+            onChange={(value) => updateField('description', value)}
             placeholder="توضیحات اضافی برای سوال"
-            rows={2}
+            height="80px"
           />
         </div>
 

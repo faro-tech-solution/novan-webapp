@@ -1,5 +1,6 @@
 import { BookOpen } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+
 import { UpcomingExercise } from '@/types/exercise';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -57,7 +58,7 @@ export const UpcomingExercisesCard = ({ exercises, className = '' }: UpcomingExe
               const { bg, text, icon } = getDifficultyStyles(exercise.difficulty);
               return (
                 <Link
-                  to={`/${role}/exercise/${exercise.id}`}
+                  href={`/${role}/exercise/${exercise.id}`}
                   key={exercise.id}
                   className={`flex items-center rounded-xl px-3 py-2 ${bg} ${text} shadow-sm transition hover:scale-[1.02] hover:shadow-md focus:outline-none text-sm`}
                   style={{ textDecoration: 'none' }}

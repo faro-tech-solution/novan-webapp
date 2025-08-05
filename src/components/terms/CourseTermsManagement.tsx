@@ -238,10 +238,10 @@ const CourseTermsManagement = ({
                     {term.name}
                   </TableCell>
                   <TableCell className="text-right">
-                    {formatDate(term.start_date)}
+                    {formatDate({dateString: term.start_date})}
                   </TableCell>
                   <TableCell className="text-right">
-                    {formatDate(term.end_date)}
+                    {formatDate({dateString: term.end_date})}
                   </TableCell>
                   <TableCell className="text-right">
                     {term.max_students === 0 ? "نامحدود" : term.max_students}

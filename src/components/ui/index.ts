@@ -49,6 +49,9 @@ export { Toaster as UIToaster } from './toaster';
 export * from './toggle-group';
 export * from './toggle';
 export * from './tooltip';
+export * from './rich-text-editor';
+export * from './FileUpload';
+export * from './FilePreviewList';
 export { useToast, toast as uiToast } from './use-toast';
 
 // Custom UI components

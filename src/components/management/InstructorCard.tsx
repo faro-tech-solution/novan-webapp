@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+
 import { Star, Users, BookOpen } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { InstructorCard as InstructorCardType } from '@/types/instructor';
@@ -25,7 +26,7 @@ const InstructorCard = ({
           />
         </div>
         
-        <Link to={`/instructor/${id}`} className="group">
+        <Link href={`/instructor/${id}`} className="group">
           <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-teal-600 transition-colors">
             {first_name} {last_name}
           </h3>
@@ -74,7 +75,7 @@ const InstructorCard = ({
         </div>
         
         <Link
-          to={`/instructor/${id}`}
+          href={`/instructor/${id}`}
           className="inline-block px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors text-sm font-medium"
         >
           View Profile
