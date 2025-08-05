@@ -114,8 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               | "native") || undefined,
           telegram_id: data.telegram_id || undefined,
           whatsapp_id: data.whatsapp_id || undefined,
-          language_preference:
-            (data.language_preference as "fa" | "en") || "fa",
+          language_preference: (data as any).language_preference === "en" ? "en" : "fa",
         });
       }
     } catch (error) {

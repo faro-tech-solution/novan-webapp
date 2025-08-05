@@ -5,6 +5,7 @@ interface ConfirmDeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   course?: Course | null;
+  item?: any; // Generic item for other types
   title?: string;
   description?: string;
   onConfirmDelete: () => void;

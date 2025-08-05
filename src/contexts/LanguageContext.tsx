@@ -51,7 +51,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const { error } = await supabase
           .from("profiles")
-          .update({ language_preference: newLanguage })
+          .update({ language_preference: newLanguage } as any)
           .eq("id", user.id);
 
         if (error) {

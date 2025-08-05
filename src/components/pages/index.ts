@@ -20,4 +20,7 @@ export * from './users';
 export * from './accounting';
 
 // Shared/Utility Pages
-export * from './shared'; 
+export * from './shared';
+
+// Notifications
+export { default as NotificationsPage } from './notifications'; 

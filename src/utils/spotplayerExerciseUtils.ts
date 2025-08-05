@@ -35,7 +35,10 @@ export const createSpotPlayerExercise = async (params: CreateSpotPlayerExerciseP
         spotplayer_item_id: spotplayerData.spotplayer_item_id || null,
         spotplayer_license_key: spotplayerData.spotplayer_license_key || null,
         auto_create_license: spotplayerData.auto_create_license || false
-      }
+      },
+      days_to_close: 0,
+      days_to_due: 0,
+      days_to_open: 0
     };
 
     const { data, error } = await supabase

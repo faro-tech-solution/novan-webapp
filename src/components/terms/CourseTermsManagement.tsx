@@ -92,13 +92,17 @@ const CourseTermsManagement = ({
             return {
               ...term,
               student_count: count || 0,
+              max_students: term.max_students || 0,
             };
           })
         );
         setTerms(termsWithCounts);
       } else {
         // For trainers, don't fetch student counts
-        setTerms(termsData || []);
+        setTerms((termsData || []).map(term => ({
+          ...term,
+          max_students: term.max_students || 0,
+        })));
       }
     } catch (error) {
       console.error("Error fetching terms:", error);

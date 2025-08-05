@@ -47,6 +47,12 @@ export const useCoursesQuery = () => {
           return {
             ...course,
             student_count: count || 0,
+            instructor_id: (course as any).instructor_id || '',
+            status: (course as any).status || 'active',
+            max_students: (course as any).max_students || 0,
+            slug: (course as any).slug || '',
+            created_at: course.created_at || '',
+            updated_at: course.updated_at || '',
           };
         })
       );

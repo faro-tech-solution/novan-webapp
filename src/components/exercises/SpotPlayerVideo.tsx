@@ -35,7 +35,6 @@ interface SpotPlayerVideoProps {
 }
 
 export const SpotPlayerVideo: React.FC<SpotPlayerVideoProps> = ({
-  exerciseId,
   courseId,
   spotplayerCourseId,
   spotplayerItemId,

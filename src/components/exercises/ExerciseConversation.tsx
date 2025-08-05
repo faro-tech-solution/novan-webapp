@@ -98,7 +98,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
     };
   }, [conversation]);
 
-  const handleSendMessage = async (isComplete: boolean = false) => {
+  const handleSendMessage = async () => {
     if (!submissionId) return;
     let messageToSend = newMessage;
     const imageUrls: string[] = [];
@@ -147,12 +147,12 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
       }
     }
     
-          if (isTrainerOrAdmin) {
-        const scoreValue = scoreInput > 0 ? scoreInput : null;
-        gradeSubmissionMutation.mutate({
-          submissionId,
-          score: scoreValue,
-        }, {
+    if (isTrainerOrAdmin) {
+      const scoreValue = scoreInput > 0 ? scoreInput : null;
+      gradeSubmissionMutation.mutate({
+        submissionId,
+        score: scoreValue,
+      }, {
         onSuccess: () => {
           setNewMessage("");
           setSelectedFiles([]);
@@ -379,7 +379,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
               </button>
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 w-full"
-                onClick={() => handleSendMessage(true)}
+                onClick={() => handleSendMessage()}
                 disabled={isLoading}
               >
                 {isLoading
@@ -392,7 +392,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
           )}
           <button
             className="bg-teal-600 text-white px-4 py-2 rounded disabled:opacity-50 w-full"
-            onClick={() => handleSendMessage(false)}
+            onClick={() => handleSendMessage()}
             disabled={(!newMessage.trim() && !isTrainerOrAdmin) || isLoading}
           >
             {isLoading ? 'در حال ارسال...' : 'ارسال پاسخ'}

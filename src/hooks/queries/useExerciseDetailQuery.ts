@@ -102,8 +102,8 @@ export const useSendConversationMessage = () => {
   return useMutation({
     mutationFn: async ({ submissionId, message }: { submissionId: string; message: string }) => {
       if (!user) throw new Error('User not authenticated');
-      const { error } = await supabase
-        .from('exercise_submissions_conversation' as any)
+      const { error } = await (supabase as any)
+        .from('exercise_submissions_conversation')
         .insert([
           {
             submission_id: submissionId,

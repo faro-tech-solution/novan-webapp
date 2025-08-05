@@ -45,7 +45,17 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
         setProfileNotFound(true);
         setProfile(null);
       } else {
-        setProfile(profileData as StudentProfile);
+        setProfile({
+          ...profileData,
+          first_name: profileData.first_name || '',
+          last_name: profileData.last_name || '',
+          email: profileData.email || '',
+          role: profileData.role || '',
+          class_id: profileData.class_id || '',
+          class_name: profileData.class_name || '',
+          created_at: profileData.created_at || '',
+          is_demo: profileData.is_demo === null ? undefined : profileData.is_demo,
+        });
       }
 
       // Fetch student enrollments

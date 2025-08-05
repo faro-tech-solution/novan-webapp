@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Exercise } from '@/types/exercise';
+import { ExerciseForm } from '@/types/formBuilder';
 import { fetchCourses, fetchExercises, createExercise, updateExercise, deleteExercise } from '@/services/exerciseService';
 import { useStableAuth } from '@/hooks/useStableAuth';
 
@@ -30,7 +31,7 @@ export const useExercisesQuery = (courseId?: string) => {
       if (!user) throw new Error('کاربر وارد نشده است');
       return await createExercise({
         title: exerciseData.title || '',
-        description: exerciseData.description,
+        description: exerciseData.description || undefined,
         difficulty: exerciseData.difficulty || '',
         estimatedTime: exerciseData.estimated_time || '',
         points: exerciseData.points || 0,
@@ -40,7 +41,12 @@ export const useExercisesQuery = (courseId?: string) => {
         content_url: exerciseData.content_url,
         iframe_html: exerciseData.iframe_html,
         auto_grade: exerciseData.auto_grade || false,
-        formStructure: exerciseData.form_structure || { questions: [] },
+        formStructure:
+          exerciseData.form_structure &&
+          typeof exerciseData.form_structure === 'object' &&
+          Array.isArray((exerciseData.form_structure as any).questions)
+            ? (exerciseData.form_structure as ExerciseForm)
+            : { questions: [] },
         spotplayer_course_id: exerciseData.spotplayer_course_id,
         spotplayer_item_id: exerciseData.spotplayer_item_id,
         arvan_video_id: exerciseData.arvan_video_id
@@ -56,7 +62,7 @@ export const useExercisesQuery = (courseId?: string) => {
       if (!user) throw new Error('کاربر وارد نشده است');
       return await updateExercise(id, {
         title: data.title || '',
-        description: data.description,
+        description: data.description || undefined,
         difficulty: data.difficulty || '',
         estimatedTime: data.estimated_time || '',
         points: data.points || 0,
@@ -66,7 +72,12 @@ export const useExercisesQuery = (courseId?: string) => {
         content_url: data.content_url,
         iframe_html: data.iframe_html,
         auto_grade: data.auto_grade || false,
-        formStructure: data.form_structure || { questions: [] },
+        formStructure:
+          data.form_structure &&
+          typeof data.form_structure === 'object' &&
+          Array.isArray((data.form_structure as any).questions)
+            ? (data.form_structure as ExerciseForm)
+            : { questions: [] },
         spotplayer_course_id: data.spotplayer_course_id,
         spotplayer_item_id: data.spotplayer_item_id,
         arvan_video_id: data.arvan_video_id

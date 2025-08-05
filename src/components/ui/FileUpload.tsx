@@ -19,7 +19,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   resetKey = 0,
   accept = 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx',
   multiple = true,
-  maxFiles = 5,
+  maxFiles = 5
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 

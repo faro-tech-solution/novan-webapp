@@ -10,9 +10,7 @@ const Students = () => {
   const [courseFilter, setCourseFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showDemoUsers, setShowDemoUsers] = useState(false);
-
-  const { students, loading, error } =
-    useStudentsQuery();
+  const { students, loading, error } = useStudentsQuery();
 
   // Extract unique course names for filter
   const courses = [...new Set(students.map((s) => s.courseName))];
