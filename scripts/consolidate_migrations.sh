@@ -5,7 +5,8 @@
 
 set -e
 
-WORKSPACE_DIR="/Users/hamidtadayoni/Documents/PROJECTS/personal/screenshot-showcase-tutorials"
+# Configuration
+WORKSPACE_DIR="/Users/hamidtadayoni/Documents/PROJECTS/personal/novan-webapp"
 SUPABASE_DIR="$WORKSPACE_DIR/supabase/migrations"
 CONSOLIDATED_DIR="$WORKSPACE_DIR/supabase/migrations-consolidated"
 MIGRATIONS_DIR="$WORKSPACE_DIR/migrations"

@@ -5,7 +5,8 @@
 
 set -e
 
-WORKSPACE_DIR="/Users/hamidtadayoni/Documents/PROJECTS/personal/screenshot-showcase-tutorials"
+# Configuration
+WORKSPACE_DIR="/Users/hamidtadayoni/Documents/PROJECTS/personal/novan-webapp"
 
 echo "🔍 Verifying Migration Organization..."
 echo "====================================="

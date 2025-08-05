@@ -5,8 +5,8 @@ const translations = {
   // Common UI elements
   common: {
     portalName: {
-      fa: 'پورتال آموزش فاروباکس',
-      en: 'FaroBox Learning Portal'
+      fa: 'نووان وب‌اپ',
+      en: 'Novan WebApp'
     },
     home: {
       fa: 'خانه',

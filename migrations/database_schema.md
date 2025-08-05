@@ -1,7 +1,6 @@
 # Database Schema Documentation
 
-## Overview
-This document describes the complete database schema for the screenshot-showcase-tutorials application. The database uses PostgreSQL with Supabase and includes tables for user management, exercises, courses, achievements, notifications, and more.
+This document describes the complete database schema for the novan-webapp application. The database uses PostgreSQL with Supabase and includes tables for user management, exercises, courses, achievements, notifications, and more.
 
 ## Table Structure
 

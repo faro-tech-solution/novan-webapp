@@ -5,8 +5,9 @@
 
 set -e
 
-SUPABASE_DIR="/Users/hamidtadayoni/Documents/PROJECTS/personal/screenshot-showcase-tutorials/supabase/migrations"
-ANALYSIS_FILE="/Users/hamidtadayoni/Documents/PROJECTS/personal/screenshot-showcase-tutorials/migration_analysis.txt"
+# Configuration
+SUPABASE_DIR="/Users/hamidtadayoni/Documents/PROJECTS/personal/novan-webapp/supabase/migrations"
+ANALYSIS_FILE="/Users/hamidtadayoni/Documents/PROJECTS/personal/novan-webapp/migration_analysis.txt"
 
 echo "🔍 Analyzing Supabase migrations for duplicates and consolidation opportunities..."
 echo "=================================================================================="
