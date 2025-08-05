@@ -270,7 +270,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
                 <div className="flex items-center gap-2 text-xs text-gray-400 mt-3">
                   <span className="font-bold">{msg.sender?.first_name} {msg.sender?.last_name}</span>
                   <span className="text-[10px] bg-gray-200 rounded px-1">دانشجو</span>
-                  <span>{formatDate(msg.created_at)}</span>
+                  <span>{formatDate({dateString: msg.created_at})}</span>
                 </div>
               </div>
             ) : (
@@ -287,7 +287,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
                 <div className="flex items-center gap-2 text-xs text-gray-400 mt-3">
                   <span className="font-bold">{msg.sender?.first_name} {msg.sender?.last_name}</span>
                   <span className="text-[10px] bg-gray-200 rounded px-1">{msg.sender?.role}</span>
-                  <span>{formatDate(msg.created_at)}</span>
+                  <span>{formatDate({dateString: msg.created_at})}</span>
                 </div>
               </div>
             );

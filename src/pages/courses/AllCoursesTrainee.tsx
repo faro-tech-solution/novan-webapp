@@ -39,7 +39,7 @@ const AllCoursesTrainee = () => {
       <div className="flex items-center justify-center py-12 min-h-[70vh]">
         <Card className="w-full max-w-3xl">
           <CardHeader>
-            <CardTitle className="font-peyda text-2xl text-center">دوره‌های آموزشی</CardTitle>
+            <CardTitle className="font-yekanbakh text-2xl text-center">دوره‌های آموزشی</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="mb-6" />

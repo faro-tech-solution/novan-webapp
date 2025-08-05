@@ -22,7 +22,7 @@ const AdminDashboard = () => {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 font-peyda">
+          <h2 className="text-2xl font-bold text-gray-900 font-yekanbakh">
             پنل مدیریت سیستم
           </h2>
           <p className="text-gray-600">مدیریت سیستم آموزشی</p>

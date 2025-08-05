@@ -95,7 +95,7 @@ const Register = () => {
       <div className="flex items-center justify-center py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="font-peyda">ثبت نام</CardTitle>
+            <CardTitle className="font-yekanbakh">ثبت نام</CardTitle>
             <CardDescription>در پلتفرم یادگیری ما عضو شوید</CardDescription>
           </CardHeader>
           <CardContent>

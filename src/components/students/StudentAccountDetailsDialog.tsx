@@ -70,7 +70,7 @@ export function StudentAccountDetailsDialog({
             <TableBody>
               {records?.map((record) => (
                 <TableRow key={record.id}>
-                  <TableCell>{formatDate(record.transaction_date)}</TableCell>
+                  <TableCell>{formatDate({dateString: record.transaction_date})}</TableCell>
                   <TableCell>{record.payment_type}</TableCell>
                   <TableCell>{record.course?.name || '-'}</TableCell>
                   <TableCell className={getAmountColor(record.payment_type)}>

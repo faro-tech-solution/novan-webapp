@@ -43,10 +43,10 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <style>
           {`
             .ql-editor {
-              font-family: 'Peyda', sans-serif !important;
+              font-family: 'YekanBakh', sans-serif !important;
             }
             .ql-container {
-              font-family: 'Peyda', sans-serif !important;
+              font-family: 'YekanBakh', sans-serif !important;
             }
             .ql-toolbar {
               border-top: none !important;

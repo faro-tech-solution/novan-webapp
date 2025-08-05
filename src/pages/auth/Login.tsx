@@ -96,7 +96,7 @@ const Login = () => {
       <div className="flex items-center justify-center py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="font-peyda">ورود</CardTitle>
+            <CardTitle className="font-yekanbakh">ورود</CardTitle>
             <CardDescription>
               اطلاعات خود را وارد کنید تا به داشبورد دسترسی پیدا کنید
             </CardDescription>

@@ -5,17 +5,25 @@
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
 @font-face {
-  font-family: 'Peyda';
-  src: url('/PeydaWeb-extralight.woff') format('woff');
-  font-weight: 200;
+  font-family: 'YekanBakh';
+  src: url('/YekanBakh/webfonts/woff/YekanBakhNoEn-Regular.woff') format('woff');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Peyda';
-  src: url('/PeydaWeb-Medium.woff') format('woff');
-  font-weight: 500;
+  font-family: 'YekanBakh';
+  src: url('/YekanBakh/webfonts/woff/YekanBakhNoEn-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'YekanBakh';
+  src: url('/YekanBakh/webfonts/woff/YekanBakhNoEn-ExtraBlack.woff') format('woff');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
@@ -108,7 +116,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Peyda', 'Tahoma', 'Arial', sans-serif;
+    font-family: 'YekanBakh', 'Tahoma', 'Arial', sans-serif;
     direction: rtl;
   }
 
@@ -124,7 +132,7 @@
 
 /* Custom styles for better Persian text rendering */
 .persian-text {
-  font-family: 'Peyda', 'Tahoma', 'Arial', sans-serif;
+  font-family: 'YekanBakh', 'Tahoma', 'Arial', sans-serif;
   line-height: 1.8;
 }
 

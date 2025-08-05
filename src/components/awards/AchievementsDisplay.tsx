@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Award as AwardType } from "@/services/awardsService";
 import { StudentAward } from "@/types/student";
 import { useAwardTranslation } from "@/utils/awardTranslationUtils";
+import { formatDate } from "@/lib/utils";
 
 interface AchievementsDisplayProps {
   allAwards: AwardType[];
@@ -70,13 +71,9 @@ const getRarityColor = (rarity: string) => {
     default:
       return "bg-slate-400";
   }
-};
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("fa-IR");
-};
-
-export const AchievementsDisplay = ({
+  };
+  
+  export const AchievementsDisplay = ({
   allAwards,
   studentAwards,
   showTitle = true,
@@ -150,7 +147,7 @@ export const AchievementsDisplay = ({
                   </div>
                   {isEarned && studentAward && (
                     <p className="text-xs text-green-600 mt-1">
-                      کسب شده در: {formatDate(studentAward.earned_at)}
+                      کسب شده در: {formatDate({dateString: studentAward.earned_at})}
                     </p>
                   )}
                   {!isEarned && (

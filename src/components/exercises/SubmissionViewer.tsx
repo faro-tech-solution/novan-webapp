@@ -55,7 +55,7 @@ export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({
             </div>
             <div className="flex justify-between items-center">
               <span className="font-medium">تاریخ ارسال:</span>
-              <span>{formatDate(submissionInfo.submittedAt)}</span>
+              <span>{formatDate({dateString: submissionInfo.submittedAt})}</span>
             </div>
             {submissionInfo.score !== undefined && (
               <div className="flex justify-between items-center">

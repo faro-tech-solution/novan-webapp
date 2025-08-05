@@ -60,7 +60,7 @@ export function AccountingTable({ records }: AccountingTableProps) {
               <TableCell>{record.description || '-'}</TableCell>
               <TableCell>{record.payment_status}</TableCell>
               <TableCell>{record.payment_type}</TableCell>
-              <TableCell>{formatDate(record.created_at)}</TableCell>
+              <TableCell>{formatDate({dateString: record.created_at})}</TableCell>
             </TableRow>
           ))}
         </TableBody>

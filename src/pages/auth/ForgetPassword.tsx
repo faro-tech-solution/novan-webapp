@@ -235,7 +235,7 @@ const ForgetPassword = () => {
         <div className="flex items-center justify-center py-12">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle className="font-peyda">تغییر رمز عبور</CardTitle>
+              <CardTitle className="font-yekanbakh">تغییر رمز عبور</CardTitle>
               <CardDescription>رمز عبور جدید خود را وارد کنید</CardDescription>
             </CardHeader>
             <CardContent>
@@ -292,7 +292,7 @@ const ForgetPassword = () => {
         <div className="flex items-center justify-center py-12">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle className="font-peyda">ایمیل ارسال شد</CardTitle>
+              <CardTitle className="font-yekanbakh">ایمیل ارسال شد</CardTitle>
               <CardDescription>
                 لینک بازیابی رمز عبور به ایمیل شما ارسال شد
               </CardDescription>
@@ -334,7 +334,7 @@ const ForgetPassword = () => {
       <div className="flex items-center justify-center py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="font-peyda">بازیابی رمز عبور</CardTitle>
+            <CardTitle className="font-yekanbakh">بازیابی رمز عبور</CardTitle>
             <CardDescription>
               ایمیل خود را وارد کنید تا لینک بازیابی رمز عبور برای شما ارسال شود
             </CardDescription>

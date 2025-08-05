@@ -11,6 +11,7 @@ import { StudentAward } from "@/types/student";
 import {
   useAwardTranslation,
 } from "@/utils/awardTranslationUtils";
+import { formatDate } from "@/lib/utils";
 
 interface AwardsCardProps {
   studentAwards: StudentAward[];
@@ -51,9 +52,7 @@ const getRarityIcon = (rarity: string) => {
   }
 };
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("fa-IR");
-};
+
 
 export const AwardsCard = ({ studentAwards, loading }: AwardsCardProps) => {
   const { translateAward } = useAwardTranslation();
@@ -112,7 +111,7 @@ export const AwardsCard = ({ studentAwards, loading }: AwardsCardProps) => {
                       }
                     </p>
                     <p className="text-xs text-gray-500">
-                      کسب شده در: {formatDate(studentAward.earned_at)}
+                      کسب شده در: {formatDate({dateString: studentAward.earned_at})}
                     </p>
                   </div>
                 </div>

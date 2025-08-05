@@ -127,7 +127,7 @@ export default function TicketConversation({ description, messages, onSend, disa
             <div key={msg.id} className="mt-5">
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <Calendar className="w-3 h-3 inline-block mr-1" />
-                {formatDate(msg.created_at)}
+                {formatDate({dateString: msg.created_at})}
                 <span className="ml-2 text-gray-700 font-semibold">{senderName}</span>
               </div>
               <div

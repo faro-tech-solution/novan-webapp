@@ -116,7 +116,7 @@ const StudentCourses = () => {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 font-peyda">دوره‌های من</h2>
+            <h2 className="text-2xl font-bold text-gray-900 font-yekanbakh">دوره‌های من</h2>
             <p className="text-gray-600">دوره‌هایی که در آن‌ها ثبت‌نام کرده‌اید</p>
           </div>
           

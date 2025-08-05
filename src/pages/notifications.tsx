@@ -1,13 +1,15 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
 import { NotificationService } from "@/services/notification.service";
 import { Notification } from "@/types/notification";
-import { useNavigate } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useNotificationTranslation } from "@/utils/notificationTranslationUtils";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import NotificationList from "@/components/notification/NotificationList";
+import { handleNotificationClick } from "@/utils/notificationUtils";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -15,6 +17,7 @@ export default function NotificationsPage() {
   const router = useRouter();
   const translateNotification = useNotificationTranslation();
 
+  console.log({notifications, loading})
   useEffect(() => {
     fetchNotifications();
 
@@ -51,35 +54,8 @@ export default function NotificationsPage() {
     }
   };
 
-  const handleNotificationClick = async (notification: Notification) => {
-    try {
-      if (!notification.is_read) {
-        await NotificationService.markAsRead(notification.id);
-        setNotifications(
-          notifications.map((n) =>
-            n.id === notification.id ? { ...n, is_read: true } : n
-          )
-        );
-      }
-
-      if (notification.link) {
-        router.push(notification.link);
-      }
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-    }
-  };
-
-  const getNotificationIcon = (type: Notification["type"]) => {
-    switch (type) {
-      case "exercise_feedback":
-        return "📝";
-      case "award_achieved":
-        return "🏆";
-      default:
-        return "📢";
-    }
-  };
+  const onNotificationClick = (notification: Notification) =>
+    handleNotificationClick(notification, setNotifications, (to: string) => router.push(to));
 
   if (loading) {
     return (
@@ -92,42 +68,21 @@ export default function NotificationsPage() {
   }
 
   return (
-    <DashboardLayout title="اعلانات">
-      <div className="space-y-4">
-        {notifications.length === 0 ? (
-          <div className="text-center text-muted-foreground py-8">
-            اعلانی وجود ندارد
-          </div>
-        ) : (
-          notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className={`p-4 rounded-lg border ${
-                !notification.is_read ? "bg-muted/50" : ""
-              } cursor-pointer hover:bg-muted/30 transition-colors`}
-              onClick={() => handleNotificationClick(notification)}
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">
-                  {notification.icon || getNotificationIcon(notification.type)}
-                </span>
-                <div className="flex-1">
-                  <h3 className="font-medium text-lg">
-                    {translateNotification(notification.title).title}
-                  </h3>
-                  {notification.description && (
-                    <p className="text-muted-foreground mt-1">
-                      {translateNotification(notification.description).title}
-                    </p>
-                  )}
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {format(new Date(notification.created_at), "PPp")}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
+    <DashboardLayout title={translateNotification('notifications_title').title}>
+      <div className="max-w-2xl mx-auto mt-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">{translateNotification('notifications_title').title}</CardTitle>
+            <CardDescription className="text-base">{translateNotification('notifications_subtitle').title}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <NotificationList
+              notifications={notifications}
+              loading={loading}
+              onNotificationClick={onNotificationClick}
+            />
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );

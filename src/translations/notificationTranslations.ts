@@ -20,12 +20,20 @@ const notificationTranslations: NotificationTranslations = {
       title: 'بازخورد جدید دریافت شد',
     }
   },
-  'new_award_achieved: first_submission': {
+  'first_submission': {
     'en': {
-      title: 'New Award Achieved: First Submission',
+      title: 'First Submission',
     },
     'fa': {
-      title: 'جایزه جدید کسب شد: تولد یک کدنویس',
+      title: 'اولین ارسال',
+    }
+  },
+  'feedback_received': {
+    'en': {
+      title: 'Feedback Received',
+    },
+    'fa': {
+      title: 'بازخورد دریافت شد',
     }
   },
   'new_award_achieved: perfect_score': {
@@ -59,6 +67,26 @@ const notificationTranslations: NotificationTranslations = {
     'fa': {
       title: 'تبریک! شما یک جایزه جدید کسب کردید.',
     }
+  },
+  'loading_notifications': {
+    'en': { title: 'Loading notifications...' },
+    'fa': { title: 'در حال بارگذاری اعلان‌ها...' }
+  },
+  'notifications_title': {
+    'en': { title: 'Notifications' },
+    'fa': { title: 'اعلان‌ها' }
+  },
+  'notifications_subtitle': {
+    'en': { title: 'All your recent notifications' },
+    'fa': { title: 'همه اعلان‌های اخیر شما' }
+  },
+  'no_notifications': {
+    'en': { title: 'No notifications available' },
+    'fa': { title: 'اعلانی وجود ندارد' }
+  },
+  'view_all_notifications': {
+    'en': { title: 'View all notifications' },
+    'fa': { title: 'مشاهده همه اعلان‌ها' }
   },
 };
 

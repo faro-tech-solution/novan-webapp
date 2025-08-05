@@ -30,7 +30,7 @@ export function StudentCoursesDialog({ open, onOpenChange, studentName, enrollme
                       ترم: {enrollment.course_terms?.name || 'عمومی'}
                     </p>
                     <p className="text-sm text-gray-500">
-                      تاریخ ثبت‌نام: {formatDate(enrollment.enrolled_at)}
+                      تاریخ ثبت‌نام: {formatDate({dateString: enrollment.enrolled_at})}
                     </p>
                   </div>
                   <Badge variant={enrollment.status === 'active' ? 'default' : 'secondary'}>

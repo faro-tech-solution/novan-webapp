@@ -148,7 +148,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
       <div className="max-w-4xl mx-auto space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-900 font-peyda">
+            <CardTitle className="text-2xl font-bold text-gray-900 font-yekanbakh">
               {exerciseId ? "ویرایش تمرین" : "ایجاد تمرین جدید"}
             </CardTitle>
             <CardDescription>
