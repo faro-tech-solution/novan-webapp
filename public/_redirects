@@ -1,2 +1,14 @@
-# Handle client-side routing
-/*    /index.html   200 
+# Handle Next.js static assets
+/_next/static/* /_next/static/:splat 200
+
+# Handle API routes
+/api/* /api/:splat 200
+
+# Handle Next.js image optimization
+/_next/image/* /_next/image/:splat 200
+
+# Handle Next.js data routes
+/_next/data/* /_next/data/:splat 200
+
+# Handle all other routes (SPA fallback)
+/* /index.html 200 

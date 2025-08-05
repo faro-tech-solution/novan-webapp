@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Upload, X } from 'lucide-react';
+import { Upload } from 'lucide-react';
 
 interface FileUploadProps {
   onFileChange: (files: File[]) => void;
@@ -19,8 +19,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   resetKey = 0,
   accept = 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx',
   multiple = true,
-  maxFiles = 5,
-  showPreview = true
+  maxFiles = 5
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 

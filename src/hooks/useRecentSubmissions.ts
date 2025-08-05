@@ -77,18 +77,20 @@ export const useRecentSubmissions = () => {
       if (error) throw error;
 
       // Transform the data
-      const transformedSubmissions: RecentSubmission[] = (data || []).map(submission => {
-        const timeAgo = getTimeAgo(new Date(submission.submitted_at));
-        
-        return {
-          id: submission.id,
-          student: submission.student_name,
-          exercise: submission.exercises?.title || 'نامشخص',
-          submitted: timeAgo,
-          score: submission.score,
-          exercise_id: submission.exercise_id
-        };
-      });
+      const transformedSubmissions: RecentSubmission[] = (data || [])
+        .filter(submission => typeof submission === 'object' && submission !== null && 'submitted_at' in submission && typeof (submission as any).submitted_at === 'string')
+        .map(submission => {
+          const s = submission as { submitted_at: string; [key: string]: any };
+          const timeAgo = getTimeAgo(new Date(s.submitted_at));
+          return {
+            id: s.id,
+            student: s.student_name,
+            exercise: s.exercises?.title || 'نامشخص',
+            submitted: timeAgo,
+            score: s.score,
+            exercise_id: s.exercise_id
+          };
+        });
 
       setSubmissions(transformedSubmissions);
     } catch (err) {

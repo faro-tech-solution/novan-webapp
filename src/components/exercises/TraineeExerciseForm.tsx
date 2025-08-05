@@ -58,9 +58,6 @@ export const TraineeExerciseForm = ({
     });
   }
   
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("fa-IR");
-  };
   const validateRequiredQuestions = (): boolean => {
     if (!exercise.form_structure?.questions) return true;
     const requiredQuestions = exercise.form_structure.questions.filter(

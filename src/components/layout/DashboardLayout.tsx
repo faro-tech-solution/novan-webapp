@@ -7,16 +7,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import Header from "./Header";
 import { useTranslation } from "@/utils/translations";
 import {
-  LayoutDashboard,
-  Users,
+  Home,
   BookOpen,
   FileText,
+  Users,
+  Settings,
   LogOut,
-  Award,
-  UserCog,
+  Bell,
   CheckCircle,
   Wallet,
-  Edit,
 } from "lucide-react";
 import {
   Sidebar,
@@ -51,7 +50,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   const trainerNavItems = [
     {
       href: "/trainer/dashboard",
-      icon: LayoutDashboard,
+      icon: Home,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
@@ -75,13 +74,13 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     },
     {
       href: "/trainer/students",
-      icon: Award,
+      icon: Bell,
       label: tSidebar("students"),
       key: "students",
     },
     {
       href: "/trainer/profile",
-      icon: UserCog,
+      icon: Settings,
       label: tSidebar("profile"),
       key: "profile",
     },
@@ -91,7 +90,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   const traineeNavItems = [
     {
       href: `/trainee/${courseId}/dashboard`,
-      icon: LayoutDashboard,
+      icon: Home,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
@@ -103,7 +102,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     },
     {
       href: `/trainee/${courseId}/progress`,
-      icon: Award,
+      icon: Bell,
       label: tSidebar("progress"),
       key: "progress",
     },
@@ -115,7 +114,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     },
     {
       href: `/trainee/${courseId}/profile`,
-      icon: UserCog,
+      icon: Settings,
       label: tSidebar("profile"),
       key: "profile",
     },
@@ -125,13 +124,13 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   const adminNavItems = [
     {
       href: "/admin/dashboard",
-      icon: LayoutDashboard,
+      icon: Home,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
     {
       href: "/admin/user-management",
-      icon: UserCog,
+      icon: Settings,
       label: tSidebar("userManagement"),
       key: "userManagement",
     },
@@ -143,7 +142,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     },
     {
       href: "/admin/students",
-      icon: Award,
+      icon: Bell,
       label: tSidebar("students"),
       key: "students",
     },
@@ -167,7 +166,7 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
     },
     {
       href: "/admin/profile",
-      icon: UserCog,
+      icon: Settings,
       label: tSidebar("profile"),
       key: "profile",
     },

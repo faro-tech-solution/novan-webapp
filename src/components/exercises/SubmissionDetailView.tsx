@@ -43,28 +43,13 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
     try {
       const parsedSolution = JSON.parse(solution);
 
-      // Check if this is a solution with feedback from video/audio/simple exercises
-      if (parsedSolution && typeof parsedSolution === "object") {
-        if (
-          parsedSolution.exerciseType === "media" &&
-          parsedSolution.feedback
-        ) {
-          return {
-            answers: Array.isArray(parsedSolution.answers)
-              ? parsedSolution.answers
-              : [],
-            userFeedback: parsedSolution.feedback,
-          };
-        }
-
-        // For non-form exercises, we might have direct feedback in the solution
-        if (
-          submission.exercise?.exercise_type &&
-          (submission.exercise.exercise_type === "video" ||
-            submission.exercise.exercise_type === "audio" ||
-            submission.exercise.exercise_type === "simple") &&
-          parsedSolution.feedback
-        ) {
+      // Check if this is a video, audio, or simple exercise with feedback
+      if (
+        submission.exercise?.exercise_type === "video" ||
+        submission.exercise?.exercise_type === "audio" ||
+        submission.exercise?.exercise_type === "simple"
+      ) {
+        if (parsedSolution.feedback) {
           return {
             answers: [],
             userFeedback: parsedSolution.feedback,
@@ -94,7 +79,7 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-xl">
-                {submission.exercise.title}
+                {submission.exercise?.title || 'تمرین نامشخص'}
               </CardTitle>
               <div className="mt-2">
                 <div className="flex items-center space-x-4 space-x-reverse text-sm">
@@ -113,7 +98,7 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
                   </div>
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <Award className="h-4 w-4" />
-                    <span>{submission.exercise.points} امتیاز</span>
+                    <span>{submission.exercise?.points || 0} امتیاز</span>
                   </div>
                 </div>
               </div>
@@ -139,23 +124,25 @@ export const SubmissionDetailView: React.FC<SubmissionDetailViewProps> = ({
         </Card>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>پاسخ دانشجو</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <SubmissionViewer
-            form={parseFormStructure(submission.exercise.form_structure)}
-            answers={parsedContent.answers}
-            submissionInfo={{
-              studentName: `${submission.student?.first_name} ${submission.student?.last_name}`,
-              submittedAt: submission.submitted_at,
-              score: submission.score || undefined,
-              feedback: submission.feedback || undefined,
-            }}
-          />
-        </CardContent>
-      </Card>
+      {submission.exercise?.form_structure && (
+        <Card>
+          <CardHeader>
+            <CardTitle>پاسخ دانشجو</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SubmissionViewer
+              form={parseFormStructure(submission.exercise.form_structure)}
+              answers={parsedContent.answers}
+              submissionInfo={{
+                studentName: `${submission.student?.first_name} ${submission.student?.last_name}`,
+                submittedAt: submission.submitted_at,
+                score: submission.score || undefined,
+                feedback: submission.feedback || undefined,
+              }}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

@@ -61,11 +61,7 @@ export const useProgressStats = () => {
       
       // Get points from completed exercises on this day
       const exercisePoints = myExercises
-        .filter(ex => {
-          if (ex.submission_status !== 'completed' || !ex.submitted_at) return false;
-          const submissionDate = new Date(ex.submitted_at);
-          return submissionDate >= date && submissionDate < nextDay;
-        })
+        .filter(ex => ex.submission_status === 'completed' && "submitted_at" in ex && (ex as any).submitted_at)
         .reduce((sum, ex) => sum + (ex.points || 0), 0);
       
       // Get bonus points from awards earned on this day
@@ -119,7 +115,7 @@ export const useProgressStats = () => {
       const totalExercises = myExercises.length;
       
       const averageScore = completedExercises.length > 0 
-        ? Math.round(completedExercises.reduce((sum, ex) => sum + (ex.score || 0), 0) / completedExercises.length)
+        ? Math.round(completedExercises.reduce((sum, ex) => sum + ("score" in ex && typeof (ex as any).score === 'number' ? (ex as any).score : 0), 0) / completedExercises.length)
         : 0;
 
       // Calculate total hours (estimated time for completed exercises)

@@ -37,7 +37,7 @@ export const BasicInfoSection = ({ form }: BasicInfoSectionProps) => {
             <FormLabel>توضیحات</FormLabel>
             <FormControl>
               <RichTextEditor 
-                value={field.value}
+                value={field.value || ''}
                 onChange={field.onChange}
                 placeholder="توضیحات کاملی از تمرین ارائه دهید..."
                 height="120px"

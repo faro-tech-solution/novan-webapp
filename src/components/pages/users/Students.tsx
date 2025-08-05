@@ -3,19 +3,14 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { StudentsStats } from "@/components/students/StudentsStats";
 import StudentsFilters from "@/components/students/StudentsFilters";
 import { StudentsTable } from "@/components/students/StudentsTable";
-import { useToast } from "@/hooks/use-toast";
 import { useStudentsQuery } from "@/hooks/queries/useStudentsQuery";
-import { Student } from "@/types/student";
 
 const Students = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [courseFilter, setCourseFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showDemoUsers, setShowDemoUsers] = useState(false);
-  const { toast } = useToast();
-
-  const { students, loading, error, updateStudent, deleteStudent } =
-    useStudentsQuery();
+  const { students, loading, error } = useStudentsQuery();
 
   // Extract unique course names for filter
   const courses = [...new Set(students.map((s) => s.courseName))];
@@ -39,41 +34,6 @@ const Students = () => {
   } else {
     filteredStudents = filteredStudents.filter((student) => !student.is_demo);
   }
-
-  const handleUpdateStudent = async (
-    studentId: string,
-    updates: Partial<Student>
-  ) => {
-    try {
-      await updateStudent({ studentId, updates });
-      toast({
-        title: "موفقیت",
-        description: "اطلاعات دانشجو با موفقیت بروزرسانی شد",
-      });
-    } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || "خطا در بروزرسانی اطلاعات دانشجو",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDeleteStudent = async (studentId: string) => {
-    try {
-      await deleteStudent(studentId);
-      toast({
-        title: "موفقیت",
-        description: "دانشجو با موفقیت حذف شد",
-      });
-    } catch (error: any) {
-      toast({
-        title: "خطا",
-        description: error.message || "خطا در حذف دانشجو",
-        variant: "destructive",
-      });
-    }
-  };
 
   if (loading) {
     return (
@@ -128,8 +88,6 @@ const Students = () => {
         <StudentsTable
           students={students}
           filteredStudents={filteredStudents}
-          onUpdateStudent={handleUpdateStudent}
-          onDeleteStudent={handleDeleteStudent}
         />
       </div>
     </DashboardLayout>

@@ -91,13 +91,17 @@ const CourseTermsManagement = ({
             return {
               ...term,
               student_count: count || 0,
+              max_students: term.max_students || 0,
             };
           })
         );
         setTerms(termsWithCounts);
       } else {
         // For trainers, don't fetch student counts
-        setTerms(termsData || []);
+        setTerms((termsData || []).map(term => ({
+          ...term,
+          max_students: term.max_students || 0,
+        })));
       }
     } catch (error) {
       console.error("Error fetching terms:", error);
@@ -238,10 +242,10 @@ const CourseTermsManagement = ({
                     {term.name}
                   </TableCell>
                   <TableCell className="text-right">
-                    {formatDate({dateString: term.start_date})}
+                    {formatDate(term.start_date)}
                   </TableCell>
                   <TableCell className="text-right">
-                    {formatDate({dateString: term.end_date})}
+                    {formatDate(term.end_date)}
                   </TableCell>
                   <TableCell className="text-right">
                     {term.max_students === 0 ? "نامحدود" : term.max_students}

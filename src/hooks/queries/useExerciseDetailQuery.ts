@@ -98,7 +98,7 @@ export const useSendConversationMessage = () => {
   return useMutation({
     mutationFn: async ({ submissionId, message }: { submissionId: string; message: string }) => {
       if (!user) throw new Error('User not authenticated');
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('exercise_submissions_conversation')
         .insert([
           {
@@ -112,7 +112,9 @@ export const useSendConversationMessage = () => {
       if (error) throw error;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries(['submissionConversation', variables.submissionId]);
+      queryClient.invalidateQueries({
+        queryKey: ['submissionConversation', variables.submissionId]
+      });
     },
   });
 }; 

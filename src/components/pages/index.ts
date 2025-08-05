@@ -1,25 +1,26 @@
 // Authentication Pages
-export * from '../../pages/auth';
+export * from './auth';
 
 // Dashboard Pages
-export * from '../../pages/dashboard';
+export * from './dashboard';
 
 // Exercise Pages
-export * from '../../pages/exercises';
+export * from './exercises';
 
 // Course Pages
-export * from '../../pages/courses';
+export * from './courses';
 
 // Management Pages
-export * from '../../pages/management';
-
-
+export * from './management';
 
 // User Pages
-export * from '../../pages/users';
+export * from './users';
 
 // Accounting Pages
-export * from '../../pages/accounting';
+export * from './accounting';
 
 // Shared/Utility Pages
-export * from '../../pages/shared'; 
+export * from './shared';
+
+// Notifications
+export { default as NotificationsPage } from './notifications'; 

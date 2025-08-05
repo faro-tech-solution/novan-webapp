@@ -95,7 +95,7 @@ const ReviewSubmissions = () => {
   };
 
   // Reset page when filters change
-  const handleFilterChange = (newFilters: Partial<typeof queryParams>) => {
+  const handleFilterChange = () => {
     setCurrentPage(1);
   };
 
@@ -118,7 +118,7 @@ const ReviewSubmissions = () => {
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
-                  handleFilterChange({ search: e.target.value });
+                  handleFilterChange();
                 }}
                 className="max-w-md"
               />
@@ -128,7 +128,7 @@ const ReviewSubmissions = () => {
                   checked={showDemoUsers}
                   onCheckedChange={(v) => {
                     setShowDemoUsers(v === true);
-                    handleFilterChange({ showDemoUsers: v === true });
+                    handleFilterChange();
                   }}
                 />
                 <label
@@ -146,7 +146,7 @@ const ReviewSubmissions = () => {
                 value={statusFilter}
                 onValueChange={(v) => {
                   setStatusFilter(v as any);
-                  handleFilterChange({ status: v as any });
+                  handleFilterChange();
                 }}
               >
                 <SelectTrigger className="w-48">
@@ -165,7 +165,7 @@ const ReviewSubmissions = () => {
                 onValueChange={(v) => {
                   setSelectedCourse(v);
                   setSelectedExercise("all");
-                  handleFilterChange({ courseId: v, exerciseId: "all" });
+                  handleFilterChange();
                 }}
               >
                 <SelectTrigger className="w-48">
@@ -186,7 +186,7 @@ const ReviewSubmissions = () => {
                 value={selectedExercise}
                 onValueChange={(v) => {
                   setSelectedExercise(v);
-                  handleFilterChange({ exerciseId: v });
+                  handleFilterChange();
                 }}
                 disabled={selectedCourse === "all" || exercisesLoading}
               >
@@ -214,7 +214,7 @@ const ReviewSubmissions = () => {
                 value={lastAnswerBy}
                 onValueChange={(v) => {
                   setLastAnswerBy(v as any);
-                  handleFilterChange({ lastAnswerBy: v as any });
+                  handleFilterChange();
                 }}
               >
                 <SelectTrigger className="w-48">

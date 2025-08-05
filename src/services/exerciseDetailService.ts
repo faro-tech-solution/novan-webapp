@@ -236,12 +236,22 @@ export const submitExerciseSolution = async (
  * @param submissionId The ID of the exercise submission
  * @returns Array of conversation messages sorted by created_at ascending
  */
-export const fetchSubmissionConversation = async (submissionId: string) => {
-  const { data, error } = await supabase
-    .from('exercise_submissions_conversation')
-    .select(`id, submission_id, sender_id, message, meta_data, created_at, sender:profiles(id, first_name, last_name, role)`)
-    .eq('submission_id', submissionId)
-    .order('created_at', { ascending: true });
-  if (error) throw error;
-  return data || [];
+export const fetchSubmissionConversation = async (submissionId: string): Promise<any[]> => {
+  try {
+    const { data, error } = await (supabase as any)
+      .from('exercise_submissions_conversation')
+      .select('*')
+      .eq('submission_id', submissionId)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching conversation:', error);
+      throw error;
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error in fetchSubmissionConversation:', error);
+    return [];
+  }
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { CreateExercise } from "@/pages/exercises";
+import { CreateExercise } from "@/components/pages/exercises";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface EditExercisePageProps {

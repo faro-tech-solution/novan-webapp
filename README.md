@@ -1,57 +1,111 @@
-# Novan WebApp
+# Novan Webapp
 
-## Project Overview
+A Next.js-based web application for course management and learning.
 
-Novan WebApp is a comprehensive learning management system built with modern web technologies.
-
-## How to run this project locally
+## Getting Started
 
 ### Prerequisites
 
-- Node.js & npm (install with [nvm](https://github.com/nvm-sh/nvm#installing-and-updating))
+- Node.js 18 or higher
+- npm or yarn package manager
 
-### Setup Instructions
+### Installation
 
-```sh
-# Step 1: Clone the repository
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory
+1. Clone the repository:
+```bash
+git clone <repository-url>
 cd novan-webapp
-
-# Step 3: Install dependencies
-npm install
-
-# Step 4: Start the development server
-npm run dev
 ```
 
-## Technologies Used
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
 
-This project is built with:
+3. Set up environment variables:
+```bash
+cp env.example .env.local
+```
 
-- Next.js
-- TypeScript
-- React
-- shadcn/ui
-- Tailwind CSS
-- Supabase (Database & Authentication)
+Edit `.env.local` and add your configuration:
+- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+- `NEXT_PUBLIC_SPOTPLAYER_API_KEY`: Your SpotPlayer API key (optional)
 
-## Available Scripts
+4. Run the development server:
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
+Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+## Building for Production
+
+### Local Build
+```bash
+npm run build
+# or
+yarn build
+```
+
+### Netlify Deployment
+
+This project is configured for Netlify deployment with server-side rendering support. To deploy:
+
+1. **Connect to Netlify:**
+   - Push your code to a Git repository (GitHub, GitLab, or Bitbucket)
+   - Connect your repository to Netlify
+   - Netlify will automatically detect the Next.js configuration
+
+2. **Environment Variables:**
+   - In your Netlify dashboard, go to Site settings > Environment variables
+   - Add the following variables:
+     - `NEXT_PUBLIC_SUPABASE_URL`
+     - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+     - `NEXT_PUBLIC_SPOTPLAYER_API_KEY` (if using SpotPlayer)
+
+3. **Build Settings:**
+   - Build command: `npm run build`
+   - Publish directory: `.next`
+   - Node version: `18`
+
+4. **Deploy:**
+   - Netlify will automatically build and deploy your site
+   - Each push to your main branch will trigger a new deployment
+   - API routes will be handled by Netlify Functions
 
 ## Project Structure
 
-The project follows a modern Next.js structure with:
+- `app/` - Next.js 13+ app directory with pages and layouts
+- `src/` - Source code including components, hooks, and utilities
+- `components/` - Reusable React components
+- `hooks/` - Custom React hooks
+- `services/` - API and external service integrations
+- `types/` - TypeScript type definitions
+- `public/` - Static assets
 
-- `/app` - Next.js app router pages
-- `/src/components` - Reusable React components
-- `/src/hooks` - Custom React hooks
-- `/src/services` - API and service layer
-- `/src/types` - TypeScript type definitions
-- `/migrations` - Database migrations
-- `/supabase` - Supabase configuration
+## Technologies Used
+
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+- Supabase
+- Radix UI
+- React Query
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is private and proprietary.

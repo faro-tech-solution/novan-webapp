@@ -1,4 +1,3 @@
-import { supabase } from '@/integrations/supabase/client';
 import { SpotPlayerConfig } from '@/types/spotplayer';
 
 export class SpotPlayerService {
@@ -11,7 +10,6 @@ export class SpotPlayerService {
    */
   static async createLicense(
     userId: string,
-    courseId: string,
     spotplayerCourseId: string,
     isTest: boolean = false
   ): Promise<{ licenseId: string; licenseKey: string; url: string }> {
@@ -140,7 +138,7 @@ export class SpotPlayerService {
 
     try {
       // Create license using the official API
-      const licenseResult = await this.createLicense(userId, courseId, spotplayerCourseId, false);
+      const licenseResult = await this.createLicense(userId, spotplayerCourseId, false);
       
       // Get or create cookie
       const cookieValue = await this.getOrCreateCookie(userId);

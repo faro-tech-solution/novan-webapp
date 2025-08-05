@@ -13,13 +13,9 @@ import { TraineeExerciseForm } from "@/components/exercises/TraineeExerciseForm"
 import { TraineeFeedbackDisplay } from "@/components/exercises/TraineeFeedbackDisplay";
 import { InstructorFormView } from "@/components/exercises/InstructorFormView";
 import { ExerciseConversation } from "@/components/exercises/ExerciseConversation";
-import { StorageTest } from "@/components/debug/StorageTest";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  useExerciseDetailQuery,
-  useSubmitExerciseMutation,
-} from "@/hooks/queries/useExerciseDetailQuery";
+import { useExerciseDetailQuery, useSubmitExerciseMutation } from "@/hooks/queries/useExerciseDetailQuery";
 import { Submission } from "@/types/reviewSubmissions";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const ExerciseDetail = () => {
   const params = useParams();
@@ -303,9 +299,6 @@ const ExerciseDetail = () => {
           </>
         )}
 
-        {/* Storage Test (Temporary) */}
-        <StorageTest />
-        
         {/* Exercise Conversation */}
         {exercise.submission_id && createSubmissionObject() && (
           <ExerciseConversation

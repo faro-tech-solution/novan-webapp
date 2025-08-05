@@ -28,7 +28,7 @@ export const useProgressStatsQuery = () => {
       const totalExercises = myExercises.length;
       
       const averageScore = completedExercises.length > 0 
-        ? Math.round(completedExercises.reduce((sum, ex) => sum + (ex.score || 0), 0) / completedExercises.length)
+        ? Math.round(completedExercises.reduce((sum, ex) => sum + ("score" in ex && typeof (ex as any).score === 'number' ? (ex as any).score : 0), 0) / completedExercises.length)
         : 0;
 
       // Calculate total hours (estimated time for completed exercises)

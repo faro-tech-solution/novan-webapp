@@ -3,7 +3,7 @@
 import React from 'react';
 import { useState } from "react";
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   LogIn,
   LogOut,
@@ -35,7 +35,6 @@ const Header = ({
   const { profile, loading } = useAuth();
   const { tCommon, tSidebar } = useTranslation();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   // Only show NotificationBell on trainee dashboard URLs
   const showNotificationBell = pathname?.startsWith('/trainee/') || false;

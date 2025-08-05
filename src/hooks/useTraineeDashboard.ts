@@ -120,7 +120,6 @@ export const useTraineeDashboard = () => {
       }
 
       // Process data
-      const now = new Date();
       const processedExercises: UpcomingExercise[] = [];
       let completedCount = 0;
       const pendingCount = 0;

@@ -70,32 +70,6 @@ export const FilePreviewList: React.FC<FilePreviewListProps> = ({
     return fileName.toLowerCase().split('.').pop()?.toUpperCase() || 'FILE';
   };
 
-  const getFileType = (fileName: string) => {
-    const extension = fileName.toLowerCase().split('.').pop();
-    switch (extension) {
-      case 'pdf':
-        return 'PDF';
-      case 'doc':
-      case 'docx':
-        return 'Word';
-      case 'xls':
-      case 'xlsx':
-        return 'Excel';
-      case 'ppt':
-      case 'pptx':
-        return 'PowerPoint';
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-      case 'webp':
-      case 'svg':
-        return 'Image';
-      default:
-        return 'File';
-    }
-  };
-
   return (
     <div className={`space-y-2 ${className}`}>
       {/* Show uploaded attachments (URLs) */}

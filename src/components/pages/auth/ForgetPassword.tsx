@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from 'next/link';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,8 +26,6 @@ const ForgetPassword = () => {
   const [loading, setLoading] = useState(false);
   const { resetPassword } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   // Password reset state
@@ -46,7 +44,10 @@ const ForgetPassword = () => {
 
   // Check for access token in URL hash for password reset
   useEffect(() => {
-    const hash = location.hash;
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
+    const hash = window.location.hash;
     console.log("Current hash:", hash);
 
     if (hash) {
@@ -107,7 +108,7 @@ const ForgetPassword = () => {
         window.history.replaceState(null, "", "/forget_password");
       }
     }
-  }, [location.hash, toast]);
+  }, [toast]);
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -2,12 +2,11 @@
 
 import React, { useState } from 'react'
 import { RichTextEditor } from '@/components/ui'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 const RichTextEditorExample: React.FC = () => {
   const [content, setContent] = useState('<h2>Welcome to the Rich Text Editor!</h2><p>This is a <strong>sample content</strong> to demonstrate the editor capabilities.</p>')
-  const [readOnlyContent, setReadOnlyContent] = useState('<h3>Read-only Content</h3><p>This content cannot be edited.</p>')
+  const readOnlyContent = '<h3>Read-only Content</h3><p>This content cannot be edited.</p>'
 
   const handleContentChange = (value: string) => {
     setContent(value)
@@ -76,13 +75,11 @@ const RichTextEditorExample: React.FC = () => {
             <RichTextEditor
               value="<p>Simple text with basic formatting only.</p>"
               onChange={() => {}}
-              modules={{
-                toolbar: [
-                  ['bold', 'italic', 'underline'],
-                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                  ['link']
-                ]
-              }}
+              toolbar={[
+                ['bold', 'italic', 'underline'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link']
+              ]}
               formats={['bold', 'italic', 'underline', 'list', 'bullet', 'link']}
               height="120px"
             />
@@ -101,7 +98,6 @@ const RichTextEditorExample: React.FC = () => {
             <RichTextEditor
               value=""
               onChange={() => {}}
-              error={true}
               placeholder="This field is required..."
               height="120px"
             />
