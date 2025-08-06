@@ -32,7 +32,7 @@ cp env.example .env.local
 Edit `.env.local` and add your configuration:
 - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key
-- `NEXT_PUBLIC_SPOTPLAYER_API_KEY`: Your SpotPlayer API key (optional)
+
 
 4. Run the development server:
 ```bash
@@ -66,7 +66,7 @@ This project is configured for Netlify deployment with server-side rendering sup
    - Add the following variables:
      - `NEXT_PUBLIC_SUPABASE_URL`
      - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-     - `NEXT_PUBLIC_SPOTPLAYER_API_KEY` (if using SpotPlayer)
+     
 
 3. **Build Settings:**
    - Build command: `npm run build`

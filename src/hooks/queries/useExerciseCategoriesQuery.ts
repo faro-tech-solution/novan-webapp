@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   fetchExerciseCategories, 
+  fetchAllExerciseCategories,
   createExerciseCategory, 
   updateExerciseCategory, 
   deleteExerciseCategory,
@@ -17,10 +18,13 @@ export const useExerciseCategoriesQuery = (courseId: string) => {
   const categoriesQuery = useQuery({
     queryKey: ['exercise-categories', courseId],
     queryFn: async () => {
-      if (!courseId) return [];
+      if (!courseId) {
+        // If no courseId is provided, fetch all categories
+        return await fetchAllExerciseCategories();
+      }
       return await fetchExerciseCategories(courseId);
     },
-    enabled: isQueryEnabled && !!courseId,
+    enabled: isQueryEnabled,
   });
 
   const createCategoryMutation = useMutation({

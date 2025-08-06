@@ -10,7 +10,7 @@ BEGIN
     -- Add the new constraint with arvan_video included
     ALTER TABLE exercises 
     ADD CONSTRAINT exercises_exercise_type_check
-    CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'spotplayer', 'iframe', 'arvan_video'));
+    CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'iframe', 'arvan_video'));
     
     RAISE NOTICE 'Successfully added arvan_video to exercise_type check constraint';
 END $$;

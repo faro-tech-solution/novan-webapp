@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Exercise } from '@/types/exercise';
 import { ExerciseForm } from '@/types/formBuilder';
-import { extractSpotPlayerData } from '@/utils/spotplayerExerciseUtils';
+
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
   if (!form_structure) {
@@ -43,15 +43,7 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
       throw new Error('Exercise not found');
     }
 
-    // Parse metadata to extract SpotPlayer fields
-    let spotplayer_course_id = "";
-    let spotplayer_item_id = "";
     
-    const spotplayerData = extractSpotPlayerData(data as any);
-    if (spotplayerData) {
-      spotplayer_course_id = spotplayerData.spotplayer_course_id;
-      spotplayer_item_id = spotplayerData.spotplayer_item_id || "";
-    }
 
     // Parse metadata to extract Arvan Video fields
     let arvan_video_id = "";
@@ -66,8 +58,7 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
       ...data,
       course_name: data.courses.name,
       form_structure: parseFormStructure(data.form_structure),
-      spotplayer_course_id,
-      spotplayer_item_id,
+
       arvan_video_id
     } as any as Exercise;
   } catch (error) {
@@ -86,6 +77,7 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
           name
         )
       `)
+      .order('category_id', { ascending: true, nullsFirst: true })
       .order('sort', { ascending: true })
       .order('created_at', { ascending: true });
 
@@ -100,16 +92,9 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
       throw new Error(`Error fetching exercises: ${error.message}`);
     }
 
-    return (data || []).map(exercise => {
-      // Parse metadata to extract SpotPlayer fields
-      let spotplayer_course_id = "";
-      let spotplayer_item_id = "";
+    // Sort exercises within each category
+    const exercises = (data || []).map(exercise => {
       
-      const spotplayerData = extractSpotPlayerData(exercise as any);
-      if (spotplayerData) {
-        spotplayer_course_id = spotplayerData.spotplayer_course_id;
-        spotplayer_item_id = spotplayerData.spotplayer_item_id || "";
-      }
 
       // Parse metadata to extract Arvan Video fields
       let arvan_video_id = "";
@@ -124,12 +109,52 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
         ...exercise,
         course_name: exercise.courses.name,
         form_structure: parseFormStructure(exercise.form_structure),
-        spotplayer_course_id,
-        spotplayer_item_id,
+
         arvan_video_id
       };
     }) as any[];
-    // })) as Exercise[];
+
+    // Group exercises by category and sort within each category
+    const exercisesByCategory: Record<string, any[]> = {};
+    const uncategorizedExercises: any[] = [];
+
+    exercises.forEach(exercise => {
+      const categoryId = exercise.category_id;
+      if (categoryId) {
+        if (!exercisesByCategory[categoryId]) {
+          exercisesByCategory[categoryId] = [];
+        }
+        exercisesByCategory[categoryId].push(exercise);
+      } else {
+        uncategorizedExercises.push(exercise);
+      }
+    });
+
+    // Sort exercises within each category by sort order, then by created_at
+    Object.keys(exercisesByCategory).forEach(categoryId => {
+      exercisesByCategory[categoryId].sort((a, b) => {
+        if (a.sort !== b.sort) {
+          return a.sort - b.sort;
+        }
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      });
+    });
+
+    // Sort uncategorized exercises
+    uncategorizedExercises.sort((a, b) => {
+      if (a.sort !== b.sort) {
+        return a.sort - b.sort;
+      }
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    });
+
+    // Combine all exercises back together
+    const sortedExercises = [
+      ...uncategorizedExercises,
+      ...Object.values(exercisesByCategory).flat()
+    ];
+
+    return sortedExercises;
   } catch (error) {
     console.error('Error in fetchExercises:', error);
     throw error;

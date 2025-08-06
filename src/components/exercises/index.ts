@@ -2,17 +2,13 @@ export { BasicInfoSection } from './BasicInfoSection';
 export { CourseAndDifficultySection } from './CourseAndDifficultySection';
 export { CreateExerciseForm } from './CreateExerciseForm';
 export { ExerciseDetailHeader } from './ExerciseDetailHeader';
-export { ExerciseFilters } from './ExerciseFilters';
 export { ExerciseInfoCard } from './ExerciseInfoCard';
-export { ExerciseStatsCards } from './ExerciseStatsCards';
 export { getStatusBadge, getExerciseStatusBadge, getDifficultyBadge } from './ExerciseStatusBadges';
-export { ExerciseTable } from './ExerciseTable';
 export { FormBuilder } from './FormBuilder';
 export { FormRenderer } from './FormRenderer';
 export { GradingSection } from './GradingSection';
 export { InstructorFormView } from './InstructorFormView';
 
-export { MyExerciseTable } from './MyExerciseTable';
 export { ExerciseCard } from './ExerciseCard';
 export { CategorizedMyExercises } from './CategorizedMyExercises';
 export { ReviewSubmissionsHeader } from './ReviewSubmissionsHeader';
@@ -26,8 +22,9 @@ export { TraineeFeedbackDisplay } from './TraineeFeedbackDisplay';
 export { VideoPlayer } from './VideoPlayer';
 export { AudioPlayer } from './AudioPlayer';
 export { SimpleExerciseCompletion } from './SimpleExerciseCompletion';
-export { SpotPlayerVideo } from './SpotPlayerVideo';
+
 export { IframePlayer } from './IframePlayer';
 export { ArvanVideoPlayer } from './ArvanVideoPlayer';
 export { ExerciseTypeSection } from './ExerciseTypeSection';
 export { ExerciseConversation } from './ExerciseConversation';
+export { ExercisesView } from './ExercisesView';

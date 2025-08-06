@@ -275,22 +275,10 @@ export const ArvanVideoPlayer: React.FC<ArvanVideoPlayerProps> = ({
     );
   }
 
-  console.log('videoUrl', videoUrl);
-
   return (
     <Card className={className}>
       <CardContent className="p-6">
         <div className="space-y-4">
-          {/* Video Title */}
-          {videoData.data.title && (
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-gray-900">{videoData.data.title}</h3>
-              {videoData.data.description && (
-                <p className="text-sm text-gray-600 mt-1">{videoData.data.description}</p>
-              )}
-            </div>
-          )}
-
           {/* Video Player */}
           <div className="relative w-full bg-black rounded-lg overflow-hidden">
             <div className="aspect-video">
@@ -306,21 +294,6 @@ export const ArvanVideoPlayer: React.FC<ArvanVideoPlayerProps> = ({
                     مرورگر شما از پخش این ویدیو پشتیبانی نمی‌کند.
                   </p>
                 </video>
-            </div>
-          </div>
-
-          {/* Video Info */}
-          <div className="flex justify-between items-center text-sm text-muted-foreground">
-            <div className="flex items-center space-x-4 space-x-reverse">
-              {videoData.data.file_info?.general?.duration && (
-                <span>مدت زمان: {Math.floor(videoData.data.file_info.general.duration / 60)}:{(videoData.data.file_info.general.duration % 60).toString().padStart(2, '0')}</span>
-              )}
-              <span>شناسه: {videoId}</span>
-            </div>
-            <div className="flex items-center space-x-2 space-x-reverse">
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                آروان کلود
-              </span>
             </div>
           </div>
 

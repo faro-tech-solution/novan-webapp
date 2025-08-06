@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Exercise } from '@/types/exercise';
 import { ExerciseForm } from '@/types/formBuilder';
 import { fetchCourses, fetchExercises, createExercise, updateExercise, deleteExercise } from '@/services/exerciseService';
+import { reorderExercises } from '@/services/exerciseReorderService';
 import { useStableAuth } from '@/hooks/useStableAuth';
 
 export const useExercisesQuery = (courseId?: string) => {
@@ -27,7 +28,7 @@ export const useExercisesQuery = (courseId?: string) => {
   });
 
   const createExerciseMutation = useMutation({
-    mutationFn: async (exerciseData: Partial<Exercise> & { spotplayer_course_id?: string; spotplayer_item_id?: string; arvan_video_id?: string }) => {
+    mutationFn: async (exerciseData: Partial<Exercise> & { arvan_video_id?: string }) => {
       if (!user) throw new Error('کاربر وارد نشده است');
       return await createExercise({
         title: exerciseData.title || '',
@@ -36,6 +37,7 @@ export const useExercisesQuery = (courseId?: string) => {
         estimatedTime: exerciseData.estimated_time || '',
         points: exerciseData.points || 0,
         courseId: exerciseData.course_id || '',
+        category_id: exerciseData.category_id || null,
 
         exercise_type: exerciseData.exercise_type || 'form',
         content_url: exerciseData.content_url,
@@ -47,8 +49,7 @@ export const useExercisesQuery = (courseId?: string) => {
           Array.isArray((exerciseData.form_structure as any).questions)
             ? (exerciseData.form_structure as ExerciseForm)
             : { questions: [] },
-        spotplayer_course_id: exerciseData.spotplayer_course_id,
-        spotplayer_item_id: exerciseData.spotplayer_item_id,
+        
         arvan_video_id: exerciseData.arvan_video_id
       }, user.id);
     },
@@ -58,7 +59,7 @@ export const useExercisesQuery = (courseId?: string) => {
   });
 
   const updateExerciseMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Exercise> & { spotplayer_course_id?: string; spotplayer_item_id?: string; arvan_video_id?: string } }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Exercise> & { arvan_video_id?: string } }) => {
       if (!user) throw new Error('کاربر وارد نشده است');
       return await updateExercise(id, {
         title: data.title || '',
@@ -67,6 +68,7 @@ export const useExercisesQuery = (courseId?: string) => {
         estimatedTime: data.estimated_time || '',
         points: data.points || 0,
         courseId: data.course_id || '',
+        category_id: data.category_id || null,
 
         exercise_type: data.exercise_type || 'form',
         content_url: data.content_url,
@@ -78,8 +80,7 @@ export const useExercisesQuery = (courseId?: string) => {
           Array.isArray((data.form_structure as any).questions)
             ? (data.form_structure as ExerciseForm)
             : { questions: [] },
-        spotplayer_course_id: data.spotplayer_course_id,
-        spotplayer_item_id: data.spotplayer_item_id,
+
         arvan_video_id: data.arvan_video_id
       });
     },
@@ -98,6 +99,16 @@ export const useExercisesQuery = (courseId?: string) => {
     },
   });
 
+  const reorderExercisesMutation = useMutation({
+    mutationFn: async (reorderData: { exerciseId: string; newOrderIndex: number; courseId: string; categoryId?: string | null }[]) => {
+      if (!user) throw new Error('کاربر وارد نشده است');
+      return await reorderExercises(reorderData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+    },
+  });
+
   return {
     exercises: exercisesQuery.data || [],
     courses: coursesQuery.data || [],
@@ -106,8 +117,10 @@ export const useExercisesQuery = (courseId?: string) => {
     createExercise: createExerciseMutation.mutateAsync,
     updateExercise: updateExerciseMutation.mutateAsync,
     deleteExercise: deleteExerciseMutation.mutateAsync,
+    reorderExercises: reorderExercisesMutation.mutateAsync,
     isCreating: createExerciseMutation.isPending,
     isUpdating: updateExerciseMutation.isPending,
     isDeleting: deleteExerciseMutation.isPending,
+    isReordering: reorderExercisesMutation.isPending,
   };
 }; 

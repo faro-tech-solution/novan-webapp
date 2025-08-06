@@ -13,15 +13,20 @@ import {
   Zap,
   AlertTriangle
 } from 'lucide-react';
-import { MyExerciseWithSubmission } from '@/types/exercise';
+import { MyExerciseWithSubmission, Exercise } from '@/types/exercise';
 
 interface ExerciseCardProps {
-  exercise: MyExerciseWithSubmission;
+  exercise: MyExerciseWithSubmission | Exercise;
+  userRole?: 'trainee' | 'admin' | 'trainer';
 }
 
-export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
+export const ExerciseCard = ({ exercise, userRole = 'trainee' }: ExerciseCardProps) => {
   const params = useParams();
   const courseId = params?.courseId as string;
+
+  // Determine if this is a trainee exercise (has submission_status) or admin/trainer exercise
+  const isTraineeExercise = 'submission_status' in exercise;
+  const submissionStatus = isTraineeExercise ? (exercise as MyExerciseWithSubmission).submission_status : 'not_started';
 
   // Get background color based on status
   const getCardBackground = (status: string) => {
@@ -71,7 +76,7 @@ export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
       default:
         return {
           icon: <FileText className="h-4 w-4 text-gray-400" />,
-          text: 'انجام نشده',
+          text: userRole === 'trainee' ? 'انجام نشده' : 'آماده',
           color: 'text-gray-700'
         };
     }
@@ -107,12 +112,24 @@ export const ExerciseCard = ({ exercise }: ExerciseCardProps) => {
     }
   };
 
-  const statusDisplay = getStatusDisplay(exercise.submission_status);
+  const statusDisplay = getStatusDisplay(submissionStatus);
   const difficultyDisplay = getDifficultyDisplay(exercise.difficulty);
 
+  // Determine the link based on user role
+  const getExerciseLink = () => {
+    if (userRole === 'trainee' && courseId) {
+      return `/trainee/${courseId}/exercise/${exercise.id}`;
+    } else if (userRole === 'admin') {
+      return `/admin/exercises/${exercise.id}`;
+    } else if (userRole === 'trainer') {
+      return `/trainer/exercises/${exercise.id}`;
+    }
+    return `/exercise/${exercise.id}`;
+  };
+
   return (
-    <Link href={courseId ? `/trainee/${courseId}/exercise/${exercise.id}` : `/exercise/${exercise.id}`}>
-      <Card className={`transition-all duration-200 mb-3 overflow-hidden hover:shadow-md transition-shadow border-0 border-r-4 ${getCardBackground(exercise.submission_status)} ${getCardHeight(exercise.submission_status)}`}>
+    <Link href={getExerciseLink()}>
+      <Card className={`transition-all duration-200 mb-3 overflow-hidden hover:shadow-md transition-shadow border-0 border-r-4 ${getCardBackground(submissionStatus)} ${getCardHeight(submissionStatus)}`}>
         <CardHeader className="px-5 py-3">
           <h3 className="text-gray-900 leading-tight">
             {exercise.title}

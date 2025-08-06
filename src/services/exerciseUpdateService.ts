@@ -25,15 +25,7 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
   try {
     const metadata: any = {};
     
-    // Add SpotPlayer metadata if it's a SpotPlayer exercise
-    if (exerciseData.exercise_type === 'spotplayer') {
-      if (exerciseData.spotplayer_course_id) {
-        metadata.spotplayer_course_id = exerciseData.spotplayer_course_id;
-      }
-      if (exerciseData.spotplayer_item_id) {
-        metadata.spotplayer_item_id = exerciseData.spotplayer_item_id;
-      }
-    }
+
 
     // Add Arvan Video metadata if it's an Arvan Video exercise
     if (exerciseData.exercise_type === 'arvan_video') {
@@ -51,6 +43,7 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
         estimated_time: exerciseData.estimatedTime,
         points: exerciseData.points,
         course_id: exerciseData.courseId,
+        category_id: exerciseData.category_id || null,
 
         exercise_type: exerciseData.exercise_type,
         content_url: exerciseData.content_url,

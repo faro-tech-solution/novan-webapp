@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UseFormReturn } from "react-hook-form";
 import { CreateExerciseFormData } from "./CreateExerciseForm";
-import { FileText, Video, AudioLines, ListChecks, Play, ExternalLink } from "lucide-react";
+import { FileText, Video, AudioLines, ListChecks, ExternalLink } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 
 interface ExerciseTypeSectionProps {
@@ -100,51 +100,7 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
               />
             )}
 
-            {exerciseType === "spotplayer" && (
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="spotplayer_course_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>شناسه دوره SpotPlayer *</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="5d2ee35bcddc092a304ae5eb"
-                          {...field}
-                          value={field.value || ""}
-                        />
-                      </FormControl>
-                      <p className="text-sm text-muted-foreground">
-                        شناسه دوره در سیستم SpotPlayer
-                      </p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="spotplayer_item_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>شناسه آیتم SpotPlayer (اختیاری)</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="item_123"
-                          {...field}
-                          value={field.value || ""}
-                        />
-                      </FormControl>
-                      <p className="text-sm text-muted-foreground">
-                        شناسه آیتم خاص در دوره (در صورت عدم وارد کردن، کل دوره در دسترس خواهد بود)
-                      </p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
+
 
             {exerciseType === "arvan_video" && (
               <FormField
@@ -239,18 +195,7 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                         </Label>
                       </div>
 
-                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
-                        <RadioGroupItem value="spotplayer" id="spotplayer" />
-                        <Label
-                          htmlFor="spotplayer"
-                          className="flex items-center cursor-pointer text-sm"
-                        >
-                          <Play className="h-4 w-4 ml-1" />
-                          <div>
-                            <div className="font-medium">SpotPlayer</div>
-                          </div>
-                        </Label>
-                      </div>
+
 
                       <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
                         <RadioGroupItem value="iframe" id="iframe" />
