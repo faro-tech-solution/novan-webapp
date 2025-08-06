@@ -16,7 +16,6 @@ import {
   UserCog,
   CheckCircle,
   Wallet,
-  Edit,
 } from "lucide-react";
 import {
   Sidebar,

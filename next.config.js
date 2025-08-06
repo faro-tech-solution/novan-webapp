@@ -7,6 +7,8 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Ignore src/pages directory since we're using App Router
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
   // Preserve the @ alias from Vite config
   webpack: (config) => {
     config.resolve.alias = {

@@ -13,4 +13,5 @@ export interface Notification {
     sender_id: string | null;
     priority: 'normal' | 'high' | 'low';
     icon: string | null;
+    course_id: string | null;
 }

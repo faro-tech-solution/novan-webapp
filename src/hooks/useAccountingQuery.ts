@@ -27,7 +27,7 @@ const processAccountingData = (data: AccountingWithDetails[]): { balances: Stude
     const userId = record.user.id;
     if (!balances.has(userId)) {
       balances.set(userId, {
-        user: record.user,
+        user: record.user as any,
         balance: 0
       });
     }

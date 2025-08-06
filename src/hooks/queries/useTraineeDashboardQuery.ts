@@ -6,7 +6,6 @@ import { useMyExercisesQuery } from './useMyExercisesQuery';
 interface DashboardStats {
   completedExercises: number;
   pendingExercises: number;
-  overdueExercises: number;
   totalPoints: number;
 }
 
@@ -40,8 +39,7 @@ export const useTraineeDashboardQuery = () => {
   // Calculate stats
   const stats: DashboardStats = {
     completedExercises: currentExercises.filter(e => e.submission_status === 'completed').length,
-    pendingExercises: currentExercises.filter(e => e.submission_status === 'pending').length,
-    overdueExercises: currentExercises.filter(e => e.submission_status === 'overdue').length,
+    pendingExercises: currentExercises.filter(e => e.submission_status !== 'completed').length,
     totalPoints: currentExercises
       .filter(e => e.submission_status === 'completed')
       .reduce((sum, e) => sum + e.points, 0)

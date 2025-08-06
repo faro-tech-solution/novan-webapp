@@ -53,12 +53,22 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
       spotplayer_item_id = spotplayerData.spotplayer_item_id || "";
     }
 
+    // Parse metadata to extract Arvan Video fields
+    let arvan_video_id = "";
+    if (data.metadata) {
+      const metadata = typeof data.metadata === 'string' 
+        ? JSON.parse(data.metadata) 
+        : data.metadata;
+      arvan_video_id = metadata?.arvan_video_id || "";
+    }
+
     return {
       ...data,
       course_name: data.courses.name,
       form_structure: parseFormStructure(data.form_structure),
       spotplayer_course_id,
-      spotplayer_item_id
+      spotplayer_item_id,
+      arvan_video_id
     } as any as Exercise;
   } catch (error) {
     console.error('Error in fetchExerciseById:', error);
@@ -101,12 +111,22 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
         spotplayer_item_id = spotplayerData.spotplayer_item_id || "";
       }
 
+      // Parse metadata to extract Arvan Video fields
+      let arvan_video_id = "";
+      if (exercise.metadata) {
+        const metadata = typeof exercise.metadata === 'string' 
+          ? JSON.parse(exercise.metadata) 
+          : exercise.metadata;
+        arvan_video_id = metadata?.arvan_video_id || "";
+      }
+
       return {
         ...exercise,
         course_name: exercise.courses.name,
         form_structure: parseFormStructure(exercise.form_structure),
         spotplayer_course_id,
-        spotplayer_item_id
+        spotplayer_item_id,
+        arvan_video_id
       };
     }) as any[];
     // })) as Exercise[];

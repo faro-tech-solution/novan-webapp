@@ -508,6 +508,7 @@ export type Database = {
           telegram_id: string | null
           whatsapp_id: string | null
           is_demo: boolean | null
+          language_preference: 'fa' | 'en' | null
         }
         Insert: {
           class_id?: string | null
@@ -531,6 +532,7 @@ export type Database = {
           telegram_id?: string | null
           whatsapp_id?: string | null
           is_demo?: boolean | null
+          language_preference?: 'fa' | 'en' | null
         }
         Update: {
           class_id?: string | null
@@ -554,6 +556,7 @@ export type Database = {
           telegram_id?: string | null
           whatsapp_id?: string | null
           is_demo?: boolean | null
+          language_preference?: 'fa' | 'en' | null
         }
         Relationships: []
       }
@@ -890,6 +893,46 @@ export type Database = {
             foreignKeyName: "accounting_course_id_fkey";
             columns: ["course_id"];
             referencedRelation: "courses";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      exercise_submissions_conversation: {
+        Row: {
+          id: number;
+          submission_id: string;
+          sender_id: string;
+          message: string;
+          meta_data: Json | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          submission_id: string;
+          sender_id: string;
+          message: string;
+          meta_data?: Json | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          submission_id?: string;
+          sender_id?: string;
+          message?: string;
+          meta_data?: Json | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_submissions_conversation_submission_id_fkey";
+            columns: ["submission_id"];
+            referencedRelation: "exercise_submissions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_submissions_conversation_sender_id_fkey";
+            columns: ["sender_id"];
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           }
         ];

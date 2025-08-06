@@ -174,7 +174,11 @@ const Profile = () => {
           });
 
           // Brief timeout to let the user see the toast before reload
-          setTimeout(() => window.location.reload(), 1500);
+          setTimeout(() => {
+            if (typeof window !== 'undefined') {
+              window.location.reload();
+            }
+          }, 1500);
         } else {
           toast({
             title: "پروفایل بروزرسانی شد",

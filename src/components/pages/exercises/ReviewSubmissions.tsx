@@ -96,6 +96,7 @@ const ReviewSubmissions = () => {
 
   // Reset page when filters change
   const handleFilterChange = (newFilters: Partial<typeof queryParams>) => {
+    console.log(newFilters)
     setCurrentPage(1);
   };
 

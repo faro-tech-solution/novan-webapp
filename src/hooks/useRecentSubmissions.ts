@@ -33,10 +33,13 @@ export const useRecentSubmissions = () => {
         .from('exercise_submissions')
         .select(`
           id,
-          student_name,
           score,
           submitted_at,
           exercise_id,
+          student:profiles!exercise_submissions_student_id_fkey(
+            first_name,
+            last_name
+          ),
           exercises!inner(
             title,
             course_id,
@@ -79,10 +82,13 @@ export const useRecentSubmissions = () => {
       // Transform the data
       const transformedSubmissions: RecentSubmission[] = (data || []).map(submission => {
         const timeAgo = getTimeAgo(new Date(submission.submitted_at));
+        const studentName = submission.student 
+          ? `${submission.student.first_name || ''} ${submission.student.last_name || ''}`.trim() || 'نامشخص'
+          : 'نامشخص';
         
         return {
           id: submission.id,
-          student: submission.student_name,
+          student: studentName,
           exercise: submission.exercises?.title || 'نامشخص',
           submitted: timeAgo,
           score: submission.score,

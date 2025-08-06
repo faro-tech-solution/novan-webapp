@@ -5,9 +5,13 @@ import { FormAnswer } from '@/types/formBuilder';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-import type { Database } from '@/types/database.types';
-
-export type ConversationMessage = Database['public']['Tables']['exercise_submissions_conversation']['Row'] & {
+export type ConversationMessage = {
+  created_at: string;
+  id: number;
+  message: string;
+  meta_data: any;
+  sender_id: string;
+  submission_id: string;
   sender?: {
     id: string;
     first_name: string;
@@ -83,9 +87,9 @@ export const useSubmitExerciseMutation = () => {
 export const useSubmissionConversation = (submissionId: string | undefined) => {
   return useQuery<ConversationMessage[], Error>({
     queryKey: ['submissionConversation', submissionId],
-    queryFn: () => {
+    queryFn: async () => {
       if (!submissionId) throw new Error('No submissionId');
-      return fetchSubmissionConversation(submissionId);
+      return fetchSubmissionConversation(submissionId) as unknown as Promise<ConversationMessage[]>;
     },
     enabled: !!submissionId,
     refetchInterval: 5000, // Poll for new messages every 5s
@@ -99,7 +103,7 @@ export const useSendConversationMessage = () => {
     mutationFn: async ({ submissionId, message }: { submissionId: string; message: string }) => {
       if (!user) throw new Error('User not authenticated');
       const { error } = await supabase
-        .from('exercise_submissions_conversation')
+        .from('exercise_submissions_conversation' as any)
         .insert([
           {
             submission_id: submissionId,
@@ -112,7 +116,9 @@ export const useSendConversationMessage = () => {
       if (error) throw error;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries(['submissionConversation', variables.submissionId]);
+      queryClient.invalidateQueries({
+        queryKey: ['submissionConversation', variables.submissionId]
+      });
     },
   });
 }; 

@@ -39,7 +39,7 @@ import {
   NotFound,
   AllCoursesTrainee,
 } from "@/pages";
-import NotificationsPage from "@/pages/notifications";
+import NotificationsPage from "@/components/pages/notifications";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 // Use the queryClient from @/lib/react-query

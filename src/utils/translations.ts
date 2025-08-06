@@ -121,7 +121,13 @@ export function useTranslation() {
   
   // Function to translate a specific key
   const t = (section: keyof typeof translations, key: string) => {
-    const translation = translations[section]?.[key];
+    const sectionTranslations = translations[section];
+    if (!sectionTranslations) {
+      console.warn(`Translation section missing: ${section}`);
+      return key;
+    }
+    
+    const translation = (sectionTranslations as Record<string, { fa: string; en: string }>)[key];
     if (!translation) {
       console.warn(`Translation missing for key: ${section}.${key}`);
       return key;

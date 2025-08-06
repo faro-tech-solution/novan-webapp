@@ -105,7 +105,7 @@ export const useMyExercisesQuery = () => {
           difficulty: exercise.difficulty,
           points: exercise.points,
           estimated_time: exercise.estimated_time,
-
+          score: submission?.score || null,
           submission_status: submissionStatus,
           exercise_type: (exercise as any).exercise_type || 'form',
                     auto_grade: (exercise as any).auto_grade || false,

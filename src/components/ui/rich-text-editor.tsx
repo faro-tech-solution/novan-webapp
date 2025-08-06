@@ -1,8 +1,13 @@
 'use client'
 
 import React from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import dynamic from 'next/dynamic';
+
+// Dynamically import ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import('react-quill'), {
+  ssr: false,
+  loading: () => <div className="h-[165px] bg-gray-100 border border-gray-300 rounded-md animate-pulse" />
+});
 
 interface RichTextEditorProps {
   value: string;

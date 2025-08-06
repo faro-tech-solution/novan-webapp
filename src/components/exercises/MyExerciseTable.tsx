@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { ResponsiveTable } from '@/components/ui/responsive-table';
-import { CheckCircle, Clock, FileText, Award, Calendar } from 'lucide-react';
+import { CheckCircle, Clock, FileText, Award } from 'lucide-react';
 import { MyExerciseWithSubmission } from '@/types/exercise';
 
 interface MyExerciseTableProps {
@@ -56,10 +56,6 @@ export const MyExerciseTable = ({ exercises }: MyExerciseTableProps) => {
       default:
         return <FileText className="h-4 w-4 text-gray-600" />;
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fa-IR');
   };
 
   const tableHeaders = [

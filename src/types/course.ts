@@ -77,7 +77,7 @@ export interface CourseTerm {
   end_date: string | null;
   course_id?: string;
   course_name?: string;
-  max_students: number;
+  max_students: number | null;
   created_at?: string;
   student_count?: number;
 }

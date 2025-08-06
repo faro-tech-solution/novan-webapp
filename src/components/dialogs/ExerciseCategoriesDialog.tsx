@@ -14,6 +14,23 @@ import {
   BookOpen,
   AlertCircle
 } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { ExerciseCategory } from '@/types/exercise';
 import { useExerciseCategoriesQuery } from '@/hooks/queries/useExerciseCategoriesQuery';
 import { useToast } from '@/hooks/use-toast';
@@ -30,6 +47,97 @@ interface CategoryFormData {
   name: string;
   description: string;
 }
+
+interface SortableCategoryItemProps {
+  category: ExerciseCategory;
+  onEdit: (category: ExerciseCategory) => void;
+  onDelete: (category: ExerciseCategory) => void;
+  editingCategory: ExerciseCategory | null;
+  isReordering?: boolean;
+}
+
+const SortableCategoryItem = ({ 
+  category, 
+  onEdit, 
+  onDelete, 
+  editingCategory,
+  isReordering = false
+}: SortableCategoryItemProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <Card 
+      ref={setNodeRef} 
+      style={style} 
+      className={`group ${isDragging ? 'opacity-50' : ''}`}
+    >
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div
+              {...attributes}
+              {...(isReordering ? {} : listeners)}
+              className={`touch-none ${
+                isReordering 
+                  ? 'cursor-not-allowed opacity-50' 
+                  : 'cursor-grab active:cursor-grabbing'
+              }`}
+            >
+              <GripVertical className="h-4 w-4 text-muted-foreground hover:text-primary" />
+            </div>
+            <div>
+              <h4 className="font-medium">{category.name}</h4>
+              {category.description && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  {category.description}
+                </p>
+              )}
+              <div className="flex items-center gap-2 mt-2">
+                <Badge variant="secondary" className="text-xs">
+                  {category.exercise_count || 0} تمرین
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  ترتیب: {category.order_index + 1}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onEdit(category)}
+              disabled={!!editingCategory || isReordering}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onDelete(category)}
+              disabled={!!editingCategory || (category.exercise_count || 0) > 0 || isReordering}
+              className="text-red-600 hover:text-red-700"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 const ExerciseCategoriesDialog = ({
   open,
@@ -53,10 +161,19 @@ const ExerciseCategoriesDialog = ({
     createCategory,
     updateCategory,
     deleteCategory,
+    reorderCategories,
     isCreating,
     isUpdating,
-    isDeleting
+    isDeleting,
+    isReordering
   } = useExerciseCategoriesQuery(courseId);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleCreateCategory = async () => {
     if (!formData.name.trim()) {
@@ -165,6 +282,38 @@ const ExerciseCategoriesDialog = ({
   const handleCancelCreate = () => {
     setShowCreateForm(false);
     setFormData({ name: '', description: '' });
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = categories.findIndex((category) => category.id === active.id);
+      const newIndex = categories.findIndex((category) => category.id === over?.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        try {
+          // Optimistically update the UI
+          const newCategories = arrayMove(categories, oldIndex, newIndex);
+          const categoryIds = newCategories.map(category => category.id);
+          
+          // Call the reorder API
+          await reorderCategories(categoryIds);
+          
+          toast({
+            title: "موفقیت",
+            description: "ترتیب دسته‌بندی‌ها با موفقیت تغییر کرد",
+          });
+        } catch (error) {
+          console.error('Error reordering categories:', error);
+          toast({
+            title: "خطا",
+            description: "خطا در تغییر ترتیب دسته‌بندی‌ها",
+            variant: "destructive",
+          });
+        }
+      }
+    }
   };
 
   if (loading) {
@@ -303,11 +452,19 @@ const ExerciseCategoriesDialog = ({
             {/* Categories List */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">دسته‌بندی‌ها ({categories.length})</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-semibold">دسته‌بندی‌ها ({categories.length})</h3>
+                  {isReordering && (
+                    <span className="text-sm text-muted-foreground animate-pulse">
+                      در حال بروزرسانی ترتیب...
+                    </span>
+                  )}
+                </div>
                 {!showCreateForm && !editingCategory && (
                   <Button 
                     onClick={() => setShowCreateForm(true)}
                     size="sm"
+                    disabled={isReordering}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     دسته‌بندی جدید
@@ -326,54 +483,29 @@ const ExerciseCategoriesDialog = ({
                   </CardContent>
                 </Card>
               ) : (
-                <div className="space-y-2">
-                  {categories.map((category) => (
-                    <Card key={category.id} className="group">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <GripVertical className="h-4 w-4 text-muted-foreground" />
-                            <div>
-                              <h4 className="font-medium">{category.name}</h4>
-                              {category.description && (
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  {category.description}
-                                </p>
-                              )}
-                              <div className="flex items-center gap-2 mt-2">
-                                <Badge variant="secondary" className="text-xs">
-                                  {category.exercise_count || 0} تمرین
-                                </Badge>
-                                <span className="text-xs text-muted-foreground">
-                                  ترتیب: {category.order_index + 1}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleEditCategory(category)}
-                              disabled={!!editingCategory}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => setDeletingCategory(category)}
-                              disabled={!!editingCategory || (category.exercise_count || 0) > 0}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext 
+                    items={categories.map(cat => cat.id)} 
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-2">
+                      {categories.map((category) => (
+                        <SortableCategoryItem
+                          key={category.id}
+                          category={category}
+                          onEdit={handleEditCategory}
+                          onDelete={setDeletingCategory}
+                          editingCategory={editingCategory}
+                          isReordering={isReordering}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               )}
             </div>
           </div>
@@ -384,7 +516,6 @@ const ExerciseCategoriesDialog = ({
       <ConfirmDeleteDialog
         open={!!deletingCategory}
         onOpenChange={(open) => !open && setDeletingCategory(null)}
-        item={deletingCategory}
         onConfirmDelete={handleDeleteCategory}
         title="حذف دسته‌بندی"
         description={`آیا از حذف دسته‌بندی "${deletingCategory?.name}" اطمینان دارید؟`}

@@ -16,7 +16,9 @@ import { AudioPlayer } from "./AudioPlayer";
 import { SimpleExerciseCompletion } from "./SimpleExerciseCompletion";
 import { SpotPlayerVideo } from "./SpotPlayerVideo";
 import { IframePlayer } from "./IframePlayer";
+import { ArvanVideoPlayer } from "./ArvanVideoPlayer";
 import { extractSpotPlayerData } from "@/utils/spotplayerExerciseUtils";
+import { extractArvanVideoData } from "@/utils/arvanVideoExerciseUtils";
 interface TraineeExerciseFormProps {
   exercise: {
     id: string;
@@ -58,9 +60,6 @@ export const TraineeExerciseForm = ({
     });
   }
   
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("fa-IR");
-  };
   const validateRequiredQuestions = (): boolean => {
     if (!exercise.form_structure?.questions) return true;
     const requiredQuestions = exercise.form_structure.questions.filter(
@@ -178,6 +177,40 @@ export const TraineeExerciseForm = ({
                     isCompleted={isSubmitted}
                     disabled={submitting || exercise.score !== undefined}
                   />
+                );
+              })()
+            ) : exercise.exercise_type === "arvan_video" ? (
+              (() => {
+                const arvanVideoData = extractArvanVideoData(exercise);
+                if (!arvanVideoData || !arvanVideoData.arvan_video_id) {
+                  return (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>این تمرین هنوز محتوایی ندارد</p>
+                      <p className="text-sm mt-2">شناسه ویدیو آروان تعریف نشده است</p>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="space-y-4">
+                    <ArvanVideoPlayer 
+                      videoId={arvanVideoData.arvan_video_id}
+                      className="w-full"
+                    />
+                    <div className="flex justify-center">
+                      <Button
+                        onClick={() => handleMediaSubmit()}
+                        disabled={submitting || exercise.score !== undefined}
+                        className="w-full max-w-md"
+                      >
+                        <Send className="h-4 w-4 mr-2" />
+                        {submitting
+                          ? "در حال ارسال..."
+                          : isSubmitted
+                          ? "بروزرسانی تکمیل"
+                          : "تکمیل تمرین"}
+                      </Button>
+                    </div>
+                  </div>
                 );
               })()
             ) : (

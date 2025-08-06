@@ -119,12 +119,10 @@ export const useTraineeDashboard = () => {
         console.error('Error fetching submissions:', submissionsError);
       }
 
-      // Process data
-      const now = new Date();
       const processedExercises: UpcomingExercise[] = [];
       let completedCount = 0;
       const pendingCount = 0;
-      let overdueCount = 0;
+      const overdueCount = 0;
       let totalPoints = 0;
 
       exercises?.forEach(exercise => {

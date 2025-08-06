@@ -143,7 +143,8 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       submission_id: typedSubmission?.id || undefined,
       metadata: typedExercise.metadata,
       spotplayer_course_id: (typedExercise.metadata as any)?.spotplayer_course_id,
-      spotplayer_item_id: (typedExercise.metadata as any)?.spotplayer_item_id
+      spotplayer_item_id: (typedExercise.metadata as any)?.spotplayer_item_id,
+      arvan_video_id: (typedExercise.metadata as any)?.arvan_video_id
     };
   } catch (error) {
     console.error('Error in fetchExerciseDetail:', error);

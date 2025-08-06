@@ -26,7 +26,7 @@ export const useExercisesQuery = (courseId?: string) => {
   });
 
   const createExerciseMutation = useMutation({
-    mutationFn: async (exerciseData: Partial<Exercise> & { spotplayer_course_id?: string; spotplayer_item_id?: string }) => {
+    mutationFn: async (exerciseData: Partial<Exercise> & { spotplayer_course_id?: string; spotplayer_item_id?: string; arvan_video_id?: string }) => {
       if (!user) throw new Error('کاربر وارد نشده است');
       return await createExercise({
         title: exerciseData.title || '',
@@ -42,7 +42,8 @@ export const useExercisesQuery = (courseId?: string) => {
         auto_grade: exerciseData.auto_grade || false,
         formStructure: exerciseData.form_structure || { questions: [] },
         spotplayer_course_id: exerciseData.spotplayer_course_id,
-        spotplayer_item_id: exerciseData.spotplayer_item_id
+        spotplayer_item_id: exerciseData.spotplayer_item_id,
+        arvan_video_id: exerciseData.arvan_video_id
       }, user.id);
     },
     onSuccess: () => {
@@ -51,7 +52,7 @@ export const useExercisesQuery = (courseId?: string) => {
   });
 
   const updateExerciseMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Exercise> & { spotplayer_course_id?: string; spotplayer_item_id?: string } }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Exercise> & { spotplayer_course_id?: string; spotplayer_item_id?: string; arvan_video_id?: string } }) => {
       if (!user) throw new Error('کاربر وارد نشده است');
       return await updateExercise(id, {
         title: data.title || '',
@@ -67,7 +68,8 @@ export const useExercisesQuery = (courseId?: string) => {
         auto_grade: data.auto_grade || false,
         formStructure: data.form_structure || { questions: [] },
         spotplayer_course_id: data.spotplayer_course_id,
-        spotplayer_item_id: data.spotplayer_item_id
+        spotplayer_item_id: data.spotplayer_item_id,
+        arvan_video_id: data.arvan_video_id
       });
     },
     onSuccess: () => {

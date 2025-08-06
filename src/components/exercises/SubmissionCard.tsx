@@ -35,7 +35,7 @@ export const SubmissionCard: React.FC<SubmissionCardProps> = ({ submission }) =>
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="space-y-2">
-            <CardTitle className="text-lg">{submission.exercise.title}</CardTitle>
+            <CardTitle className="text-lg">{submission?.exercise?.title}</CardTitle>
             <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600">
               <div className="flex items-center space-x-1 space-x-reverse">
                 <User className="h-4 w-4" />
@@ -77,9 +77,9 @@ export const SubmissionCard: React.FC<SubmissionCardProps> = ({ submission }) =>
                 <DialogTitle>پاسخ‌های {`${submission.student?.first_name} ${submission.student?.last_name}`}</DialogTitle>
               </DialogHeader>
               
-              {submission.exercise.form_structure && (
+              {submission?.exercise?.form_structure && (
                 <SubmissionViewer
-                  form={submission.exercise.form_structure}
+                  form={submission?.exercise?.form_structure}
                   answers={answers}
                   submissionInfo={{
                     studentName: `${submission.student?.first_name} ${submission.student?.last_name}`,

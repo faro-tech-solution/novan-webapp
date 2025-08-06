@@ -36,7 +36,7 @@ export const withQueryDebug = <T>(queryFn: () => Promise<T>, queryKey: QueryKey)
 
 // Observer to attach to a QueryClient
 export const queryDebugObserver = {
-  onSuccess: (data: unknown, query: any) => {
+  onSuccess: (_data: unknown, query: any) => {
     if (ENABLE_QUERY_DEBUG) {
       logQueryEvent('fetch', query.queryKey, 'success');
     }
@@ -46,7 +46,7 @@ export const queryDebugObserver = {
       logQueryEvent('fetch', query.queryKey, `error: ${error}`);
     }
   },
-  onSettled: (data: unknown, error: unknown, query: any) => {
+  onSettled: (_data: unknown, _error: unknown, query: any) => {
     if (ENABLE_QUERY_DEBUG) {
       logQueryEvent('fetch', query.queryKey, 'settled');
     }
