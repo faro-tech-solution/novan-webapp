@@ -14,4 +14,4 @@ fi
 psql -h localhost -U postgres -d postgres -f migrations/add_metadata_to_exercises.sql
 
 echo "✅ Metadata migration applied successfully!"
-echo "The exercises table now has a metadata field for storing SpotPlayer configuration." 
+echo "The exercises table now has a metadata field for storing exercise-specific configuration." 

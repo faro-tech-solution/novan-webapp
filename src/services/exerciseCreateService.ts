@@ -11,13 +11,12 @@ export interface CreateExerciseData {
   courseId: string;
   category_id?: string | null;
 
-  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'spotplayer' | 'iframe' | 'arvan_video';
+  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'arvan_video';
   content_url?: string | null;
   iframe_html?: string | null;
   auto_grade: boolean;
   formStructure: ExerciseForm | any;
-  spotplayer_course_id?: string;
-  spotplayer_item_id?: string;
+
   arvan_video_id?: string;
 }
 
@@ -43,15 +42,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
   try {
     const metadata: any = {};
     
-    // Add SpotPlayer metadata if it's a SpotPlayer exercise
-    if (exerciseData.exercise_type === 'spotplayer') {
-      if (exerciseData.spotplayer_course_id) {
-        metadata.spotplayer_course_id = exerciseData.spotplayer_course_id;
-      }
-      if (exerciseData.spotplayer_item_id) {
-        metadata.spotplayer_item_id = exerciseData.spotplayer_item_id;
-      }
-    }
+
 
     // Add Arvan Video metadata if it's an Arvan Video exercise
     if (exerciseData.exercise_type === 'arvan_video') {

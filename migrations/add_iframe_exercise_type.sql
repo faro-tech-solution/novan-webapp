@@ -10,7 +10,7 @@ BEGIN
     -- Add the new constraint with iframe included
     ALTER TABLE exercises 
     ADD CONSTRAINT exercises_exercise_type_check
-    CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'spotplayer', 'iframe'));
+    CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'iframe'));
     
     RAISE NOTICE 'Successfully added iframe to exercise_type check constraint';
 END $$; 

@@ -34,7 +34,7 @@ The video ID is the identifier from ArvanCloud's video service:
 ### Database Changes
 
 - Added `arvan_video` to the `exercise_type` enum constraint
-- Video ID is stored in the existing `metadata` JSON column (following the same pattern as SpotPlayer)
+- Video ID is stored in the existing `metadata` JSON column
 - Migration file: `migrations/add_arvan_video_exercise_type.sql`
 
 ### Files Modified
@@ -168,5 +168,5 @@ NEXT_PUBLIC_ARVAN_CLOUD_API_KEY=your_api_key_here
 
 ### Video ID Not Showing in Edit Form (Fixed)
 **Issue**: When editing an Arvan Video exercise, the video ID textbox was empty.
-**Root Cause**: The `fetchExerciseById` service was not extracting `arvan_video_id` from metadata like it did for SpotPlayer fields.
-**Solution**: Updated `fetchExerciseById` and `fetchExercises` functions to extract `arvan_video_id` from metadata and add it as a direct property to the exercise object, consistent with SpotPlayer field handling.
+**Root Cause**: The `fetchExerciseById` service was not extracting `arvan_video_id` from metadata.
+**Solution**: Updated `fetchExerciseById` and `fetchExercises` functions to extract `arvan_video_id` from metadata and add it as a direct property to the exercise object.
