@@ -4,3 +4,4 @@ export { default as ExerciseDetail } from './ExerciseDetail';
 export { default as MyExercises } from './MyExercises';
 export { default as ReviewSubmissions } from './ReviewSubmissions';
 export { default as CreateExercise } from './CreateExercise';
+export { default as AdminExercisesView } from './AdminExercisesView';

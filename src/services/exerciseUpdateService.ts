@@ -51,6 +51,7 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
         estimated_time: exerciseData.estimatedTime,
         points: exerciseData.points,
         course_id: exerciseData.courseId,
+        category_id: exerciseData.category_id || null,
 
         exercise_type: exerciseData.exercise_type,
         content_url: exerciseData.content_url,

@@ -16,6 +16,52 @@ export interface UpdateExerciseCategoryData {
   is_active?: boolean;
 }
 
+// Fetch all categories (for admin/trainer view)
+export const fetchAllExerciseCategories = async (): Promise<ExerciseCategory[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('exercise_categories')
+      .select(`
+        *,
+        courses (
+          id,
+          name
+        )
+      `)
+      .eq('is_active', true)
+      .order('order_index', { ascending: true })
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      if (error.message.includes('relation "exercise_categories" does not exist')) {
+        console.warn('Exercise categories table does not exist. Please run the migration first.');
+        return [];
+      }
+      throw new Error(`Error fetching exercise categories: ${error.message}`);
+    }
+
+    const categoriesWithCounts = await Promise.all(
+      (data || []).map(async (category: any) => {
+        const { count } = await supabase
+          .from('exercises')
+          .select('*', { count: 'exact', head: true })
+          .eq('category_id', category.id);
+
+        return {
+          ...category,
+          exercise_count: count || 0
+        };
+      })
+    );
+
+    return categoriesWithCounts as ExerciseCategory[];
+  } catch (error) {
+    console.error('Error in fetchAllExerciseCategories:', error);
+    // Return empty array in case of error to prevent breaking the UI
+    return [];
+  }
+};
+
 // Fetch categories for a specific course
 export const fetchExerciseCategories = async (courseId: string): Promise<ExerciseCategory[]> => {
   try {

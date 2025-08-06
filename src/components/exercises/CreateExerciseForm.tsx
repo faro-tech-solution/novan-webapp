@@ -16,7 +16,7 @@ const formSchema = z.object({
   title: z.string().min(1, "عنوان تمرین الزامی است"),
   description: z.string().optional(),
   course_id: z.string().min(1, "انتخاب دوره الزامی است"),
-  category_id: z.string().optional(),
+  category_id: z.string().optional().or(z.literal("no-category")),
   difficulty: z.string().min(1, "انتخاب سطح دشواری الزامی است"),
 
   points: z.number().min(0, "امتیاز باید 0 یا بیشتر باشد"),

@@ -86,6 +86,7 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
           name
         )
       `)
+      .order('category_id', { ascending: true, nullsFirst: true })
       .order('sort', { ascending: true })
       .order('created_at', { ascending: true });
 
@@ -100,7 +101,8 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
       throw new Error(`Error fetching exercises: ${error.message}`);
     }
 
-    return (data || []).map(exercise => {
+    // Sort exercises within each category
+    const exercises = (data || []).map(exercise => {
       // Parse metadata to extract SpotPlayer fields
       let spotplayer_course_id = "";
       let spotplayer_item_id = "";
@@ -129,7 +131,48 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
         arvan_video_id
       };
     }) as any[];
-    // })) as Exercise[];
+
+    // Group exercises by category and sort within each category
+    const exercisesByCategory: Record<string, any[]> = {};
+    const uncategorizedExercises: any[] = [];
+
+    exercises.forEach(exercise => {
+      const categoryId = exercise.category_id;
+      if (categoryId) {
+        if (!exercisesByCategory[categoryId]) {
+          exercisesByCategory[categoryId] = [];
+        }
+        exercisesByCategory[categoryId].push(exercise);
+      } else {
+        uncategorizedExercises.push(exercise);
+      }
+    });
+
+    // Sort exercises within each category by sort order, then by created_at
+    Object.keys(exercisesByCategory).forEach(categoryId => {
+      exercisesByCategory[categoryId].sort((a, b) => {
+        if (a.sort !== b.sort) {
+          return a.sort - b.sort;
+        }
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      });
+    });
+
+    // Sort uncategorized exercises
+    uncategorizedExercises.sort((a, b) => {
+      if (a.sort !== b.sort) {
+        return a.sort - b.sort;
+      }
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    });
+
+    // Combine all exercises back together
+    const sortedExercises = [
+      ...uncategorizedExercises,
+      ...Object.values(exercisesByCategory).flat()
+    ];
+
+    return sortedExercises;
   } catch (error) {
     console.error('Error in fetchExercises:', error);
     throw error;

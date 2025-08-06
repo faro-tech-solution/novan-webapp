@@ -9,6 +9,7 @@ export interface CreateExerciseData {
   estimatedTime: string;
   points: number;
   courseId: string;
+  category_id?: string | null;
 
   exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'spotplayer' | 'iframe' | 'arvan_video';
   content_url?: string | null;
@@ -59,6 +60,31 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       }
     }
 
+    // Get the next sort order for this course and category
+    let query = supabase
+      .from('exercises')
+      .select('sort')
+      .eq('course_id', exerciseData.courseId);
+    
+    // If category_id is provided, filter by category_id as well
+    if (exerciseData.category_id) {
+      query = query.eq('category_id', exerciseData.category_id);
+    } else {
+      // If no category_id, get exercises without category (uncategorized)
+      query = query.is('category_id', null);
+    }
+    
+    const { data: maxOrderData, error: maxOrderError } = await query
+      .order('sort', { ascending: false })
+      .limit(1);
+
+    if (maxOrderError) {
+      console.error('Error getting max sort order:', maxOrderError);
+      throw new Error(`Error getting max sort order: ${maxOrderError.message}`);
+    }
+
+    const nextSortOrder = maxOrderData && maxOrderData.length > 0 ? maxOrderData[0].sort + 1 : 0;
+
     const requestData = {
       title: exerciseData.title,
       description: exerciseData.description || null,
@@ -66,6 +92,8 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       estimated_time: exerciseData.estimatedTime || '-',
       points: exerciseData.points,
       course_id: exerciseData.courseId,
+      category_id: exerciseData.category_id || null,
+      sort: nextSortOrder,
 
       exercise_type: exerciseData.exercise_type,
       content_url: exerciseData.content_url,
