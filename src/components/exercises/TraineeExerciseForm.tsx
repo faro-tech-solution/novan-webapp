@@ -1,12 +1,5 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Send, Clock } from "lucide-react";
+import { Send } from "lucide-react";
 import { FormRenderer } from "./FormRenderer";
 import { ExerciseForm, FormAnswer } from "@/types/formBuilder";
 import { useToast } from "@/hooks/use-toast";
@@ -94,145 +87,103 @@ export const TraineeExerciseForm = ({
   const isSubmitted =
     exercise.submission_status === "completed" ||
     exercise.submission_status === "pending";
-  const canSubmit =
-    exercise.submission_status !== "overdue";
 
   return (
-    <Card>
-      {" "}
-      <CardHeader>
-        {" "}
-        <CardTitle>پاسخ به تمرین</CardTitle>{" "}
-        <CardDescription>
-          {" "}
-          {isSubmitted
-            ? "پاسخ شما قبلاً ارسال شده است. می‌توانید آن را ویرایش کنید."
-            : "لطفاً به سوالات زیر پاسخ دهید"}{" "}
-        </CardDescription>{" "}
-      </CardHeader>{" "}
-      <CardContent>
-        {" "}
-        {canSubmit ? (
-          <div className="space-y-6">
-            {" "}
-            {exercise.exercise_type === "form" &&
-            exercise.form_structure &&
-            exercise.form_structure.questions.length > 0 ? (
-              <FormRenderer
-                form={exercise.form_structure}
-                answers={answers}
-                onChange={onAnswersChange}
-                disabled={false}
-              />
-            ) : exercise.exercise_type === "video" && exercise.content_url ? (
-              <VideoPlayer
-                videoUrl={exercise.content_url}
-                onComplete={handleMediaSubmit}
-                isCompleted={isSubmitted}
-                disabled={submitting || exercise.score !== undefined}
-              />
-            ) : exercise.exercise_type === "audio" && exercise.content_url ? (
-              <AudioPlayer
-                audioUrl={exercise.content_url}
-                onComplete={handleMediaSubmit}
-                isCompleted={isSubmitted}
-                disabled={submitting || exercise.score !== undefined}
-              />
-            ) : exercise.exercise_type === "iframe" && exercise.iframe_html ? (
-              <IframePlayer
-                iframeHtml={exercise.iframe_html}
-                onComplete={handleMediaSubmit}
-                isCompleted={isSubmitted}
-                disabled={submitting || exercise.score !== undefined}
-              />
-            ) : exercise.exercise_type === "simple" ? (
-              <SimpleExerciseCompletion
-                onComplete={handleMediaSubmit}
-                isCompleted={isSubmitted}
-                disabled={submitting || exercise.score !== undefined}
-                              />
-            ) : exercise.exercise_type === "arvan_video" ? (
-              (() => {
-                const arvanVideoData = extractArvanVideoData(exercise);
-                if (!arvanVideoData || !arvanVideoData.arvan_video_id) {
-                  return (
-                    <div className="text-center py-8 text-gray-500">
-                      <p>این تمرین هنوز محتوایی ندارد</p>
-                      <p className="text-sm mt-2">شناسه ویدیو آروان تعریف نشده است</p>
-                    </div>
-                  );
-                }
-                return (
-                  <div className="space-y-4">
-                    <ArvanVideoPlayer 
-                      videoId={arvanVideoData.arvan_video_id}
-                      className="w-full"
-                    />
-                    <div className="flex justify-center">
-                      <Button
-                        onClick={() => handleMediaSubmit()}
-                        disabled={submitting || exercise.score !== undefined}
-                        className="w-full max-w-md"
-                      >
-                        <Send className="h-4 w-4 mr-2" />
-                        {submitting
-                          ? "در حال ارسال..."
-                          : isSubmitted
-                          ? "بروزرسانی تکمیل"
-                          : "تکمیل تمرین"}
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })()
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                {" "}
-                <p>این تمرین هنوز محتوایی ندارد</p>{" "}
-              </div>
-            )}{" "}
-            {exercise.exercise_type === "form" &&
-              exercise.form_structure &&
-              exercise.form_structure.questions.length > 0 && (
-                <div className="flex justify-end">
-                  {" "}
+    <div>
+      <div className="space-y-6">
+        {exercise.exercise_type === "form" &&
+        exercise.form_structure &&
+        exercise.form_structure.questions.length > 0 ? (
+          <FormRenderer
+            form={exercise.form_structure}
+            answers={answers}
+            onChange={onAnswersChange}
+            disabled={false}
+          />
+        ) : exercise.exercise_type === "video" && exercise.content_url ? (
+          <VideoPlayer
+            videoUrl={exercise.content_url}
+            onComplete={handleMediaSubmit}
+            isCompleted={isSubmitted}
+            disabled={submitting || exercise.score !== undefined}
+          />
+        ) : exercise.exercise_type === "audio" && exercise.content_url ? (
+          <AudioPlayer
+            audioUrl={exercise.content_url}
+            onComplete={handleMediaSubmit}
+            isCompleted={isSubmitted}
+            disabled={submitting || exercise.score !== undefined}
+          />
+        ) : exercise.exercise_type === "iframe" && exercise.iframe_html ? (
+          <IframePlayer
+            iframeHtml={exercise.iframe_html}
+            onComplete={handleMediaSubmit}
+            isCompleted={isSubmitted}
+            disabled={submitting || exercise.score !== undefined}
+          />
+        ) : exercise.exercise_type === "simple" ? (
+          <SimpleExerciseCompletion
+            onComplete={handleMediaSubmit}
+            isCompleted={isSubmitted}
+            disabled={submitting || exercise.score !== undefined}
+          />
+        ) : exercise.exercise_type === "arvan_video" ? (
+          (() => {
+            const arvanVideoData = extractArvanVideoData(exercise);
+            if (!arvanVideoData || !arvanVideoData.arvan_video_id) {
+              return (
+                <div className="text-center py-8 text-gray-500">
+                  <p>این تمرین هنوز محتوایی ندارد</p>
+                  <p className="text-sm mt-2">شناسه ویدیو آروان تعریف نشده است</p>
+                </div>
+              );
+            }
+            return (
+              <div className="space-y-4">
+                <ArvanVideoPlayer 
+                  videoId={arvanVideoData.arvan_video_id}
+                  className="w-full"
+                />
+                {!isSubmitted && (
+                <div className="flex justify-center">
                   <Button
-                    onClick={handleSubmit}
+                    onClick={() => handleMediaSubmit()}
                     disabled={submitting || exercise.score !== undefined}
+                    className="w-full max-w-md"
                   >
-                    {" "}
-                    <Send className="h-4 w-4 mr-2" />{" "}
+                    <Send className="h-4 w-4 mr-2" />
                     {submitting
                       ? "در حال ارسال..."
-                      : isSubmitted
-                      ? "بروزرسانی پاسخ"
-                      : "ارسال پاسخ"}{" "}
-                  </Button>{" "}
+                      : "تکمیل تمرین"}
+                  </Button>
                 </div>
-              )}{" "}
-          </div>
+                )}
+              </div>
+            );
+          })()
         ) : (
-          <div className="text-center py-8">
-            {" "}
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              {" "}
-              <Clock className="h-8 w-8 text-gray-600" />{" "}
-            </div>{" "}
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              {" "}
-              {exercise.submission_status === "overdue"
-                ? "مهلت تمرین به پایان رسیده"
-                : "تمرین هنوز شروع نشده"}{" "}
-            </h3>{" "}
-            <p className="text-gray-600">
-              {" "}
-              {exercise.submission_status === "overdue"
-                ? "متأسفانه مهلت ارسال این تمرین به پایان رسیده است."
-                : "این تمرین هنوز شروع نشده است."}{" "}
-            </p>{" "}
+          <div className="text-center py-8 text-gray-500">
+            <p>این تمرین هنوز محتوایی ندارد</p>
           </div>
-        )}{" "}
-      </CardContent>{" "}
-    </Card>
+        )}
+        {exercise.exercise_type === "form" &&
+          exercise.form_structure &&
+          exercise.form_structure.questions.length > 0 && (
+            <div className="flex justify-end">
+              <Button
+                onClick={handleSubmit}
+                disabled={submitting || exercise.score !== undefined}
+              >
+                <Send className="h-4 w-4 mr-2" />
+                {submitting
+                  ? "در حال ارسال..."
+                  : isSubmitted
+                  ? "بروزرسانی پاسخ"
+                  : "ارسال پاسخ"}
+              </Button>
+            </div>
+          )}
+      </div>
+    </div>
   );
 };

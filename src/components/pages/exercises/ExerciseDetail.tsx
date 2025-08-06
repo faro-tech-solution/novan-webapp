@@ -9,13 +9,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { FormAnswer } from "@/types/formBuilder";
 import { ExerciseDetailHeader } from "@/components/exercises/ExerciseDetailHeader";
 import { ExerciseInfoCard } from "@/components/exercises/ExerciseInfoCard";
-import { TraineeExerciseForm } from "@/components/exercises/TraineeExerciseForm";
-import { TraineeFeedbackDisplay } from "@/components/exercises/TraineeFeedbackDisplay";
 import { InstructorFormView } from "@/components/exercises/InstructorFormView";
 import { ExerciseConversation } from "@/components/exercises/ExerciseConversation";
 import { useExerciseDetailQuery, useSubmitExerciseMutation } from "@/hooks/queries/useExerciseDetailQuery";
 import { Submission } from "@/types/reviewSubmissions";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const ExerciseDetail = () => {
   const params = useParams();
@@ -133,48 +130,15 @@ const ExerciseDetail = () => {
         />
 
         <ExerciseInfoCard
+          exercise={exercise}
           title={exercise.title}
           courseName={exercise.course_name}
           description={exercise.description}
+          answers={answers}
+          setAnswers={setAnswers}
+          handleSubmit={handleSubmit}
+          submitMutation={submitMutation}
         />
-
-        {/* Submission Status Notification for Trainees */}
-        {profile?.role === "trainee" &&
-          exercise.submission_status === "completed" && (
-            <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800">
-                تمرین قبلا ارسال شده است. شما این تمرین را با موفقیت تکمیل
-                کرده‌اید.
-                {exercise.score !== null && exercise.score !== undefined && (
-                  <span className="font-semibold">
-                    {" "}
-                    نمره دریافتی: {exercise.score}
-                  </span>
-                )}
-              </AlertDescription>
-            </Alert>
-          )}
-
-        {/* Feedback Display for Trainees */}
-        {profile?.role === "trainee" && exercise.feedback && (
-          <TraineeFeedbackDisplay
-            feedback={exercise.feedback}
-            score={exercise.score}
-          />
-        )}
-
-        {profile?.role === "trainee" &&
-          exercise.submission_status !== "completed" && (
-            <TraineeExerciseForm
-              exercise={exercise}
-              answers={answers}
-              onAnswersChange={setAnswers}
-              onSubmit={handleSubmit}
-              submitting={submitMutation.isPending}
-              userId={user?.id}
-            />
-          )}
 
         {(profile?.role === "trainer" || profile?.role === "admin") && (
           <>
