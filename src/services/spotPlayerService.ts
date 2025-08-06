@@ -16,7 +16,7 @@ export class SpotPlayerService {
     if (!this.API_KEY) {
       throw new Error('SpotPlayer API key is not configured. Please set NEXT_PUBLIC_SPOTPLAYER_API_KEY or SPOTPLAYER_API_KEY environment variable.');
     }
-
+    console.log(courseId)
     console.log('Creating SpotPlayer license with:', {
       API_BASE_URL: this.API_BASE_URL,
       API_KEY: this.API_KEY ? '***configured***' : 'NOT_CONFIGURED',

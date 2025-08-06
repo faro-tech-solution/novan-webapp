@@ -6,7 +6,6 @@ import { useMyExercisesQuery } from './useMyExercisesQuery';
 interface DashboardStats {
   completedExercises: number;
   pendingExercises: number;
-  overdueExercises: number;
   totalPoints: number;
 }
 
@@ -41,7 +40,6 @@ export const useTraineeDashboardQuery = () => {
   const stats: DashboardStats = {
     completedExercises: currentExercises.filter(e => e.submission_status === 'completed').length,
     pendingExercises: 0,
-    overdueExercises: 0,
     totalPoints: currentExercises
       .filter(e => e.submission_status === 'completed')
       .reduce((sum, e) => sum + e.points, 0)

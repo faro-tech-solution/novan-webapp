@@ -28,5 +28,6 @@ export { AudioPlayer } from './AudioPlayer';
 export { SimpleExerciseCompletion } from './SimpleExerciseCompletion';
 export { SpotPlayerVideo } from './SpotPlayerVideo';
 export { IframePlayer } from './IframePlayer';
+export { ArvanVideoPlayer } from './ArvanVideoPlayer';
 export { ExerciseTypeSection } from './ExerciseTypeSection';
 export { ExerciseConversation } from './ExerciseConversation';

@@ -146,6 +146,29 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
               </div>
             )}
 
+            {exerciseType === "arvan_video" && (
+              <FormField
+                control={form.control}
+                name="arvan_video_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>شناسه ویدیو آروان *</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="waV5ZLBklg"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <p className="text-sm text-muted-foreground">
+                      شناسه ویدیو در سرویس آروان کلود (Video ID)
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             
           </div>
 
@@ -238,6 +261,22 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                           <ExternalLink className="h-4 w-4 ml-1" />
                           <div>
                             <div className="font-medium">iframe</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="arvan_video" id="arvan_video" />
+                        <Label
+                          htmlFor="arvan_video"
+                          className="flex items-center cursor-pointer text-sm"
+                        >
+                          <Video className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">ویدیو آروان</div>
+                            <div className="text-xs text-muted-foreground">
+                              CDN ایمن ویدیو آروان کلود
+                            </div>
                           </div>
                         </Label>
                       </div>

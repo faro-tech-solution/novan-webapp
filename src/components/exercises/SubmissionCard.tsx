@@ -79,7 +79,7 @@ export const SubmissionCard: React.FC<SubmissionCardProps> = ({ submission }) =>
               
               {submission.exercise?.form_structure && (
                 <SubmissionViewer
-                  form={submission.exercise.form_structure}
+                  form={submission?.exercise?.form_structure}
                   answers={answers}
                   submissionInfo={{
                     studentName: `${submission.student?.first_name} ${submission.student?.last_name}`,

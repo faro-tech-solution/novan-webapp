@@ -44,8 +44,7 @@ const ForgetPassword = () => {
 
   // Check for access token in URL hash for password reset
   useEffect(() => {
-    // Only run on client side
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return; // Skip on server-side
     
     const hash = window.location.hash;
     console.log("Current hash:", hash);

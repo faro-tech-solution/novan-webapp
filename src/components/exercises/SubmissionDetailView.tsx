@@ -7,7 +7,7 @@ import { ExerciseForm, FormAnswer } from "@/types/formBuilder";
 import { Submission } from "@/types/reviewSubmissions";
 
 interface SubmissionDetailViewProps {
-  submission: Submission;
+  submission: Submission | any;
   onBack: () => void;
 }
 

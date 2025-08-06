@@ -4,19 +4,20 @@ import { ExerciseForm } from '@/types/formBuilder';
 
 export interface CreateExerciseData {
   title: string;
-  description?: string;
+  description?: string | null;
   difficulty: string;
   estimatedTime: string;
   points: number;
   courseId: string;
 
-  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'spotplayer' | 'iframe';
+  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'spotplayer' | 'iframe' | 'arvan_video';
   content_url?: string | null;
   iframe_html?: string | null;
   auto_grade: boolean;
-  formStructure: ExerciseForm;
+  formStructure: ExerciseForm | any;
   spotplayer_course_id?: string;
   spotplayer_item_id?: string;
+  arvan_video_id?: string;
 }
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
@@ -51,7 +52,12 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       }
     }
 
-
+    // Add Arvan Video metadata if it's an Arvan Video exercise
+    if (exerciseData.exercise_type === 'arvan_video') {
+      if (exerciseData.arvan_video_id) {
+        metadata.arvan_video_id = exerciseData.arvan_video_id;
+      }
+    }
 
     const requestData = {
       title: exerciseData.title,

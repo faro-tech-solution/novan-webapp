@@ -27,8 +27,9 @@ export const useProgressStatsQuery = () => {
       const completedExercises = myExercises.filter(ex => ex.submission_status === 'completed');
       const totalExercises = myExercises.length;
       
+      // Since 'score' does not exist on the exercise type, use 'points' instead for averageScore
       const averageScore = completedExercises.length > 0 
-        ? Math.round(completedExercises.reduce((sum, ex) => sum + ("score" in ex && typeof (ex as any).score === 'number' ? (ex as any).score : 0), 0) / completedExercises.length)
+        ? Math.round(completedExercises.reduce((sum, ex) => sum + ("points" in ex && typeof (ex as any).points === 'number' ? (ex as any).points : 0), 0) / completedExercises.length)
         : 0;
 
       // Calculate total hours (estimated time for completed exercises)

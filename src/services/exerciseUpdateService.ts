@@ -35,7 +35,12 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
       }
     }
 
-
+    // Add Arvan Video metadata if it's an Arvan Video exercise
+    if (exerciseData.exercise_type === 'arvan_video') {
+      if (exerciseData.arvan_video_id) {
+        metadata.arvan_video_id = exerciseData.arvan_video_id;
+      }
+    }
 
     const { data, error } = await supabase
       .from('exercises')

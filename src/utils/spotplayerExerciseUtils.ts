@@ -43,7 +43,7 @@ export const createSpotPlayerExercise = async (params: CreateSpotPlayerExerciseP
 
     const { data, error } = await supabase
       .from('exercises')
-      .insert(exercise)
+      .insert(exercise as any)
       .select()
       .single();
 

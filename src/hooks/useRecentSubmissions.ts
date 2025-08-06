@@ -33,10 +33,13 @@ export const useRecentSubmissions = () => {
         .from('exercise_submissions')
         .select(`
           id,
-          student_name,
           score,
           submitted_at,
           exercise_id,
+          student:profiles!exercise_submissions_student_id_fkey(
+            first_name,
+            last_name
+          ),
           exercises!inner(
             title,
             course_id,

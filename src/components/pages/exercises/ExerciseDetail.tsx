@@ -274,6 +274,19 @@ const ExerciseDetail = () => {
                   </p>
                 </div>
               </div>
+            ) : exercise.exercise_type === "arvan_video" ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">محتوای ویدیو آروان</h3>
+                <div className="bg-gray-50 p-4 rounded-md space-y-3">
+                  <div>
+                    <p className="font-medium text-sm text-gray-700">شناسه ویدیو:</p>
+                    <p className="text-gray-900 font-mono">{exercise.metadata?.arvan_video_id || 'تعریف نشده'}</p>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    این تمرین از سرویس ویدیو آروان کلود استفاده می‌کند. ویدیو از طریق CDN ایمن آروان ارائه می‌شود.
+                  </p>
+                </div>
+              </div>
             ) : null}
 
             <div className="bg-blue-50 p-4 rounded-md mt-6">

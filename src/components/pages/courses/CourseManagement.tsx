@@ -132,7 +132,7 @@ const CourseManagement = () => {
 
         {/* Courses Grid */}
         <CourseGrid
-          courses={courses}
+          courses={courses as any}
           userRole={profile?.role}
           userId={profile?.id}
           canCreateCourses={canCreateCourses}

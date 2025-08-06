@@ -33,14 +33,14 @@ export interface CourseStudent {
 // Student interface for profile modal
 export interface StudentProfile {
   id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  role: string | null;
   is_demo?: boolean;
   class_id: string | null;
   class_name: string | null;
-  created_at: string;
+  created_at: string | null;
 }
 
 // Student interface for enrollment details

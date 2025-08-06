@@ -54,7 +54,7 @@ export const SpotPlayerVideo: React.FC<SpotPlayerVideoProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const { toast } = useToast();
-
+  console.log({exerciseId})
   // Load SpotPlayer script
   useEffect(() => {
     const existingScript = document.querySelector('script[src*="app-api.js"]');

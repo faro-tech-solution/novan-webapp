@@ -30,7 +30,7 @@ const EditTermDialog = ({ open, onOpenChange, term, onTermUpdated }: EditTermDia
         name: term.name,
         start_date: term.start_date || '',
         end_date: term.end_date || '',
-        max_students: term.max_students,
+        max_students: term.max_students || 0,
       });
     }
   }, [term]);

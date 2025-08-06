@@ -70,6 +70,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
           form_structure: data.form_structure || { questions: [] },
           spotplayer_course_id: data.spotplayer_course_id,
           spotplayer_item_id: data.spotplayer_item_id,
+          arvan_video_id: data.arvan_video_id,
         };
 
         if (exerciseId) {
@@ -130,6 +131,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
       form_structure: (typeof exercise.form_structure === 'object' && exercise.form_structure !== null ? exercise.form_structure : { questions: [] }) as any,
       spotplayer_course_id: (exercise as any).spotplayer_course_id || "",
       spotplayer_item_id: (exercise as any).spotplayer_item_id || "",
+      arvan_video_id: (exercise as any).arvan_video_id || "",
     };
   }, [exercise]);
 

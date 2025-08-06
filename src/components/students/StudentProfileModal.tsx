@@ -202,7 +202,7 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
                     <label className="text-sm font-medium text-gray-500">تاریخ عضویت</label>
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-1 text-gray-400" />
-                      <p>{new Date(profile.created_at).toLocaleDateString('fa-IR')}</p>
+                      <p>{profile.created_at ? new Date(profile.created_at).toLocaleDateString('fa-IR') : 'نامشخص'}</p>
                     </div>
                   </div>
                 </div>

@@ -43,6 +43,7 @@ import EditTermDialog from "@/components/dialogs/EditTermDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { CourseTerm } from "@/types/course";
+import { formatDate } from "@/lib/utils";
 
 interface CourseTermsManagementProps {
   courseId: string;
@@ -175,11 +176,6 @@ const CourseTermsManagement = ({
     }
   };
 
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "تعین نشده";
-    return new Date(dateStr).toLocaleDateString("fa-IR");
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-32">
@@ -242,13 +238,13 @@ const CourseTermsManagement = ({
                     {term.name}
                   </TableCell>
                   <TableCell className="text-right">
-                    {formatDate(term.start_date)}
+                    {formatDate({dateString: term.start_date || ''})}
                   </TableCell>
                   <TableCell className="text-right">
-                    {formatDate(term.end_date)}
+                    {formatDate({dateString: term.end_date || ''})}
                   </TableCell>
                   <TableCell className="text-right">
-                    {term.max_students === 0 ? "نامحدود" : term.max_students}
+                    {term.max_students === 0 || term.max_students === null ? "نامحدود" : term.max_students}
                   </TableCell>
                   {canViewStudentCounts && (
                     <TableCell className="text-right">

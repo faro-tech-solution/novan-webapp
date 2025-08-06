@@ -23,7 +23,7 @@ export interface UserProfile {
   english_level?: "beginner" | "intermediate" | "advanced" | "native";
   telegram_id?: string;
   whatsapp_id?: string;
-  language_preference?: "fa" | "en";
+  language_preference?: "fa" | "en" | null;
 }
 
 interface AuthContextType {
@@ -208,7 +208,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     password: string,
     role: UserRole
   ) => {
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/` : '/';
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -234,7 +234,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const resetPassword = async (email: string) => {
     // Redirect to forget password page
-    const redirectUrl = `${window.location.origin}/forget_password`;
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/forget_password` : '/forget_password';
     console.log("Password reset redirect URL:", redirectUrl);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
