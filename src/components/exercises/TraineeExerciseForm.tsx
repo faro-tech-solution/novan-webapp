@@ -44,7 +44,6 @@ export const TraineeExerciseForm = ({
   onAnswersChange,
   onSubmit,
   submitting,
-  userId,
 }: TraineeExerciseFormProps) => {
   const { toast } = useToast();
   
