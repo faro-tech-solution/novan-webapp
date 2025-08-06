@@ -255,25 +255,7 @@ const ExerciseDetail = () => {
                   </p>
                 </div>
               </div>
-            ) : exercise.exercise_type === "spotplayer" ? (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">محتوای تمرین SpotPlayer</h3>
-                <div className="bg-gray-50 p-4 rounded-md space-y-3">
-                  <div>
-                    <p className="font-medium text-sm text-gray-700">شناسه دوره SpotPlayer:</p>
-                    <p className="text-gray-900 font-mono">{exercise.metadata?.spotplayer_course_id || 'تعریف نشده'}</p>
-                  </div>
-                  {exercise.metadata?.spotplayer_item_id && (
-                    <div>
-                      <p className="font-medium text-sm text-gray-700">شناسه آیتم SpotPlayer:</p>
-                      <p className="text-gray-900 font-mono">{exercise.metadata.spotplayer_item_id}</p>
-                    </div>
-                  )}
-                  <p className="text-sm text-gray-600">
-                    این تمرین از پلتفرم SpotPlayer استفاده می‌کند. دانشجویان برای مشاهده ویدیو نیاز به لایسنس معتبر دارند.
-                  </p>
-                </div>
-              </div>
+
             ) : exercise.exercise_type === "arvan_video" ? (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">محتوای ویدیو آروان</h3>

@@ -14,10 +14,8 @@ import { ExerciseType } from "@/types/exercise";
 import { VideoPlayer } from "./VideoPlayer";
 import { AudioPlayer } from "./AudioPlayer";
 import { SimpleExerciseCompletion } from "./SimpleExerciseCompletion";
-import { SpotPlayerVideo } from "./SpotPlayerVideo";
 import { IframePlayer } from "./IframePlayer";
 import { ArvanVideoPlayer } from "./ArvanVideoPlayer";
-import { extractSpotPlayerData } from "@/utils/spotplayerExerciseUtils";
 import { extractArvanVideoData } from "@/utils/arvanVideoExerciseUtils";
 interface TraineeExerciseFormProps {
   exercise: {
@@ -153,32 +151,7 @@ export const TraineeExerciseForm = ({
                 onComplete={handleMediaSubmit}
                 isCompleted={isSubmitted}
                 disabled={submitting || exercise.score !== undefined}
-              />
-            ) : exercise.exercise_type === "spotplayer" && 
-               exercise.course_id && 
-               userId ? (
-              (() => {
-                const spotplayerData = extractSpotPlayerData(exercise);
-                if (!spotplayerData || !spotplayerData.spotplayer_course_id) {
-                  return (
-                    <div className="text-center py-8 text-gray-500">
-                      <p>این تمرین هنوز محتوایی ندارد</p>
-                    </div>
-                  );
-                }
-                return (
-                  <SpotPlayerVideo
-                    exerciseId={exercise.id}
-                    courseId={exercise.course_id}
-                    spotplayerCourseId={spotplayerData.spotplayer_course_id}
-                    spotplayerItemId={spotplayerData.spotplayer_item_id}
-                    userId={userId}
-                    onComplete={handleMediaSubmit}
-                    isCompleted={isSubmitted}
-                    disabled={submitting || exercise.score !== undefined}
-                  />
-                );
-              })()
+                              />
             ) : exercise.exercise_type === "arvan_video" ? (
               (() => {
                 const arvanVideoData = extractArvanVideoData(exercise);

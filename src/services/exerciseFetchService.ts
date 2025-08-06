@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Exercise } from '@/types/exercise';
 import { ExerciseForm } from '@/types/formBuilder';
-import { extractSpotPlayerData } from '@/utils/spotplayerExerciseUtils';
+
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
   if (!form_structure) {
@@ -43,15 +43,7 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
       throw new Error('Exercise not found');
     }
 
-    // Parse metadata to extract SpotPlayer fields
-    let spotplayer_course_id = "";
-    let spotplayer_item_id = "";
     
-    const spotplayerData = extractSpotPlayerData(data as any);
-    if (spotplayerData) {
-      spotplayer_course_id = spotplayerData.spotplayer_course_id;
-      spotplayer_item_id = spotplayerData.spotplayer_item_id || "";
-    }
 
     // Parse metadata to extract Arvan Video fields
     let arvan_video_id = "";
@@ -66,8 +58,7 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
       ...data,
       course_name: data.courses.name,
       form_structure: parseFormStructure(data.form_structure),
-      spotplayer_course_id,
-      spotplayer_item_id,
+
       arvan_video_id
     } as any as Exercise;
   } catch (error) {
@@ -103,15 +94,7 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
 
     // Sort exercises within each category
     const exercises = (data || []).map(exercise => {
-      // Parse metadata to extract SpotPlayer fields
-      let spotplayer_course_id = "";
-      let spotplayer_item_id = "";
       
-      const spotplayerData = extractSpotPlayerData(exercise as any);
-      if (spotplayerData) {
-        spotplayer_course_id = spotplayerData.spotplayer_course_id;
-        spotplayer_item_id = spotplayerData.spotplayer_item_id || "";
-      }
 
       // Parse metadata to extract Arvan Video fields
       let arvan_video_id = "";
@@ -126,8 +109,7 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
         ...exercise,
         course_name: exercise.courses.name,
         form_structure: parseFormStructure(exercise.form_structure),
-        spotplayer_course_id,
-        spotplayer_item_id,
+
         arvan_video_id
       };
     }) as any[];
