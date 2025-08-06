@@ -103,8 +103,6 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
     let messageToSend = newMessage;
     const imageUrls: string[] = [];
 
-    console.log('handleSendMessage: isComplete', isComplete);
-    
     console.log('handleSendMessage: Starting with', selectedFiles.length, 'files');
     
     // Upload all files

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FormAnswer, ExerciseForm } from '@/types/formBuilder';
@@ -15,13 +15,13 @@ interface SubmissionViewerProps {
   };
 }
 
-export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({
+export const SubmissionViewer = ({
   form,
   answers,
   submissionInfo
-}) => {
+}: SubmissionViewerProps): ReactElement => {
   const getAnswer = (questionId: string): string | string[] => {
-    const answer = answers.find(a => a.questionId === questionId);
+    const answer = answers.find((a: FormAnswer) => a.questionId === questionId);
     return answer?.answer || '';
   };
 
@@ -46,7 +46,7 @@ export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({
             </div>
             <div className="flex justify-between items-center">
               <span className="font-medium">تاریخ ارسال:</span>
-              <span>{formatDate(submissionInfo.submittedAt)}</span>
+              <span>{formatDate({dateString: submissionInfo.submittedAt || ''})}</span>
             </div>
             {submissionInfo.score !== undefined && (
               <div className="flex justify-between items-center">
@@ -67,7 +67,7 @@ export const SubmissionViewer: React.FC<SubmissionViewerProps> = ({
       )}
 
       {form?.questions && form.questions.length > 0 ? (
-        form.questions.map((question, index) => {
+        form.questions.map((question: any, index: number) => {
           const answer = getAnswer(question.id);
           const hasAnswer = Array.isArray(answer) ? answer.length > 0 : answer.toString().trim() !== '';
 
