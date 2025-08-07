@@ -218,8 +218,8 @@ const ForgetPassword = () => {
         setStoredAccessToken(null);
         setStoredRefreshToken(null);
         // Clear the hash from URL and redirect to login
-        window.history.replaceState(null, "", "/");
-        router.push("/");
+        window.history.replaceState(null, "", "/portal/login");
+        router.push("/portal/login");
       }
     } finally {
       setUpdatePasswordLoading(false);
@@ -313,7 +313,7 @@ const ForgetPassword = () => {
                   درخواست مجدد
                 </Button>
                 <div className="text-sm">
-                  <Link href="/" className="text-teal-600 hover:text-teal-700">
+                  <Link href="/portal/login" className="text-teal-600 hover:text-teal-700">
                     بازگشت به صفحه ورود
                   </Link>
                 </div>
@@ -359,7 +359,7 @@ const ForgetPassword = () => {
             </form>
 
             <div className="mt-4 text-center text-sm">
-              <Link href="/" className="text-teal-600 hover:text-teal-700">
+              <Link href="/portal/login" className="text-teal-600 hover:text-teal-700">
                 بازگشت به صفحه ورود
               </Link>
             </div>

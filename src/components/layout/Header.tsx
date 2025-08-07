@@ -37,7 +37,7 @@ const Header = ({
   const pathname = usePathname();
 
   // Only show NotificationBell on trainee dashboard URLs
-  const showNotificationBell = pathname?.startsWith('/trainee/') || false;
+  const showNotificationBell = pathname?.startsWith('/portal/trainee/') || false;
 
   return (
     <header style={{ width: '100vw', background: 'transparent', boxShadow: 'none', border: 'none', margin: 0, padding: 0 }}>
@@ -94,13 +94,13 @@ const Header = ({
               ) : (
                 !isDashboard && (
                   <div className="flex items-center space-x-2 space-x-reverse">
-                    <Link href="/">
+                    <Link href="/portal/login">
                       <Button variant="outline">
                         <LogIn className="h-4 w-4 ml-2" />
                         {tCommon("login")}
                       </Button>
                     </Link>
-                    <Link href="/register">
+                    <Link href="/portal/register">
                       <Button className="bg-teal-500 hover:bg-teal-600 text-white">
                         {tCommon("register")}
                       </Button>
@@ -139,28 +139,28 @@ const Header = ({
                   {tCommon("home")}
                 </Link>
                 <Link
-                  href="/courses"
+                  href="/portal/trainee/all-courses"
                   className="text-gray-700 hover:text-teal-600 transition-colors"
                 >
                   {tCommon("courses")}
                 </Link>
                 {(profile?.role === "trainer" || profile?.role === "admin") && (
                   <Link
-                    href="/students"
+                    href="/portal/trainer/students"
                     className="text-gray-700 hover:text-teal-600 transition-colors"
                   >
                     {tCommon("students")}
                   </Link>
                 )}
                 <Link
-                  href="/instructors"
+                  href="/portal/instructors"
                   className="text-gray-700 hover:text-teal-600 transition-colors"
                 >
                   {tCommon("instructors")}
                 </Link>
                 {profile && (
                   <Link
-                    href={profile?.role ? `/${profile.role}/dashboard` : "/"}
+                    href={profile?.role ? `/portal/${profile.role}/dashboard` : "/"}
                     className="text-gray-700 hover:text-teal-600 transition-colors"
                   >
                     {tCommon("dashboard")}
@@ -169,13 +169,13 @@ const Header = ({
                 {!profile && (
                   <>
                     <Link
-                      href="/"
+                      href="/portal/login"
                       className="text-gray-700 hover:text-teal-600 transition-colors"
                     >
                       {tCommon("login")}
                     </Link>
                     <Link
-                      href="/register"
+                      href="/portal/register"
                       className="text-gray-700 hover:text-teal-600 transition-colors"
                     >
                       {tCommon("register")}

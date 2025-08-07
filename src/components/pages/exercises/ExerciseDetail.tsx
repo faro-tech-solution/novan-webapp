@@ -81,9 +81,9 @@ const ExerciseDetail = () => {
         onSuccess: () => {
           // Navigate to the correct trainee URL structure
           if (profile?.role === "trainee" && exercise.course_id) {
-            router.push(`/trainee/${exercise.course_id}/my-exercises`);
+            router.push(`/portal/trainee/${exercise.course_id}/my-exercises`);
           } else {
-            router.push("/my-exercises");
+            router.push("/portal/trainee/all-courses");
           }
         },
       }

@@ -1,14 +1,14 @@
 export function getDashboardPathForRole(role: string): string {
   switch (role) {
     case 'trainer':
-      return '/trainer/dashboard';
+      return '/portal/trainer/dashboard';
     case 'trainee':
-      return '/trainee/all-courses';  
+      return '/portal/trainee/all-courses';  
     case 'admin':
-      return '/admin/dashboard';
+      return '/portal/admin/dashboard';
     case 'teammate':
-      return '/teammate/dashboard';
+      return '/portal/teammate/dashboard';
     default:
-      return '/';
+      return '/portal/login';
   }
 } 

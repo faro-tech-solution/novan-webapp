@@ -103,7 +103,7 @@ export const MyExerciseTable = ({ exercises }: MyExerciseTableProps) => {
                 </TableCell>
                 <TableCell>{exercise.estimated_time}</TableCell>
                 <TableCell>
-                  <Link href={courseId ? `/trainee/${courseId}/exercise/${exercise.id}` : `/exercise/${exercise.id}` }>
+                  <Link href={courseId ? `/portal/trainee/${courseId}/exercise/${exercise.id}` : `/portal/exercise/${exercise.id}` }>
                     <Button size="sm" variant="outline">
                       {exercise.submission_status === 'completed' ? 'مشاهده' : 'شروع'}
                     </Button>

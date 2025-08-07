@@ -38,7 +38,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">مدیریت</div>
               <p className="text-xs text-muted-foreground">کاربران و نقش‌ها</p>
-              <Link href="/admin/user-management">
+              <Link href="/portal/admin/user-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">دوره‌ها</div>
               <p className="text-xs text-muted-foreground">ایجاد و مدیریت</p>
-              <Link href="/admin/courses-management">
+              <Link href="/portal/admin/courses-management">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">لیست</div>
               <p className="text-xs text-muted-foreground">مشاهده دانشجویان</p>
-              <Link href="/admin/students">
+              <Link href="/portal/admin/students">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
               <p className="text-xs text-muted-foreground">
                 تمرین‌ها و آزمون‌ها
               </p>
-              <Link href="/admin/exercises">
+              <Link href="/portal/admin/exercises">
                 <Button variant="outline" size="sm" className="mt-2">
                   مشاهده
                 </Button>

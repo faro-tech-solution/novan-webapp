@@ -9,6 +9,6 @@ export function useGoToTraineeCourseDashboard() {
 
   return (courseId: string) => {
     setCourseId(courseId);
-    router.push(`/trainee/${courseId}/dashboard`);
+    router.push(`/portal/trainee/${courseId}/dashboard`);
   };
 } 

@@ -44,42 +44,42 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const handleLogout = async () => {
     await logout();
-    router.push("/");
+    router.push("/portal/login");
   };
 
   const trainerNavItems = [
     {
-      href: "/trainer/dashboard",
+      href: "/portal/trainer/dashboard",
       icon: Home,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
     {
-      href: "/trainer/courses-management",
+      href: "/portal/trainer/courses-management",
       icon: Users,
       label: tSidebar("courseManagement"),
       key: "courseManagement",
     },
     {
-      href: "/trainer/exercises",
+      href: "/portal/trainer/exercises",
       icon: FileText,
       label: tSidebar("exercises"),
       key: "exercises",
     },
     {
-      href: "/trainer/review-submissions",
+      href: "/portal/trainer/review-submissions",
       icon: CheckCircle,
       label: tSidebar("reviewSubmissions"),
       key: "reviewSubmissions",
     },
     {
-      href: "/trainer/students",
+      href: "/portal/trainer/students",
       icon: Bell,
       label: tSidebar("students"),
       key: "students",
     },
     {
-      href: "/trainer/profile",
+      href: "/portal/trainer/profile",
       icon: Settings,
       label: tSidebar("profile"),
       key: "profile",
@@ -89,31 +89,31 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   const { courseId }: any = useParams();
   const traineeNavItems = [
     {
-      href: `/trainee/${courseId}/dashboard`,
+      href: `/portal/trainee/${courseId}/dashboard`,
       icon: Home,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
     {
-      href: `/trainee/${courseId}/my-exercises`,
+      href: `/portal/trainee/${courseId}/my-exercises`,
       icon: FileText,
       label: tSidebar("myExercises"),
       key: "myExercises",
     },
     {
-      href: `/trainee/${courseId}/progress`,
+      href: `/portal/trainee/${courseId}/progress`,
       icon: Bell,
       label: tSidebar("progress"),
       key: "progress",
     },
     {
-      href: `/trainee/${courseId}/student-courses`,
+      href: `/portal/trainee/${courseId}/student-courses`,
       icon: BookOpen,
       label: tSidebar("myCourses"),
       key: "myCourses",
     },
     {
-      href: `/trainee/${courseId}/profile`,
+      href: `/portal/trainee/${courseId}/profile`,
       icon: Settings,
       label: tSidebar("profile"),
       key: "profile",
@@ -123,49 +123,49 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const adminNavItems = [
     {
-      href: "/admin/dashboard",
+      href: "/portal/admin/dashboard",
       icon: Home,
       label: tSidebar("dashboard"),
       key: "dashboard",
     },
     {
-      href: "/admin/user-management",
+      href: "/portal/admin/user-management",
       icon: Settings,
       label: tSidebar("userManagement"),
       key: "userManagement",
     },
     {
-      href: "/admin/courses-management",
+      href: "/portal/admin/courses-management",
       icon: BookOpen,
       label: tSidebar("courseManagement"),
       key: "courseManagement",
     },
     {
-      href: "/admin/students",
+      href: "/portal/admin/students",
       icon: Bell,
       label: tSidebar("students"),
       key: "students",
     },
     {
-      href: "/admin/exercises",
+      href: "/portal/admin/exercises",
       icon: FileText,
       label: tSidebar("exercises"),
       key: "exercises",
     },
     {
-      href: "/admin/review-submissions",
+      href: "/portal/admin/review-submissions",
       icon: CheckCircle,
       label: tSidebar("reviewSubmissions"),
       key: "reviewSubmissions",
     },
     {
-      href: "/admin/accounting",
+      href: "/portal/admin/accounting",
       icon: Wallet,
       label: tSidebar("accounting"),
       key: "accounting",
     },
     {
-      href: "/admin/profile",
+      href: "/portal/admin/profile",
       icon: Settings,
       label: tSidebar("profile"),
       key: "profile",
