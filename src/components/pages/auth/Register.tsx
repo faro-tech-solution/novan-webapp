@@ -75,7 +75,7 @@ const Register = () => {
           description:
             "لطفا ایمیل خود را بررسی کنید و حساب کاربری را تایید کنید.",
         });
-        router.push("/");
+        router.push("/portal/login");
       }
     } catch {
       toast({
@@ -172,7 +172,7 @@ const Register = () => {
             <div className="mt-4 text-center text-sm">
               <span className="text-gray-600">قبلا ثبت نام کرده‌اید؟ </span>
               <Link
-                href={"/"}
+                href={"/portal/login"}
                 className="text-teal-600 hover:text-teal-700 font-medium"
               >
                 ورود

@@ -21,8 +21,8 @@ const AdminExercisesView = () => {
 
   const handleCreateExercise = () => {
     const createPath = profile?.role === "admin" 
-      ? "/admin/exercises/create" 
-      : "/trainer/exercises/create";
+      ? "/portal/admin/exercises/create" 
+      : "/portal/trainer/exercises/create";
     router.push(createPath);
   };
 

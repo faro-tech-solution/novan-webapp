@@ -146,9 +146,9 @@ export default function NotificationBell() {
           onClick={() => {
             const userRole = profile?.role || 'trainee';
             if (userRole === 'trainee' && courseId) {
-              router.push(`/trainee/${courseId}/notifications`);
+              router.push(`/portal/trainee/${courseId}/notifications`);
             } else {
-              router.push(`/${userRole}/notifications`);
+              router.push(`/portal/${userRole}/notifications`);
             }
             setIsOpen(false);
           }}

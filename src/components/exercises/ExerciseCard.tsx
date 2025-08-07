@@ -118,13 +118,13 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee' }: ExerciseCardPro
   // Determine the link based on user role
   const getExerciseLink = () => {
     if (userRole === 'trainee' && courseId) {
-      return `/trainee/${courseId}/exercise/${exercise.id}`;
+      return `/portal/trainee/${courseId}/exercise/${exercise.id}`;
     } else if (userRole === 'admin') {
-      return `/admin/exercises/${exercise.id}`;
+      return `/portal/admin/exercises/${exercise.id}`;
     } else if (userRole === 'trainer') {
-      return `/trainer/exercises/${exercise.id}`;
+      return `/portal/trainer/exercises/${exercise.id}`;
     }
-    return `/exercise/${exercise.id}`;
+    return `/portal/exercise/${exercise.id}`;
   };
 
   return (

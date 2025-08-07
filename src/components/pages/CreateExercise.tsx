@@ -22,7 +22,7 @@ export const CreateExercise: React.FC<CreateExerciseProps> = () => {
         title: "موفقیت",
         description: "تمرین با موفقیت ایجاد شد",
       });
-      router.push('/admin/exercises');
+      router.push('/portal/admin/exercises');
     } catch (error: any) {
       toast({
         title: "خطا",

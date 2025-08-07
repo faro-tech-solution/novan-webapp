@@ -100,7 +100,7 @@ const StudentCourses = () => {
           <p className="text-gray-600 mb-4">
             در این بخش دوره‌ای وجود ندارد
           </p>
-          <Link href="/courses">
+          <Link href="/portal/trainee/all-courses">
             <Button>
               مشاهده دوره‌های موجود
             </Button>

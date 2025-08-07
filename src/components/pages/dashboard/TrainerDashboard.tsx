@@ -22,19 +22,19 @@ const TrainerDashboard = () => {
   const { stats, loading: statsLoading } = useTrainerStats();
 
   const handleCreateExercise = () => {
-    router.push("/trainer/exercises/create");
+    router.push("/portal/trainer/exercises/create");
   };
 
   const handleManageCourses = () => {
-    router.push("/trainer/courses-management");
+    router.push("/portal/trainer/courses-management");
   };
 
   const handleReviewSubmissions = () => {
-    router.push("/trainer/review-submissions");
+    router.push("/portal/trainer/review-submissions");
   };
 
   const handleViewSubmission = (submissionId: string) => {
-    router.push(`/trainer/review-submissions?submission=${submissionId}`);
+    router.push(`/portal/trainer/review-submissions?submission=${submissionId}`);
   };
 
   return (

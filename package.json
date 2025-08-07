@@ -10,6 +10,7 @@
     "migrate:create": "node scripts/migrate.js create",
     "migrate:sync": "node scripts/migrate.js sync",
     "migrate:list": "node scripts/migrate.js list",
+    "fix:course-enrollments-rls": "node scripts/apply_course_enrollments_fix.js",
     "prepare": "husky install"
   },
   "dependencies": {

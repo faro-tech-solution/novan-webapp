@@ -47,10 +47,10 @@ const Login = () => {
     }
   }, [profile, router, searchParams]);
 
-  // Redirect from /login to / for backward compatibility
+  // Redirect from /login to /portal/login for backward compatibility
   useEffect(() => {
-    if (pathname === "/") {
-      router.replace("/");
+    if (pathname === "/login") {
+      router.replace("/portal/login");
     }
   }, [pathname, router]);
 
@@ -125,7 +125,7 @@ const Login = () => {
                 />
                 <div className="text-left mt-1">
                   <Link
-                    href="/forget_password"
+                    href="/portal/forget_password"
                     className="text-xs text-teal-600 hover:text-teal-700 underline"
                   >
                     رمز عبور را فراموش کرده‌اید؟
@@ -141,7 +141,7 @@ const Login = () => {
             <div className="mt-4 text-center text-sm">
               <span className="text-gray-600">حساب ندارید؟ </span>
               <Link
-                href="/register"
+                href="/portal/register"
                 className="text-teal-600 hover:text-teal-700 font-medium"
               >
                 ثبت نام

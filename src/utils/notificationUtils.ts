@@ -37,9 +37,9 @@ export async function handleNotificationClick(
     const exercise_id = meta.exercise_id;
     if (course_id) {
         if (notification.type === "award_achieved") {
-            redirectUrl = `/trainee/${course_id}/progress`;
+            redirectUrl = `/portal/trainee/${course_id}/progress`;
         } else if (notification.type === "exercise_feedback" && exercise_id) {
-            redirectUrl = `/trainee/${course_id}/exercise/${exercise_id}`;
+            redirectUrl = `/portal/trainee/${course_id}/exercise/${exercise_id}`;
         }
     }
 
