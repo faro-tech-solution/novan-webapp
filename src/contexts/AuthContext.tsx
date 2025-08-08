@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -62,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
+  const currentUserIdRef = useRef<string | null>(null);
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -130,59 +131,74 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     // Set up auth state listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.id);
+    } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      console.log("Auth state changed:", event, newSession?.user?.id);
 
-      // Only process significant auth changes after initial load
+      // Ignore token refresh noise
       if (isInitialized && event === "TOKEN_REFRESHED") {
-        console.log("Token refreshed, not updating user state");
         return;
       }
 
-      setSession(session);
+      setSession(newSession);
 
-      // Only update user state if there's a meaningful change
-      const newUser = session?.user ?? null;
-      if (newUser?.id !== user?.id) {
+      const newUser = newSession?.user ?? null;
+      const previousUserId = currentUserIdRef.current;
+
+      // If auth event is sign-out, clear state and stop loading
+      if (event === "SIGNED_OUT") {
+        setUser(null);
+        setProfile(null);
+        currentUserIdRef.current = null;
+        setLoading(false);
+        if (!initialCheckDone) {
+          setIsInitialized(true);
+          initialCheckDone = true;
+        }
+        return;
+      }
+
+      // If user identity changed, reload profile and then clear loading
+      if (newUser?.id !== previousUserId) {
+        setLoading(true);
         setUser(newUser);
-
+        currentUserIdRef.current = newUser?.id ?? null;
         if (newUser) {
-          // Defer profile fetching to avoid potential deadlocks
-          setTimeout(() => {
-            fetchProfile(newUser.id);
-          }, 0);
+          await fetchProfile(newUser.id);
         } else {
           setProfile(null);
         }
+        setLoading(false);
       }
 
       if (!initialCheckDone) {
-        setLoading(false);
         setIsInitialized(true);
         initialCheckDone = true;
       }
     });
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Check for existing session (await profile fetch before clearing loading)
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       console.log("Initial session check:", session?.user?.id);
 
       setSession(session);
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      currentUserIdRef.current = currentUser?.id ?? null;
 
-      if (session?.user) {
-        setTimeout(() => {
-          fetchProfile(session.user.id);
-        }, 0);
+      if (currentUser) {
+        await fetchProfile(currentUser.id);
+      } else {
+        setProfile(null);
       }
 
       setLoading(false);
       setIsInitialized(true);
       initialCheckDone = true;
-    });
+    })();
 
     return () => subscription.unsubscribe();
-  }, [user?.id, isInitialized]);
+  }, []);
 
   const login = async (email: string, password: string) => {
     console.log("Login attempt for:", email);

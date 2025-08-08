@@ -6,7 +6,6 @@ import { BasicInfoSection } from "./BasicInfoSection";
 import { CourseAndDifficultySection } from "./CourseAndDifficultySection";
 import { TimingAndPointsSection } from "./TimingAndPointsSection";
 import { ExerciseTypeSection } from "./ExerciseTypeSection";
-import { FormBuilder } from "./FormBuilder";
 import { Course } from "@/types/course";
 import { ExerciseForm } from "@/types/formBuilder";
 import * as z from "zod";
@@ -110,18 +109,7 @@ export const CreateExerciseForm = ({
         <TimingAndPointsSection form={form} />
         <ExerciseTypeSection form={form} />
 
-        {/* Form Builder Section - Only show for form type exercises */}
-        {form.watch("exercise_type") === "form" && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">محتوای تمرین</h3>
-            <FormBuilder
-              value={form.watch("form_structure")}
-              onChange={(formStructure) =>
-                form.setValue("form_structure", formStructure)
-              }
-            />
-          </div>
-        )}
+        {/* Form Builder moved inside ExerciseTypeSection */}
 
         <div className="flex justify-end space-x-2 space-x-reverse pt-4">
           <Button

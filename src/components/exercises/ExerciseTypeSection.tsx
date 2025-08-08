@@ -14,6 +14,7 @@ import { UseFormReturn } from "react-hook-form";
 import { CreateExerciseFormData } from "./CreateExerciseForm";
 import { FileText, Video, AudioLines, ListChecks, ExternalLink } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { FormBuilder } from "./FormBuilder";
 
 interface ExerciseTypeSectionProps {
   form: UseFormReturn<CreateExerciseFormData>;
@@ -26,26 +27,126 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
     <Card>
       <CardContent className="pt-6">
         <div className="grid grid-cols-12 gap-6">
+          {/* Right Column - Exercise Type Selection (3/12) */}
+          <div className="col-span-12 lg:col-span-3 bg-gray">
+            <FormField
+              control={form.control}
+              name="exercise_type"
+              render={({ field }) => (
+                <FormItem className="space-y-4">
+                  <FormLabel>نوع تمرین</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                      className="space-y-3"
+                    >
+                      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="form" id="form" />
+                        <Label
+                          htmlFor="form"
+                          className="flex items-center cursor-pointer text-sm flex-row-reverse"
+                        >
+                          <FileText className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">فرم‌های متنوع</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="video" id="video" />
+                        <Label
+                          htmlFor="video"
+                          className="flex items-center cursor-pointer text-sm flex-row-reverse"
+                        >
+                          <Video className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">تمرین ویدیویی</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="audio" id="audio" />
+                        <Label
+                          htmlFor="audio"
+                          className="flex items-center cursor-pointer text-sm flex-row-reverse"
+                        >
+                          <AudioLines className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">تمرین صوتی</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="simple" id="simple" />
+                        <Label
+                          htmlFor="simple"
+                          className="flex items-center cursor-pointer text-sm flex-row-reverse"
+                        >
+                          <ListChecks className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">تمرین ساده</div>
+                          </div>
+                        </Label>
+                      </div>
+
+
+
+                      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="iframe" id="iframe" />
+                        <Label
+                          htmlFor="iframe"
+                          className="flex items-center cursor-pointer text-sm flex-row-reverse"
+                        >
+                          <ExternalLink className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">iframe</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="arvan_video" id="arvan_video" />
+                        <Label
+                          htmlFor="arvan_video"
+                          className="flex items-center cursor-pointer text-sm flex-row-reverse"
+                        >
+                          <Video className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">ویدیو آروان</div>
+                          </div>
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           {/* Left Column - Exercise Forms (9/12) */}
           <div className="col-span-12 lg:col-span-9 space-y-6">
             <FormField
               control={form.control}
               name="auto_grade"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-x-reverse bg-gray-100">
+                <FormItem className="flex flex-row items-start space-x-3 space-x-reverse bg-gray-100 p-4 rounded-md">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>نمره‌دهی خودکار</FormLabel>
-                    <p className="text-sm text-muted-foreground">
+                    <FormLabel>نمره‌دهی خودکار</FormLabel><br />
+                    <FormLabel className="text-sm text-muted-foreground">
                       دانشجو بلافاصله پس از تکمیل تمرین، نمره خود را دریافت می‌کند و
                       نیازی به بررسی مدرس نیست
-                    </p>
-                  </div>
+                    </FormLabel>
                 </FormItem>
               )}
             />
@@ -100,8 +201,6 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
               />
             )}
 
-
-
             {exerciseType === "arvan_video" && (
               <FormField
                 control={form.control}
@@ -125,113 +224,19 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
               />
             )}
 
-            
+            {exerciseType === "form" && (
+              <div className="space-y-4">
+                <FormBuilder
+                  value={form.watch("form_structure")}
+                  onChange={(formStructure) =>
+                    form.setValue("form_structure", formStructure)
+                  }
+                />
+              </div>
+            )}
           </div>
 
-          {/* Right Column - Exercise Type Selection (3/12) */}
-          <div className="col-span-12 lg:col-span-3 bg-gray">
-            <FormField
-              control={form.control}
-              name="exercise_type"
-              render={({ field }) => (
-                <FormItem className="space-y-4">
-                  <FormLabel>نوع تمرین</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
-                      className="space-y-3"
-                    >
-                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
-                        <RadioGroupItem value="form" id="form" />
-                        <Label
-                          htmlFor="form"
-                          className="flex items-center cursor-pointer text-sm"
-                        >
-                          <FileText className="h-4 w-4 ml-1" />
-                          <div>
-                            <div className="font-medium">فرم‌های متنوع</div>
-                          </div>
-                        </Label>
-                      </div>
-
-                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
-                        <RadioGroupItem value="video" id="video" />
-                        <Label
-                          htmlFor="video"
-                          className="flex items-center cursor-pointer text-sm"
-                        >
-                          <Video className="h-4 w-4 ml-1" />
-                          <div>
-                            <div className="font-medium">تمرین ویدیویی</div>
-                          </div>
-                        </Label>
-                      </div>
-
-                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
-                        <RadioGroupItem value="audio" id="audio" />
-                        <Label
-                          htmlFor="audio"
-                          className="flex items-center cursor-pointer text-sm"
-                        >
-                          <AudioLines className="h-4 w-4 ml-1" />
-                          <div>
-                            <div className="font-medium">تمرین صوتی</div>
-                          </div>
-                        </Label>
-                      </div>
-
-                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
-                        <RadioGroupItem value="simple" id="simple" />
-                        <Label
-                          htmlFor="simple"
-                          className="flex items-center cursor-pointer text-sm"
-                        >
-                          <ListChecks className="h-4 w-4 ml-1" />
-                          <div>
-                            <div className="font-medium">تمرین ساده</div>
-                          </div>
-                        </Label>
-                      </div>
-
-
-
-                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
-                        <RadioGroupItem value="iframe" id="iframe" />
-                        <Label
-                          htmlFor="iframe"
-                          className="flex items-center cursor-pointer text-sm"
-                        >
-                          <ExternalLink className="h-4 w-4 ml-1" />
-                          <div>
-                            <div className="font-medium">iframe</div>
-                          </div>
-                        </Label>
-                      </div>
-
-                      <div className="flex items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
-                        <RadioGroupItem value="arvan_video" id="arvan_video" />
-                        <Label
-                          htmlFor="arvan_video"
-                          className="flex items-center cursor-pointer text-sm"
-                        >
-                          <Video className="h-4 w-4 ml-1" />
-                          <div>
-                            <div className="font-medium">ویدیو آروان</div>
-                            <div className="text-xs text-muted-foreground">
-                              CDN ایمن ویدیو آروان کلود
-                            </div>
-                          </div>
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          
         </div>
       </CardContent>
     </Card>

@@ -11,30 +11,33 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
-  const { profile, loading } = useAuth();
+  const { profile, user, loading, isInitialized } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (!loading) {
-      // If user is not authenticated, redirect to login and preserve intended destination
-      if (!profile) {
-        const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
-        router.push(`/?from=${encodeURIComponent(currentPath)}`);
-        return;
-      }
+    if (!isInitialized || loading) return;
 
-      // If a specific role is required and user doesn't have it, redirect to their correct dashboard
-      if (requiredRole && profile.role !== requiredRole) {
-        router.push(getDashboardPathForRole(profile.role));
-        return;
-      }
+    // Wait for auth to initialize. If no user after init, redirect.
+    if (!user) {
+      const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
+      router.push(`/?from=${encodeURIComponent(currentPath)}`);
+      return;
     }
-  }, [profile, loading, router, requiredRole, pathname, searchParams]);
+
+    // If profile still missing after init but user exists, stay while profile loads
+    if (!profile) return;
+
+    // Enforce role if required
+    if (requiredRole && profile.role !== requiredRole) {
+      router.push(getDashboardPathForRole(profile.role));
+      return;
+    }
+  }, [isInitialized, loading, user, profile, router, requiredRole, pathname, searchParams]);
 
   // Show loading while checking authentication
-  if (loading) {
+  if (!isInitialized || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -46,12 +49,17 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
   }
 
   // If not authenticated, don't render children (will redirect)
+  if (!user) {
+    return null;
+  }
+
+  // If user exists but profile not loaded yet, hold rendering
   if (!profile) {
     return null;
   }
 
   // If role is required and doesn't match, don't render children (will redirect)
-  if (requiredRole && profile.role !== requiredRole) {
+  if (requiredRole && profile && profile.role !== requiredRole) {
     return null;
   }
 
