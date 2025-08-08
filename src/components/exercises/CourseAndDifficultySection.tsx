@@ -13,6 +13,7 @@ interface CourseAndDifficultySectionProps {
 
 export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficultySectionProps) => {
   const selectedCourseId = form.watch("course_id");
+  const exerciseType = form.watch("exercise_type");
   const { categories = [] } = useExerciseCategoriesQuery(selectedCourseId);
   
   // Reset category when course changes
@@ -20,8 +21,10 @@ export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficult
     form.setValue("category_id", "no-category");
   }, [selectedCourseId, form]);
   
+  const isMediaType = exerciseType === 'video' || exerciseType === 'audio' || exerciseType === 'iframe' || exerciseType === 'arvan_video';
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <FormField
         control={form.control}
         name="course_id"
@@ -85,28 +88,30 @@ export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficult
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="difficulty"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>سطح دشواری</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value || ''}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="انتخاب سطح" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="آسان">آسان</SelectItem>
-                <SelectItem value="متوسط">متوسط</SelectItem>
-                <SelectItem value="سخت">سخت</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {!isMediaType && (
+        <FormField
+          control={form.control}
+          name="difficulty"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>سطح دشواری</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value || ''}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="انتخاب سطح" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="آسان">آسان</SelectItem>
+                  <SelectItem value="متوسط">متوسط</SelectItem>
+                  <SelectItem value="سخت">سخت</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
     </div>
   );
 };

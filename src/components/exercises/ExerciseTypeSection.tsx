@@ -9,12 +9,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UseFormReturn } from "react-hook-form";
 import { CreateExerciseFormData } from "./CreateExerciseForm";
 import { FileText, Video, AudioLines, ListChecks, ExternalLink } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { FormBuilder } from "./FormBuilder";
+import { useToast } from "@/hooks/use-toast";
 
 interface ExerciseTypeSectionProps {
   form: UseFormReturn<CreateExerciseFormData>;
@@ -22,6 +24,31 @@ interface ExerciseTypeSectionProps {
 
 export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
   const exerciseType = form.watch("exercise_type");
+  const { toast } = useToast();
+
+  const extractArvanVideoId = (input: string): string | null => {
+    if (!input) return null;
+    const trimmed = input.trim();
+    const urlIdMatch = trimmed.match(/\/videos\/([^\/?#]+)(?:[\/?#]|$)/i);
+    if (urlIdMatch && urlIdMatch[1]) return urlIdMatch[1];
+    if (/^[A-Za-z0-9_-]{6,}$/i.test(trimmed)) return trimmed;
+    return null;
+  };
+
+  const handlePasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const extracted = extractArvanVideoId(text);
+      if (extracted) {
+        form.setValue("arvan_video_id", extracted, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+        toast({ title: "شناسه ویدیو ثبت شد", description: extracted });
+      } else {
+        toast({ title: "شناسه معتبر پیدا نشد", description: "متن کلیپ‌بورد شامل شناسه یا لینک ویدیو آروان نبود" });
+      }
+    } catch (error) {
+      toast({ title: "دسترسی به کلیپ‌بورد ناموفق بود", description: "اجازه دسترسی به کلیپ‌بورد را بررسی کنید" });
+    }
+  };
 
   return (
     <Card>
@@ -134,7 +161,16 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
             <FormField
               control={form.control}
               name="auto_grade"
-              render={({ field }) => (
+              render={({ field }) => {
+                const isMediaType = exerciseType === 'video' || exerciseType === 'audio' || exerciseType === 'iframe' || exerciseType === 'arvan_video';
+                // Ensure default ON for media types
+                if (isMediaType && !field.value) {
+                  // Avoid re-render loops by setting only when false
+                  setTimeout(() => {
+                    form.setValue('auto_grade', true, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+                  }, 0);
+                }
+                return (
                 <FormItem className="flex flex-row items-start space-x-3 space-x-reverse bg-gray-100 p-4 rounded-md">
                   <FormControl>
                     <Checkbox
@@ -148,7 +184,7 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                       نیازی به بررسی مدرس نیست
                     </FormLabel>
                 </FormItem>
-              )}
+              )}}
             />
 
             {(exerciseType === "video" || exerciseType === "audio") && (
@@ -209,14 +245,19 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                   <FormItem>
                     <FormLabel>شناسه ویدیو آروان *</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="waV5ZLBklg"
-                        {...field}
-                        value={field.value || ""}
-                      />
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="c8a3062d-006b-45f7-8639-c20c9eee27d5"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                        <Button type="button" variant="secondary" onClick={handlePasteFromClipboard}>
+                          چسباندن از کلیپ‌بورد
+                        </Button>
+                      </div>
                     </FormControl>
                     <p className="text-sm text-muted-foreground">
-                      شناسه ویدیو در سرویس آروان کلود (Video ID)
+                      شناسه ویدیو در سرویس آروان کلود (Video ID). می‌توانید آدرس کامل ویدیو را از پنل آروان بچسبانید، شناسه به‌طور خودکار استخراج می‌شود.
                     </p>
                     <FormMessage />
                   </FormItem>

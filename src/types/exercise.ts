@@ -29,7 +29,7 @@ export interface Exercise {
   difficulty: string;
 
   points: number;
-  estimated_time: string;
+  estimated_time: string; // stored as string in DB; UI now uses seconds (number)
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -82,7 +82,7 @@ export interface SubmissionData {
 export interface UpcomingExercise {
   id: string;
   title: string;
-  estimated_time: string;
+  estimated_time: string; // stored as string in DB; UI now uses seconds (number)
   points: number;
   difficulty: string;
   submission_status: SubmissionStatusType;
@@ -99,7 +99,7 @@ export interface MyExerciseWithSubmission {
   category_name?: string;
   difficulty: string;
   points: number;
-  estimated_time: string;
+  estimated_time: string; // stored as string in DB; UI now uses seconds (number)
   exercise_type: ExerciseType;
   content_url?: string | null;
   auto_grade: boolean;
@@ -115,7 +115,7 @@ export interface ExerciseDetail {
   course_name: string;
   difficulty: string;
   points: number;
-  estimated_time: string;
+  estimated_time: string; // stored as string in DB; UI now uses seconds (number)
   submission_status: SubmissionStatusType;
   exercise_type: ExerciseType;
   content_url?: string | null;
