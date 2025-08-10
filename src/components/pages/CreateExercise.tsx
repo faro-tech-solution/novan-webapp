@@ -17,7 +17,11 @@ export const CreateExercise: React.FC<CreateExerciseProps> = () => {
 
   const handleSubmit = async (data: CreateExerciseFormData) => {
     try {
-      await createExercise(data);
+      const exerciseData = {
+        ...data,
+        estimated_time: String(data.estimated_time ?? 0),
+      };
+      await createExercise(exerciseData);
       toast({
         title: "موفقیت",
         description: "تمرین با موفقیت ایجاد شد",
