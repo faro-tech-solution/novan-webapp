@@ -84,6 +84,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
+      console.log("Profile data 111:", data);
+
       if (data) {
         console.log("Profile fetched successfully:", data);
         setProfile({
@@ -134,8 +136,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       console.log("Auth state changed:", event, newSession?.user?.id);
 
-      // Ignore token refresh noise
-      if (isInitialized && event === "TOKEN_REFRESHED") {
+      // Ignore token refresh noise entirely to prevent user/profile flicker
+      if (event === "TOKEN_REFRESHED") {
+        setSession(newSession);
         return;
       }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
 import { getDashboardPathForRole } from '@/utils';
@@ -16,13 +16,18 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // Compute the "from" location once to avoid effect churn caused by unstable searchParams object
+  const fromLocation = useMemo(() => {
+    const qs = searchParams?.toString();
+    return pathname + (qs ? `?${qs}` : "");
+  }, [pathname]);
+
   useEffect(() => {
     if (!isInitialized || loading) return;
 
     // Wait for auth to initialize. If no user after init, redirect.
     if (!user) {
-      const currentPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
-      router.push(`/?from=${encodeURIComponent(currentPath)}`);
+      router.replace(`/portal/login?from=${encodeURIComponent(fromLocation)}`);
       return;
     }
 
@@ -31,10 +36,10 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
 
     // Enforce role if required
     if (requiredRole && profile.role !== requiredRole) {
-      router.push(getDashboardPathForRole(profile.role));
+      router.replace(getDashboardPathForRole(profile.role));
       return;
     }
-  }, [isInitialized, loading, user, profile, router, requiredRole, pathname, searchParams]);
+  }, [isInitialized, loading, user, profile, router, requiredRole, fromLocation]);
 
   // Show loading while checking authentication
   if (!isInitialized || loading) {
