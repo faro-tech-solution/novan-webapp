@@ -35,17 +35,16 @@ const Login = () => {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (profile) {
-      // If redirected from a protected route, go back to that route
-      const from = searchParams?.get('from');
-      if (from) {
-        router.replace(decodeURIComponent(from));
-        return;
-      }
-      // Otherwise, go to dashboard by role
-      router.push(getDashboardPathForRole(profile.role));
+    if (!profile) return;
+    // If redirected from a protected route, go back to that route
+    const from = searchParams?.get('from');
+    if (from) {
+      router.replace(decodeURIComponent(from));
+      return;
     }
-  }, [profile, router, searchParams]);
+    // Otherwise, go to dashboard by role
+    router.replace(getDashboardPathForRole(profile.role));
+  }, [profile, router]);
 
   // Redirect from /login to /portal/login for backward compatibility
   useEffect(() => {
