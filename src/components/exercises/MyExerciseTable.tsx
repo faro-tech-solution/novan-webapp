@@ -10,6 +10,7 @@ import { ResponsiveTable } from '@/components/ui/responsive-table';
 import { CheckCircle, Clock, FileText, Award } from 'lucide-react';
 import { MyExerciseWithSubmission } from '@/types/exercise';
 import { getExerciseTypeIconSmall } from '@/utils/exerciseTypeIcons';
+import { translateDifficultyToDisplay } from '@/utils/difficultyTranslation';
 
 interface MyExerciseTableProps {
   exercises: MyExerciseWithSubmission[];
@@ -33,16 +34,22 @@ export const MyExerciseTable = ({ exercises }: MyExerciseTableProps) => {
     }
   };
 
-  const getDifficultyBadge = (difficulty: string) => {
+  const getDifficultyBadge = (difficulty: string | null) => {
+    const displayText = translateDifficultyToDisplay(difficulty);
+    
+    if (!difficulty) {
+      return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{displayText}</Badge>;
+    }
+    
     switch (difficulty) {
-      case 'آسان':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-800 hover:text-green-100 transition-colors">{difficulty}</Badge>;
-      case 'متوسط':
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-800 hover:text-yellow-100 transition-colors">{difficulty}</Badge>;
-      case 'سخت':
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-800 hover:text-red-100 transition-colors">{difficulty}</Badge>;
+      case 'easy':
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-800 hover:text-green-100 transition-colors">{displayText}</Badge>;
+      case 'medium':
+        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-800 hover:text-yellow-100 transition-colors">{displayText}</Badge>;
+      case 'hard':
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-800 hover:text-red-100 transition-colors">{displayText}</Badge>;
       default:
-        return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{difficulty}</Badge>;
+        return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{displayText}</Badge>;
     }
   };
 

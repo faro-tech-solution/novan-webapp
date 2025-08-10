@@ -5,7 +5,7 @@ import { ExerciseForm } from '@/types/formBuilder';
 export interface CreateExerciseData {
   title: string;
   description?: string | null;
-  difficulty: string;
+  difficulty: string | null;
   estimatedTime: string;
   points: number;
   courseId: string;
@@ -79,7 +79,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
     const requestData = {
       title: exerciseData.title,
       description: exerciseData.description || null,
-      difficulty: exerciseData.difficulty,
+      difficulty: exerciseData.difficulty || null,
       estimated_time: exerciseData.estimatedTime || '-',
       points: exerciseData.points,
       course_id: exerciseData.courseId,

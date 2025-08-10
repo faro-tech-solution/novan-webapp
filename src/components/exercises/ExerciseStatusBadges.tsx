@@ -1,6 +1,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { AlertTriangle } from 'lucide-react';
+import { translateDifficultyToDisplay } from '@/utils/difficultyTranslation';
 
 export const getStatusBadge = (status: string) => {
   switch (status) {
@@ -35,15 +36,21 @@ export const getExerciseStatusBadge = (exerciseStatus: string) => {
   }
 };
 
-export const getDifficultyBadge = (difficulty: string) => {
+export const getDifficultyBadge = (difficulty: string | null) => {
+  const displayText = translateDifficultyToDisplay(difficulty);
+  
+  if (!difficulty) {
+    return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{displayText}</Badge>;
+  }
+  
   switch (difficulty) {
-    case 'آسان':
-      return <Badge className="bg-green-100 text-green-800 hover:bg-green-800 hover:text-green-100 transition-colors">{difficulty}</Badge>;
-    case 'متوسط':
-      return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-800 hover:text-yellow-100 transition-colors">{difficulty}</Badge>;
-    case 'سخت':
-      return <Badge className="bg-red-100 text-red-800 hover:bg-red-800 hover:text-red-100 transition-colors">{difficulty}</Badge>;
+    case 'easy':
+      return <Badge className="bg-green-100 text-green-800 hover:bg-green-800 hover:text-green-100 transition-colors">{displayText}</Badge>;
+    case 'medium':
+      return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-800 hover:text-yellow-100 transition-colors">{displayText}</Badge>;
+    case 'hard':
+      return <Badge className="bg-red-100 text-red-800 hover:bg-red-800 hover:text-red-100 transition-colors">{displayText}</Badge>;
     default:
-      return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{difficulty}</Badge>;
+      return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{displayText}</Badge>;
   }
 };

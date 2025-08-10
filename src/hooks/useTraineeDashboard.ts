@@ -15,7 +15,7 @@ interface UpcomingExercise {
   title: string;
   description: string | null;
   course_name: string;
-  difficulty: string;
+  difficulty: string | null;
 
   estimated_time: string;
   points: number;

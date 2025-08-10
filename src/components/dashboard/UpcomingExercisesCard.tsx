@@ -10,21 +10,29 @@ interface UpcomingExercisesCardProps {
   className?: string;
 }
 
-const getDifficultyStyles = (difficulty: string) => {
+const getDifficultyStyles = (difficulty: string | null) => {
+  if (!difficulty) {
+    return {
+      bg: 'bg-gray-100',
+      text: 'text-gray-800',
+      icon: <BookOpen className="h-4 w-4 text-gray-400" />,
+    };
+  }
+  
   switch (difficulty) {
-    case 'آسان':
+    case 'easy':
       return {
         bg: 'bg-green-100',
         text: 'text-green-800',
         icon: <BookOpen className="h-4 w-4 text-green-400" />,
       };
-    case 'متوسط':
+    case 'medium':
       return {
         bg: 'bg-yellow-100',
         text: 'text-yellow-800',
         icon: <BookOpen className="h-4 w-4 text-yellow-400" />,
       };
-    case 'سخت':
+    case 'hard':
       return {
         bg: 'bg-red-100',
         text: 'text-red-800',

@@ -5,7 +5,7 @@ import { ArrowLeft, Clock, Award } from 'lucide-react';
 
 interface ExerciseDetailHeaderProps {
   onBack: () => void;
-  difficulty: string;
+  difficulty: string | null;
   estimatedTime: string;
   points: number;
   submissionStatus: string;
@@ -18,13 +18,13 @@ export const ExerciseDetailHeader = ({
   points,
   submissionStatus
 }: ExerciseDetailHeaderProps) => {
-  const getDifficultyBadge = (difficulty: string) => {
+  const getDifficultyBadge = (difficulty: string | null) => {
     switch (difficulty) {
-      case 'آسان':
+      case 'easy':
         return <Badge className="bg-green-100 text-green-800">{difficulty}</Badge>;
-      case 'متوسط':
+      case 'medium':
         return <Badge className="bg-yellow-100 text-yellow-800">{difficulty}</Badge>;
-      case 'سخت':
+      case 'hard':
         return <Badge className="bg-red-100 text-red-800">{difficulty}</Badge>;
       default:
         return <Badge variant="outline">{difficulty}</Badge>;

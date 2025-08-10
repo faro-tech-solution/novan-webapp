@@ -39,7 +39,7 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
       .update({
         title: exerciseData.title,
         description: exerciseData.description || null,
-        difficulty: exerciseData.difficulty,
+        difficulty: exerciseData.difficulty || null,
         estimated_time: exerciseData.estimatedTime,
         points: exerciseData.points,
         course_id: exerciseData.courseId,

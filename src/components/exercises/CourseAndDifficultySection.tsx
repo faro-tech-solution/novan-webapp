@@ -4,6 +4,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { CreateExerciseFormData } from './CreateExerciseForm';
 import { Course } from '@/types/course';
 import { useExerciseCategoriesQuery } from '@/hooks/queries/useExerciseCategoriesQuery';
+import { getDifficultyOptions } from '@/utils/difficultyTranslation';
 import { useEffect } from 'react';
 
 interface CourseAndDifficultySectionProps {
@@ -102,9 +103,11 @@ export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficult
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="آسان">آسان</SelectItem>
-                  <SelectItem value="متوسط">متوسط</SelectItem>
-                  <SelectItem value="سخت">سخت</SelectItem>
+                  {getDifficultyOptions().map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />

@@ -33,7 +33,7 @@ export const useExercisesQuery = (courseId?: string) => {
       return await createExercise({
         title: exerciseData.title || '',
         description: exerciseData.description || undefined,
-        difficulty: exerciseData.difficulty || '',
+        difficulty: exerciseData.difficulty || null,
         estimatedTime: String(exerciseData.estimated_time ?? 0),
         points: exerciseData.points || 0,
         courseId: exerciseData.course_id || '',
@@ -64,7 +64,7 @@ export const useExercisesQuery = (courseId?: string) => {
       return await updateExercise(id, {
         title: data.title || '',
         description: data.description || undefined,
-        difficulty: data.difficulty || '',
+        difficulty: data.difficulty || null,
         estimatedTime: String(data.estimated_time ?? 0),
         points: data.points || 0,
         courseId: data.course_id || '',
