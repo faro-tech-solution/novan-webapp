@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
-  const { profile, user, loading, isInitialized } = useAuth();
+  const { profile, user, isInitialized } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -23,26 +23,42 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
   }, [pathname]);
 
   useEffect(() => {
-    if (!isInitialized || loading) return;
+    if (!isInitialized) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[ProtectedRoute] waiting init', { isInitialized, pathname: fromLocation });
+      }
+      return;
+    }
 
     // Wait for auth to initialize. If no user after init, redirect.
     if (!user) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[ProtectedRoute] no user, redirecting to login', { fromLocation });
+      }
       router.replace(`/portal/login?from=${encodeURIComponent(fromLocation)}`);
       return;
     }
 
     // If profile still missing after init but user exists, stay while profile loads
-    if (!profile) return;
+    if (!profile) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[ProtectedRoute] user exists but profile not loaded yet');
+      }
+      return;
+    }
 
     // Enforce role if required
     if (requiredRole && profile.role !== requiredRole) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[ProtectedRoute] role mismatch, redirecting', { requiredRole, actual: profile.role });
+      }
       router.replace(getDashboardPathForRole(profile.role));
       return;
     }
-  }, [isInitialized, loading, user, profile, router, requiredRole, fromLocation]);
+  }, [isInitialized, user, profile, router, requiredRole, fromLocation]);
 
   // Show loading while checking authentication
-  if (!isInitialized || loading) {
+  if (!isInitialized) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
