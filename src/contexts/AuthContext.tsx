@@ -128,17 +128,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     console.log("Setting up auth state listener...");
 
-    let initialCheckDone = false;
+    let mounted = true;
+    let initialSessionComplete = false;
+
+    // Check for existing session first, then set up listener
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log("Initial session check:", session?.user?.id);
+
+        if (!mounted) return;
+
+        setSession(session);
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        currentUserIdRef.current = currentUser?.id ?? null;
+
+        if (currentUser) {
+          await fetchProfile(currentUser.id);
+        } else {
+          setProfile(null);
+        }
+
+        if (!mounted) return;
+
+        setLoading(false);
+        setIsInitialized(true);
+        initialSessionComplete = true;
+      } catch (error) {
+        console.error("Error during initial auth check:", error);
+        if (!mounted) return;
+        setLoading(false);
+        setIsInitialized(true);
+        initialSessionComplete = true;
+      }
+    };
 
     // Set up auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      console.log("Auth state changed:", event, newSession?.user?.id);
+      console.log("Auth state changed:", event, newSession?.user?.id, { initialSessionComplete });
+
+      if (!mounted) return;
 
       // Ignore token refresh noise entirely to prevent user/profile flicker
       if (event === "TOKEN_REFRESHED") {
         setSession(newSession);
+        return;
+      }
+
+      // Skip auth state changes until initial session check is complete
+      if (!initialSessionComplete) {
+        console.log("Skipping auth state change during initial load");
         return;
       }
 
@@ -153,10 +195,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setProfile(null);
         currentUserIdRef.current = null;
         setLoading(false);
-        if (!initialCheckDone) {
-          setIsInitialized(true);
-          initialCheckDone = true;
-        }
+        setIsInitialized(true);
         return;
       }
 
@@ -170,37 +209,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         } else {
           setProfile(null);
         }
-        setLoading(false);
-      }
-
-      if (!initialCheckDone) {
-        setIsInitialized(true);
-        initialCheckDone = true;
+        if (mounted) {
+          setLoading(false);
+        }
       }
     });
 
-    // Check for existing session (await profile fetch before clearing loading)
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log("Initial session check:", session?.user?.id);
+    // Start the initialization
+    initializeAuth();
 
-      setSession(session);
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      currentUserIdRef.current = currentUser?.id ?? null;
-
-      if (currentUser) {
-        await fetchProfile(currentUser.id);
-      } else {
-        setProfile(null);
-      }
-
-      setLoading(false);
-      setIsInitialized(true);
-      initialCheckDone = true;
-    })();
-
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
