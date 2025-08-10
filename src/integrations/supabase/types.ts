@@ -290,7 +290,7 @@ export type Database = {
           days_to_due: number
           days_to_open: number
           description: string | null
-          difficulty: string
+          difficulty: string | null
           estimated_time: string
           exercise_type: string
           form_structure: Json | null
@@ -313,7 +313,7 @@ export type Database = {
           days_to_due: number
           days_to_open: number
           description?: string | null
-          difficulty: string
+          difficulty: string | null
           estimated_time?: string
           exercise_type?: string
           form_structure?: Json | null

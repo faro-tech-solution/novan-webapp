@@ -44,7 +44,7 @@ const CreateExerciseDialog = ({
           title: data.title,
           description: data.description || null,
           course_id: data.course_id,
-          difficulty: data.difficulty,
+          difficulty: data.difficulty || null,
 
           points: data.points,
           estimated_time: String(data.estimated_time ?? 0),

@@ -3,27 +3,36 @@ import Link from 'next/link';
 
 import { UpcomingExercise } from '@/types/exercise';
 import { useAuth } from '@/contexts/AuthContext';
+import { getExerciseTypeIconSmall } from '@/utils/exerciseTypeIcons';
 
 interface UpcomingExercisesCardProps {
   exercises: UpcomingExercise[];
   className?: string;
 }
 
-const getDifficultyStyles = (difficulty: string) => {
+const getDifficultyStyles = (difficulty: string | null) => {
+  if (!difficulty) {
+    return {
+      bg: 'bg-gray-100',
+      text: 'text-gray-800',
+      icon: <BookOpen className="h-4 w-4 text-gray-400" />,
+    };
+  }
+  
   switch (difficulty) {
-    case 'آسان':
+    case 'easy':
       return {
         bg: 'bg-green-100',
         text: 'text-green-800',
         icon: <BookOpen className="h-4 w-4 text-green-400" />,
       };
-    case 'متوسط':
+    case 'medium':
       return {
         bg: 'bg-yellow-100',
         text: 'text-yellow-800',
         icon: <BookOpen className="h-4 w-4 text-yellow-400" />,
       };
-    case 'سخت':
+    case 'hard':
       return {
         bg: 'bg-red-100',
         text: 'text-red-800',
@@ -65,7 +74,10 @@ export const UpcomingExercisesCard = ({ exercises, className = '' }: UpcomingExe
                 >
                   <div className="flex-shrink-0 ml-2 flex items-center justify-center">{icon}</div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <div className="truncate leading-tight text-sm">{exercise.title}</div>
+                    <div className="truncate leading-tight text-sm flex items-center gap-2">
+                      {getExerciseTypeIconSmall(exercise.exercise_type)}
+                      {exercise.title}
+                    </div>
                   </div>
                 </Link>
               );

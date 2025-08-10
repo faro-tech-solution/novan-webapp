@@ -3,7 +3,7 @@ export interface ExerciseData {
   title: string;
   description: string | null;
   course_id: string;
-  difficulty: string;
+  difficulty: string | null;
 
   points: number;
   estimated_time: string;

@@ -22,7 +22,8 @@ const TraineeDashboard = () => {
       estimated_time: ex.estimated_time,
       points: ex.points,
       difficulty: ex.difficulty,
-      submission_status: ex.submission_status
+      submission_status: ex.submission_status,
+      exercise_type: ex.exercise_type
     }));
 
   if (loading) {

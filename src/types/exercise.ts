@@ -26,7 +26,7 @@ export interface Exercise {
   description: string | null;
   course_id: string;
   category_id?: string | null;
-  difficulty: string;
+  difficulty: string | null;
 
   points: number;
   estimated_time: string; // stored as string in DB; UI now uses seconds (number)
@@ -84,8 +84,9 @@ export interface UpcomingExercise {
   title: string;
   estimated_time: string; // stored as string in DB; UI now uses seconds (number)
   points: number;
-  difficulty: string;
+  difficulty: string | null;
   submission_status: SubmissionStatusType;
+  exercise_type: ExerciseType;
 }
 
 // For my exercise table
@@ -97,7 +98,7 @@ export interface MyExerciseWithSubmission {
   course_name?: string;
   category_id?: string | null;
   category_name?: string;
-  difficulty: string;
+  difficulty: string | null;
   points: number;
   estimated_time: string; // stored as string in DB; UI now uses seconds (number)
   exercise_type: ExerciseType;
@@ -113,7 +114,7 @@ export interface ExerciseDetail {
   description: string | null;
   course_id: string;
   course_name: string;
-  difficulty: string;
+  difficulty: string | null;
   points: number;
   estimated_time: string; // stored as string in DB; UI now uses seconds (number)
   submission_status: SubmissionStatusType;

@@ -11,6 +11,7 @@ import { ExerciseCard } from '@/components/exercises/ExerciseCard';
 import { MyExerciseWithSubmission } from '@/types/exercise';
 import { useExerciseCategoriesQuery } from '@/hooks/queries/useExerciseCategoriesQuery';
 import { Folder, FolderOpen, List, AlertCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CategorizedMyExercisesProps {
   exercises: MyExerciseWithSubmission[];
@@ -20,7 +21,8 @@ export const CategorizedMyExercises = ({ exercises }: CategorizedMyExercisesProp
   const params = useParams();
   const courseId = params?.courseId as string;
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | 'all' | 'uncategorized'>('all');
-  
+  const { profile } = useAuth();
+  const userRole = profile?.role;
   // Fetch categories for the course
   const { categories, loading: categoriesLoading } = useExerciseCategoriesQuery(courseId || '');
 
@@ -92,7 +94,7 @@ export const CategorizedMyExercises = ({ exercises }: CategorizedMyExercisesProp
   }, [categories, categorizedExercises, uncategorizedExercises, allExercises]);
 
   const getCategoryTitle = () => {
-    if (selectedCategoryId === 'all') return 'همه تمرین‌ها';
+    if (selectedCategoryId === 'all') return userRole === 'trainee' ? "تمرین های پیش رو" : "همه تمرین‌ها";
     if (selectedCategoryId === 'uncategorized') return 'تمرین‌های بدون دسته‌بندی';
     const category = categories.find(cat => cat.id === selectedCategoryId);
     return category ? category.name : 'دسته‌بندی نامشخص';
@@ -149,7 +151,7 @@ export const CategorizedMyExercises = ({ exercises }: CategorizedMyExercisesProp
               {/* All Exercises */}
               <CategoryItem
                 id="all"
-                title="همه تمرین‌ها"
+                title={userRole === 'trainee' ? "تمرین های پیش رو" : "همه تمرین‌ها"}
                 icon={<List className="h-4 w-4" />}
                 count={allExercises.length}
                 isSelected={selectedCategoryId === 'all'}

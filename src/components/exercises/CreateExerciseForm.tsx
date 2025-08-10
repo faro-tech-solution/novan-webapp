@@ -16,7 +16,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   course_id: z.string().min(1, "انتخاب دوره الزامی است"),
   category_id: z.string().optional().or(z.literal("no-category")),
-  difficulty: z.string().optional(),
+  difficulty: z.string().optional().nullable(),
 
   points: z.number().min(1, "امتیاز باید بین 1 تا 250 باشد").max(250, "امتیاز باید بین 1 تا 250 باشد"),
   estimated_time: z.number().min(0, "زمان تخمینی باید بر حسب ثانیه و ۰ یا بیشتر باشد"),
@@ -35,20 +35,6 @@ const formSchema = z.object({
 
   iframe_html: z.string().optional(),
   arvan_video_id: z.string().optional(),
-}).superRefine((data, ctx) => {
-  // Require difficulty only for non-media types (the user requested to hide it for media types)
-  // Media types: video, audio, iframe, arvan_video
-  const mediaTypes = ["video", "audio", "iframe", "arvan_video"] as const;
-  const isMediaType = mediaTypes.includes(data.exercise_type as any);
-  if (!isMediaType) {
-    if (!data.difficulty || data.difficulty.trim().length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["difficulty"],
-        message: "انتخاب سطح دشواری الزامی است",
-      });
-    }
-  }
 });
 
 export type CreateExerciseFormData = z.infer<typeof formSchema>;
@@ -76,7 +62,7 @@ export const CreateExerciseForm = ({
       description: "",
       course_id: "",
       category_id: "no-category",
-      difficulty: "",
+      difficulty: undefined,
 
       points: 5,
       estimated_time: 0,

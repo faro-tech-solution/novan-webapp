@@ -14,6 +14,8 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { MyExerciseWithSubmission, Exercise } from '@/types/exercise';
+import { getExerciseTypeIcon } from '@/utils/exerciseTypeIcons';
+import { translateDifficultyToDisplay } from '@/utils/difficultyTranslation';
 
 interface ExerciseCardProps {
   exercise: MyExerciseWithSubmission | Exercise;
@@ -83,30 +85,40 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee' }: ExerciseCardPro
   };
 
   // Get difficulty icon and styling
-  const getDifficultyDisplay = (difficulty: string) => {
+  const getDifficultyDisplay = (difficulty: string | null) => {
+    const displayText = translateDifficultyToDisplay(difficulty);
+    
+    if (!difficulty) {
+      return {
+        icon: <Star className="h-4 w-4 text-gray-400" />,
+        text: displayText,
+        color: 'text-gray-400'
+      };
+    }
+    
     switch (difficulty) {
-      case 'آسان':
+      case 'easy':
         return {
           icon: <Star className="h-4 w-4 text-gray-400" />,
-          text: difficulty,
+          text: displayText,
           color: 'text-gray-400'
         };
-      case 'متوسط':
+      case 'medium':
         return {
           icon: <TrendingUp className="h-4 w-4 text-gray-400" />,
-          text: difficulty,
+          text: displayText,
           color: 'text-gray-400'
         };
-      case 'سخت':
+      case 'hard':
         return {
           icon: <Zap className="h-4 w-4 text-gray-400" />,
-          text: difficulty,
+          text: displayText,
           color: 'text-gray-400'
         };
       default:
         return {
           icon: <Star className="h-4 w-4 text-gray-400" />,
-          text: difficulty,
+          text: displayText,
           color: 'text-gray-400'
         };
     }
@@ -131,7 +143,8 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee' }: ExerciseCardPro
     <Link href={getExerciseLink()}>
       <Card className={`transition-all duration-200 mb-3 overflow-hidden hover:shadow-md transition-shadow border-0 border-r-4 ${getCardBackground(submissionStatus)} ${getCardHeight(submissionStatus)}`}>
         <CardHeader className="px-5 py-3">
-          <h3 className="text-gray-900 leading-tight">
+          <h3 className="text-gray-900 leading-tight flex items-center gap-2">
+            {getExerciseTypeIcon(exercise.exercise_type)}
             {exercise.title}
           </h3>
         </CardHeader>

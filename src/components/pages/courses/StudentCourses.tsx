@@ -32,7 +32,11 @@ const StudentCourses = () => {
     return true;
   });
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty: string | null) => {
+    if (!difficulty) {
+      return 'bg-gray-100 text-gray-800';
+    }
+    
     switch (difficulty) {
       case 'مبتدی': return 'bg-green-100 text-green-800';
       case 'متوسط': return 'bg-yellow-100 text-yellow-800';
@@ -186,7 +190,7 @@ const StudentCourses = () => {
                   </div>
                   <div className="flex flex-col space-y-2">
                     <Badge className={getDifficultyColor(course.difficulty)}>
-                      {course.difficulty}
+                      {course.difficulty || 'نامشخص'}
                     </Badge>
                     <Badge className={getStatusColor(course.status)}>
                       {course.status === 'active' ? 'در حال مطالعه' : 'تکمیل شده'}
