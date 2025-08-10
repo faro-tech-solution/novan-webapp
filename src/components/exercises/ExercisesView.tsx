@@ -76,13 +76,20 @@ export const ExercisesView = ({
   // Get exercises to display based on selected category
   const displayedExercises = useMemo(() => {
     if (selectedCategoryId === 'all') {
+      // For trainee role, show only uncompleted exercises (next 10)
+      if (userRole === 'trainee') {
+        const uncompletedExercises = allExercises.filter(ex => 
+          (ex as any).submission_status !== 'completed'
+        );
+        return uncompletedExercises.slice(0, 10);
+      }
       return allExercises;
     } else if (selectedCategoryId === 'uncategorized') {
       return uncategorizedExercises;
     } else {
       return categorizedExercises[selectedCategoryId] || [];
     }
-  }, [selectedCategoryId, allExercises, uncategorizedExercises, categorizedExercises]);
+  }, [selectedCategoryId, allExercises, uncategorizedExercises, categorizedExercises, userRole]);
 
   // Calculate stats for categories
   const categoryStats = useMemo(() => {
@@ -106,13 +113,25 @@ export const ExercisesView = ({
       overdue: uncategorizedExercises.filter(ex => (ex as any).submission_status === 'overdue').length,
     };
 
-    // Stats for all
-    stats['all'] = {
-      total: allExercises.length,
-      completed: allExercises.filter(ex => (ex as any).submission_status === 'completed').length,
-      pending: allExercises.filter(ex => (ex as any).submission_status === 'pending').length,
-      overdue: allExercises.filter(ex => (ex as any).submission_status === 'overdue').length,
-    };
+    // Stats for all (or upcoming exercises for trainee)
+    if (userRole === 'trainee') {
+      const uncompletedExercises = allExercises.filter(ex => 
+        (ex as any).submission_status !== 'completed'
+      );
+      stats['all'] = {
+        total: Math.min(uncompletedExercises.length, 10),
+        completed: 0, // No completed exercises in upcoming
+        pending: uncompletedExercises.filter(ex => (ex as any).submission_status === 'pending').length,
+        overdue: uncompletedExercises.filter(ex => (ex as any).submission_status === 'overdue').length,
+      };
+    } else {
+      stats['all'] = {
+        total: allExercises.length,
+        completed: allExercises.filter(ex => (ex as any).submission_status === 'completed').length,
+        pending: allExercises.filter(ex => (ex as any).submission_status === 'pending').length,
+        overdue: allExercises.filter(ex => (ex as any).submission_status === 'overdue').length,
+      };
+    }
 
     return stats;
   }, [categories, categorizedExercises, uncategorizedExercises, allExercises]);
@@ -235,7 +254,7 @@ export const ExercisesView = ({
   }, [draggedIndex, localExercises, userRole, courseId, onExercisesReorder, exercises, toast, reorderExercises, selectedCategoryId, uncategorizedExercises, categorizedExercises]);
 
   const getCategoryTitle = () => {
-    if (selectedCategoryId === 'all') return 'همه تمرین‌ها';
+    if (selectedCategoryId === 'all') return userRole === 'trainee' ? "تمرین های پیش رو" : "همه تمرین‌ها";
     if (selectedCategoryId === 'uncategorized') return 'تمرین‌های بدون دسته‌بندی';
     const category = categories.find(cat => cat.id === selectedCategoryId);
     return category ? category.name : 'دسته‌بندی نامشخص';
@@ -312,12 +331,12 @@ export const ExercisesView = ({
         <CardContent className="p-0">
           <ScrollArea className="h-[600px]">
             <div className="p-4 space-y-2">
-              {/* All Exercises */}
+              {/* All Exercises or Upcoming Exercises for Trainee */}
               <CategoryItem
                 id="all"
-                title="همه تمرین‌ها"
+                title={userRole === 'trainee' ? "تمرین های پیش رو" : "همه تمرین‌ها"}
                 icon={<List className="h-4 w-4" />}
-                count={allExercises.length}
+                count={categoryStats['all']?.total || 0}
                 isSelected={selectedCategoryId === 'all'}
                 onClick={() => setSelectedCategoryId('all')}
               />

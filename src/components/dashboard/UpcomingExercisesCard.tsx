@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { UpcomingExercise } from '@/types/exercise';
 import { useAuth } from '@/contexts/AuthContext';
+import { getExerciseTypeIconSmall } from '@/utils/exerciseTypeIcons';
 
 interface UpcomingExercisesCardProps {
   exercises: UpcomingExercise[];
@@ -65,7 +66,10 @@ export const UpcomingExercisesCard = ({ exercises, className = '' }: UpcomingExe
                 >
                   <div className="flex-shrink-0 ml-2 flex items-center justify-center">{icon}</div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <div className="truncate leading-tight text-sm">{exercise.title}</div>
+                    <div className="truncate leading-tight text-sm flex items-center gap-2">
+                      {getExerciseTypeIconSmall(exercise.exercise_type)}
+                      {exercise.title}
+                    </div>
                   </div>
                 </Link>
               );

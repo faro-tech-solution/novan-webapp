@@ -10,6 +10,7 @@ import {
   Award
 } from 'lucide-react';
 import { Exercise } from '@/types/exercise';
+import { getExerciseTypeIconSmall } from '@/utils/exerciseTypeIcons';
 import { getExerciseStatusBadge, getDifficultyBadge } from './ExerciseStatusBadges';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -58,7 +59,10 @@ export const ExerciseTable = ({ exercises, filteredExercises, onDeleteExercise, 
               <TableRow key={exercise.id}>
                 <TableCell>
                   <div>
-                    <div className="font-medium">{exercise.title}</div>
+                    <div className="font-medium flex items-center gap-2">
+                      {getExerciseTypeIconSmall(exercise.exercise_type)}
+                      {exercise.title}
+                    </div>
                     <div className="flex items-center space-x-2 space-x-reverse text-xs text-gray-500 mt-1">
                       <Clock className="h-3 w-3" />
                       <span>{exercise.estimated_time}</span>

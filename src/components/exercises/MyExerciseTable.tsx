@@ -9,6 +9,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { ResponsiveTable } from '@/components/ui/responsive-table';
 import { CheckCircle, Clock, FileText, Award } from 'lucide-react';
 import { MyExerciseWithSubmission } from '@/types/exercise';
+import { getExerciseTypeIconSmall } from '@/utils/exerciseTypeIcons';
 
 interface MyExerciseTableProps {
   exercises: MyExerciseWithSubmission[];
@@ -91,7 +92,10 @@ export const MyExerciseTable = ({ exercises }: MyExerciseTableProps) => {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="font-medium">{exercise.title}</div>
+                  <div className="font-medium flex items-center gap-2">
+                    {getExerciseTypeIconSmall(exercise.exercise_type)}
+                    {exercise.title}
+                  </div>
                 </TableCell>
                 <TableCell>{getDifficultyBadge(exercise.difficulty)}</TableCell>
 

@@ -14,6 +14,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { MyExerciseWithSubmission, Exercise } from '@/types/exercise';
+import { getExerciseTypeIcon } from '@/utils/exerciseTypeIcons';
 
 interface ExerciseCardProps {
   exercise: MyExerciseWithSubmission | Exercise;
@@ -131,7 +132,8 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee' }: ExerciseCardPro
     <Link href={getExerciseLink()}>
       <Card className={`transition-all duration-200 mb-3 overflow-hidden hover:shadow-md transition-shadow border-0 border-r-4 ${getCardBackground(submissionStatus)} ${getCardHeight(submissionStatus)}`}>
         <CardHeader className="px-5 py-3">
-          <h3 className="text-gray-900 leading-tight">
+          <h3 className="text-gray-900 leading-tight flex items-center gap-2">
+            {getExerciseTypeIcon(exercise.exercise_type)}
             {exercise.title}
           </h3>
         </CardHeader>

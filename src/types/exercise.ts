@@ -86,6 +86,7 @@ export interface UpcomingExercise {
   points: number;
   difficulty: string;
   submission_status: SubmissionStatusType;
+  exercise_type: ExerciseType;
 }
 
 // For my exercise table

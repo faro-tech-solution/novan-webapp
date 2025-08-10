@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { User, Clock } from 'lucide-react';
 import { Submission } from '@/types/reviewSubmissions';
+import { getExerciseTypeIconSmall } from '@/utils/exerciseTypeIcons';
 
 interface SubmissionsListProps {
   submissions: Submission[];
@@ -31,7 +32,10 @@ export const SubmissionsList: React.FC<SubmissionsListProps> = ({
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <h3 className="font-semibold">{submission.exercise?.title || 'تمرین نامشخص'}</h3>
+                <h3 className="font-semibold flex items-center gap-2">
+                  {submission.exercise?.exercise_type && getExerciseTypeIconSmall(submission.exercise.exercise_type)}
+                  {submission.exercise?.title || 'تمرین نامشخص'}
+                </h3>
                 <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-600">
                   <div className="flex items-center space-x-2 space-x-reverse">
                     <User className="h-4 w-4" />
