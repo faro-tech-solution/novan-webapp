@@ -7,20 +7,22 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getDashboardPathForRole } from '@/utils';
 
 const Dashboard = () => {
-  const { profile, loading } = useAuth();
+  const { profile, loading, isInitialized } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    if (!isInitialized || loading) return;
+
     if (!loading) {
       if (!profile) {
-        router.push('/');
+        router.replace('/portal/login');
         return;
       }
 
       // Redirect based on user role
-      router.push(getDashboardPathForRole(profile.role));
+      router.replace(getDashboardPathForRole(profile.role));
     }
-  }, [profile, loading, router]);
+  }, [profile, loading, isInitialized, router]);
 
   if (loading) {
     return (
