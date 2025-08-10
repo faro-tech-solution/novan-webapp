@@ -47,7 +47,7 @@ const CreateExerciseDialog = ({
           difficulty: data.difficulty,
 
           points: data.points,
-          estimated_time: data.estimated_time || "-",
+          estimated_time: String(data.estimated_time ?? 0),
           exercise_type: data.exercise_type,
           content_url: data.content_url,
           auto_grade: data.auto_grade,

@@ -6,7 +6,6 @@ import { BasicInfoSection } from "./BasicInfoSection";
 import { CourseAndDifficultySection } from "./CourseAndDifficultySection";
 import { TimingAndPointsSection } from "./TimingAndPointsSection";
 import { ExerciseTypeSection } from "./ExerciseTypeSection";
-import { FormBuilder } from "./FormBuilder";
 import { Course } from "@/types/course";
 import { ExerciseForm } from "@/types/formBuilder";
 import * as z from "zod";
@@ -17,17 +16,17 @@ const formSchema = z.object({
   description: z.string().optional(),
   course_id: z.string().min(1, "انتخاب دوره الزامی است"),
   category_id: z.string().optional().or(z.literal("no-category")),
-  difficulty: z.string().min(1, "انتخاب سطح دشواری الزامی است"),
+  difficulty: z.string().optional(),
 
-  points: z.number().min(0, "امتیاز باید 0 یا بیشتر باشد"),
-  estimated_time: z.string().min(1, "زمان تخمینی الزامی است"),
+  points: z.number().min(1, "امتیاز باید بین 1 تا 250 باشد").max(250, "امتیاز باید بین 1 تا 250 باشد"),
+  estimated_time: z.number().min(0, "زمان تخمینی باید بر حسب ثانیه و ۰ یا بیشتر باشد"),
   exercise_type: z.enum(["form", "video", "audio", "simple", "iframe", "arvan_video"] as const),
   content_url: z
     .string()
     .url("آدرس محتوا باید URL معتبر باشد")
     .optional()
     .nullable(),
-  auto_grade: z.boolean().default(false),
+  auto_grade: z.boolean().default(true),
   form_structure: z
     .object({
       questions: z.array(z.any()),
@@ -36,6 +35,20 @@ const formSchema = z.object({
 
   iframe_html: z.string().optional(),
   arvan_video_id: z.string().optional(),
+}).superRefine((data, ctx) => {
+  // Require difficulty only for non-media types (the user requested to hide it for media types)
+  // Media types: video, audio, iframe, arvan_video
+  const mediaTypes = ["video", "audio", "iframe", "arvan_video"] as const;
+  const isMediaType = mediaTypes.includes(data.exercise_type as any);
+  if (!isMediaType) {
+    if (!data.difficulty || data.difficulty.trim().length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["difficulty"],
+        message: "انتخاب سطح دشواری الزامی است",
+      });
+    }
+  }
 });
 
 export type CreateExerciseFormData = z.infer<typeof formSchema>;
@@ -65,11 +78,11 @@ export const CreateExerciseForm = ({
       category_id: "no-category",
       difficulty: "",
 
-      points: 100,
-      estimated_time: "",
+      points: 5,
+      estimated_time: 0,
       exercise_type: "form",
       content_url: null,
-      auto_grade: false,
+      auto_grade: true,
       form_structure: { questions: [] },
       
       iframe_html: "",
@@ -110,18 +123,7 @@ export const CreateExerciseForm = ({
         <TimingAndPointsSection form={form} />
         <ExerciseTypeSection form={form} />
 
-        {/* Form Builder Section - Only show for form type exercises */}
-        {form.watch("exercise_type") === "form" && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">محتوای تمرین</h3>
-            <FormBuilder
-              value={form.watch("form_structure")}
-              onChange={(formStructure) =>
-                form.setValue("form_structure", formStructure)
-              }
-            />
-          </div>
-        )}
+        {/* Form Builder moved inside ExerciseTypeSection */}
 
         <div className="flex justify-end space-x-2 space-x-reverse pt-4">
           <Button
