@@ -156,15 +156,17 @@ export const submitExerciseSolution = async (
   studentId: string,
   solution: string,
   courseId: string,
-  feedback?: string
-): Promise<{ error: string | null }> => {
-  console.log('Submitting solution for exercise:', exerciseId);
+  feedback?: string,
+  autoGrade?: boolean,
+  attachments?: string[]
+): Promise<{ error: string | null; submissionId?: string }> => {
+  console.log('Submitting solution for exercise:', exerciseId, 'autoGrade:', autoGrade);
 
-  // For video, audio, and simple exercises, store feedback in the solution field
-  // as a JSON object with both answers and feedback
+  // Only store feedback in solution for auto_grade exercises
+  // For non-auto_grade exercises, feedback will be stored in conversation
   let finalSolution = solution;
   
-  if (feedback && feedback.trim()) {
+  if (feedback && feedback.trim() && autoGrade) {
     try {
       // Try to parse existing solution to see if it's already JSON
       const existingSolution = JSON.parse(solution);
@@ -190,7 +192,7 @@ export const submitExerciseSolution = async (
     student_id: studentId,
     course_id: courseId, // Set course_id from parameter
     solution: finalSolution,
-    latest_answer: finalSolution, // Set latest_answer to the same value as solution
+    latest_answer: 'trainee', // Set latest_answer to role instead of solution
     submission_status: 'pending', // Set default submission status
     submitted_at: new Date().toISOString()
   };
@@ -205,15 +207,49 @@ export const submitExerciseSolution = async (
       : submissionData.solution
   });
   
-  const { error } = await supabase
+  const { data: submissionResult, error } = await supabase
     .from('exercise_submissions')
     .upsert(submissionData, {
       onConflict: 'exercise_id,student_id'
-    });
+    })
+    .select('id')
+    .single();
 
   if (error) {
     console.error('Error submitting solution:', error);
     return { error: error.message };
+  }
+
+  const submissionId = submissionResult?.id;
+
+  // For non-auto_grade exercises, create conversation entry if feedback exists
+  if (!autoGrade && (feedback?.trim() || (attachments && attachments.length > 0)) && submissionId) {
+    try {
+      const metaData = {
+        type: 'initial_submission',
+        attachments: attachments || []
+      };
+
+      const { error: conversationError } = await supabase
+        .from('exercise_submissions_conversation')
+        .insert({
+          submission_id: submissionId,
+          sender_id: studentId,
+          message: feedback?.trim() || '',
+          meta_data: metaData,
+          created_at: new Date().toISOString(),
+        });
+
+      if (conversationError) {
+        console.error('Error creating conversation entry:', conversationError);
+        // Don't fail the submission if conversation creation fails
+      } else {
+        console.log('Conversation entry created for non-auto_grade exercise');
+      }
+    } catch (conversationError) {
+      console.error('Error creating conversation entry:', conversationError);
+      // Don't fail the submission if conversation creation fails
+    }
   }
 
   console.log('Solution submitted successfully, checking achievements');
@@ -228,7 +264,7 @@ export const submitExerciseSolution = async (
   }
 
   console.log('Solution submitted successfully');
-  return { error: null };
+  return { error: null, submissionId };
 };
 
 /**
@@ -240,7 +276,15 @@ export const fetchSubmissionConversation = async (submissionId: string): Promise
   try {
     const { data, error } = await (supabase as any)
       .from('exercise_submissions_conversation')
-      .select('*')
+      .select(`
+        *,
+        sender:profiles!sender_id (
+          id,
+          first_name,
+          last_name,
+          role
+        )
+      `)
       .eq('submission_id', submissionId)
       .order('created_at', { ascending: true });
 
