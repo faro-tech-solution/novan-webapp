@@ -37,13 +37,13 @@ const ExerciseDetail = () => {
 
   // Create submission object for conversation component
   const createSubmissionObject = (): Submission | null => {
-    if (!exercise || !exercise.submission_id || !user) return null;
+    if (!exercise || !user) return null;
     
     return {
-      id: exercise.submission_id,
+      id: exercise.submission_id || 'temp-submission-' + exercise.id, // Use temporary ID if no submission exists
       exercise_id: exercise.id,
       student_id: user.id,
-      submitted_at: new Date().toISOString(), // This would ideally come from the submission data
+      submitted_at: exercise.submission_id ? new Date().toISOString() : new Date().toISOString(), // Use current date as fallback
       score: exercise.score || null,
       feedback: exercise.feedback || null,
       graded_at: null,
@@ -66,7 +66,7 @@ const ExerciseDetail = () => {
     };
   };
 
-  const handleSubmit = async (feedback?: string) => {
+  const handleSubmit = async (feedback?: string, attachments?: string[]) => {
     if (!exercise || !user || !profile) return;
 
     submitMutation.mutate(
@@ -76,6 +76,8 @@ const ExerciseDetail = () => {
         answers,
         courseId: exercise.course_id, // Pass courseId from hook
         feedback: feedback || "", // Include feedback in submission
+        autoGrade: exercise.auto_grade, // Pass autoGrade from exercise
+        attachments: attachments || [], // Pass attachments
       },
       {
         onSuccess: () => {
@@ -258,11 +260,18 @@ const ExerciseDetail = () => {
           </>
         )}
 
-        {/* Exercise Conversation */}
-        {exercise.submission_id && createSubmissionObject() && (
+        {/* Exercise Conversation - Show for non-auto_grade exercises only */}
+        {createSubmissionObject() && !exercise.auto_grade && (
+          (profile?.role === "trainee" || (
+            (profile?.role === "trainer" || profile?.role === "admin") && 
+            exercise.submission_id
+          ))
+        ) && (
           <ExerciseConversation
             submission={createSubmissionObject()!}
             variant="full"
+            onExerciseSubmit={exercise.exercise_type === "simple" ? handleSubmit : undefined}
+            exerciseSubmitting={exercise.exercise_type === "simple" ? submitMutation.isPending : false}
           />
         )}
       </div>

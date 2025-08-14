@@ -17,12 +17,16 @@ interface ExerciseConversationProps {
   submission: Submission;
   variant?: 'full' | 'compact';
   onClose?: () => void; // Add onClose prop
+  onExerciseSubmit?: (feedback?: string, attachments?: string[]) => void; // For simple exercise submission
+  exerciseSubmitting?: boolean; // Loading state for exercise submission
 }
 
 export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
   submission,
   variant = 'full',
   onClose,
+  onExerciseSubmit,
+  exerciseSubmitting = false,
 }) => {
   const submissionId = submission.id;
   const score = submission.score;
@@ -44,22 +48,41 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
   const [resetKey, setResetKey] = useState(0);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: conversation = [], isLoading: conversationLoading } = useSubmissionConversation(submissionId) as { data: ConversationMessage[], isLoading: boolean };
+  // Only fetch conversation if submissionId doesn't start with 'temp-submission-'
+  const actualSubmissionId = submissionId?.startsWith('temp-submission-') ? undefined : submissionId;
+  const { data: conversation = [], isLoading: conversationLoading } = useSubmissionConversation(actualSubmissionId) as { data: ConversationMessage[], isLoading: boolean };
 
-  // Helper function to extract attachments from message content
-  const extractAttachments = (messageContent: string): { text: string; attachments: string[] } => {
-    const imgRegex = /<img[^>]+src=['"]([^'"]+)['"][^>]*>/g;
-    const attachments: string[] = [];
-    let match;
+  // Helper function to extract attachments from metadata
+  const extractAttachments = (message: ConversationMessage): { text: string; attachments: string[] } => {
+    const text = message.message || '';
     
-    while ((match = imgRegex.exec(messageContent)) !== null) {
-      attachments.push(match[1]);
+    // Try to get attachments from metadata first
+    let attachments: string[] = [];
+    if (message.meta_data && typeof message.meta_data === 'object') {
+      const metaData = message.meta_data as any;
+      if (metaData.attachments && Array.isArray(metaData.attachments)) {
+        attachments = metaData.attachments;
+      }
     }
     
-    // Remove img tags from the text content
-    const textContent = messageContent.replace(/<img[^>]*>/g, '');
+    // Fallback: extract from message content for old messages
+    if (attachments.length === 0) {
+      const imgRegex = /<img[^>]+src=['"]([^'"]+)['"][^>]*>/g;
+      let match;
+      
+      while ((match = imgRegex.exec(text)) !== null) {
+        attachments.push(match[1]);
+      }
+    }
     
-    return { text: textContent, attachments };
+    // Clean text content by removing img tags and attachment blocks
+    const cleanText = text
+      .replace(/<img[^>]*>/g, '')
+      .replace(/<br\/><div[^>]*>📎<\/div><div[^>]*>[^<]*<\/div><\/div>/g, '')
+      .replace(/<br\/>/g, '')
+      .trim();
+    
+    return { text: cleanText, attachments };
   };
 
   const sendMessageMutation = useSendConversationMessage();
@@ -70,7 +93,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
   const isTrainerOrAdmin = profile?.role === "trainer" || profile?.role === "admin";
   
   // Shared loading state
-  const isLoading = sendMessageMutation.isPending || gradeSubmissionMutation.isPending || markAsViewedMutation.isPending || uploading;
+  const isLoading = sendMessageMutation.isPending || gradeSubmissionMutation.isPending || markAsViewedMutation.isPending || uploading || exerciseSubmitting;
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -99,9 +122,46 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
   }, [conversation]);
 
   const handleSendMessage = async () => {
-    if (!submissionId) return;
-    let messageToSend = newMessage;
-    const imageUrls: string[] = [];
+    // Handle simple exercise submission for temporary submissions
+    if (isTemporarySubmission && isSimpleExercise && onExerciseSubmit) {
+      // For simple exercises, upload files first then submit
+      let attachmentUrls: string[] = [];
+      
+      if (selectedFiles && selectedFiles.length > 0) {
+        setUploading(true);
+        try {
+          for (const file of selectedFiles) {
+            if (file instanceof File) {
+              console.log('Uploading file for simple exercise:', file.name);
+              const fileUrl = await uploadFileToSupabase(file, 'exercise-conversation');
+              if (fileUrl) {
+                attachmentUrls.push(fileUrl);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error uploading files for simple exercise:', error);
+        } finally {
+          setUploading(false);
+        }
+      }
+      
+      // Submit exercise with feedback and attachments
+      if (onExerciseSubmit) {
+        // We need to modify the submission to handle attachments
+        // For now, we'll pass the message and store attachments separately
+        onExerciseSubmit(newMessage.trim() || undefined, attachmentUrls);
+      }
+      return;
+    }
+    
+    if (!submissionId || submissionId.startsWith('temp-submission-')) {
+      // For other temporary submissions (non-simple exercises), we can't send messages yet
+      console.warn('Cannot send conversation message before exercise submission');
+      return;
+    }
+    const messageToSend = newMessage;
+    const attachmentUrls: string[] = [];
 
     console.log('handleSendMessage: Starting with', selectedFiles.length, 'files');
     
@@ -115,33 +175,17 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
             const fileUrl = await uploadFileToSupabase(file, 'exercise-conversation');
             if (fileUrl) {
               console.log('Upload successful, URL:', fileUrl);
-              imageUrls.push(fileUrl);
+              attachmentUrls.push(fileUrl);
             } else {
               console.error('Upload failed for file:', file.name);
             }
           }
         }
-        console.log('All uploads completed. URLs:', imageUrls);
+        console.log('All uploads completed. URLs:', attachmentUrls);
       } catch (error) {
         console.error('Error uploading files:', error);
       } finally {
         setUploading(false);
-      }
-      
-      // Add all files to the message
-      if (imageUrls.length > 0) {
-        const fileHtml = imageUrls.map(url => {
-          const fileName = url.split('/').pop() || 'attachment';
-          const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(fileName);
-          const fileExtension = fileName.split('.').pop()?.toUpperCase() || 'FILE';
-          
-          if (isImage) {
-            return `<br/><img src='${url}' alt='attachment' style='max-width:100px; border-radius:8px; margin-top:8px;' />`;
-          } else {
-            return `<br/><div style='display: inline-block; background-color: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 12px; margin-top: 8px; text-align: center; min-width: 80px;'><div style='font-size: 16px; margin-bottom: 4px;'>📎</div><div style='font-size: 12px; font-weight: 500; color: #374151;'>${fileExtension}</div></div>`;
-          }
-        }).join('');
-        messageToSend = `${messageToSend}${fileHtml}`;
       }
     }
     
@@ -156,9 +200,13 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
           setSelectedFiles([]);
           setResetKey(prev => prev + 1); // Force reset of FileUpload component after successful submit
           
-          // Send message to conversation if there's a message
-          if (messageToSend.trim()) {
-            sendMessageMutation.mutate({ submissionId, message: messageToSend }, {
+          // Send message to conversation if there's a message or attachments
+          if (messageToSend.trim() || attachmentUrls.length > 0) {
+            sendMessageMutation.mutate({ 
+              submissionId, 
+              message: messageToSend.trim(), 
+              attachments: attachmentUrls 
+            }, {
               onSuccess: () => {
                 // Close popup after successful operation
                 if (onClose) {
@@ -175,8 +223,12 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
         }
       });
     } else {
-      if (!messageToSend.trim()) return;
-      sendMessageMutation.mutate({ submissionId, message: messageToSend }, {
+      if (!messageToSend.trim() && attachmentUrls.length === 0) return;
+      sendMessageMutation.mutate({ 
+        submissionId, 
+        message: messageToSend.trim(), 
+        attachments: attachmentUrls 
+      }, {
         onSuccess: () => {
           setNewMessage("");
           setSelectedFiles([]);
@@ -192,7 +244,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
   };
 
   const handleMarkAsViewed = async () => {
-    if (!submissionId) return;
+    if (!submissionId || submissionId.startsWith('temp-submission-')) return;
     
     markAsViewedMutation.mutate({
       submissionId,
@@ -209,6 +261,12 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
   if (!submissionId) {
     return null;
   }
+  
+  // Check if this is a temporary submission (before actual submission)
+  const isTemporarySubmission = submissionId.startsWith('temp-submission-');
+  
+  // Check if this is a simple exercise
+  const isSimpleExercise = submission.exercise?.exercise_type === 'simple';
 
   return (
     <div className={variant === 'compact' ? '' : 'mt-10'}>
@@ -249,7 +307,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
           <div>در حال بارگذاری گفتگو...</div>
         ) : conversation && conversation.length > 0 ? (
           conversation.map((msg) => {
-            const { text, attachments } = extractAttachments(msg.message);
+            const { text, attachments } = extractAttachments(msg);
             
             return msg.sender?.role === 'trainee' ? (
               <div
@@ -293,7 +351,14 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
             );
           })
         ) : (
-          <div className="text-gray-400">هنوز پیامی ثبت نشده است.</div>
+          <div className="text-gray-400">
+            {isTemporarySubmission 
+              ? (isSimpleExercise 
+                  ? "برای تکمیل این تمرین، پیام خود را در زیر بنویسید و ارسال کنید." 
+                  : "پس از ارسال تمرین، می‌توانید در اینجا با مربی گفتگو کنید.")
+              : "هنوز پیامی ثبت نشده است."
+            }
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
@@ -344,13 +409,18 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
           <RichTextEditor
             value={newMessage}
             onChange={setNewMessage}
-            placeholder="پیام خود را بنویسید..."
-            readOnly={isLoading}
+            placeholder={isTemporarySubmission 
+              ? (isSimpleExercise 
+                  ? "برای تکمیل تمرین، پیام خود را بنویسید..." 
+                  : "ابتدا تمرین را ارسال کنید...")
+              : "پیام خود را بنویسید..."
+            }
+            readOnly={isLoading || (isTemporarySubmission && !isSimpleExercise)}
             height="120px"
           />
           <FileUpload
             onFileChange={setSelectedFiles}
-            disabled={isLoading}
+            disabled={isLoading || (isTemporarySubmission && !isSimpleExercise)}
             label={uploading ? 'در حال آپلود...' : 'افزودن فایل'}
             resetKey={resetKey}
           />
@@ -391,9 +461,14 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
           <button
             className="bg-teal-600 text-white px-4 py-2 rounded disabled:opacity-50 w-full"
             onClick={() => handleSendMessage()}
-            disabled={(!newMessage.trim() && !isTrainerOrAdmin) || isLoading}
+            disabled={(!newMessage.trim() && !isTrainerOrAdmin) || isLoading || (isTemporarySubmission && !isSimpleExercise)}
           >
-            {isLoading ? 'در حال ارسال...' : 'ارسال پاسخ'}
+            {isLoading 
+              ? 'در حال ارسال...' 
+              : isTemporarySubmission 
+                ? (isSimpleExercise ? 'تکمیل تمرین' : 'ابتدا تمرین را ارسال کنید')
+                : 'ارسال پاسخ'
+            }
           </button>
         </div>
       </div>

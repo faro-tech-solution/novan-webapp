@@ -42,19 +42,25 @@ export const useSubmitExerciseMutation = () => {
       answers,
       courseId,
       feedback,
+      autoGrade,
+      attachments,
     }: {
       exerciseId: string;
       studentId: string;
       answers: FormAnswer[];
       courseId: string;
       feedback?: string;
+      autoGrade?: boolean;
+      attachments?: string[];
     }) => {
       const result = await submitExerciseSolution(
         exerciseId,
         studentId,
         JSON.stringify(answers),
         courseId,
-        feedback
+        feedback,
+        autoGrade,
+        attachments
       );
 
       if (result.error) {
@@ -97,27 +103,52 @@ export const useSubmissionConversation = (submissionId: string | undefined) => {
 };
 
 export const useSendConversationMessage = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ submissionId, message }: { submissionId: string; message: string }) => {
-      if (!user) throw new Error('User not authenticated');
-      const { error } = await (supabase as any)
+    mutationFn: async ({ 
+      submissionId, 
+      message, 
+      attachments = [] 
+    }: { 
+      submissionId: string; 
+      message: string; 
+      attachments?: string[];
+    }) => {
+      if (!user || !profile) throw new Error('User not authenticated');
+      
+      // Insert conversation message
+      const { error: conversationError } = await (supabase as any)
         .from('exercise_submissions_conversation')
         .insert([
           {
             submission_id: submissionId,
             sender_id: user.id,
             message,
-            meta_data: { type: 'trainer_reply' },
+            meta_data: { 
+              type: 'message',
+              attachments: attachments 
+            },
             created_at: new Date().toISOString(),
           },
         ]);
-      if (error) throw error;
+      if (conversationError) throw conversationError;
+
+      // Update latest_answer in exercise_submissions
+      const { error: updateError } = await (supabase as any)
+        .from('exercise_submissions')
+        .update({
+          latest_answer: profile.role
+        })
+        .eq('id', submissionId);
+      if (updateError) throw updateError;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['submissionConversation', variables.submissionId]
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['submissions']
       });
     },
   });

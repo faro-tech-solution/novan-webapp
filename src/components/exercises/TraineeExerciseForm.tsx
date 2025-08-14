@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ExerciseType } from "@/types/exercise";
 import { VideoPlayer } from "./VideoPlayer";
 import { AudioPlayer } from "./AudioPlayer";
-import { SimpleExerciseCompletion } from "./SimpleExerciseCompletion";
+
 import { IframePlayer } from "./IframePlayer";
 import { ArvanVideoPlayer } from "./ArvanVideoPlayer";
 import { extractArvanVideoData } from "@/utils/arvanVideoExerciseUtils";
@@ -117,12 +117,6 @@ export const TraineeExerciseForm = ({
         ) : exercise.exercise_type === "iframe" && exercise.iframe_html ? (
           <IframePlayer
             iframeHtml={exercise.iframe_html}
-            onComplete={handleMediaSubmit}
-            isCompleted={isSubmitted}
-            disabled={submitting || exercise.score !== undefined}
-          />
-        ) : exercise.exercise_type === "simple" ? (
-          <SimpleExerciseCompletion
             onComplete={handleMediaSubmit}
             isCompleted={isSubmitted}
             disabled={submitting || exercise.score !== undefined}
