@@ -29,7 +29,7 @@ const CourseCardComponent = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
-      case 'upcoming': return 'bg-blue-100 text-blue-800';
+  
       case 'completed': return 'bg-gray-100 text-gray-800';
       case 'inactive': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -39,7 +39,7 @@ const CourseCardComponent = ({
   const getStatusText = (status: string) => {
     switch (status) {
       case 'active': return 'فعال';
-      case 'upcoming': return 'آینده';
+  
       case 'completed': return 'تکمیل شده';
       case 'inactive': return 'غیرفعال';
       default: return status;

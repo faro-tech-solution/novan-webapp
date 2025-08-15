@@ -27,27 +27,24 @@ export const useTraineeDashboardQuery = () => {
     enabled: !!user,
   });
 
-  // Show all exercises (no date filtering)
-  const currentExercises = myExercises;
-
-  // Get upcoming exercises (not started, due soon) - limit to 3
-  const upcomingExercises = currentExercises
-    .filter(ex => ex.submission_status === 'not_started')
-            .sort((a, b) => a.id.localeCompare(b.id))
+  // Get incomplete exercises (not completed) - limit to 3
+  const incompleteExercises = myExercises
+    .filter(ex => ex.submission_status !== 'completed')
+    .sort((a, b) => a.id.localeCompare(b.id))
     .slice(0, 3);
 
   // Calculate stats
   const stats: DashboardStats = {
-    completedExercises: currentExercises.filter(e => e.submission_status === 'completed').length,
+    completedExercises: myExercises.filter(e => e.submission_status === 'completed').length,
     pendingExercises: 0,
-    totalPoints: currentExercises
+    totalPoints: myExercises
       .filter(e => e.submission_status === 'completed')
       .reduce((sum, e) => sum + e.points, 0)
   };
 
   return {
     stats,
-    upcomingExercises,
+    incompleteExercises,
     studentAwards,
     isLoading: exercisesLoading || awardsLoading,
     error: exercisesError || awardsError

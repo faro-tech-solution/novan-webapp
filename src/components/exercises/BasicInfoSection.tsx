@@ -6,7 +6,7 @@ import { FileUpload } from '@/components/ui/FileUpload';
 import { FilePreviewList } from '@/components/ui/FilePreviewList';
 import { UseFormReturn } from 'react-hook-form';
 import { CreateExerciseFormData } from './CreateExerciseForm';
-import { useState } from 'react';
+
 
 interface BasicInfoSectionProps {
   form: UseFormReturn<CreateExerciseFormData>;

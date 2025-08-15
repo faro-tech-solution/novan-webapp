@@ -2,8 +2,8 @@ import { ExerciseForm, FormAnswer } from './formBuilder';
 import { Json } from '@/integrations/supabase/types';
 
 export type ExerciseType = 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'arvan_video';
-export type SubmissionStatusType = 'not_started' | 'pending' | 'completed' | 'overdue';
-export type ExerciseStatusType = 'upcoming' | 'active' | 'overdue' | 'closed';
+export type SubmissionStatusType = 'not_started' | 'pending' | 'completed';
+export type ExerciseStatusType = 'active' | 'closed';
 
 // Exercise category interface
 export interface ExerciseCategory {
@@ -79,16 +79,7 @@ export interface SubmissionData {
   course_id: string;
 }
 
-// For upcoming exercises card
-export interface UpcomingExercise {
-  id: string;
-  title: string;
-  estimated_time: string; // stored as string in DB; UI now uses seconds (number)
-  points: number;
-  difficulty: string | null;
-  submission_status: SubmissionStatusType;
-  exercise_type: ExerciseType;
-}
+
 
 // For my exercise table
 export interface MyExerciseWithSubmission {

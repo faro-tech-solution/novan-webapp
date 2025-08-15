@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { formatDate } from '@/lib/utils';
 import { Calendar } from 'lucide-react';
 import { RichTextEditor, FilePreviewList, FileUpload } from '@/components/ui';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+
 import { uploadImageToSupabase } from '@/utils/uploadImageToSupabase';
 
 export interface TicketMessage {
@@ -32,7 +32,7 @@ export default function TicketConversation({ description, messages, onSend, disa
   const [uploading, setUploading] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,28 +70,7 @@ export default function TicketConversation({ description, messages, onSend, disa
   return (
     <div className="rounded-lg p-3 min-h-[350px] overflow-y-auto mb-3">
       <div className="min-h-[120px]">
-        {/* Fullscreen Image Dialog */}
-        <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-          <DialogContent className="flex items-center justify-center bg-black bg-opacity-90 p-0 max-w-full max-h-full" style={{ minHeight: '100vh', minWidth: '100vw' }}>
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 left-4 z-20 bg-white bg-opacity-80 rounded-full p-2 text-black hover:bg-opacity-100"
-              aria-label="Close"
-              style={{ fontSize: 24 }}
-            >
-              ×
-            </button>
-            {selectedImage && (
-              <img
-                src={selectedImage}
-                alt="نمایش تصویر"
-                className="max-w-full max-h-[90vh] object-contain mx-auto my-auto rounded shadow-lg"
-                style={{ background: 'white' }}
-                onClick={e => e.stopPropagation()}
-              />
-            )}
-          </DialogContent>
-        </Dialog>
+
         
         {/* Ticket description as the first message */}
         {description && (
@@ -145,7 +124,6 @@ export default function TicketConversation({ description, messages, onSend, disa
                 {/* Attachments section */}
                 <FilePreviewList
                   attachments={attachments}
-                  onImageClick={setSelectedImage}
                   imageSize="lg"
                   className="mt-2"
                 />

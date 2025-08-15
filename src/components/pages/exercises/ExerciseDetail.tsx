@@ -11,7 +11,6 @@ import { ExerciseDetailHeader } from "@/components/exercises/ExerciseDetailHeade
 import { ExerciseInfoCard } from "@/components/exercises/ExerciseInfoCard";
 import { InstructorFormView } from "@/components/exercises/InstructorFormView";
 import { ExerciseConversation } from "@/components/exercises/ExerciseConversation";
-import { FilePreviewList } from "@/components/ui/FilePreviewList";
 import { useExerciseDetailQuery, useSubmitExerciseMutation } from "@/hooks/queries/useExerciseDetailQuery";
 import { Submission } from "@/types/reviewSubmissions";
 
@@ -142,18 +141,6 @@ const ExerciseDetail = () => {
           handleSubmit={handleSubmit}
           submitMutation={submitMutation}
         />
-
-        {/* Exercise Attachments */}
-        {exercise.attachments && exercise.attachments.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold mb-4">فایل‌های پیوست</h3>
-            <FilePreviewList
-              attachments={exercise.attachments}
-              showRemoveButton={false}
-              imageSize="lg"
-            />
-          </div>
-        )}
 
         {(profile?.role === "trainer" || profile?.role === "admin") && (
           <>

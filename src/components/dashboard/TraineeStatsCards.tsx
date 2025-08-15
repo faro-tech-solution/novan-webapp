@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Clock, AlertTriangle, Award } from 'lucide-react';
+import { CheckCircle, Clock, Award } from 'lucide-react';
 
 interface ExerciseStats {
   id: string;
-  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
+  submission_status: 'not_started' | 'pending' | 'completed';
   points: number;
 }
 
@@ -16,14 +16,13 @@ export const TraineeStatsCards = ({ exercises, gridMode }: TraineeStatsCardsProp
   const stats = {
     completedExercises: exercises.filter(e => e.submission_status === 'completed').length,
     pendingExercises: exercises.filter(e => e.submission_status === 'pending').length,
-    overdueExercises: exercises.filter(e => e.submission_status === 'overdue').length,
     totalPoints: exercises
       .filter(e => e.submission_status === 'completed')
       .reduce((sum, e) => sum + e.points, 0)
   };
 
   return (
-    <div className={gridMode ? 'grid grid-cols-2 grid-rows-2 gap-2' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'}>
+    <div className={gridMode ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">تکمیل شده</CardTitle>
@@ -46,16 +45,7 @@ export const TraineeStatsCards = ({ exercises, gridMode }: TraineeStatsCardsProp
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">عقب‌افتاده</CardTitle>
-          <AlertTriangle className="h-4 w-4 text-red-600" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-red-600">{stats.overdueExercises}</div>
-          <p className="text-xs text-muted-foreground">تمرین دیرکرد</p>
-        </CardContent>
-      </Card>
+
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

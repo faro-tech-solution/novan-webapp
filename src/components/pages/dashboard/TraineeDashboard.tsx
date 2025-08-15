@@ -4,27 +4,13 @@ import { useMyExercises } from '@/hooks/useMyExercises';
 
 import { TraineeStatsCards } from '@/components/dashboard/TraineeStatsCards';
 import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesCard';
+
 import WelcomeCard from '@/components/dashboard/WelcomeCard';
 
 const TraineeDashboard = () => {
   const { myExercises, loading, error, refetch } = useMyExercises();
 
-  // Show all exercises (no date filtering)
-  const currentExercises = myExercises;
 
-  // Get upcoming exercises (not started) - limit to 3
-  const upcomingExercises = currentExercises
-    .filter(ex => ex.submission_status === 'not_started')
-    .slice(0, 3)
-    .map(ex => ({
-      id: ex.id,
-      title: ex.title,
-      estimated_time: ex.estimated_time,
-      points: ex.points,
-      difficulty: ex.difficulty,
-      submission_status: ex.submission_status,
-      exercise_type: ex.exercise_type
-    }));
 
   if (loading) {
     return (
@@ -59,16 +45,14 @@ const TraineeDashboard = () => {
           <WelcomeCard />
         </div>
         <div className="hidden md:block md:w-1/3 pr-4">
-          <TraineeStatsCards exercises={currentExercises} gridMode />
+          <TraineeStatsCards exercises={myExercises} gridMode />
         </div>
       </div>
       <div className="flex flex-row w-full p-2 md:p-4 mt-0">
         <div className="w-full md:w-1/3">
-          {/* Upcoming Exercises */}
-          <UpcomingExercisesCard exercises={upcomingExercises} />
+          {/* Incomplete Exercises */}
+          <UpcomingExercisesCard exercises={myExercises} />
         </div>
-
-
       </div>
     </DashboardLayout>
   );

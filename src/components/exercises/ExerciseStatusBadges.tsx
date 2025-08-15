@@ -1,6 +1,6 @@
 
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle } from 'lucide-react';
+
 import { translateDifficultyToDisplay } from '@/utils/difficultyTranslation';
 
 export const getStatusBadge = (status: string) => {
@@ -18,17 +18,8 @@ export const getStatusBadge = (status: string) => {
 
 export const getExerciseStatusBadge = (exerciseStatus: string) => {
   switch (exerciseStatus) {
-    case 'upcoming':
-      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-800 hover:text-blue-100 transition-colors">آینده</Badge>;
     case 'active':
       return <Badge className="bg-green-100 text-green-800 hover:bg-green-800 hover:text-green-100 transition-colors">در حال انجام</Badge>;
-    case 'overdue':
-      return (
-        <Badge className="bg-red-100 text-red-800 hover:bg-red-800 hover:text-red-100 transition-colors">
-          <AlertTriangle className="h-3 w-3 mr-1" />
-          عقب‌افتاده
-        </Badge>
-      );
     case 'closed':
       return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-800 hover:text-gray-100 transition-colors">بسته</Badge>;
     default:

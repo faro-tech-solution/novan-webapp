@@ -92,7 +92,7 @@ export const useMyExercisesQuery = () => {
       const transformedExercises = exercises.map(exercise => {
         const submission = exercise.exercise_submissions?.[0];
         // Determine submission status
-        const submissionStatus: 'not_started' | 'pending' | 'completed' | 'overdue' = submission ? 'completed' : 'not_started';
+        const submissionStatus: 'not_started' | 'pending' | 'completed' = submission ? 'completed' : 'not_started';
 
         return {
           id: exercise.id,

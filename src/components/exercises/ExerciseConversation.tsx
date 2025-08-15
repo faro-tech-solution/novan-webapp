@@ -7,7 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDate } from "@/lib/utils";
 import { RichTextEditor, FilePreviewList, FileUpload } from "@/components/ui";
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+
 import { uploadFileToSupabase } from '@/utils/uploadImageToSupabase';
 import { Submission } from "@/types/reviewSubmissions";
 import { useSubmissionConversation, useSendConversationMessage, ConversationMessage } from "@/hooks/queries/useExerciseDetailQuery";
@@ -44,7 +44,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
     console.log('ExerciseConversation: selectedFiles changed:', selectedFiles.length, selectedFiles.map(f => f.name));
   }, [selectedFiles]);
   const [uploading, setUploading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   const [resetKey, setResetKey] = useState(0);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -102,24 +102,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
   }, [conversation]);
 
   // Attach click handlers to images in messages
-  useEffect(() => {
-    if (!messagesContainerRef.current) return;
-    const container = messagesContainerRef.current;
-    const imgs = container.querySelectorAll('img');
-    imgs.forEach(img => {
-      img.style.cursor = 'zoom-in';
-      img.onclick = (e) => {
-        e.stopPropagation();
-        setSelectedImage(img.src);
-      };
-    });
-    // Cleanup: remove handlers
-    return () => {
-      imgs.forEach(img => {
-        img.onclick = null;
-      });
-    };
-  }, [conversation]);
+
 
   const handleSendMessage = async () => {
     // Handle simple exercise submission for temporary submissions
@@ -270,28 +253,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
 
   return (
     <div className={variant === 'compact' ? '' : 'mt-10'}>
-      {/* Fullscreen Image Dialog */}
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="flex items-center justify-center bg-black bg-opacity-90 p-0 max-w-full max-h-full" style={{ minHeight: '100vh', minWidth: '100vw' }}>
-          <button
-            onClick={() => setSelectedImage(null)}
-            className="absolute top-4 left-4 z-20 bg-white bg-opacity-80 rounded-full p-2 text-black hover:bg-opacity-100"
-            aria-label="بستن"
-            style={{ fontSize: 24 }}
-          >
-            ×
-          </button>
-          {selectedImage && (
-            <img
-              src={selectedImage}
-              alt="نمایش تصویر"
-              className="max-w-full max-h-[90vh] object-contain mx-auto my-auto rounded shadow-lg"
-              style={{ background: 'white' }}
-              onClick={e => e.stopPropagation()}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+
       
       {variant === 'full' && (
         <h3 className="text-lg font-semibold mb-2">گفتگو درباره این تمرین</h3>
@@ -321,7 +283,6 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
                   {/* Attachments section */}
                   <FilePreviewList
                     attachments={attachments}
-                    onImageClick={setSelectedImage}
                     className="mt-3"
                   />
                 </div>
@@ -338,7 +299,6 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
                   {/* Attachments section */}
                   <FilePreviewList
                     attachments={attachments}
-                    onImageClick={setSelectedImage}
                     className="mt-3"
                   />
                 </div>

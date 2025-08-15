@@ -209,7 +209,7 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
                     <SelectContent>
                       <SelectItem value="active">فعال</SelectItem>
                       <SelectItem value="inactive">غیرفعال</SelectItem>
-                      <SelectItem value="upcoming">آینده</SelectItem>
+          
                       <SelectItem value="preregister">پیش‌ثبت‌نام</SelectItem>
                     </SelectContent>
                   </Select>
