@@ -39,6 +39,7 @@ export interface Exercise {
   auto_grade: boolean;
   form_structure?: ExerciseForm | Json | null;
   metadata?: Json | null;
+  attachments?: string[]; // Array of uploaded file URLs
   sort: number;
   submissions?: number;
   total_students?: number;
@@ -128,5 +129,6 @@ export interface ExerciseDetail {
   score?: number;
   submission_id?: string;
   metadata?: any;
+  attachments?: string[]; // Array of uploaded file URLs
   arvan_video_id?: string;
 }

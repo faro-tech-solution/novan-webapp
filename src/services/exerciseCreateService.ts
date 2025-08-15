@@ -18,6 +18,7 @@ export interface CreateExerciseData {
   formStructure: ExerciseForm | any;
 
   arvan_video_id?: string;
+  attachments?: string[]; // Array of uploaded file URLs
 }
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
@@ -49,6 +50,11 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       if (exerciseData.arvan_video_id) {
         metadata.arvan_video_id = exerciseData.arvan_video_id;
       }
+    }
+
+    // Add attachments to metadata
+    if (exerciseData.attachments && exerciseData.attachments.length > 0) {
+      metadata.attachments = exerciseData.attachments;
     }
 
     // Get the next sort order for this course and category

@@ -50,6 +50,7 @@ export const useExercisesQuery = (courseId?: string) => {
             ? (exerciseData.form_structure as ExerciseForm)
             : { questions: [] },
         
+        attachments: exerciseData.attachments || [],
         arvan_video_id: exerciseData.arvan_video_id
       }, user.id);
     },
@@ -81,6 +82,7 @@ export const useExercisesQuery = (courseId?: string) => {
             ? (data.form_structure as ExerciseForm)
             : { questions: [] },
 
+        attachments: data.attachments || [],
         arvan_video_id: data.arvan_video_id
       });
     },
