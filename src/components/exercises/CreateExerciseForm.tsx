@@ -10,6 +10,8 @@ import { Course } from "@/types/course";
 import { ExerciseForm } from "@/types/formBuilder";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { uploadFileToSupabase } from "@/utils/uploadImageToSupabase";
+import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   title: z.string().min(1, "عنوان تمرین الزامی است"),
@@ -35,6 +37,7 @@ const formSchema = z.object({
 
   iframe_html: z.string().optional(),
   arvan_video_id: z.string().optional(),
+  attachments: z.array(z.string()).default([]), // Array of uploaded file URLs
 });
 
 export type CreateExerciseFormData = z.infer<typeof formSchema>;
@@ -45,6 +48,8 @@ interface CreateExerciseFormProps {
   onSubmit: (data: CreateExerciseFormData) => Promise<void>;
   onCancel: () => void;
   defaultValues?: CreateExerciseFormData;
+  selectedFiles?: File[];
+  onSelectedFilesChange?: (files: File[]) => void;
 }
 
 export const CreateExerciseForm = ({
@@ -53,6 +58,8 @@ export const CreateExerciseForm = ({
   onSubmit,
   onCancel,
   defaultValues,
+  selectedFiles = [],
+  onSelectedFilesChange,
 }: CreateExerciseFormProps) => {
   const form = useForm<CreateExerciseFormData>({
     resolver: zodResolver(formSchema),
@@ -73,6 +80,7 @@ export const CreateExerciseForm = ({
       
       iframe_html: "",
       arvan_video_id: "",
+      attachments: [],
     },
   });
 
@@ -84,12 +92,47 @@ export const CreateExerciseForm = ({
   }, [defaultValues, form]);
 
   const handleFormSubmit = useCallback(
-    (e: React.FormEvent) => {
-      form.handleSubmit(onSubmit)(e);
+    async (e: React.FormEvent) => {
       e.preventDefault();
       e.stopPropagation();
+
+      try {
+        // Upload selected files first
+        const uploadedUrls: string[] = [];
+        const currentAttachments = form.getValues('attachments') || [];
+
+        if (selectedFiles.length > 0) {
+          for (const file of selectedFiles) {
+            const url = await uploadFileToSupabase(file, 'exercise-attachments');
+            if (url) {
+              uploadedUrls.push(url);
+            } else {
+              toast({
+                title: "خطا در آپلود فایل",
+                description: `فایل ${file.name} با موفقیت آپلود نشد`,
+                variant: "destructive",
+              });
+            }
+          }
+
+          // Update form with new attachments
+          const newAttachments = [...currentAttachments, ...uploadedUrls];
+          form.setValue('attachments', newAttachments);
+        }
+
+        // Submit the form with updated data
+        const formData = form.getValues();
+        await onSubmit(formData);
+      } catch (error) {
+        console.error('Error in form submission:', error);
+        toast({
+          title: "خطا در ذخیره تمرین",
+          description: "خطایی در ذخیره تمرین رخ داد",
+          variant: "destructive",
+        });
+      }
     },
-    [form, onSubmit]
+    [form, onSubmit, selectedFiles]
   );
 
   const handleCancel = useCallback(
@@ -104,7 +147,11 @@ export const CreateExerciseForm = ({
   return (
     <Form {...form}>
       <form onSubmit={handleFormSubmit} className="space-y-6">
-        <BasicInfoSection form={form} />
+        <BasicInfoSection 
+          form={form} 
+          selectedFiles={selectedFiles}
+          onSelectedFilesChange={onSelectedFilesChange}
+        />
         <CourseAndDifficultySection form={form} courses={courses} />
         <TimingAndPointsSection form={form} />
         <ExerciseTypeSection form={form} />

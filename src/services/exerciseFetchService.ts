@@ -47,18 +47,20 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
 
     // Parse metadata to extract Arvan Video fields
     let arvan_video_id = "";
+    let attachments: string[] = [];
     if (data.metadata) {
       const metadata = typeof data.metadata === 'string' 
         ? JSON.parse(data.metadata) 
         : data.metadata;
       arvan_video_id = metadata?.arvan_video_id || "";
+      attachments = metadata?.attachments || [];
     }
 
     return {
       ...data,
       course_name: data.courses.name,
       form_structure: parseFormStructure(data.form_structure),
-
+      attachments: attachments,
       arvan_video_id
     } as any as Exercise;
   } catch (error) {
@@ -98,18 +100,20 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
 
       // Parse metadata to extract Arvan Video fields
       let arvan_video_id = "";
+      let attachments: string[] = [];
       if (exercise.metadata) {
         const metadata = typeof exercise.metadata === 'string' 
           ? JSON.parse(exercise.metadata) 
           : exercise.metadata;
         arvan_video_id = metadata?.arvan_video_id || "";
+        attachments = metadata?.attachments || [];
       }
 
       return {
         ...exercise,
         course_name: exercise.courses.name,
         form_structure: parseFormStructure(exercise.form_structure),
-
+        attachments: attachments,
         arvan_video_id
       };
     }) as any[];

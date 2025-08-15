@@ -6,30 +6,18 @@ import { supabase } from '@/integrations/supabase/client';
 interface DashboardStats {
   completedExercises: number;
   pendingExercises: number;
-  overdueExercises: number;
   totalPoints: number;
 }
 
-interface UpcomingExercise {
-  id: string;
-  title: string;
-  description: string | null;
-  course_name: string;
-  difficulty: string | null;
 
-  estimated_time: string;
-  points: number;
-  submission_status: 'not_started' | 'pending' | 'completed' | 'overdue';
-}
 
 export const useTraineeDashboard = () => {
   const [stats, setStats] = useState<DashboardStats>({
     completedExercises: 0,
     pendingExercises: 0,
-    overdueExercises: 0,
     totalPoints: 0
   });
-  const [upcomingExercises, setUpcomingExercises] = useState<UpcomingExercise[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
@@ -71,10 +59,8 @@ export const useTraineeDashboard = () => {
         setStats({
           completedExercises: 0,
           pendingExercises: 0,
-          overdueExercises: 0,
           totalPoints: 0
         });
-        setUpcomingExercises([]);
         return;
       }
 
@@ -120,51 +106,24 @@ export const useTraineeDashboard = () => {
       }
 
       // Process data
-      const processedExercises: UpcomingExercise[] = [];
       let completedCount = 0;
       const pendingCount = 0;
-      const overdueCount = 0;
       let totalPoints = 0;
 
       exercises?.forEach(exercise => {
-
         const submission = submissions?.find(sub => sub.exercise_id === exercise.id);
         
-        let submissionStatus: 'not_started' | 'pending' | 'completed' | 'overdue';
         if (submission) {
-          submissionStatus = 'completed';
           completedCount++;
           totalPoints += exercise.points;
-        } else {
-          submissionStatus = 'not_started';
         }
-
-        processedExercises.push({
-          id: exercise.id,
-          title: exercise.title,
-          description: exercise.description,
-          course_name: exercise.courses?.name || 'نامشخص',
-          difficulty: exercise.difficulty,
-
-          estimated_time: exercise.estimated_time,
-          points: exercise.points,
-          submission_status: submissionStatus
-        });
       });
-
-      // Get upcoming exercises (not started, due soon)
-      const upcoming = processedExercises
-        .filter(ex => ex.submission_status === 'not_started')
-        .sort((a, b) => new Date(a.id).getTime() - new Date(b.id).getTime())
-        .slice(0, 3);
 
       setStats({
         completedExercises: completedCount,
         pendingExercises: pendingCount,
-        overdueExercises: overdueCount,
         totalPoints: totalPoints
       });
-      setUpcomingExercises(upcoming);
 
     } catch (err) {
       console.error('Error in fetchDashboardData:', err);
@@ -182,7 +141,6 @@ export const useTraineeDashboard = () => {
 
   return {
     stats,
-    upcomingExercises,
     loading,
     error,
     refetch: fetchDashboardData

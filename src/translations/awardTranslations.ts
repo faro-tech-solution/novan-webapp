@@ -138,16 +138,7 @@ const awardTranslations: AwardTranslations = {
       description: '💪 شما تمام تمرین‌های یک ماه را تکمیل کردید',
     }
   },
-  'never_give_up': {
-    'en': {
-      name: 'Never Give Up',
-      description: 'Complete an overdue exercise',
-    },
-    'fa': {
-      name: 'هرگز تسلیم نشو',
-      description: '🚀 شما یک تمرین معوقه را تکمیل کردید',
-    }
-  },
+
   'fast_learner': {
     'en': {
       name: 'Fast Learner',

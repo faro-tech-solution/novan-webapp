@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import { ReactNode } from "react";
-import Link from 'next/link';
-import { useRouter, usePathname, useParams } from 'next/navigation';
+import Link from "next/link";
+import { useRouter, usePathname, useParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "./Header";
 import { useTranslation } from "@/utils/translations";
@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useSubmissionsQuery } from "@/hooks/queries/useReviewSubmissionsQuery";
 import { Badge } from "@/components/ui/badge";
-// import ActiveCourseSelector from "../courses/ActiveCourseSelector";
+import ActiveCourseSelector from "../courses/ActiveCourseSelector";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -118,7 +118,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       label: tSidebar("profile"),
       key: "profile",
     },
-
   ];
 
   const adminNavItems = [
@@ -187,14 +186,21 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const navItems = getNavItems();
 
-  const { data: submissionsData } = useSubmissionsQuery({ status: 'pending' });
+  const { data: submissionsData } = useSubmissionsQuery({ status: "pending" });
   const pendingReviewCount = submissionsData?.totalCount || 0;
 
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen bg-gray-50 w-full">
         {/* Use the common Header component with dashboard-specific props */}
-        <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#f5f7fe' }}>
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
+            background: "#f5f7fe",
+          }}
+        >
           <Header
             isDashboard={true}
             title={title}
@@ -209,17 +215,17 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
           <div
             className="hidden md:block w-64"
             style={{
-              background: '#f5f7fe',
-              boxShadow: 'none',
-              border: 'none',
-              position: 'sticky',
-              top: '64px', // adjust if header height changes
+              background: "#f5f7fe",
+              boxShadow: "none",
+              border: "none",
+              position: "sticky",
+              top: "64px", // adjust if header height changes
               zIndex: 40,
-              height: 'calc(100vh - 64px)',
+              height: "calc(100vh - 64px)",
               minHeight: 0,
             }}
           >
-            <div className="h-full py-4" style={{ height: '100%' }}>
+            <div className="h-full py-4" style={{ height: "100%" }}>
               <nav className="space-y-1">
                 {navItems.map((item) => {
                   const isActive = pathname.startsWith(item.href);
@@ -228,7 +234,11 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
                       key={item.href}
                       href={item.href}
                       className={`flex items-center px-4 py-2 relative transition
-                        ${isActive ? 'bg-[rgb(237,238,245)] text-gray-900 rounded-tr-[20px] rounded-br-[20px] mr-5' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}
+                        ${
+                          isActive
+                            ? "bg-[rgb(237,238,245)] text-gray-900 rounded-tr-[20px] rounded-br-[20px] mr-5"
+                            : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        }
                       `}
                     >
                       <item.icon className="h-5 w-5 ml-3" />
@@ -257,17 +267,26 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
           <div
             className="md:hidden"
             style={{
-              background: '#f5f7fe',
-              boxShadow: 'none',
-              border: 'none',
-              position: 'sticky',
-              top: '64px', // adjust if header height changes
+              background: "#f5f7fe",
+              boxShadow: "none",
+              border: "none",
+              position: "sticky",
+              top: "64px", // adjust if header height changes
               zIndex: 40,
-              height: 'calc(100vh - 64px)',
+              height: "calc(100vh - 64px)",
               minHeight: 0,
             }}
           >
-            <Sidebar variant="inset" collapsible="icon" style={{ background: '#f5f7fe', boxShadow: 'none', border: 'none', height: '100%' }}>
+            <Sidebar
+              variant="inset"
+              collapsible="icon"
+              style={{
+                background: "#f5f7fe",
+                boxShadow: "none",
+                border: "none",
+                height: "100%",
+              }}
+            >
               <SidebarHeader>
                 <div className="flex items-center justify-between px-4 py-2">
                   <h2 className="text-lg font-semibold">{title}</h2>
@@ -307,14 +326,14 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
             style={{
               minWidth: 0,
               minHeight: 0,
-              overflow: 'auto',
-              backgroundColor: '#edeef5',
-              borderRadius: '24px',
-              margin: '0 0 10px 10px',
-              position: 'relative',
+              overflow: "auto",
+              backgroundColor: "#edeef5",
+              borderRadius: "24px",
+              margin: "0 0 10px 10px",
+              position: "relative",
             }}
           >
-            {/* <ActiveCourseSelector /> */}
+            <ActiveCourseSelector />
             {children}
           </main>
         </div>

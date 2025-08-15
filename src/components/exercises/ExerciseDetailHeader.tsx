@@ -37,8 +37,6 @@ export const ExerciseDetailHeader = ({
         return <Badge className="bg-green-100 text-green-800">تکمیل شده</Badge>;
       case 'pending':
         return <Badge className="bg-yellow-100 text-yellow-800">در انتظار بررسی</Badge>;
-      case 'overdue':
-        return <Badge className="bg-red-100 text-red-800">مهلت گذشته</Badge>;
       default:
         return <Badge variant="outline">شروع نشده</Badge>;
     }

@@ -1,12 +1,12 @@
 import { BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
-import { UpcomingExercise } from '@/types/exercise';
+import { MyExerciseWithSubmission } from '@/types/exercise';
 import { useAuth } from '@/contexts/AuthContext';
 import { getExerciseTypeIconSmall } from '@/utils/exerciseTypeIcons';
 
 interface UpcomingExercisesCardProps {
-  exercises: UpcomingExercise[];
+  exercises: MyExerciseWithSubmission[];
   className?: string;
 }
 
@@ -51,19 +51,22 @@ export const UpcomingExercisesCard = ({ exercises, className = '' }: UpcomingExe
   const { profile } = useAuth();
   const role = profile?.role || 'trainee';
 
+  // Filter exercises that are not completed
+  const incompleteExercises = exercises.filter(ex => ex.submission_status !== 'completed').slice(0, 3);
+
   return (
     <div className={`min-w-0 ${className}`}>
       <div className="bg-white rounded-2xl shadow p-4">
         <div className="mb-3">
-          <h3 className="text-base font-medium">تمرین‌های پیش رو</h3>
+          <h3 className="text-base font-medium">تمرین‌های باقی‌مانده</h3>
         </div>
-        {exercises.length === 0 ? (
+        {incompleteExercises.length === 0 ? (
           <div className="text-center py-6 text-gray-500 text-sm">
-            تمرین جدیدی برای انجام وجود ندارد
+            همه تمرین‌ها تکمیل شده‌اند
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            {exercises.map((exercise) => {
+            {incompleteExercises.map((exercise) => {
               const { bg, text, icon } = getDifficultyStyles(exercise.difficulty);
               return (
                 <Link

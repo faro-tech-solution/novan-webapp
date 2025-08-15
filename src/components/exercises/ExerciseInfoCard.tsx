@@ -1,5 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { FilePreviewList } from '@/components/ui/FilePreviewList';
 import { useAuth } from '@/contexts/AuthContext';
 import { TraineeExerciseForm } from './TraineeExerciseForm';
 import { FormAnswer } from '@/types/formBuilder';
@@ -27,6 +28,7 @@ export const ExerciseInfoCard = ({
   submitMutation
 }: ExerciseInfoCardProps) => {
   const { profile, user } = useAuth();
+
   return (
     <Card>
       <CardHeader>
@@ -42,6 +44,18 @@ export const ExerciseInfoCard = ({
             <div 
               className="text-sm text-gray-700"
               dangerouslySetInnerHTML={{ __html: description }}
+            />
+          </div>
+        )}
+
+        {/* Exercise Attachments */}
+        {exercise.attachments && exercise.attachments.length > 0 && (
+          <div className="mt-4">
+            <h4 className="font-semibold mb-2">فایل‌های پیوست:</h4>
+            <FilePreviewList
+              attachments={exercise.attachments}
+              showRemoveButton={false}
+              imageSize="lg"
             />
           </div>
         )}

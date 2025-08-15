@@ -5,7 +5,7 @@ export const calculateSubmissionStatus = (
   submission: ExerciseSubmissionLegacy | undefined,
   adjustedOpenDate: Date,
   adjustedCloseDate: Date
-): 'not_started' | 'pending' | 'completed' | 'overdue' => {
+): 'not_started' | 'pending' | 'completed' => {
   const today = new Date();
   
   console.log('Calculating submission status:', {
@@ -25,9 +25,7 @@ export const calculateSubmissionStatus = (
       return 'pending';
     }
   } else {
-    if (today > adjustedCloseDate) {
-      return 'overdue';
-    } else if (today >= adjustedOpenDate && today <= adjustedCloseDate) {
+    if (today >= adjustedOpenDate && today <= adjustedCloseDate) {
       return 'not_started';
     } else {
       // Exercise hasn't opened yet

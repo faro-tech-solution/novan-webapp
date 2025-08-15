@@ -43,7 +43,7 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
       description: '',
       maxStudents: 50,
       instructorId: '',
-      status: 'upcoming',
+              status: 'active',
       price: 0,
     },
   });
@@ -198,7 +198,7 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
                     <SelectContent>
                       <SelectItem value="active">فعال</SelectItem>
                       <SelectItem value="inactive">غیرفعال</SelectItem>
-                      <SelectItem value="upcoming">آینده</SelectItem>
+          
                       <SelectItem value="preregister">پیش‌ثبت‌نام</SelectItem>
                     </SelectContent>
                   </Select>

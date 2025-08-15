@@ -25,8 +25,6 @@ export const MyExerciseTable = ({ exercises }: MyExerciseTableProps) => {
         return <Badge className="bg-green-100 text-green-800 hover:bg-green-800 hover:text-green-100 transition-colors">تکمیل شده</Badge>;
       case 'pending':
         return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-800 hover:text-yellow-100 transition-colors">در انتظار بررسی</Badge>;
-      case 'overdue':
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-800 hover:text-red-100 transition-colors">دیرکرد</Badge>;
       case 'not_started':
         return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-800 hover:text-gray-100 transition-colors">انجام نشده</Badge>;
       default:
@@ -59,8 +57,6 @@ export const MyExerciseTable = ({ exercises }: MyExerciseTableProps) => {
         return <CheckCircle className="h-4 w-4 text-green-600" />;
       case 'pending':
         return <Clock className="h-4 w-4 text-yellow-600" />;
-      case 'overdue':
-        return <Clock className="h-4 w-4 text-red-600" />;
       default:
         return <FileText className="h-4 w-4 text-gray-600" />;
     }

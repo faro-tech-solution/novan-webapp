@@ -10,8 +10,7 @@ import {
   Award, 
   Star,
   TrendingUp,
-  Zap,
-  AlertTriangle
+  Zap
 } from 'lucide-react';
 import { MyExerciseWithSubmission, Exercise } from '@/types/exercise';
 import { getExerciseTypeIcon } from '@/utils/exerciseTypeIcons';
@@ -37,8 +36,6 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee' }: ExerciseCardPro
         return 'bg-green-100 border-green-400';
       case 'pending':
         return 'bg-yellow-100 border-yellow-400';
-      case 'overdue':
-        return 'bg-red-100 border-red-400';
       case 'not_started':
       default:
         return 'bg-gray-100 border-gray-400';
@@ -67,12 +64,6 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee' }: ExerciseCardPro
           icon: <Clock className="h-4 w-4 text-gray-400" />,
           text: 'در انتظار بررسی',
           color: 'text-yellow-700'
-        };
-      case 'overdue':
-        return {
-          icon: <AlertTriangle className="h-4 w-4 text-gray-400" />,
-          text: 'دیرکرد',
-          color: 'text-red-700'
         };
       case 'not_started':
       default:

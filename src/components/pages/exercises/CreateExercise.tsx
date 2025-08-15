@@ -29,6 +29,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
   const { updateExercise } = useExercisesQueryNew();
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [loading, setLoading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   // Fetch exercise data if in edit mode
   useEffect(() => {
@@ -68,7 +69,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
           iframe_html: data.iframe_html,
           auto_grade: data.auto_grade,
           form_structure: data.form_structure || { questions: [] },
-          
+          attachments: data.attachments || [],
           arvan_video_id: data.arvan_video_id,
         };
 
@@ -109,6 +110,10 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
     router.back();
   }, [router]);
 
+  const handleSelectedFilesChange = useCallback((files: File[]) => {
+    setSelectedFiles(files);
+  }, []);
+
   // Convert exercise data to form data format
   const getFormDefaultValues = useCallback(():
     | CreateExerciseFormData
@@ -128,7 +133,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
       iframe_html: exercise.iframe_html || "",
       auto_grade: exercise.auto_grade || false,
       form_structure: (typeof exercise.form_structure === 'object' && exercise.form_structure !== null ? exercise.form_structure : { questions: [] }) as any,
-
+      attachments: exercise.attachments || [],
       arvan_video_id: (exercise as any).arvan_video_id || "",
     };
   }, [exercise]);
@@ -162,6 +167,8 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
               onSubmit={onSubmit}
               onCancel={handleCancel}
               defaultValues={getFormDefaultValues()}
+              selectedFiles={selectedFiles}
+              onSelectedFilesChange={handleSelectedFilesChange}
             />
           </CardContent>
         </Card>

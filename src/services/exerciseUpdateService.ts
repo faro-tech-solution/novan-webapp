@@ -34,6 +34,11 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
       }
     }
 
+    // Add attachments to metadata
+    if (exerciseData.attachments && exerciseData.attachments.length > 0) {
+      metadata.attachments = exerciseData.attachments;
+    }
+
     const { data, error } = await supabase
       .from('exercises')
       .update({
