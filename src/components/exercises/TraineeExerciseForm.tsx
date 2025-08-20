@@ -9,7 +9,9 @@ import { AudioPlayer } from "./AudioPlayer";
 
 import { IframePlayer } from "./IframePlayer";
 import { ArvanVideoPlayer } from "./ArvanVideoPlayer";
+import { NegavidVideoPlayer } from "./NegavidVideoPlayer";
 import { extractArvanVideoData } from "@/utils/arvanVideoExerciseUtils";
+import { extractNegavidVideoData } from "@/utils/negavidVideoExerciseUtils";
 interface TraineeExerciseFormProps {
   exercise: {
     id: string;
@@ -136,6 +138,41 @@ export const TraineeExerciseForm = ({
               <div className="space-y-4">
                 <ArvanVideoPlayer 
                   videoId={arvanVideoData.arvan_video_id}
+                  className="w-full"
+                />
+                {!isSubmitted && (
+                <div className="flex justify-center">
+                  <Button
+                    onClick={() => handleMediaSubmit()}
+                    disabled={submitting || exercise.score !== undefined}
+                    className="w-full max-w-md"
+                  >
+                    <Send className="h-4 w-4 mr-2" />
+                    {submitting
+                      ? "در حال ارسال..."
+                      : "تکمیل تمرین"}
+                  </Button>
+                </div>
+                )}
+              </div>
+            );
+          })()
+        ) : exercise.exercise_type === "negavid" ? (
+          (() => {
+            const negavidVideoData = extractNegavidVideoData(exercise);
+            console.log('TraineeExerciseForm - Extracted negavid data:', negavidVideoData, exercise);
+            if (!negavidVideoData || !negavidVideoData.negavid_video_id) {
+              return (
+                <div className="text-center py-8 text-gray-500">
+                  <p>این تمرین هنوز محتوایی ندارد</p>
+                  <p className="text-sm mt-2">شناسه ویدیو نگاود تعریف نشده است</p>
+                </div>
+              );
+            }
+            return (
+              <div className="space-y-4">
+                <NegavidVideoPlayer 
+                  videoId={negavidVideoData.negavid_video_id}
                   className="w-full"
                 />
                 {!isSubmitted && (

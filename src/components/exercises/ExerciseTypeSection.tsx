@@ -148,6 +148,19 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                           </div>
                         </Label>
                       </div>
+
+                      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="negavid" id="negavid" />
+                        <Label
+                          htmlFor="negavid"
+                          className="flex items-center cursor-pointer text-sm flex-row-reverse"
+                        >
+                          <Video className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">ویدیو نگاود</div>
+                          </div>
+                        </Label>
+                      </div>
                     </RadioGroup>
                   </FormControl>
                   <FormMessage />
@@ -162,7 +175,7 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
               control={form.control}
               name="auto_grade"
               render={({ field }) => {
-                const isMediaType = exerciseType === 'video' || exerciseType === 'audio' || exerciseType === 'iframe' || exerciseType === 'arvan_video';
+                const isMediaType = exerciseType === 'video' || exerciseType === 'audio' || exerciseType === 'iframe' || exerciseType === 'arvan_video' || exerciseType === 'negavid';
                 // Ensure default ON for media types
                 if (isMediaType && !field.value) {
                   // Avoid re-render loops by setting only when false
@@ -258,6 +271,34 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                     </FormControl>
                     <p className="text-sm text-muted-foreground">
                       شناسه ویدیو در سرویس آروان کلود (Video ID). می‌توانید آدرس کامل ویدیو را از پنل آروان بچسبانید، شناسه به‌طور خودکار استخراج می‌شود.
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {exerciseType === "negavid" && (
+              <FormField
+                control={form.control}
+                name="negavid_video_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>شناسه ویدیو نگاود *</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="39620"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                        <Button type="button" variant="secondary" onClick={handlePasteFromClipboard}>
+                          چسباندن از کلیپ‌بورد
+                        </Button>
+                      </div>
+                    </FormControl>
+                    <p className="text-sm text-muted-foreground">
+                      شناسه ویدیو در سرویس نگاود (Video ID). می‌توانید آدرس کامل ویدیو را از پنل نگاود بچسبانید، شناسه به‌طور خودکار استخراج می‌شود.
                     </p>
                     <FormMessage />
                   </FormItem>

@@ -1,7 +1,7 @@
 import { ExerciseForm, FormAnswer } from './formBuilder';
 import { Json } from '@/integrations/supabase/types';
 
-export type ExerciseType = 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'arvan_video';
+export type ExerciseType = 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'arvan_video' | 'negavid';
 export type SubmissionStatusType = 'not_started' | 'pending' | 'completed';
 export type ExerciseStatusType = 'active' | 'closed';
 
@@ -47,6 +47,7 @@ export interface Exercise {
   course_name?: string;
   category_name?: string;
   arvan_video_id?: string;
+  negavid_video_id?: string;
 }
 
 // Exercise with course information from database
@@ -122,4 +123,5 @@ export interface ExerciseDetail {
   metadata?: any;
   attachments?: string[]; // Array of uploaded file URLs
   arvan_video_id?: string;
+  negavid_video_id?: string;
 }

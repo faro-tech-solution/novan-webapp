@@ -34,6 +34,13 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
       }
     }
 
+    // Add Negavid Video metadata if it's a Negavid Video exercise
+    if (exerciseData.exercise_type === 'negavid') {
+      if (exerciseData.negavid_video_id) {
+        metadata.negavid_video_id = exerciseData.negavid_video_id;
+      }
+    }
+
     // Add attachments to metadata
     if (exerciseData.attachments && exerciseData.attachments.length > 0) {
       metadata.attachments = exerciseData.attachments;

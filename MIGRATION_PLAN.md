@@ -32,9 +32,7 @@ Migrating features from the pre-Next.js `chore/document-sql` branch to the curre
 - [ ] `uploadImageToSupabase` utility
 - [ ] Image preview dialog
 
-### 6. Ticket System
-- [ ] `TicketConversation` component
-- [ ] Ticket-related services and hooks
+
 
 ### 7. Integration Points
 - [x] Update existing pages to use new components (ExerciseDetail page updated)
@@ -52,7 +50,7 @@ Migrating features from the pre-Next.js `chore/document-sql` branch to the curre
 1. Add RichTextEditor component
 2. Add FileUpload and FilePreviewList components
 3. Add ExerciseConversation component
-4. Add TicketConversation component
+
 
 ### Step 3: Services and Hooks
 1. Update exerciseDetailService with conversation functions

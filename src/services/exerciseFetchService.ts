@@ -45,14 +45,16 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
 
     
 
-    // Parse metadata to extract Arvan Video fields
+    // Parse metadata to extract Arvan Video and Negavid Video fields
     let arvan_video_id = "";
+    let negavid_video_id = "";
     let attachments: string[] = [];
     if (data.metadata) {
       const metadata = typeof data.metadata === 'string' 
         ? JSON.parse(data.metadata) 
         : data.metadata;
       arvan_video_id = metadata?.arvan_video_id || "";
+      negavid_video_id = metadata?.negavid_video_id || "";
       attachments = metadata?.attachments || [];
     }
 
@@ -61,7 +63,8 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
       course_name: data.courses.name,
       form_structure: parseFormStructure(data.form_structure),
       attachments: attachments,
-      arvan_video_id
+      arvan_video_id,
+      negavid_video_id
     } as any as Exercise;
   } catch (error) {
     console.error('Error in fetchExerciseById:', error);

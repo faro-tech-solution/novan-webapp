@@ -28,13 +28,6 @@ export const ArvanVideoPlayer: React.FC<ArvanVideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
 
-  console.log('videoId', videoId);
-  console.log('videoData', videoData);
-  console.log('videoUrl', videoUrl);
-  console.log('loading', loading);
-  console.log('error', error);
-  console.log('retryCount', retryCount);
-
   // Helper function to get best MP4 URL as fallback
   const getBestMp4Url = (videoData: ArvanVideoResponse): string | null => {
     if (videoData.data.mp4_videos && videoData.data.mp4_videos.length > 0) {

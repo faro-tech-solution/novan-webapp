@@ -124,6 +124,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     // Parse metadata to extract attachments and other metadata
     let attachments: string[] = [];
     let arvan_video_id: string | undefined;
+    let negavid_video_id: string | undefined;
     
     if (typedExercise.metadata) {
       try {
@@ -133,6 +134,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         
         attachments = metadata.attachments || [];
         arvan_video_id = metadata.arvan_video_id;
+        negavid_video_id = metadata.negavid_video_id;
       } catch (error) {
         console.error('Error parsing exercise metadata:', error);
       }
@@ -160,7 +162,8 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
       submission_id: typedSubmission?.id || undefined,
       metadata: typedExercise.metadata,
       attachments: attachments,
-      arvan_video_id: arvan_video_id
+      arvan_video_id: arvan_video_id,
+      negavid_video_id: negavid_video_id
     };
   } catch (error) {
     console.error('Error in fetchExerciseDetail:', error);
