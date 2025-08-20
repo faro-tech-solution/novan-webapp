@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,8 @@ import { Loader2, PlayCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { 
   fetchNegavidVideoUrl, 
   isVideoReady,
-  getEmbedPlayerHtml,
+  getEmbedScript,
+  getEmbedContainerId,
   type NegavidVideoResponse 
 } from '@/services/negavidVideoService';
 
@@ -23,6 +24,9 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
 
   const loadVideo = async () => {
     if (!videoId?.trim()) {
@@ -59,8 +63,74 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
 
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
+    setScriptLoaded(false);
     loadVideo();
   };
+
+  // Load the embed script when video data is available
+  useEffect(() => {
+    if (!videoData || !isVideoReady(videoData) || !containerRef.current) {
+      return;
+    }
+
+    const embedScript = getEmbedScript(videoData);
+    const containerId = getEmbedContainerId(videoData);
+
+    if (!embedScript || !containerId) {
+      console.error('Missing embed script or container ID');
+      return;
+    }
+
+    // Create container div for the video player
+    const container = containerRef.current;
+    container.innerHTML = `<div id="${containerId}" class="w-full h-full"></div>`;
+
+    // Remove any existing script
+    if (scriptRef.current) {
+      document.head.removeChild(scriptRef.current);
+      scriptRef.current = null;
+    }
+
+    // Create and load the new script
+    const script = document.createElement('script');
+    script.defer = true;
+    script.className = 'negavid-video-stream-embed';
+    script.id = `stream_id-${videoId}`;
+    
+    // Extract script src from embed_script
+    const srcMatch = embedScript.match(/src='([^']+)'/);
+    if (srcMatch) {
+      script.src = srcMatch[1];
+    }
+
+    // Extract negavid_id and set as attribute
+    const negavidIdMatch = embedScript.match(/negavid_id='([^']+)'/);
+    if (negavidIdMatch) {
+      script.setAttribute('negavid_id', negavidIdMatch[1]);
+    }
+
+    script.onload = () => {
+      console.log('Negavid embed script loaded successfully');
+      setScriptLoaded(true);
+    };
+
+    script.onerror = () => {
+      console.error('Failed to load Negavid embed script');
+      setError('خطا در بارگذاری پخش‌کننده ویدیو');
+    };
+
+    document.head.appendChild(script);
+    scriptRef.current = script;
+
+    // Cleanup function
+    return () => {
+      if (scriptRef.current) {
+        document.head.removeChild(scriptRef.current);
+        scriptRef.current = null;
+      }
+      setScriptLoaded(false);
+    };
+  }, [videoData, videoId]);
 
   useEffect(() => {
     loadVideo();
@@ -138,8 +208,6 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
     );
   }
 
-  const embedPlayerHtml = getEmbedPlayerHtml(videoData);
-
   return (
     <Card className={className}>
       <CardContent className="p-6">
@@ -147,38 +215,20 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
           {/* Video Player */}
           <div className="relative w-full bg-black rounded-lg overflow-hidden">
             <div className="aspect-video">
-              {embedPlayerHtml ? (
-                <div 
-                  dangerouslySetInnerHTML={{ __html: embedPlayerHtml }}
-                  className="w-full h-full"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-white">
-                  <p>ویدیو در دسترس نیست</p>
+              <div 
+                ref={containerRef}
+                className="w-full h-full"
+              />
+              {!scriptLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                  <div className="flex flex-col items-center space-y-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-white" />
+                    <p className="text-white text-sm">در حال بارگذاری پخش‌کننده...</p>
+                  </div>
                 </div>
               )}
             </div>
           </div>
-
-          {/* Video Info */}
-          <div className="bg-gray-50 p-4 rounded-md space-y-2">
-            <h3 className="font-medium text-gray-900">{videoData.data.name}</h3>
-            {videoData.data.description && (
-              <p className="text-sm text-gray-600">{videoData.data.description}</p>
-            )}
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span>مدت: {Math.round(videoData.data.duration)} دقیقه</span>
-              <span>بازدید: {videoData.data.view}</span>
-            </div>
-          </div>
-
-          {/* Security Notice */}
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="text-xs">
-              این ویدیو از طریق سرویس نگاود ارائه می‌شود و تحت محافظت امنیتی قرار دارد.
-            </AlertDescription>
-          </Alert>
         </div>
       </CardContent>
     </Card>

@@ -14,6 +14,7 @@ interface DraggableExerciseCardProps {
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, index: number) => void;
   userRole: 'admin' | 'trainer';
+  exercises?: (Exercise | any)[]; // For continuous numbering
 }
 
 export const DraggableExerciseCard = ({
@@ -23,7 +24,8 @@ export const DraggableExerciseCard = ({
   onDragStart,
   onDragOver,
   onDrop,
-  userRole
+  userRole,
+  exercises
 }: DraggableExerciseCardProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -78,7 +80,7 @@ export const DraggableExerciseCard = ({
         'transition-transform duration-200',
         (userRole === 'admin' || userRole === 'trainer') && 'ml-4'
       )}>
-        <ExerciseCard exercise={exercise} userRole={userRole} />
+        <ExerciseCard exercise={exercise} userRole={userRole} exercises={exercises} />
       </div>
 
       {/* Drag Overlay */}

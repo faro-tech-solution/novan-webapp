@@ -423,12 +423,14 @@ export const ExercisesView = ({
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
                       userRole={userRole}
+                      exercises={allExercises}
                     />
                   ) : (
                     <ExerciseCard 
                       key={exercise.id} 
                       exercise={exercise as MyExerciseWithSubmission} 
-                      userRole={userRole} 
+                      userRole={userRole}
+                      exercises={allExercises}
                     />
                   )
                 ))}

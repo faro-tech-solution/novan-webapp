@@ -16,7 +16,7 @@ export const reorderExercises = async (reorderData: ReorderExerciseData[]): Prom
     for (const { exerciseId, newOrderIndex } of reorderData) {
       const { data, error } = await supabase
         .from('exercises')
-        .update({ sort: newOrderIndex })
+        .update({ order_index: newOrderIndex } as any)
         .eq('id', exerciseId)
         .select()
         .single();
@@ -29,7 +29,7 @@ export const reorderExercises = async (reorderData: ReorderExerciseData[]): Prom
       results.push(data);
     }
 
-    return results as Exercise[];
+    return results as unknown as Exercise[];
   } catch (error) {
     console.error('Error in reorderExercises:', error);
     throw error;
@@ -42,7 +42,7 @@ export const getExercisesByCourse = async (courseId: string): Promise<Exercise[]
       .from('exercises')
       .select('*')
       .eq('course_id', courseId)
-      .order('sort', { ascending: true })
+      .order('order_index', { ascending: true })
       .order('created_at', { ascending: true });
 
     if (error) {
@@ -50,7 +50,7 @@ export const getExercisesByCourse = async (courseId: string): Promise<Exercise[]
       throw new Error(`Error fetching exercises: ${error.message}`);
     }
 
-    return (data || []) as Exercise[];
+    return (data || []) as unknown as Exercise[];
   } catch (error) {
     console.error('Error in getExercisesByCourse:', error);
     throw error;

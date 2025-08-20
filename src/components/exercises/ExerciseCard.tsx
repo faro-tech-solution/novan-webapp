@@ -15,13 +15,15 @@ import {
 import { MyExerciseWithSubmission, Exercise } from '@/types/exercise';
 import { getExerciseTypeIcon } from '@/utils/exerciseTypeIcons';
 import { translateDifficultyToDisplay } from '@/utils/difficultyTranslation';
+import { formatExerciseTitleWithNumber, formatExerciseTitleWithNumberFromList } from '@/utils/exerciseOrderUtils';
 
 interface ExerciseCardProps {
   exercise: MyExerciseWithSubmission | Exercise;
   userRole?: 'trainee' | 'admin' | 'trainer';
+  exercises?: (MyExerciseWithSubmission | Exercise | any)[]; // For continuous numbering
 }
 
-export const ExerciseCard = ({ exercise, userRole = 'trainee' }: ExerciseCardProps) => {
+export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: ExerciseCardProps) => {
   const params = useParams();
   const courseId = params?.courseId as string;
 
@@ -130,13 +132,20 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee' }: ExerciseCardPro
     return `/portal/exercise/${exercise.id}`;
   };
 
+  // Format title with number - use continuous numbering if exercises list is provided
+  const displayTitle = exercises && exercises.length > 0
+    ? formatExerciseTitleWithNumberFromList(exercise.title, exercises, exercise.id)
+    : exercise.order_index !== undefined
+    ? formatExerciseTitleWithNumber(exercise.title, exercise.order_index)
+    : exercise.title;
+
   return (
     <Link href={getExerciseLink()}>
       <Card className={`transition-all duration-200 mb-3 overflow-hidden hover:shadow-md transition-shadow border-0 border-r-4 ${getCardBackground(submissionStatus)} ${getCardHeight(submissionStatus)}`}>
         <CardHeader className="px-5 py-3">
           <h3 className="text-gray-900 leading-tight flex items-center gap-2">
             {getExerciseTypeIcon(exercise.exercise_type)}
-            {exercise.title}
+            {displayTitle}
           </h3>
         </CardHeader>
         

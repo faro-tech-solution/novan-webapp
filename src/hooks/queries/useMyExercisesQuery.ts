@@ -77,7 +77,7 @@ export const useMyExercisesQuery = () => {
           )
         `)
         .in('course_id', enrolledCourseIds)
-        .order('sort', { ascending: true })
+        .order('order_index', { ascending: true })
         .order('created_at', { ascending: true });
 
       if (exercisesError) {
@@ -108,8 +108,9 @@ export const useMyExercisesQuery = () => {
           score: submission?.score || null,
           submission_status: submissionStatus,
           exercise_type: (exercise as any).exercise_type || 'form',
-                    auto_grade: (exercise as any).auto_grade || false,
+          auto_grade: (exercise as any).auto_grade || false,
           content_url: (exercise as any).content_url || null,
+          order_index: (exercise as any).order_index,
         };
       });
 

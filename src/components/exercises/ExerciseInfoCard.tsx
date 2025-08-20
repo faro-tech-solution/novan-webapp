@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { TraineeExerciseForm } from './TraineeExerciseForm';
 import { FormAnswer } from '@/types/formBuilder';
 import { ExerciseDetail } from '@/types/exercise';
+import { formatExerciseTitleWithNumber } from '@/utils/exerciseOrderUtils';
 
 interface ExerciseInfoCardProps {
   title: string;
@@ -29,10 +30,15 @@ export const ExerciseInfoCard = ({
 }: ExerciseInfoCardProps) => {
   const { profile, user } = useAuth();
 
+  // Format title with number if order_index is available
+  const displayTitle = exercise.order_index 
+    ? formatExerciseTitleWithNumber(title, exercise.order_index)
+    : title;
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">{title}</CardTitle>
+        <CardTitle className="text-2xl">{displayTitle}</CardTitle>
         <CardDescription className="text-base space-y-2">
           <div>درس: {courseName}</div>
         </CardDescription>

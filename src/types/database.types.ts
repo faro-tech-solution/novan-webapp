@@ -449,8 +449,8 @@ export type Database = {
           form_structure: Json | null
           id: string
           metadata: Json | null
+          order_index: number
           points: number
-          sort: number
           title: string
           updated_at: string
         }
@@ -471,8 +471,8 @@ export type Database = {
           form_structure?: Json | null
           id?: string
           metadata?: Json | null
+          order_index?: number
           points?: number
-          sort?: number
           title: string
           updated_at?: string
         }
@@ -493,8 +493,8 @@ export type Database = {
           form_structure?: Json | null
           id?: string
           metadata?: Json | null
+          order_index?: number
           points?: number
-          sort?: number
           title?: string
           updated_at?: string
         }
