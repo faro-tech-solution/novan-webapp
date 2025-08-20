@@ -1,4 +1,5 @@
-import { useCoursesQuery } from '@/hooks/queries/useCoursesQuery';
+import { useEnrolledCoursesQuery } from '@/hooks/queries/useEnrolledCoursesQuery';
+import { useAvailableCoursesQuery } from '@/hooks/queries/useAvailableCoursesQuery';
 import { useDashboardPanelContext } from '@/contexts/DashboardPanelContext';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -6,18 +7,21 @@ import { useGoToTraineeCourseDashboard } from '@/lib/navigation';
 import CoursesBlock from './CoursesBlock';
 
 const ActiveCourseSelector = () => {
-  const { courses, loading } = useCoursesQuery();
+  const { data: enrolledCourses = [], isLoading: enrolledLoading } = useEnrolledCoursesQuery();
+  const { data: availableCourses = [], isLoading: availableLoading } = useAvailableCoursesQuery();
 
   const { trainee: { courseId: currentCourseId } } = useDashboardPanelContext();
   const goToTraineeCourseDashboard = useGoToTraineeCourseDashboard();
   const [showAll, setShowAll] = useState(false);
-  const activeCourses = courses.filter((c: any) => c.status === 'active');
-  const otherCourses = courses.filter((c: any) => c.status !== 'active');
-  const activeCourse = [...activeCourses, ...otherCourses].find((c: any) => c.id === currentCourseId);
+  
+  // Find the current active course from enrolled courses
+  const activeCourse = enrolledCourses.find((c: any) => c.id === currentCourseId);
 
   const onChangeCourse = (id: string) => { 
     goToTraineeCourseDashboard(id);
   }
+
+  const loading = enrolledLoading || availableLoading;
 
   if (loading) return <div className="py-4 text-center">در حال بارگذاری لیست دوره‌ها...</div>;
 
@@ -34,17 +38,17 @@ const ActiveCourseSelector = () => {
         style={{ top: showAll ? 0 : -220 }}
       >
         <div className="bg-teal-600 rounded-xl p-4 flex gap-4 w-full" style={{ height: 220 }}>
-          {/* Active Courses Column */}
+          {/* Enrolled Courses Column */}
           <CoursesBlock
-            title="دوره‌های فعال"
-            courses={activeCourses}
+            title="دوره‌های ثبت‌نام شده"
+            courses={enrolledCourses}
             onChangeCourse={id => { onChangeCourse(id); setShowAll(false); }}
             isActiveColumn
           />
-          {/* Other Courses Column */}
+          {/* Available Courses Column */}
           <CoursesBlock
-            title="پیشنهاد دوره"
-            courses={otherCourses}
+            title="دوره‌های موجود"
+            courses={availableCourses}
             onChangeCourse={id => { onChangeCourse(id); setShowAll(false); }}
           />
         </div>
