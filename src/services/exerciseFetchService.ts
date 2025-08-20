@@ -82,8 +82,7 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
           name
         )
       `)
-      .order('category_id', { ascending: true, nullsFirst: true })
-      .order('sort', { ascending: true })
+      .order('order_index', { ascending: true })
       .order('created_at', { ascending: true });
 
     if (courseId) {
@@ -121,47 +120,9 @@ export const fetchExercises = async (courseId?: string): Promise<Exercise[]> => 
       };
     }) as any[];
 
-    // Group exercises by category and sort within each category
-    const exercisesByCategory: Record<string, any[]> = {};
-    const uncategorizedExercises: any[] = [];
-
-    exercises.forEach(exercise => {
-      const categoryId = exercise.category_id;
-      if (categoryId) {
-        if (!exercisesByCategory[categoryId]) {
-          exercisesByCategory[categoryId] = [];
-        }
-        exercisesByCategory[categoryId].push(exercise);
-      } else {
-        uncategorizedExercises.push(exercise);
-      }
-    });
-
-    // Sort exercises within each category by sort order, then by created_at
-    Object.keys(exercisesByCategory).forEach(categoryId => {
-      exercisesByCategory[categoryId].sort((a, b) => {
-        if (a.sort !== b.sort) {
-          return a.sort - b.sort;
-        }
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      });
-    });
-
-    // Sort uncategorized exercises
-    uncategorizedExercises.sort((a, b) => {
-      if (a.sort !== b.sort) {
-        return a.sort - b.sort;
-      }
-      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-    });
-
-    // Combine all exercises back together
-    const sortedExercises = [
-      ...uncategorizedExercises,
-      ...Object.values(exercisesByCategory).flat()
-    ];
-
-    return sortedExercises;
+    // Since we're now using order_index which already includes proper ordering,
+    // we can simply return the exercises as they are (already sorted by order_index)
+    return exercises;
   } catch (error) {
     console.error('Error in fetchExercises:', error);
     throw error;

@@ -40,7 +40,7 @@ export interface Exercise {
   form_structure?: ExerciseForm | Json | null;
   metadata?: Json | null;
   attachments?: string[]; // Array of uploaded file URLs
-  sort: number;
+  order_index: number; // Calculated order based on category order and exercise order within category
   submissions?: number;
   total_students?: number;
   exercise_status?: ExerciseStatusType;
@@ -98,6 +98,7 @@ export interface MyExerciseWithSubmission {
   content_url?: string | null;
   auto_grade: boolean;
   submission_status: SubmissionStatusType;
+  order_index?: number; // Calculated order based on category order and exercise order within category
 }
 
 // For exercise detail service
@@ -124,4 +125,5 @@ export interface ExerciseDetail {
   attachments?: string[]; // Array of uploaded file URLs
   arvan_video_id?: string;
   negavid_video_id?: string;
+  order_index?: number; // Calculated order based on category order and exercise order within category
 }

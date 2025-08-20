@@ -221,6 +221,9 @@ export const reorderExerciseCategories = async (
     if (errors.length > 0) {
       throw new Error(`Error reordering categories: ${errors[0].error?.message}`);
     }
+
+    // The trigger will automatically recalculate exercise order_indexes
+    // when category order changes, so no additional action is needed here
   } catch (error) {
     console.error('Error in reorderExerciseCategories:', error);
     throw error;

@@ -1,7 +1,10 @@
--- Add order_index column to exercises table
+-- Manual Migration: Add order_index to exercises table
+-- Run this script in your Supabase SQL Editor
+
+-- Step 1: Add order_index column if it doesn't exist
 ALTER TABLE exercises ADD COLUMN IF NOT EXISTS order_index INTEGER DEFAULT 0;
 
--- Create function to calculate order_index based on category order and exercise order within category
+-- Step 2: Create function to calculate order_index
 CREATE OR REPLACE FUNCTION calculate_exercise_order_index()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -39,14 +42,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create trigger to automatically calculate order_index
+-- Step 3: Create trigger to automatically calculate order_index
 DROP TRIGGER IF EXISTS trigger_calculate_exercise_order_index ON exercises;
 CREATE TRIGGER trigger_calculate_exercise_order_index
   BEFORE INSERT OR UPDATE ON exercises
   FOR EACH ROW
   EXECUTE FUNCTION calculate_exercise_order_index();
 
--- Create function to recalculate all order_indexes
+-- Step 4: Create function to recalculate all order_indexes
 CREATE OR REPLACE FUNCTION recalculate_all_exercise_order_indexes()
 RETURNS void AS $$
 DECLARE
@@ -80,14 +83,21 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Update existing exercises to have calculated order_index
+-- Step 5: Update existing exercises to have calculated order_index
 SELECT recalculate_all_exercise_order_indexes();
 
--- Make order_index NOT NULL after setting default values
+-- Step 6: Make order_index NOT NULL after setting default values
 ALTER TABLE exercises ALTER COLUMN order_index SET NOT NULL;
 
--- Create index for better performance on sorting
+-- Step 7: Create index for better performance on sorting
 CREATE INDEX IF NOT EXISTS idx_exercises_order_index ON exercises(course_id, order_index);
 
--- Add comment to document the column
-COMMENT ON COLUMN exercises.order_index IS 'Order index for sorting exercises within a course, calculated as (category_order * 1000) + exercise_order_in_category (0-based, display adds +1)'; 
+-- Step 8: Add comment to document the column
+COMMENT ON COLUMN exercises.order_index IS 'Order index for sorting exercises within a course, calculated as (category_order * 1000) + exercise_order_in_category (0-based, display adds +1)';
+
+-- Step 9: Verify the migration
+SELECT 
+  'Migration completed successfully!' as status,
+  COUNT(*) as total_exercises,
+  COUNT(CASE WHEN order_index IS NOT NULL THEN 1 END) as exercises_with_order_index
+FROM exercises;

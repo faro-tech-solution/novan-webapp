@@ -298,7 +298,6 @@ export type Database = {
           iframe_html: string | null
           metadata: Json | null
           points: number
-          sort: number
           title: string
           updated_at: string
         }
@@ -321,7 +320,6 @@ export type Database = {
           iframe_html?: string | null
           metadata?: Json | null
           points?: number
-          sort?: number
           title: string
           updated_at?: string
         }
@@ -344,7 +342,6 @@ export type Database = {
           iframe_html?: string | null
           metadata?: Json | null
           points?: number
-          sort?: number
           title?: string
           updated_at?: string
         }

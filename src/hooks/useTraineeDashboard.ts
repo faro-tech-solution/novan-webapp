@@ -77,7 +77,6 @@ export const useTraineeDashboard = () => {
           description,
           course_id,
           difficulty,
-
           points,
           estimated_time,
           created_at,
@@ -87,7 +86,6 @@ export const useTraineeDashboard = () => {
           )
         `)
         .in('course_id', enrolledCourseIds)
-        .order('sort', { ascending: true })
         .order('created_at', { ascending: true });
 
       if (exercisesError) {

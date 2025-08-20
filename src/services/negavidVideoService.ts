@@ -95,6 +95,25 @@ export function getEmbedPlayerHtml(videoData: NegavidVideoResponse): string | nu
 }
 
 /**
+ * Get the embed script from the response
+ */
+export function getEmbedScript(videoData: NegavidVideoResponse): string | null {
+  return videoData.data.embed_script || null;
+}
+
+/**
+ * Get the container ID from the embed script
+ */
+export function getEmbedContainerId(videoData: NegavidVideoResponse): string | null {
+  const embedScript = videoData.data.embed_script;
+  if (!embedScript) return null;
+  
+  // Extract negavid_id from the script tag
+  const match = embedScript.match(/negavid_id='([^']+)'/);
+  return match ? match[1] : null;
+}
+
+/**
  * Get the manifest URL for HLS streaming
  */
 export function getManifestUrl(videoData: NegavidVideoResponse): string | null {
@@ -107,7 +126,7 @@ export function getManifestUrl(videoData: NegavidVideoResponse): string | null {
 export function isVideoReady(videoData: NegavidVideoResponse): boolean {
   return videoData.status === 'success' && 
          videoData.data.status === 'Ready' && 
-         !!videoData.data.embed_player;
+         !!videoData.data.embed_script;
 }
 
 export type { 

@@ -50,6 +50,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
         auto_grade,
         form_structure,
         metadata,
+        order_index,
         courses (
           name
         )
