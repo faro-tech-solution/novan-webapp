@@ -55,6 +55,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
 
   const onSubmit = useCallback(
     async (data: CreateExerciseFormData) => {
+      console.log('CreateExercise onSubmit called with form data:', data);
       try {
         const exerciseData = {
           title: data.title,
@@ -71,7 +72,10 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
           form_structure: data.form_structure || { questions: [] },
           attachments: data.attachments || [],
           arvan_video_id: data.arvan_video_id,
+          negavid_video_id: data.negavid_video_id,
         };
+        
+        console.log('Transformed exerciseData:', exerciseData);
 
         if (exerciseId) {
           // Update existing exercise
@@ -135,6 +139,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
       form_structure: (typeof exercise.form_structure === 'object' && exercise.form_structure !== null ? exercise.form_structure : { questions: [] }) as any,
       attachments: exercise.attachments || [],
       arvan_video_id: (exercise as any).arvan_video_id || "",
+      negavid_video_id: (exercise as any).negavid_video_id || "",
     };
   }, [exercise]);
 

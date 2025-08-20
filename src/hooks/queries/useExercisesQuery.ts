@@ -28,7 +28,8 @@ export const useExercisesQuery = (courseId?: string) => {
   });
 
   const createExerciseMutation = useMutation({
-    mutationFn: async (exerciseData: Partial<Exercise> & { arvan_video_id?: string }) => {
+    mutationFn: async (exerciseData: Partial<Exercise> & { arvan_video_id?: string; negavid_video_id?: string }) => {
+      console.log('createExerciseMutation called with:', exerciseData);
       if (!user) throw new Error('کاربر وارد نشده است');
       return await createExercise({
         title: exerciseData.title || '',
@@ -51,7 +52,8 @@ export const useExercisesQuery = (courseId?: string) => {
             : { questions: [] },
         
         attachments: exerciseData.attachments || [],
-        arvan_video_id: exerciseData.arvan_video_id
+        arvan_video_id: exerciseData.arvan_video_id,
+        negavid_video_id: exerciseData.negavid_video_id
       }, user.id);
     },
     onSuccess: () => {
@@ -60,7 +62,7 @@ export const useExercisesQuery = (courseId?: string) => {
   });
 
   const updateExerciseMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Exercise> & { arvan_video_id?: string } }) => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Exercise> & { arvan_video_id?: string; negavid_video_id?: string } }) => {
       if (!user) throw new Error('کاربر وارد نشده است');
       return await updateExercise(id, {
         title: data.title || '',
@@ -83,7 +85,8 @@ export const useExercisesQuery = (courseId?: string) => {
             : { questions: [] },
 
         attachments: data.attachments || [],
-        arvan_video_id: data.arvan_video_id
+        arvan_video_id: data.arvan_video_id,
+        negavid_video_id: data.negavid_video_id
       });
     },
     onSuccess: () => {

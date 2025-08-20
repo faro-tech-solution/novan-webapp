@@ -12,7 +12,7 @@
 - ✅ **FileUpload**: File upload component with image support
 - ✅ **FilePreviewList**: Image preview component with zoom functionality
 - ✅ **ExerciseConversation**: Real-time conversation component for exercise submissions
-- ✅ **TicketConversation**: Conversation component for ticket system
+
 - ✅ **RateAndConversation**: Admin component for rating and conversation
 
 ### 3. Services and Hooks
@@ -34,7 +34,7 @@
 - [x] Update ExerciseDetail page to use ExerciseConversation
 - [ ] Update SubmissionDetailView to include conversation
 - [ ] Update SubmissionCard to include conversation
-- [ ] Update ticket-related pages to use TicketConversation
+
 
 ### 4.2 Database Application
 - [ ] Apply the migration files to the database
@@ -70,7 +70,7 @@
 - `src/components/ui/FilePreviewList.tsx`
 - `src/components/exercises/ExerciseConversation.tsx`
 - `src/components/exercises/admin/table/rateAndConversation.tsx`
-- `src/components/tickets/TicketConversation.tsx`
+
 - `src/utils/uploadImageToSupabase.ts`
 - `migrations/add_exercise_submissions_conversation.sql`
 - `migrations/update_notifications_table.sql`
