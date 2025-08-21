@@ -7,7 +7,6 @@ import ExerciseCategoriesDialog from "@/components/dialogs/ExerciseCategoriesDia
 import CourseManagementHeader from "@/components/courses/CourseManagementHeader";
 import CourseGrid from "@/components/courses/CourseGrid";
 import ConfirmDeleteDialog from "@/components/dialogs/ConfirmDeleteDialog";
-import TermsManagementModal from "@/components/dialogs/TermsManagementModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useCoursesQuery } from "@/hooks/queries/useCoursesQuery";
@@ -18,7 +17,6 @@ const CourseManagement = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [showStudentsDialog, setShowStudentsDialog] = useState(false);
   const [showCategoriesDialog, setShowCategoriesDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -37,10 +35,7 @@ const CourseManagement = () => {
     setShowDeleteDialog(true);
   };
 
-  const handleManageTerms = (course: Course) => {
-    setSelectedCourse(course);
-    setShowTermsDialog(true);
-  };
+
 
   const handleViewStudents = (course: Course) => {
     setSelectedCourse(course);
@@ -138,19 +133,10 @@ const CourseManagement = () => {
           canCreateCourses={canCreateCourses}
           isAdmin={isAdmin}
           onCreateCourse={() => setShowCreateDialog(true)}
-          onManageTerms={handleManageTerms}
           onManageCategories={handleManageCategories}
           onEditCourse={handleEditCourse}
           onDeleteCourse={handleDeleteCourse}
           onViewStudents={handleViewStudents}
-        />
-
-        {/* Terms Management Modal */}
-        <TermsManagementModal
-          open={showTermsDialog}
-          onClose={() => setShowTermsDialog(false)}
-          course={selectedCourse}
-          userRole={profile?.role}
         />
       </div>
 

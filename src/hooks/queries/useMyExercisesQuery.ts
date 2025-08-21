@@ -20,15 +20,9 @@ export const useMyExercisesQuery = () => {
         .select(`
           course_id,
           enrolled_at,
-          term_id,
           courses (
             id,
             name
-          ),
-          course_terms (
-            id,
-            start_date,
-            end_date
           )
         `)
         .eq('student_id', user.id)

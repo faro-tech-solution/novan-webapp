@@ -26,9 +26,6 @@ export function StudentCoursesDialog({ open, onOpenChange, studentName, enrollme
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-medium">{enrollment.course.name}</h3>
-                    <p className="text-sm text-gray-500 mt-1">
-                      ترم: {enrollment.course_terms?.name || 'عمومی'}
-                    </p>
                     <p className="text-sm text-gray-500">
                       تاریخ ثبت‌نام: {formatDate({dateString: enrollment.enrolled_at})}
                     </p>

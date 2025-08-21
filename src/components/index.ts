@@ -25,9 +25,6 @@ export * from './awards';
 // Accounting components
 export * from './accounting';
 
-// Terms management
-export * from './terms';
-
 // General management
 export * from './management';
 

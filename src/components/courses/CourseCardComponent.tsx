@@ -9,7 +9,6 @@ interface CourseCardComponentProps {
   course: Course;
   userRole?: string;
   userId?: string;
-  onManageTerms: (course: Course) => void;
   onManageCategories: (course: Course) => void;
   onEditCourse: (course: Course) => void;
   onDeleteCourse: (course: Course) => void;
@@ -20,7 +19,6 @@ const CourseCardComponent = ({
   course, 
   userRole, 
   userId, 
-  onManageTerms, 
   onManageCategories,
   onEditCourse, 
   onDeleteCourse, 
@@ -64,7 +62,6 @@ const CourseCardComponent = ({
               course={course}
               userRole={userRole}
               userId={userId}
-              onManageTerms={onManageTerms}
               onManageCategories={onManageCategories}
               onEditCourse={onEditCourse}
               onDeleteCourse={onDeleteCourse}

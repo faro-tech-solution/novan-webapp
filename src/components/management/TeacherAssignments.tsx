@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { CourseTerm } from '@/types/course';
 import { TeacherAssignment } from '@/types/instructor';
 
 interface Course {
@@ -22,10 +21,8 @@ interface TeacherAssignmentsProps {
 
 const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAssignmentsProps) => {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [terms, setTerms] = useState<CourseTerm[]>([]);
   const [assignments, setAssignments] = useState<TeacherAssignment>({
-    course_ids: [],
-    term_ids: []
+    course_ids: []
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -45,48 +42,18 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
 
       if (coursesError) throw coursesError;
 
-      // Fetch all terms with course names
-      const { data: termsData, error: termsError } = await supabase
-        .from('course_terms')
-        .select(`
-          id,
-          name,
-          course_id,
-          start_date,
-          end_date,
-          courses!inner(name)
-        `)
-        .order('name');
-
-      if (termsError) throw termsError;
-
       // Fetch current assignments
-      const [courseAssignments, termAssignments] = await Promise.all([
-        supabase
-          .from('teacher_course_assignments')
-          .select('course_id')
-          .eq('teacher_id', teacherId),
-        supabase
-          .from('teacher_term_assignments')
-          .select('term_id')
-          .eq('teacher_id', teacherId)
-      ]);
+      const { data: courseAssignments, error: courseAssignmentsError } = await supabase
+        .from('teacher_course_assignments')
+        .select('course_id')
+        .eq('teacher_id', teacherId);
+
+      if (courseAssignmentsError) throw courseAssignmentsError;
 
       setCourses(coursesData || []);
-      const processedTermsData = termsData.map(term => ({
-        id: term.id,
-        name: term.name,
-        course_id: term.course_id,
-        course_name: term.courses.name,
-        start_date: term.start_date,
-        end_date: term.end_date,
-        max_students: 0 // Default value since it's not in the query
-      }));
-      setTerms(processedTermsData);
 
       setAssignments({
-        course_ids: courseAssignments.data?.map(a => a.course_id) || [],
-        term_ids: termAssignments.data?.map(a => a.term_id) || []
+        course_ids: courseAssignments?.map(a => a.course_id) || []
       });
 
     } catch (error) {
@@ -110,16 +77,10 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
       if (!user) throw new Error('User not authenticated');
 
       // Delete existing assignments
-      await Promise.all([
-        supabase
-          .from('teacher_course_assignments')
-          .delete()
-          .eq('teacher_id', teacherId),
-        supabase
-          .from('teacher_term_assignments')
-          .delete()
-          .eq('teacher_id', teacherId)
-      ]);
+      await supabase
+        .from('teacher_course_assignments')
+        .delete()
+        .eq('teacher_id', teacherId);
 
       // Insert new course assignments
       if (assignments.course_ids.length > 0) {
@@ -134,21 +95,6 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
           .insert(courseAssignmentsData);
 
         if (courseError) throw courseError;
-      }
-
-      // Insert new term assignments
-      if (assignments.term_ids.length > 0) {
-        const termAssignmentsData = assignments.term_ids.map(termId => ({
-          teacher_id: teacherId,
-          term_id: termId,
-          assigned_by: user.id
-        }));
-
-        const { error: termError } = await supabase
-          .from('teacher_term_assignments')
-          .insert(termAssignmentsData);
-
-        if (termError) throw termError;
       }
 
       toast({
@@ -179,14 +125,7 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
     }));
   };
 
-  const handleTermToggle = (termId: string, checked: boolean) => {
-    setAssignments(prev => ({
-      ...prev,
-      term_ids: checked 
-        ? [...prev.term_ids, termId]
-        : prev.term_ids.filter(id => id !== termId)
-    }));
-  };
+
 
   useEffect(() => {
     fetchData();
@@ -201,7 +140,7 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
           <div className="flex justify-between items-center mb-6">
             <div>
               <h2 className="text-xl font-bold">تنظیم دسترسی‌های {teacherName}</h2>
-              <p className="text-gray-600">انتخاب درس‌ها و ترم‌هایی که مربی به آنها دسترسی دارد</p>
+              <p className="text-gray-600">انتخاب درس‌هایی که مربی به آنها دسترسی دارد</p>
             </div>
             <Button variant="outline" onClick={onClose}>
               بستن
@@ -213,7 +152,7 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
               <div className="text-lg">در حال بارگذاری...</div>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-1 gap-6">
               {/* Course Assignments */}
               <Card>
                 <CardHeader>
@@ -243,43 +182,6 @@ const TeacherAssignments = ({ teacherId, teacherName, open, onClose }: TeacherAs
                     ))}
                     {courses.length === 0 && (
                       <p className="text-gray-500 text-sm">هنوز درسی ایجاد نشده</p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Term Assignments */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">دسترسی به ترم‌ها</CardTitle>
-                  <CardDescription>
-                    انتخاب ترم‌هایی که مربی می‌تواند مشاهده کند
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {terms.map((term) => (
-                      <div key={term.id} className="flex items-center space-x-2 space-x-reverse">
-                        <Checkbox
-                          id={`term-${term.id}`}
-                          checked={assignments.term_ids.includes(term.id)}
-                          onCheckedChange={(checked) => 
-                            handleTermToggle(term.id, !!checked)
-                          }
-                        />
-                        <label 
-                          htmlFor={`term-${term.id}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
-                          {term.name}
-                          <span className="text-gray-500 text-xs block">
-                            درس: {term.course_name}
-                          </span>
-                        </label>
-                      </div>
-                    ))}
-                    {terms.length === 0 && (
-                      <p className="text-gray-500 text-sm">هنوز ترمی ایجاد نشده</p>
                     )}
                   </div>
                 </CardContent>
