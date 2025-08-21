@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useMyExercises } from '@/hooks/useMyExercises';
+import { useMyExercisesQuery } from '@/hooks/queries/useMyExercisesQuery';
 import { useStudentAwards } from '@/hooks/useStudentAwards';
 import { getWeeklyActivityStats, calculateActivityStreak, fetchStudentActivityLogs } from '@/services/activityLogService';
 
@@ -20,7 +20,7 @@ export const useProgressStats = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
-  const { myExercises, loading: exercisesLoading } = useMyExercises();
+  const { data: myExercises = [], isLoading: exercisesLoading } = useMyExercisesQuery();
   const { studentAwards, loading: awardsLoading } = useStudentAwards();
 
   const calculateWeeklyPointsActivity = async () => {

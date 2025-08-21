@@ -10,10 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import {
-  useCoursesQuery,
-  useCreateExerciseMutation,
-} from "@/hooks/useExercisesQuery";
+import { useCoursesQuery } from "@/hooks/queries/useCoursesQuery";
+import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
 import {
   CreateExerciseForm,
   CreateExerciseFormData,
@@ -30,8 +28,8 @@ const CreateExerciseDialog = ({
 }: CreateExerciseDialogProps = {}) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const { toast } = useToast();
-  const { data: courses = [] } = useCoursesQuery();
-  const createExerciseMutation = useCreateExerciseMutation();
+  const { courses = [] } = useCoursesQuery();
+  const { createExercise, isCreating } = useExercisesQuery();
 
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
@@ -54,7 +52,7 @@ const CreateExerciseDialog = ({
           form_structure: data.form_structure || { questions: [] },
         };
 
-        await createExerciseMutation.mutateAsync(exerciseData);
+        await createExercise(exerciseData);
 
         toast({
           title: "تمرین ایجاد شد",
@@ -72,7 +70,7 @@ const CreateExerciseDialog = ({
         });
       }
     },
-    [createExerciseMutation, setOpen, toast]
+    [createExercise, setOpen, toast]
   );
 
   const handleCancel = useCallback(() => {
@@ -90,14 +88,14 @@ const CreateExerciseDialog = ({
         <div className="overflow-y-auto flex-1 pr-2">
           <CreateExerciseForm
             courses={courses}
-            isSubmitting={createExerciseMutation.isPending}
+            isSubmitting={isCreating}
             onSubmit={onSubmit}
             onCancel={handleCancel}
           />
         </div>
       </DialogContent>
     ),
-    [courses, createExerciseMutation.isPending, onSubmit, handleCancel]
+    [courses, isCreating, onSubmit, handleCancel]
   );
 
   if (isControlled) {

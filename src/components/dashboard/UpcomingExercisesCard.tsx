@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { MyExerciseWithSubmission } from '@/types/exercise';
 import { useAuth } from '@/contexts/AuthContext';
 import { getExerciseTypeIconSmall } from '@/utils/exerciseTypeIcons';
+import { isExerciseNew } from '@/utils/exerciseUtils';
 
 interface UpcomingExercisesCardProps {
   exercises: MyExerciseWithSubmission[];
@@ -80,6 +81,11 @@ export const UpcomingExercisesCard = ({ exercises, className = '' }: UpcomingExe
                     <div className="truncate leading-tight text-sm flex items-center gap-2">
                       {getExerciseTypeIconSmall(exercise.exercise_type)}
                       {exercise.title}
+                      {isExerciseNew(exercise.created_at) && exercise.submission_status === 'not_started' && (
+                        <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                          جدید
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>
