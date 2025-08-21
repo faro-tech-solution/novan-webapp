@@ -274,7 +274,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const resetPassword = async (email: string) => {
     // Redirect to forget password page
-    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/forget_password` : '/forget_password';
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/portal/forget_password` : '/portal/forget_password';
     console.log("Password reset redirect URL:", redirectUrl);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
