@@ -47,18 +47,7 @@ const ForgetPassword = () => {
     if (typeof window === 'undefined') return; // Skip on server-side
     
     const hash = window.location.hash;
-    const currentUrl = window.location.href;
-    const currentPath = window.location.pathname;
-    console.log("Current URL:", currentUrl);
-    console.log("Current path:", currentPath);
     console.log("Current hash:", hash);
-
-    // If we're on the root domain but have a hash with tokens, redirect to the correct path
-    if (currentPath === '/' && hash && hash.includes("access_token=")) {
-      console.log("Redirecting from root to correct forget password path");
-      window.location.href = `/portal/forget_password${hash}`;
-      return;
-    }
 
     if (hash) {
       // Check for access token
@@ -115,10 +104,8 @@ const ForgetPassword = () => {
         });
 
         // Only clear the hash if there's an error, not if there's a valid token
-        window.history.replaceState(null, "", "/portal/forget_password");
+        window.history.replaceState(null, "", "/forget_password");
       }
-    } else {
-      console.log("No hash found in URL");
     }
   }, [toast]);
 
@@ -126,10 +113,8 @@ const ForgetPassword = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      console.log("Sending password reset email to:", email);
       const { error } = await resetPassword(email);
       if (error) {
-        console.error("Password reset error:", error);
         toast({
           title: "خطا",
           description:
@@ -137,20 +122,12 @@ const ForgetPassword = () => {
           variant: "destructive",
         });
       } else {
-        console.log("Password reset email sent successfully");
         toast({
           title: "ایمیل ارسال شد",
           description: "لینک بازیابی رمز عبور به ایمیل شما ارسال شد.",
         });
         setEmailSent(true);
       }
-    } catch (err) {
-      console.error("Unexpected error in password reset:", err);
-      toast({
-        title: "خطا",
-        description: "خطای غیرمنتظره رخ داد. لطفا دوباره تلاش کنید.",
-        variant: "destructive",
-      });
     } finally {
       setLoading(false);
     }
