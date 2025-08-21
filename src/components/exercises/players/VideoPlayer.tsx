@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, CheckCircle } from "lucide-react";
-import { FeedbackForm } from "./FeedbackForm";
+import { FeedbackForm } from "../FeedbackForm";
 
 interface VideoPlayerProps {
   videoUrl: string;

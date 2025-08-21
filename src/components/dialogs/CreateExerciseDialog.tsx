@@ -15,7 +15,7 @@ import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
 import {
   CreateExerciseForm,
   CreateExerciseFormData,
-} from "@/components/exercises/CreateExerciseForm";
+} from "@/components/exercises";
 
 interface CreateExerciseDialogProps {
   open?: boolean;

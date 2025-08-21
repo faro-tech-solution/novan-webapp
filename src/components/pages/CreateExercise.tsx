@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CreateExerciseForm, CreateExerciseFormData } from '@/components/exercises/CreateExerciseForm';
+import { CreateExerciseForm, CreateExerciseFormData } from '@/components/exercises';
 import { useExercisesQuery } from '@/hooks/queries/useExercisesQuery';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';

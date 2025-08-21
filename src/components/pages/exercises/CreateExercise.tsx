@@ -9,7 +9,7 @@ import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
 import {
   CreateExerciseForm,
   CreateExerciseFormData,
-} from "@/components/exercises/CreateExerciseForm";
+} from "@/components/exercises";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Exercise } from "@/types/exercise";
 import { fetchExerciseById } from "@/services/exerciseService";
