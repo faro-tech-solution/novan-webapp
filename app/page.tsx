@@ -1,25 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function HomePage() {
-  // Handle password reset redirect from root domain
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    const hash = window.location.hash;
-    const currentPath = window.location.pathname;
-    
-    // If we're on the root domain and have a hash with access_token, redirect to forget password
-    if (currentPath === '/' && hash && hash.includes("access_token=")) {
-      console.log("Redirecting from root to forget password page");
-      window.location.href = `/portal/forget_password${hash}`;
-      return;
-    }
-  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">

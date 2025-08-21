@@ -248,8 +248,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     password: string,
     role: UserRole
   ) => {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://novan.app');
-    const redirectUrl = `${siteUrl}/`;
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/` : '/';
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -275,9 +274,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const resetPassword = async (email: string) => {
     // Redirect to forget password page
-    // Use environment variable for site URL or fallback to window.location.origin
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://novan.app');
-    const redirectUrl = `${siteUrl}/portal/forget_password`;
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/forget_password` : '/forget_password';
     console.log("Password reset redirect URL:", redirectUrl);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {

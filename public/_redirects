@@ -11,4 +11,4 @@
 /_next/data/* /_next/data/:splat 200
 
 # Handle all other routes (SPA fallback)
-/* /.netlify/functions/___netlify-handler 200 
+/* /index.html 200 
