@@ -104,7 +104,7 @@ const ForgetPassword = () => {
         });
 
         // Only clear the hash if there's an error, not if there's a valid token
-        window.history.replaceState(null, "", "/forget_password");
+        window.history.replaceState(null, "", "/portal/forget_password");
       }
     }
   }, [toast]);
