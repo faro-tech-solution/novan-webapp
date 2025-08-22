@@ -31,10 +31,7 @@ export const useStudentsQuery = () => {
               name
             ),
             status,
-            enrolled_at,
-            course_terms (
-              name
-            )
+            enrolled_at
           )
         `)
         .eq('role', 'trainee')
@@ -57,7 +54,6 @@ export const useStudentsQuery = () => {
           courseName: enrollment?.course?.name || 'بدون دوره',
           joinDate: enrollment?.enrolled_at || student.created_at,
           status: enrollment?.status || 'فعال',
-          termName: enrollment?.course_terms?.name || 'عمومی',
           course_enrollments: student.course_enrollments,
           completedExercises: 0,
           totalExercises: 0,

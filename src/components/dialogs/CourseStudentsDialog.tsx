@@ -21,9 +21,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Tables } from "@/integrations/supabase/types";
 
-type CourseEnrollment = Tables<"course_enrollments"> & {
+
+type CourseEnrollment = {
+  id: string;
+  course_id: string;
+  student_id: string;
+  status: string;
+  enrolled_at: string;
+  created_at: string;
+  updated_at: string;
   profiles?: {
     first_name: string | null;
     last_name: string | null;
@@ -66,7 +73,6 @@ const CourseStudentsDialog = ({
           student_id,
           status,
           enrolled_at,
-          term_id,
           created_at,
           updated_at,
           profiles!student_id (
@@ -185,7 +191,6 @@ const CourseStudentsDialog = ({
         student_id: studentData.id,
         status: "active",
         enrolled_at: now,
-        term_id: null,
         created_at: now,
         updated_at: now,
       };

@@ -63,8 +63,7 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
         .from('course_enrollments')
         .select(`
           *,
-          courses!inner(name),
-          course_terms(name)
+          courses!inner(name)
         `)
         .eq('student_id', studentId);
 
@@ -73,8 +72,7 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
       const transformedEnrollments = (enrollmentData || []).map(enrollment => ({
         course_name: enrollment.courses?.name || 'نامشخص',
         enrolled_at: enrollment.enrolled_at,
-        status: enrollment.status,
-        term_name: enrollment.course_terms?.name
+        status: enrollment.status
       }));
 
       setEnrollments(transformedEnrollments);
@@ -137,38 +135,6 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
                 </div>
               </CardContent>
             </Card>
-
-            {/* Course Enrollments */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BookOpen className="h-5 w-5 mr-2" />
-                  دوره‌های ثبت‌نام شده ({enrollments.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {enrollments.length === 0 ? (
-                  <p className="text-gray-500 text-center py-4">در هیچ دوره‌ای ثبت‌نام نکرده</p>
-                ) : (
-                  <div className="space-y-3">
-                    {enrollments.map((enrollment, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex-1">
-                          <h4 className="font-medium">{enrollment.course_name}</h4>
-                          <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-500 mt-1">
-                            <span>ترم: {enrollment.term_name || 'عمومی'}</span>
-                            <span>تاریخ ثبت‌نام: {new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR')}</span>
-                          </div>
-                        </div>
-                        <Badge className={getStatusColor(enrollment.status)}>
-                          {getStatusText(enrollment.status)}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </div>
         ) : profile ? (
           <div className="space-y-6">
@@ -227,7 +193,6 @@ const StudentProfileModal = ({ open, onOpenChange, studentId, studentName }: Stu
                         <div className="flex-1">
                           <h4 className="font-medium">{enrollment.course_name}</h4>
                           <div className="flex items-center space-x-4 space-x-reverse text-sm text-gray-500 mt-1">
-                            <span>ترم: {enrollment.term_name || 'عمومی'}</span>
                             <span>تاریخ ثبت‌نام: {new Date(enrollment.enrolled_at).toLocaleDateString('fa-IR')}</span>
                           </div>
                         </div>

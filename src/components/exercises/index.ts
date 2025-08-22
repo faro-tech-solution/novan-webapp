@@ -6,21 +6,14 @@ export { ExerciseInfoCard } from './ExerciseInfoCard';
 export { getStatusBadge, getExerciseStatusBadge, getDifficultyBadge } from './ExerciseStatusBadges';
 export { FormBuilder } from './FormBuilder';
 export { FormRenderer } from './FormRenderer';
-export { GradingSection } from './GradingSection';
 export { InstructorFormView } from './InstructorFormView';
 
 export { ExerciseCard } from './ExerciseCard';
-export { CategorizedMyExercises } from './CategorizedMyExercises';
-export { ReviewSubmissionsHeader } from './ReviewSubmissionsHeader';
-export { SubmissionCard } from './SubmissionCard';
-export { SubmissionDetailView } from './SubmissionDetailView';
 export { SubmissionViewer } from './SubmissionViewer';
-export { SubmissionsList } from './SubmissionsList';
 export { TimingAndPointsSection } from './TimingAndPointsSection';
 export { TraineeExerciseForm } from './TraineeExerciseForm';
 export { VideoPlayer } from './VideoPlayer';
 export { AudioPlayer } from './AudioPlayer';
-export { SimpleExerciseCompletion } from './SimpleExerciseCompletion';
 
 export { IframePlayer } from './IframePlayer';
 export { ArvanVideoPlayer } from './ArvanVideoPlayer';

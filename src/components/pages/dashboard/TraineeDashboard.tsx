@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { useMyExercises } from '@/hooks/useMyExercises';
+import { useMyExercisesQuery } from '@/hooks/queries/useMyExercisesQuery';
 
 import { TraineeStatsCards } from '@/components/dashboard/TraineeStatsCards';
 import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesCard';
@@ -8,7 +8,7 @@ import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesC
 import WelcomeCard from '@/components/dashboard/WelcomeCard';
 
 const TraineeDashboard = () => {
-  const { myExercises, loading, error, refetch } = useMyExercises();
+  const { data: myExercises = [], isLoading: loading, error, refetch } = useMyExercisesQuery();
 
 
 

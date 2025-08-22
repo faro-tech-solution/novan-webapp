@@ -48,7 +48,6 @@ export interface StudentEnrollment {
   course_name: string;
   enrolled_at: string;
   status: string;
-  term_name?: string;
 }
 
 // Student interface for details dialog
@@ -65,7 +64,6 @@ export interface StudentDetails {
   averageScore: number;
   lastActivity: string;
   totalPoints: number;
-  termName?: string;
   role?: string;
   created_at?: string;
   updated_at?: string;
@@ -133,7 +131,4 @@ export interface StudentCourseEnrollment {
   };
   status: string;
   enrolled_at: string;
-  course_terms: {
-    name: string;
-  } | null;
 } 

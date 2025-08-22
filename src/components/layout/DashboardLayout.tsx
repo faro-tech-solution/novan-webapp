@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/sidebar";
 import { useSubmissionsQuery } from "@/hooks/queries/useReviewSubmissionsQuery";
 import { Badge } from "@/components/ui/badge";
-// import ActiveCourseSelector from "../courses/ActiveCourseSelector";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -333,7 +332,6 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
               position: "relative",
             }}
           >
-            {/* <ActiveCourseSelector /> */}
             {children}
           </main>
         </div>

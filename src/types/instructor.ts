@@ -31,7 +31,6 @@ export interface CourseInstructor {
 // Instructor interface for assignments
 export interface TeacherAssignment {
   course_ids: string[];
-  term_ids: string[];
 }
 
 // Instructor interface for profile

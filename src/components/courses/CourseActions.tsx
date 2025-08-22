@@ -1,13 +1,12 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Calendar, Pencil, Trash2, FolderOpen } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, FolderOpen } from 'lucide-react';
 import { Course } from '@/types/course';
 
 interface CourseActionsProps {
   course: Course;
   userRole?: string;
   userId?: string;
-  onManageTerms: (course: Course) => void;
   onManageCategories: (course: Course) => void;
   onEditCourse: (course: Course) => void;
   onDeleteCourse: (course: Course) => void;
@@ -16,7 +15,6 @@ interface CourseActionsProps {
 const CourseActions = ({ 
   course, 
   userRole, 
-  onManageTerms, 
   onManageCategories,
   onEditCourse, 
   onDeleteCourse 
@@ -34,13 +32,6 @@ const CourseActions = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-white border shadow-md">
-        <DropdownMenuItem 
-          onClick={() => onManageTerms(course)}
-          className="cursor-pointer"
-        >
-          <Calendar className="h-4 w-4 mr-2" />
-          مشاهده ترم‌ها
-        </DropdownMenuItem>
         {canManageCategories && (
           <DropdownMenuItem 
             onClick={() => onManageCategories(course)}

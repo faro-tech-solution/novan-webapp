@@ -4,10 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
-import {
-  useCoursesQuery,
-  useCreateExerciseMutation,
-} from "@/hooks/useExercisesQuery";
+import { useCoursesQuery } from "@/hooks/queries/useCoursesQuery";
+import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
 import {
   CreateExerciseForm,
   CreateExerciseFormData,
@@ -24,9 +22,9 @@ interface CreateExerciseProps {
 const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
   const router = useRouter();
   const { toast } = useToast();
-  const { data: courses = [] } = useCoursesQuery();
-  const createExerciseMutation = useCreateExerciseMutation();
-  const { updateExercise } = useExercisesQueryNew();
+  const { courses = [] } = useCoursesQuery();
+  const { createExercise, isCreating } = useExercisesQuery();
+  const { updateExercise, isUpdating } = useExercisesQueryNew();
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -87,7 +85,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
           });
         } else {
           // Create new exercise
-          await createExerciseMutation.mutateAsync(exerciseData);
+          await createExercise(exerciseData);
 
           toast({
             title: "تمرین ایجاد شد",
@@ -107,7 +105,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
         });
       }
     },
-    [createExerciseMutation, router, toast, exerciseId, updateExercise]
+    [createExercise, router, toast, exerciseId, updateExercise]
   );
 
   const handleCancel = useCallback(() => {
@@ -168,7 +166,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
           <CardContent>
             <CreateExerciseForm
               courses={courses}
-              isSubmitting={createExerciseMutation.isPending}
+              isSubmitting={isCreating || isUpdating}
               onSubmit={onSubmit}
               onCancel={handleCancel}
               defaultValues={getFormDefaultValues()}

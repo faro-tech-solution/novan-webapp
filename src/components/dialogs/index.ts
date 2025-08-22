@@ -3,7 +3,4 @@ export { default as CourseStudentsDialog } from './CourseStudentsDialog';
 export { default as CreateCourseDialog } from './CreateCourseDialog';
 export { default as CreateExerciseDialog } from './CreateExerciseDialog';
 export { default as CreatePaymentDialog } from './CreatePaymentDialog';
-export { default as CreateTermDialog } from './CreateTermDialog';
 export { default as EditCourseDialog } from './EditCourseDialog';
-export { default as EditTermDialog } from './EditTermDialog';
-export { default as TermsManagementModal } from './TermsManagementModal';

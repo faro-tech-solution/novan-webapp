@@ -20,15 +20,9 @@ export const useMyExercisesQuery = () => {
         .select(`
           course_id,
           enrolled_at,
-          term_id,
           courses (
             id,
             name
-          ),
-          course_terms (
-            id,
-            start_date,
-            end_date
           )
         `)
         .eq('student_id', user.id)
@@ -111,6 +105,7 @@ export const useMyExercisesQuery = () => {
           auto_grade: (exercise as any).auto_grade || false,
           content_url: (exercise as any).content_url || null,
           order_index: (exercise as any).order_index,
+          created_at: exercise.created_at,
         };
       });
 

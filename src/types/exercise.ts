@@ -99,6 +99,7 @@ export interface MyExerciseWithSubmission {
   auto_grade: boolean;
   submission_status: SubmissionStatusType;
   order_index?: number; // Calculated order based on category order and exercise order within category
+  created_at: string;
 }
 
 // For exercise detail service
