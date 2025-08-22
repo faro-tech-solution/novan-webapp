@@ -270,16 +270,16 @@ export const ArvanVideoPlayer: React.FC<ArvanVideoPlayerProps> = ({
 
   return (
     <Card className={className}>
-      <CardContent className="p-6">
+      <CardContent className="p-0">
         <div className="space-y-4">
           {/* Video Player */}
           <div className="relative w-full bg-black rounded-lg overflow-hidden">
             <div className="aspect-video">
                 <video
-                ref={videoRef}
+                  ref={videoRef}
                   controls
                   className="w-full h-full"
-                poster={videoData.data.thumbnail_url}
+                  poster={videoData.data.thumbnail_url}
                   preload="metadata"
                   controlsList="nodownload"
                 >

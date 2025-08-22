@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ExerciseCard, DraggableExerciseCard } from '@/components/exercises';
 import { MyExerciseWithSubmission, Exercise } from '@/types/exercise';
 import { useExerciseCategoriesQuery } from '@/hooks/queries/useExerciseCategoriesQuery';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Folder, FolderOpen, List, AlertCircle } from 'lucide-react';
 
 interface ExercisesViewProps {
@@ -39,6 +41,7 @@ export const ExercisesView = ({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [localExercises, setLocalExercises] = useState<(MyExerciseWithSubmission | Exercise)[]>(exercises);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   // Update localExercises when exercises prop changes
   useEffect(() => {
@@ -301,7 +304,80 @@ export const ExercisesView = ({
     );
   }
 
-  // Categorized view
+  // Mobile view
+  if (isMobile) {
+    return (
+      <div className="space-y-4">
+        {/* Mobile Category Selector */}
+        <Card>
+          <CardHeader className="hidden md:block pb-3">
+            <CardTitle className="text-lg">دسته‌بندی تمرین</CardTitle>
+            <CardDescription>
+              انتخاب دسته‌بندی برای مشاهده تمرین‌ها
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Select value={selectedCategoryId} onValueChange={(value: string | 'all' | 'uncategorized') => setSelectedCategoryId(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="انتخاب دسته‌بندی" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  همه تمرین‌ها ({categoryStats['all']?.total || 0})
+                </SelectItem>
+                
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {!courseId && (category as any).courses?.name 
+                      ? `${category.name} (${(category as any).courses.name})`
+                      : category.name
+                    } ({categoryStats[category.id]?.total || 0})
+                  </SelectItem>
+                ))}
+                
+                {uncategorizedExercises.length > 0 && (
+                  <SelectItem value="uncategorized">
+                    بدون دسته‌بندی ({uncategorizedExercises.length})
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+
+        {/* Mobile Exercises Display */}
+        <Card>
+          <CardHeader>
+            <CardTitle>{getCategoryTitle()}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {displayedExercises.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                {selectedCategoryId === 'all' 
+                  ? 'هیچ تمرینی برای شما تعریف نشده است.'
+                  : 'هیچ تمرینی در این دسته‌بندی وجود ندارد.'
+                }
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {displayedExercises.map((exercise) => (
+                  <div key={exercise.id}>
+                    <ExerciseCard 
+                      exercise={exercise as MyExerciseWithSubmission} 
+                      userRole={userRole}
+                      exercises={allExercises}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Desktop/Tablet view (existing layout)
   return (
     <div className="flex h-full space-x-4 space-x-reverse">
       {/* Categories Sidebar */}

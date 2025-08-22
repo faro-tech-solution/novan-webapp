@@ -1,14 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useState } from "react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LogIn,
   LogOut,
-  Menu,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -31,7 +28,7 @@ const Header = ({
   sidebarTrigger,
   onLogout,
 }: HeaderProps = {}) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const { profile, loading } = useAuth();
   const { tCommon, tSidebar } = useTranslation();
   const pathname = usePathname();
@@ -112,82 +109,7 @@ const Header = ({
           )}
 
           {sidebarTrigger}
-
-          {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-          </Button>
         </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t">
-            <nav className="flex flex-col space-y-4">
-              <Link
-                href="/"
-                className="text-gray-700 hover:text-teal-600 transition-colors"
-                              >
-                  {tCommon("home")}
-                </Link>
-                <Link
-                  href="/portal/trainee/all-courses"
-                  className="text-gray-700 hover:text-teal-600 transition-colors"
-                >
-                  {tCommon("courses")}
-                </Link>
-                {(profile?.role === "trainer" || profile?.role === "admin") && (
-                  <Link
-                    href="/portal/trainer/students"
-                    className="text-gray-700 hover:text-teal-600 transition-colors"
-                  >
-                    {tCommon("students")}
-                  </Link>
-                )}
-                <Link
-                  href="/portal/instructors"
-                  className="text-gray-700 hover:text-teal-600 transition-colors"
-                >
-                  {tCommon("instructors")}
-                </Link>
-                {profile && (
-                  <Link
-                    href={profile?.role ? `/portal/${profile.role}/dashboard` : "/"}
-                    className="text-gray-700 hover:text-teal-600 transition-colors"
-                  >
-                    {tCommon("dashboard")}
-                  </Link>
-                )}
-                {!profile && (
-                  <>
-                    <Link
-                      href="/portal/login"
-                      className="text-gray-700 hover:text-teal-600 transition-colors"
-                    >
-                      {tCommon("login")}
-                    </Link>
-                    <Link
-                      href="/portal/register"
-                      className="text-gray-700 hover:text-teal-600 transition-colors"
-                    >
-                      {tCommon("register")}
-                    </Link>
-                  </>
-                )}
-              <div className="mt-2 pt-2 border-t">
-                <LanguageSwitch />
-              </div>
-            </nav>
-          </div>
-        )}
       </div>
     </header>
   );
