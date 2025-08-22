@@ -15,7 +15,7 @@ import { UseFormReturn } from "react-hook-form";
 import { CreateExerciseFormData } from "./CreateExerciseForm";
 import { FileText, Video, AudioLines, ListChecks, ExternalLink } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { FormBuilder } from "./FormBuilder";
+import { FormBuilder } from "../forms/FormBuilder";
 import { useToast } from "@/hooks/use-toast";
 
 interface ExerciseTypeSectionProps {

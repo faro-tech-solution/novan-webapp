@@ -1,22 +1,17 @@
-export { BasicInfoSection } from './BasicInfoSection';
-export { CourseAndDifficultySection } from './CourseAndDifficultySection';
-export { CreateExerciseForm } from './CreateExerciseForm';
-export { ExerciseDetailHeader } from './ExerciseDetailHeader';
-export { ExerciseInfoCard } from './ExerciseInfoCard';
-export { getStatusBadge, getExerciseStatusBadge, getDifficultyBadge } from './ExerciseStatusBadges';
-export { FormBuilder } from './FormBuilder';
-export { FormRenderer } from './FormRenderer';
+// Main exercise handler
+export { ExerciseHandler } from './ExerciseHandler';
+
+// Legacy components (keeping for backward compatibility)
+export { TraineeExerciseForm } from './TraineeExerciseForm';
+export { ExercisesView } from './ExercisesView';
+export { ExerciseConversation } from './ExerciseConversation';
+export { SubmissionViewer } from './SubmissionViewer';
+export { FeedbackForm } from './FeedbackForm';
 export { InstructorFormView } from './InstructorFormView';
 
-export { ExerciseCard } from './ExerciseCard';
-export { SubmissionViewer } from './SubmissionViewer';
-export { TimingAndPointsSection } from './TimingAndPointsSection';
-export { TraineeExerciseForm } from './TraineeExerciseForm';
-export { VideoPlayer } from './VideoPlayer';
-export { AudioPlayer } from './AudioPlayer';
+// Organized exports from subdirectories
+export * from './players';
+export * from './forms';
+export * from './display';
+export * from './management';
 
-export { IframePlayer } from './IframePlayer';
-export { ArvanVideoPlayer } from './ArvanVideoPlayer';
-export { ExerciseTypeSection } from './ExerciseTypeSection';
-export { ExerciseConversation } from './ExerciseConversation';
-export { ExercisesView } from './ExercisesView';

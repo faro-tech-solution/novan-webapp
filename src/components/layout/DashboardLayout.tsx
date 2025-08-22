@@ -321,14 +321,14 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
           </div>
 
           <main
-            className="flex-1 p-6"
+            className="flex-1 p-3 md:p-6"
             style={{
               minWidth: 0,
               minHeight: 0,
               overflow: "auto",
               backgroundColor: "#edeef5",
               borderRadius: "24px",
-              margin: "0 0 10px 10px",
+              margin: "0 0 10px 0",
               position: "relative",
             }}
           >

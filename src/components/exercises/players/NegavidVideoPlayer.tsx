@@ -142,7 +142,7 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
 
   return (
     <Card className={className}>
-      <CardContent className="p-6">
+      <CardContent className="p-0">
         <div className="space-y-4">
           {/* Video Player */}
           <div className="relative w-full bg-black rounded-lg overflow-hidden">

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -146,19 +147,21 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: Exer
       <Card className={`transition-all duration-200 mb-3 overflow-hidden hover:shadow-md transition-shadow border-0 border-r-4 ${getCardBackground(submissionStatus)} ${getCardHeight(submissionStatus)}`}>
         <CardHeader className="px-5 py-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-gray-900 leading-tight flex items-center gap-2">
+            <h3 className="text-gray-900 leading-tight flex gap-2">
               {getExerciseTypeIcon(exercise.exercise_type)}
-              {displayTitle}
+              <div className={`text-sm md:text-base ${submissionStatus === 'completed' ? 'truncate' : ''}`}>
+                {displayTitle}
+              </div>
             </h3>
             {isExerciseNew(exercise.created_at) && submissionStatus === 'not_started' && (
-              <Badge variant="destructive" className="text-xs px-2 py-1">
+              <Badge variant="destructive" className="text-xs px-2">
                 جدید
               </Badge>
             )}
           </div>
         </CardHeader>
         
-        <CardContent className='px-5 py-0'>
+        <CardContent className='hidden md:block px-5 py-0'>
           {/* Main Info Row */}
           <div className="flex items-center space-x-4 space-x-reverse mb-3">
             {/* Difficulty */}

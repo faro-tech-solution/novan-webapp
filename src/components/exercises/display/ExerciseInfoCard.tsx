@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FilePreviewList } from '@/components/ui/FilePreviewList';
 import { useAuth } from '@/contexts/AuthContext';
-import { TraineeExerciseForm } from './TraineeExerciseForm';
+import { TraineeExerciseForm } from '../TraineeExerciseForm';
 import { FormAnswer } from '@/types/formBuilder';
 import { ExerciseDetail } from '@/types/exercise';
 import { formatExerciseTitleWithNumber } from '@/utils/exerciseOrderUtils';

@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { FormRenderer } from './FormRenderer';
+import { FormRenderer } from './forms/FormRenderer';
 import { ExerciseForm } from '@/types/formBuilder';
 
 interface InstructorFormViewProps {
