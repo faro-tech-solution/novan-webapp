@@ -152,7 +152,7 @@ export function getManifestUrl(videoData: NegavidVideoResponse): string | null {
 export function isVideoReady(videoData: NegavidVideoResponse): boolean {
   return videoData.success === true && 
          videoData.data.condition === 'ready' && 
-         !!videoData.data.embed_stream?.script;
+         !!videoData.data.embed_stream?.iframe;
 }
 
 export type { 
