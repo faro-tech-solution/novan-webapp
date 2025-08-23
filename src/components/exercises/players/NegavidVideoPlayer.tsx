@@ -6,8 +6,8 @@ import { Loader2, PlayCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { 
   fetchNegavidVideoUrl, 
   isVideoReady,
+  getEmbedPlayerHtml,
   getEmbedScript,
-  getEmbedContainerId,
   type NegavidVideoResponse 
 } from '@/services/negavidVideoService';
 
@@ -26,6 +26,7 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
   const [retryCount, setRetryCount] = useState(0);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const loadVideo = async () => {
     if (!videoId?.trim()) {
@@ -89,6 +90,34 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
     }
   };
 
+  const createIframeFromHtml = (htmlString: string) => {
+    if (!containerRef.current) return;
+
+    // Clear the container
+    containerRef.current.innerHTML = '';
+
+    // Create a temporary div to parse the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
+
+    // Find the iframe element
+    const iframeElement = tempDiv.querySelector('iframe');
+    if (iframeElement) {
+      // Clone the iframe to avoid any reference issues
+      const clonedIframe = iframeElement.cloneNode(true) as HTMLIFrameElement;
+      
+      // Store reference to the iframe
+      iframeRef.current = clonedIframe;
+      
+      // Append the iframe to the container
+      containerRef.current.appendChild(clonedIframe);
+      
+      console.log('Iframe created and appended successfully');
+    } else {
+      console.error('No iframe found in the HTML string');
+    }
+  };
+
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
     setScriptLoaded(false);
@@ -107,6 +136,16 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
       }
     }
   }, [videoData]);
+
+  // Create iframe when video data is ready and container is available
+  useEffect(() => {
+    if (videoData && isVideoReady(videoData) && containerRef.current) {
+      const embedPlayerHtml = getEmbedPlayerHtml(videoData);
+      if (embedPlayerHtml) {
+        createIframeFromHtml(embedPlayerHtml);
+      }
+    }
+  }, [videoData, containerRef.current]);
 
   // Cleanup script on unmount
   useEffect(() => {
@@ -190,8 +229,6 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
     );
   }
 
-  const containerId = getEmbedContainerId(videoData);
-
   return (
     <Card className={className}>
       <CardContent className="p-0">
@@ -199,24 +236,17 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
           {/* Video Player */}
           <div className="relative w-full bg-black rounded-lg overflow-hidden">
             <div className="aspect-video">
-              {containerId ? (
-                <div 
-                  ref={containerRef}
-                  id={containerId}
-                  className="w-full h-full"
-                  style={{
-                    position: 'relative',
-                    paddingBottom: '56.25%',
-                    paddingTop: '25px',
-                    height: '0',
-                    overflow: 'hidden'
-                  }}
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-white">
-                  <p>ویدیو در دسترس نیست</p>
-                </div>
-              )}
+              <div 
+                ref={containerRef}
+                className="w-full h-full"
+                style={{
+                  position: 'relative',
+                  paddingBottom: '56.25%',
+                  paddingTop: '25px',
+                  height: '0',
+                  overflow: 'hidden'
+                }}
+              />
             </div>
             {!scriptLoaded && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -226,6 +256,7 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
                 </div>
               </div>
             )}
+            
           </div>
         </div>
       </CardContent>
