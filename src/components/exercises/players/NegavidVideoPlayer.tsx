@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import {
   fetchNegavidVideoUrl, 
   isVideoReady,
   getEmbedPlayerHtml,
+  getEmbedScript,
   type NegavidVideoResponse 
 } from '@/services/negavidVideoService';
 
@@ -23,6 +24,8 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const loadVideo = async () => {
     if (!videoId?.trim()) {
@@ -39,7 +42,7 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
       const videoData = await fetchNegavidVideoUrl(videoId);
       
       if (!isVideoReady(videoData)) {
-        setError(`ویدیو در دسترس نیست. وضعیت: ${videoData.data.status}`);
+        setError(`ویدیو در دسترس نیست. وضعیت: ${videoData.data.condition}`);
         setVideoData(videoData);
         setLoading(false);
         return;
@@ -57,14 +60,63 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
     }
   };
 
+  const loadEmbedScript = (scriptHtml: string) => {
+    // Remove any existing script
+    const existingScript = document.querySelector('script[class*="negavid-video-stream-embed"]');
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Create a temporary div to parse the script HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = scriptHtml;
+    const scriptElement = tempDiv.querySelector('script');
+    
+    if (scriptElement) {
+      // Set up script loading event
+      scriptElement.onload = () => {
+        console.log('Negavid embed script loaded successfully');
+        setScriptLoaded(true);
+      };
+      
+      scriptElement.onerror = () => {
+        console.error('Failed to load Negavid embed script');
+        setScriptLoaded(false);
+      };
+
+      // Append the script to the document head
+      document.head.appendChild(scriptElement);
+    }
+  };
+
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
+    setScriptLoaded(false);
     loadVideo();
   };
 
   useEffect(() => {
     loadVideo();
   }, [videoId, retryCount]);
+
+  useEffect(() => {
+    if (videoData && isVideoReady(videoData)) {
+      const embedScript = getEmbedScript(videoData);
+      if (embedScript) {
+        loadEmbedScript(embedScript);
+      }
+    }
+  }, [videoData]);
+
+  // Cleanup script on unmount
+  useEffect(() => {
+    return () => {
+      const existingScript = document.querySelector('script[class*="negavid-video-stream-embed"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -118,8 +170,8 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
               <div className="space-y-2">
                 <p>ویدیو در دسترس نیست</p>
                 <p className="text-sm text-muted-foreground">شناسه ویدیو: {videoId}</p>
-                {videoData?.data?.status && (
-                  <p className="text-sm text-muted-foreground">وضعیت: {videoData.data.status}</p>
+                {videoData?.data?.condition && (
+                  <p className="text-sm text-muted-foreground">وضعیت: {videoData.data.condition}</p>
                 )}
                 <Button 
                   variant="outline" 
@@ -149,6 +201,7 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
             <div className="aspect-video">
               {embedPlayerHtml ? (
                 <div 
+                  ref={containerRef}
                   dangerouslySetInnerHTML={{ __html: embedPlayerHtml }}
                   className="w-full h-full"
                 />
@@ -158,8 +211,15 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
                 </div>
               )}
             </div>
+            {!scriptLoaded && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="flex flex-col items-center space-y-2">
+                  <Loader2 className="h-6 w-6 animate-spin text-white" />
+                  <p className="text-white text-sm">در حال بارگذاری پخش‌کننده...</p>
+                </div>
+              </div>
+            )}
           </div>
-
         </div>
       </CardContent>
     </Card>
