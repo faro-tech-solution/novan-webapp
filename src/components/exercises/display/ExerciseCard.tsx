@@ -154,7 +154,7 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: Exer
               </div>
             </h3>
             {isExerciseNew(exercise.created_at) && submissionStatus === 'not_started' && (
-              <Badge variant="destructive" className="text-xs px-2">
+              <Badge variant="destructive" className="text-xs px-2 opacity-50">
                 جدید
               </Badge>
             )}

@@ -6,8 +6,8 @@ import { Loader2, PlayCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { 
   fetchNegavidVideoUrl, 
   isVideoReady,
-  getEmbedPlayerHtml,
   getEmbedScript,
+  getEmbedContainerId,
   type NegavidVideoResponse 
 } from '@/services/negavidVideoService';
 
@@ -190,7 +190,7 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
     );
   }
 
-  const embedPlayerHtml = getEmbedPlayerHtml(videoData);
+  const containerId = getEmbedContainerId(videoData);
 
   return (
     <Card className={className}>
@@ -199,11 +199,18 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
           {/* Video Player */}
           <div className="relative w-full bg-black rounded-lg overflow-hidden">
             <div className="aspect-video">
-              {embedPlayerHtml ? (
+              {containerId ? (
                 <div 
                   ref={containerRef}
-                  dangerouslySetInnerHTML={{ __html: embedPlayerHtml }}
+                  id={containerId}
                   className="w-full h-full"
+                  style={{
+                    position: 'relative',
+                    paddingBottom: '56.25%',
+                    paddingTop: '25px',
+                    height: '0',
+                    overflow: 'hidden'
+                  }}
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-white">
