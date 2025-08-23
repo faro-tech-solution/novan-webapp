@@ -1,22 +1,41 @@
-interface NegavidVideoData {
+interface NegavidVideoMeta {
+  duration: number;
+  extension: string;
+  size: string;
+}
+
+interface NegavidVideoCategory {
   id: number;
   name: string;
+}
+
+interface NegavidEmbedStream {
+  iframe: string;
+  script: string;
+}
+
+interface NegavidVideoData {
+  id: number;
+  title: string;
   description: string | null;
-  download_count: number;
-  url: boolean;
-  view: string;
-  duration: number;
-  embed_player: string;
-  embed_script: string;
-  status: string;
-  subtitles: any[];
-  rich_snipp: any | null;
+  view_count: number;
+  download_permission: boolean;
+  password: string | null;
+  dynamic_watermark: boolean;
+  cover: string;
+  soft_watermark: boolean;
   manifest: string;
+  condition: string;
+  play_url: string;
+  category: NegavidVideoCategory;
+  meta: NegavidVideoMeta;
+  subtitles: any[];
+  embed_stream: NegavidEmbedStream;
 }
 
 interface NegavidVideoResponse {
   data: NegavidVideoData;
-  status: string;
+  success: boolean;
 }
 
 interface NegavidVideoError {
@@ -29,7 +48,7 @@ interface NegavidVideoError {
  */
 export async function fetchNegavidVideoUrl(videoId: string): Promise<NegavidVideoResponse> {
   try {
-    const baseUrl = 'https://open.negavid.com/api/v1';
+    const baseUrl = process.env.NEXT_PUBLIC_NEGAVID_BASE_URL;
     const accessToken = process.env.NEXT_PUBLIC_NEGAVID_ACCESS_TOKEN;
 
     console.log('fetchNegavidVideoUrl called with:', { videoId, baseUrl, hasAccessToken: !!accessToken });
@@ -39,17 +58,24 @@ export async function fetchNegavidVideoUrl(videoId: string): Promise<NegavidVide
     }
 
     // Build API URL
-    const url = `${baseUrl}/video/${videoId}`;
+    const url = `${baseUrl}/video/edit/${videoId}`;
 
     console.log('Fetching Negavid video:', {
       videoId,
       url: url.toString()
     });
 
+    const organizationId = process.env.NEXT_PUBLIC_NEGAVID_ORGANIZATION_ID;
+    
+    if (!organizationId) {
+      throw new Error('Negavid API configuration missing. Please check NEGAVID_ORGANIZATION_ID environment variable.');
+    }
+
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
+        'X-Organization-Code': organizationId,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
@@ -91,25 +117,25 @@ export async function fetchNegavidVideoUrl(videoId: string): Promise<NegavidVide
  * Get the embed player HTML from the response
  */
 export function getEmbedPlayerHtml(videoData: NegavidVideoResponse): string | null {
-  return videoData.data.embed_player || null;
+  return videoData.data.embed_stream?.iframe || null;
 }
 
 /**
  * Get the embed script from the response
  */
 export function getEmbedScript(videoData: NegavidVideoResponse): string | null {
-  return videoData.data.embed_script || null;
+  return videoData.data.embed_stream?.script || null;
 }
 
 /**
  * Get the container ID from the embed script
  */
 export function getEmbedContainerId(videoData: NegavidVideoResponse): string | null {
-  const embedScript = videoData.data.embed_script;
+  const embedScript = videoData.data.embed_stream?.script;
   if (!embedScript) return null;
   
   // Extract negavid_id from the script tag
-  const match = embedScript.match(/negavid_id='([^']+)'/);
+  const match = embedScript.match(/negavid_id="([^"]+)"/);
   return match ? match[1] : null;
 }
 
@@ -124,13 +150,16 @@ export function getManifestUrl(videoData: NegavidVideoResponse): string | null {
  * Check if video is available and ready to play
  */
 export function isVideoReady(videoData: NegavidVideoResponse): boolean {
-  return videoData.status === 'success' && 
-         videoData.data.status === 'Ready' && 
-         !!videoData.data.embed_script;
+  return videoData.success === true && 
+         videoData.data.condition === 'ready' && 
+         !!videoData.data.embed_stream?.iframe;
 }
 
 export type { 
   NegavidVideoResponse, 
   NegavidVideoError, 
-  NegavidVideoData 
+  NegavidVideoData,
+  NegavidVideoMeta,
+  NegavidVideoCategory,
+  NegavidEmbedStream
 };
