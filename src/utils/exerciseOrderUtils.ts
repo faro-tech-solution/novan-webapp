@@ -66,3 +66,24 @@ export const calculateOrderIndex = (
 export const isUncategorizedExercise = (orderIndex: number): boolean => {
   return orderIndex >= 999999;
 };
+
+/**
+ * Calculate the correct order_index for reordering exercises within a category
+ * @param categoryOrder - The order_index of the category (from exercise_categories table)
+ * @param exerciseIndexInCategory - The position of the exercise within the category (0-based)
+ * @param isUncategorized - Whether the exercise is uncategorized
+ * @returns The correct order_index value for the exercise
+ */
+export const calculateReorderOrderIndex = (
+  categoryOrder: number,
+  exerciseIndexInCategory: number,
+  isUncategorized: boolean = false
+): number => {
+  if (isUncategorized) {
+    // For uncategorized exercises, use high order_index values (999999+)
+    return 999999 + exerciseIndexInCategory;
+  } else {
+    // For categorized exercises, use the standard formula
+    return calculateOrderIndex(categoryOrder, exerciseIndexInCategory);
+  }
+};
