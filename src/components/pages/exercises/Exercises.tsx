@@ -12,7 +12,15 @@ const Exercises = () => {
     exercises = [],
     loading: exercisesLoading,
     error: exercisesError,
+    deleteExercise,
   } = useExercisesQuery(activeCourseId || undefined);
+
+  const handleDeleteExercise = async (exerciseId: string): Promise<void> => {
+    const result = await deleteExercise(exerciseId);
+    if (result.error) {
+      throw new Error(result.error);
+    }
+  };
 
   if (!activeCourseId) {
     return (
@@ -32,6 +40,7 @@ const Exercises = () => {
         error={exercisesError}
         userRole={profile?.role as 'admin' | 'trainer'}
         courseId={activeCourseId}
+        onDeleteExercise={handleDeleteExercise}
       />
     </DashboardLayout>
   );

@@ -24,6 +24,7 @@ interface ExercisesViewProps {
   courseId?: string;
   onExercisesReorder?: (reorderedExercises: (MyExerciseWithSubmission | Exercise)[]) => void;
   reorderExercises?: (reorderData: { exerciseId: string; newOrderIndex: number; courseId: string; categoryId?: string | null }[]) => Promise<any>;
+  onDeleteExercise?: (exerciseId: string) => Promise<void>;
 }
 
 export const ExercisesView = ({
@@ -33,7 +34,8 @@ export const ExercisesView = ({
   userRole = 'trainee',
   courseId: propCourseId,
   onExercisesReorder,
-  reorderExercises
+  reorderExercises,
+  onDeleteExercise
 }: ExercisesViewProps) => {
   const params = useParams();
   const urlCourseId = params?.courseId as string;
@@ -252,6 +254,25 @@ export const ExercisesView = ({
       });
     }
   }, [draggedIndex, localExercises, userRole, courseId, onExercisesReorder, exercises, toast, reorderExercises, selectedCategoryId, uncategorizedExercises, categorizedExercises]);
+
+  // Delete exercise handler
+  const handleDeleteExercise = useCallback(async (exerciseId: string) => {
+    if (!onDeleteExercise) return;
+    
+    try {
+      await onDeleteExercise(exerciseId);
+      toast({
+        title: "تمرین حذف شد",
+        description: "تمرین با موفقیت حذف شد",
+      });
+    } catch (error) {
+      toast({
+        title: "خطا",
+        description: "خطا در حذف تمرین",
+        variant: "destructive",
+      });
+    }
+  }, [onDeleteExercise, toast]);
 
   const getCategoryTitle = () => {
     if (selectedCategoryId === 'all') return "همه تمرین‌ها";
@@ -510,6 +531,7 @@ export const ExercisesView = ({
                       onDragStart={handleDragStart}
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
+                      onDelete={handleDeleteExercise}
                       userRole={userRole}
                       exercises={allExercises}
                     />

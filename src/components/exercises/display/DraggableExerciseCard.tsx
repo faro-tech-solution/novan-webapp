@@ -3,8 +3,20 @@
 import { useState } from 'react';
 import { Exercise } from '@/types/exercise';
 import { ExerciseCard } from './ExerciseCard';
-import { GripVertical, Move } from 'lucide-react';
+import { GripVertical, Move, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface DraggableExerciseCardProps {
   exercise: Exercise;
@@ -13,6 +25,7 @@ interface DraggableExerciseCardProps {
   onDragStart: (e: React.DragEvent, index: number) => void;
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, index: number) => void;
+  onDelete?: (exerciseId: string) => void;
   userRole: 'admin' | 'trainer';
   exercises?: (Exercise | any)[]; // For continuous numbering
 }
@@ -24,6 +37,7 @@ export const DraggableExerciseCard = ({
   onDragStart,
   onDragOver,
   onDrop,
+  onDelete,
   userRole,
   exercises
 }: DraggableExerciseCardProps) => {
@@ -72,6 +86,45 @@ export const DraggableExerciseCard = ({
           <div className="bg-white border border-gray-200 rounded-full p-1 shadow-sm hover:shadow-md transition-shadow">
             <GripVertical className="h-4 w-4 text-gray-400" />
           </div>
+        </div>
+      )}
+
+      {/* Delete Button */}
+      {onDelete && (userRole === 'admin' || userRole === 'trainer') && (
+        <div className="absolute -right-2 top-1/2 transform -translate-y-1/2 z-10">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-8 w-8 p-0 rounded-full shadow-sm hover:shadow-md transition-shadow"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>حذف تمرین</AlertDialogTitle>
+                <AlertDialogDescription>
+                  آیا مطمئن هستید که می‌خواهید تمرین "{exercise.title}" را حذف کنید؟
+                  <br />
+                  <span className="text-red-600 font-medium">
+                    این عمل قابل بازگشت نیست و تمام اطلاعات مربوط به این تمرین حذف خواهد شد.
+                  </span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>انصراف</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDelete(exercise.id)}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  حذف تمرین
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       )}
 
