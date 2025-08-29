@@ -10,10 +10,10 @@ export const useExercisesQuery = (courseId?: string) => {
   const queryClient = useQueryClient();
 
   const exercisesQuery = useQuery({
-    queryKey: ['exercises', courseId],
+    queryKey: ['exercises', courseId, user?.id],
     queryFn: async () => {
       if (!user) return [];
-      return await fetchExercises(courseId);
+      return await fetchExercises(courseId, user.id);
     },
     enabled: isQueryEnabled,
     // Use global defaults from react-query.ts
