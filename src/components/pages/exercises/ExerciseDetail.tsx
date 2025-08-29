@@ -10,8 +10,10 @@ import { FormAnswer } from "@/types/formBuilder";
 import { ExerciseDetailHeader, ExerciseInfoCard } from "@/components/exercises";
 import { InstructorFormView } from "@/components/exercises/InstructorFormView";
 import { ExerciseConversation } from "@/components/exercises/ExerciseConversation";
+import ExerciseListSidebar from "@/components/exercises/ExerciseListSidebar";
 import { useExerciseDetailQuery, useSubmitExerciseMutation } from "@/hooks/queries/useExerciseDetailQuery";
 import { Submission } from "@/types/reviewSubmissions";
+import { getNextExercise } from "@/services/exerciseFetchService";
 
 const ExerciseDetail = () => {
   const params = useParams();
@@ -79,10 +81,23 @@ const ExerciseDetail = () => {
         attachments: attachments || [], // Pass attachments
       },
       {
-        onSuccess: () => {
-          // Navigate to the correct trainee URL structure
+        onSuccess: async () => {
+          // Try to get the next exercise
           if (profile?.role === "trainee" && exercise.course_id) {
-            router.push(`/portal/trainee/${exercise.course_id}/my-exercises`);
+            try {
+              const nextExercise = await getNextExercise(exercise.id, exercise.course_id);
+              if (nextExercise) {
+                // Redirect to the next exercise
+                router.push(`/portal/trainee/${exercise.course_id}/exercise/${nextExercise.id}`);
+              } else {
+                // No next exercise found, redirect to exercise list
+                router.push(`/portal/trainee/${exercise.course_id}/my-exercises`);
+              }
+            } catch (error) {
+              console.error('Error getting next exercise:', error);
+              // Fallback to exercise list if there's an error
+              router.push(`/portal/trainee/${exercise.course_id}/my-exercises`);
+            }
           } else {
             router.push("/portal/trainee/all-courses");
           }
@@ -121,25 +136,28 @@ const ExerciseDetail = () => {
 
   return (
     <DashboardLayout title="جزئیات تمرین">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <ExerciseDetailHeader
-          onBack={() => router.back()}
-          difficulty={exercise.difficulty}
-          estimatedTime={exercise.estimated_time}
-          points={exercise.points}
-          submissionStatus={exercise.submission_status}
-        />
+      <div className="flex h-full">
+        {/* Main Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-4xl mx-auto space-y-6 p-6">
+            <ExerciseDetailHeader
+              onBack={() => router.back()}
+              difficulty={exercise.difficulty}
+              estimatedTime={exercise.estimated_time}
+              points={exercise.points}
+              submissionStatus={exercise.submission_status}
+            />
 
-        <ExerciseInfoCard
-          exercise={exercise}
-          title={exercise.title}
-          courseName={exercise.course_name}
-          description={exercise.description}
-          answers={answers}
-          setAnswers={setAnswers}
-          handleSubmit={handleSubmit}
-          submitMutation={submitMutation}
-        />
+            <ExerciseInfoCard
+              exercise={exercise}
+              title={exercise.title}
+              courseName={exercise.course_name}
+              description={exercise.description}
+              answers={answers}
+              setAnswers={setAnswers}
+              handleSubmit={handleSubmit}
+              submitMutation={submitMutation}
+            />
 
         {(profile?.role === "trainer" || profile?.role === "admin") && (
           <>
@@ -284,6 +302,16 @@ const ExerciseDetail = () => {
             variant="full"
             onExerciseSubmit={exercise.exercise_type === "simple" ? handleSubmit : undefined}
             exerciseSubmitting={exercise.exercise_type === "simple" ? submitMutation.isPending : false}
+          />
+        )}
+          </div>
+        </div>
+
+        {/* Exercise List Sidebar - Only show for trainees */}
+        {profile?.role === "trainee" && exercise.course_id && (
+          <ExerciseListSidebar
+            currentExerciseId={exercise.id}
+            courseId={exercise.course_id}
           />
         )}
       </div>

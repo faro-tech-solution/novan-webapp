@@ -13,6 +13,7 @@ import { MyExerciseWithSubmission, Exercise } from '@/types/exercise';
 import { useExerciseCategoriesQuery } from '@/hooks/queries/useExerciseCategoriesQuery';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { calculateReorderOrderIndex } from '@/utils/exerciseOrderUtils';
 import { Folder, FolderOpen, List, AlertCircle } from 'lucide-react';
 
 interface ExercisesViewProps {
@@ -210,12 +211,24 @@ export const ExercisesView = ({
       setDraggedIndex(null);
 
       // Prepare data for API call - only include exercises from the current category
-      const reorderData = newCategoryExercises.map((exercise, index) => ({
-        exerciseId: exercise.id,
-        newOrderIndex: index,
-        courseId: courseId || '',
-        categoryId: selectedCategoryId === 'uncategorized' ? null : selectedCategoryId
-      }));
+      const reorderData = newCategoryExercises.map((exercise, index) => {
+        const isUncategorized = selectedCategoryId === 'uncategorized';
+        const category = categories.find(cat => cat.id === selectedCategoryId);
+        const categoryOrder = category?.order_index ?? 0;
+        
+        const newOrderIndex = calculateReorderOrderIndex(
+          categoryOrder,
+          index,
+          isUncategorized
+        );
+        
+        return {
+          exerciseId: exercise.id,
+          newOrderIndex,
+          courseId: courseId || '',
+          categoryId: selectedCategoryId === 'uncategorized' ? null : selectedCategoryId
+        };
+      });
 
       // Call API to update order in database
       await reorderExercises?.(reorderData);
