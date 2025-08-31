@@ -65,6 +65,7 @@ const fetchSubmissions = async (params: SubmissionsQueryParams = {}): Promise<Su
       graded_by,
       solution,
       latest_answer,
+      submission_status,
       exercise:exercises (
         id,
         title,
@@ -85,9 +86,9 @@ const fetchSubmissions = async (params: SubmissionsQueryParams = {}): Promise<Su
 
   // Apply filters
   if (status === 'pending') {
-    query = query.is('score', null);
+    query = query.eq('submission_status', 'pending');
   } else if (status === 'completed') {
-    query = query.not('score', 'is', null);
+    query = query.eq('submission_status', 'completed');
   }
 
   if (courseId && courseId !== 'all') {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,8 +39,12 @@ export const ExercisesView = ({
   onDeleteExercise
 }: ExercisesViewProps) => {
   const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const urlCourseId = params?.courseId as string;
   const courseId = propCourseId || urlCourseId;
+  
+  // Initialize selectedCategoryId from URL query parameter
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | 'all' | 'uncategorized'>('all');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [localExercises, setLocalExercises] = useState<(MyExerciseWithSubmission | Exercise)[]>(exercises);
@@ -51,6 +55,31 @@ export const ExercisesView = ({
   useEffect(() => {
     setLocalExercises(exercises);
   }, [exercises]);
+
+  // Initialize selectedCategoryId from URL query parameter
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl && (categoryFromUrl === 'all' || categoryFromUrl === 'uncategorized' || categoryFromUrl.length > 0)) {
+      setSelectedCategoryId(categoryFromUrl as string | 'all' | 'uncategorized');
+    }
+  }, [searchParams]);
+
+  // Function to update URL when category changes
+  const updateCategoryInUrl = useCallback((categoryId: string | 'all' | 'uncategorized') => {
+    const currentUrl = new URL(window.location.href);
+    if (categoryId === 'all') {
+      currentUrl.searchParams.delete('category');
+    } else {
+      currentUrl.searchParams.set('category', categoryId);
+    }
+    router.replace(currentUrl.pathname + currentUrl.search, { scroll: false });
+  }, [router]);
+
+  // Function to handle category selection (updates both state and URL)
+  const handleCategorySelection = useCallback((categoryId: string | 'all' | 'uncategorized') => {
+    setSelectedCategoryId(categoryId);
+    updateCategoryInUrl(categoryId);
+  }, [updateCategoryInUrl]);
   
   // Fetch categories for the course (or all categories if no course is selected)
   const { categories, loading: categoriesLoading, error: categoriesError } = useExerciseCategoriesQuery(courseId || '');
@@ -352,7 +381,7 @@ export const ExercisesView = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <Select value={selectedCategoryId} onValueChange={(value: string | 'all' | 'uncategorized') => setSelectedCategoryId(value)}>
+            <Select value={selectedCategoryId} onValueChange={(value: string | 'all' | 'uncategorized') => handleCategorySelection(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="انتخاب دسته‌بندی" />
               </SelectTrigger>
@@ -444,7 +473,7 @@ export const ExercisesView = ({
                 icon={<List className="h-4 w-4" />}
                 count={categoryStats['all']?.total || 0}
                 isSelected={selectedCategoryId === 'all'}
-                onClick={() => setSelectedCategoryId('all')}
+                onClick={() => handleCategorySelection('all')}
               />
 
               <Separator className="my-2" />
@@ -475,7 +504,7 @@ export const ExercisesView = ({
                     }
                     count={categoryStats[category.id]?.total || 0}
                     isSelected={selectedCategoryId === category.id}
-                    onClick={() => setSelectedCategoryId(category.id)}
+                    onClick={() => handleCategorySelection(category.id)}
                   />
                 ))
               ) : (
@@ -508,7 +537,7 @@ export const ExercisesView = ({
                     icon={<AlertCircle className="h-4 w-4" />}
                     count={uncategorizedExercises.length}
                     isSelected={selectedCategoryId === 'uncategorized'}
-                    onClick={() => setSelectedCategoryId('uncategorized')}
+                    onClick={() => handleCategorySelection('uncategorized')}
                   />
                 </>
               )}

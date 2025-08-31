@@ -67,6 +67,7 @@ export interface ExerciseSubmission {
   feedback: string | null;
   score: number | null;
   submitted_at: string;
+  submission_status?: string;
 }
 
 // For submitting a new submission

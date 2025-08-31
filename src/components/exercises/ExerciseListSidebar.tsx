@@ -82,7 +82,7 @@ const ExerciseListSidebar: React.FC<ExerciseListSidebarProps> = ({
   }, [currentExerciseId, exercises]);
 
   const getStatusIcon = (exercise: ExerciseWithSubmission) => {
-    if (exercise.submission_status === 'completed') {
+    if (exercise.submission_status === 'completed' || exercise.submission_status === 'pending') {
       return <CheckCircle className="h-4 w-4 text-green-600" />;
     }
     // Not started exercises should show green circle

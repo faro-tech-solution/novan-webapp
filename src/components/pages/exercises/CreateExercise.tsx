@@ -6,6 +6,8 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useToast } from "@/hooks/use-toast";
 import { useCoursesQuery } from "@/hooks/queries/useCoursesQuery";
 import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
+import { useAuth } from "@/contexts/AuthContext";
+import { useDashboardPanelContext } from "@/contexts/DashboardPanelContext";
 import {
   CreateExerciseForm,
   CreateExerciseFormData,
@@ -22,12 +24,30 @@ interface CreateExerciseProps {
 const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
   const router = useRouter();
   const { toast } = useToast();
+  const { profile } = useAuth();
+  const { trainee: { courseId: activeCourseId } } = useDashboardPanelContext();
   const { courses = [] } = useCoursesQuery();
   const { createExercise, isCreating } = useExercisesQuery();
   const { updateExercise, isUpdating } = useExercisesQueryNew();
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  // Function to get the correct exercises page path based on user role and context
+  const getExercisesPagePath = useCallback((categoryId: string | null) => {
+    const categoryParam = categoryId && categoryId !== "no-category" ? `?category=${categoryId}` : "";
+    
+    if (profile?.role === 'admin') {
+      return `/portal/admin/exercises${categoryParam}`;
+    } else if (profile?.role === 'trainer') {
+      return `/portal/trainer/exercises${categoryParam}`;
+    } else if (profile?.role === 'trainee' && activeCourseId) {
+      return `/portal/trainee/${activeCourseId}/exercises${categoryParam}`;
+    } else {
+      // Fallback to admin exercises page
+      return `/portal/admin/exercises${categoryParam}`;
+    }
+  }, [profile?.role, activeCourseId]);
 
   // Fetch exercise data if in edit mode
   useEffect(() => {
@@ -93,8 +113,9 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
           });
         }
 
-        // Navigate back to exercises page
-        router.back();
+        // Navigate to exercises page with category filter
+        const exercisesPath = getExercisesPagePath(data.category_id || null);
+        router.push(exercisesPath);
       } catch (error) {
         console.error("Error saving exercise:", error);
         toast({
@@ -105,7 +126,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
         });
       }
     },
-    [createExercise, router, toast, exerciseId, updateExercise]
+    [createExercise, router, toast, exerciseId, updateExercise, getExercisesPagePath]
   );
 
   const handleCancel = useCallback(() => {
