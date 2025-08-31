@@ -79,6 +79,7 @@ const ExerciseDetail = () => {
         feedback: feedback || "", // Include feedback in submission
         autoGrade: exercise.auto_grade, // Pass autoGrade from exercise
         attachments: attachments || [], // Pass attachments
+        exerciseType: exercise.exercise_type, // Pass exercise type
       },
       {
         onSuccess: async () => {
@@ -290,8 +291,8 @@ const ExerciseDetail = () => {
           </>
         )}
 
-        {/* Exercise Conversation - Show for non-auto_grade exercises only */}
-        {createSubmissionObject() && !exercise.auto_grade && (
+        {/* Exercise Conversation - Show for non-auto_grade exercises or simple exercises */}
+        {createSubmissionObject() && (!exercise.auto_grade || exercise.exercise_type === "simple") && (
           (profile?.role === "trainee" || (
             (profile?.role === "trainer" || profile?.role === "admin") && 
             exercise.submission_id
