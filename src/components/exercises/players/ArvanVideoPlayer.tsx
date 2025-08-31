@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { memo, useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ interface ArvanVideoPlayerProps {
   className?: string;
 }
 
-export const ArvanVideoPlayer: React.FC<ArvanVideoPlayerProps> = ({ 
+const ArvanVideoPlayerComponent: React.FC<ArvanVideoPlayerProps> = ({ 
   videoId, 
   className = '' 
 }) => {
@@ -302,3 +302,5 @@ export const ArvanVideoPlayer: React.FC<ArvanVideoPlayerProps> = ({
     </Card>
   );
 };
+
+export const ArvanVideoPlayer = memo(ArvanVideoPlayerComponent);

@@ -1,7 +1,6 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { TimeSelector } from '@/components/ui/time-selector';
 import { UseFormReturn } from 'react-hook-form';
 import { CreateExerciseFormData } from './CreateExerciseForm';
 import { Clock, Award } from 'lucide-react';
@@ -54,47 +53,18 @@ export const TimingAndPointsSection = ({ form }: TimingAndPointsSectionProps) =>
         control={form.control}
         name="estimated_time"
         render={({ field }) => {
-          const suggestions: { label: string; seconds: number }[] = [
-            { label: '۱۵ دقیقه', seconds: 15 * 60 },
-            { label: '۳۰ دقیقه', seconds: 30 * 60 },
-            { label: '۱ ساعت', seconds: 60 * 60 },
-          ];
           const numericValue = typeof field.value === 'number' ? field.value : 0;
           return (
           <FormItem>
             <FormLabel className="flex items-center">
               <Clock className="h-4 w-4 ml-1" />
-              زمان تخمینی (ثانیه)
+              زمان تخمینی
             </FormLabel>
             <FormControl>
-              <div className="grid grid-cols-3 gap-3 items-start">
-                <div className="col-span-3 md:col-span-1">
-                  <Input
-                    type="number"
-                    min={0}
-                    step={1}
-                    placeholder="0"
-                    value={numericValue}
-                    onChange={(e) => field.onChange(Math.max(0, parseInt(e.target.value || '0', 10)))}
-                    required
-                  />
-                </div>
-                <div className="col-span-3 md:col-span-2">
-                  <div className="flex flex-wrap gap-2">
-                    {suggestions.map((s) => (
-                      <Button
-                        key={s.seconds}
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => field.onChange(s.seconds)}
-                      >
-                        {s.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <TimeSelector
+                value={numericValue}
+                onChange={field.onChange}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

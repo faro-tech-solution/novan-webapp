@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { memo, useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,7 @@ interface NegavidVideoPlayerProps {
   className?: string;
 }
 
-export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({ 
+const NegavidVideoPlayerComponent: React.FC<NegavidVideoPlayerProps> = ({ 
   videoId, 
   className = '' 
 }) => {
@@ -226,3 +226,5 @@ export const NegavidVideoPlayer: React.FC<NegavidVideoPlayerProps> = ({
     </Card>
   );
 };
+
+export const NegavidVideoPlayer = memo(NegavidVideoPlayerComponent);

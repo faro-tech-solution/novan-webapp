@@ -19,6 +19,7 @@ import { getExerciseTypeIcon } from '@/utils/exerciseTypeIcons';
 import { translateDifficultyToDisplay } from '@/utils/difficultyTranslation';
 import { formatExerciseTitleWithNumber, formatExerciseTitleWithNumberFromList } from '@/utils/exerciseOrderUtils';
 import { isExerciseNew } from '@/utils/exerciseUtils';
+import { formatDuration } from '@/utils/exerciseStatsUtils';
 
 interface ExerciseCardProps {
   exercise: MyExerciseWithSubmission | Exercise;
@@ -123,6 +124,19 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: Exer
   const statusDisplay = getStatusDisplay(submissionStatus);
   const difficultyDisplay = getDifficultyDisplay(exercise.difficulty);
 
+  // Check if this is a video exercise
+  const isVideoExercise = ['video', 'arvan_video', 'negavid', 'iframe'].includes(exercise.exercise_type);
+  
+  // Get formatted duration for video exercises
+  const getVideoDuration = () => {
+    if (!isVideoExercise || !exercise.estimated_time) return null;
+    
+    const timeInSeconds = parseFloat(exercise.estimated_time) || 0;
+    const timeInMinutes = timeInSeconds / 60;
+    
+    return formatDuration(timeInMinutes, 'time');
+  };
+
   // Determine the link based on user role
   const getExerciseLink = () => {
     if (userRole === 'trainee' && courseId) {
@@ -165,12 +179,14 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: Exer
           {/* Main Info Row */}
           <div className="flex items-center space-x-4 space-x-reverse mb-3">
             {/* Difficulty */}
+            {  exercise.difficulty && exercise.difficulty !== 'null' && (
             <div className="flex items-center space-x-2 space-x-reverse">
               {difficultyDisplay.icon}
               <span className={`text-sm text-gray-400`}>
                 {difficultyDisplay.text}
               </span>
             </div>
+            )}
 
             {/* Status */}
             <div className="flex items-center space-x-2 space-x-reverse">
@@ -187,6 +203,16 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: Exer
                 {exercise.points} امتیاز
               </span>
             </div>
+
+            {/* Video Duration */}
+            {isVideoExercise && getVideoDuration() && (
+              <div className="flex items-center space-x-2 space-x-reverse">
+                <Clock className="h-4 w-4 text-gray-400" />
+                <span className="text-sm text-gray-400">
+                  {getVideoDuration()}
+                </span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

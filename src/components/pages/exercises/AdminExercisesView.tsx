@@ -17,6 +17,7 @@ const AdminExercisesView = () => {
     loading: exercisesLoading,
     error: exercisesError,
     reorderExercises,
+    deleteExercise,
   } = useExercisesQuery(activeCourseId || undefined);
 
   const handleCreateExercise = () => {
@@ -30,6 +31,13 @@ const AdminExercisesView = () => {
     // The reordering is handled by the ExercisesView component
     // This callback can be used for additional actions if needed
     console.log('Exercises reordered:', reorderedExercises);
+  };
+
+  const handleDeleteExercise = async (exerciseId: string): Promise<void> => {
+    const result = await deleteExercise(exerciseId);
+    if (result.error) {
+      throw new Error(result.error);
+    }
   };
 
   if (!activeCourseId) {
@@ -69,6 +77,7 @@ const AdminExercisesView = () => {
           courseId={activeCourseId}
           onExercisesReorder={handleExercisesReorder}
           reorderExercises={reorderExercises}
+          onDeleteExercise={handleDeleteExercise}
         />
       </div>
     </DashboardLayout>
