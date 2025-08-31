@@ -9,6 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ExerciseCard, DraggableExerciseCard } from '@/components/exercises';
+import { ExerciseStatsReport } from '@/components/exercises/ExerciseStatsReport';
 import { MyExerciseWithSubmission, Exercise } from '@/types/exercise';
 import { useExerciseCategoriesQuery } from '@/hooks/queries/useExerciseCategoriesQuery';
 import { useToast } from '@/hooks/use-toast';
@@ -286,7 +287,7 @@ export const ExercisesView = ({
     icon, 
     count, 
     isSelected, 
-    onClick 
+    onClick
   }: { 
     id: string; 
     title: string; 
@@ -383,6 +384,17 @@ export const ExercisesView = ({
         <Card>
           <CardHeader>
             <CardTitle>{getCategoryTitle()}</CardTitle>
+            {/* Statistics for selected category */}
+            {displayedExercises.length > 0 && (
+              <div className="mt-2">
+                <ExerciseStatsReport 
+                  exercises={displayedExercises}
+                  title=""
+                  showCompletionPercentage={userRole === 'trainee'}
+                  variant={selectedCategoryId === 'all' ? 'overall' : 'category'}
+                />
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             {displayedExercises.length === 0 ? (
@@ -510,6 +522,17 @@ export const ExercisesView = ({
         <Card>
           <CardHeader>
             <CardTitle>{getCategoryTitle()}</CardTitle>
+            {/* Statistics for selected category */}
+            {displayedExercises.length > 0 && (
+              <div className="mt-2">
+                <ExerciseStatsReport 
+                  exercises={displayedExercises}
+                  title=""
+                  showCompletionPercentage={userRole === 'trainee'}
+                  variant={selectedCategoryId === 'all' ? 'overall' : 'category'}
+                />
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             {displayedExercises.length === 0 ? (
