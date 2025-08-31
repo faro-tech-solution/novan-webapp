@@ -88,6 +88,7 @@ export const fetchExercises = async (courseId?: string, userId?: string): Promis
         exercise_submissions!left (
           id,
           score,
+          submission_status,
           submitted_at,
           feedback,
           graded_at,
@@ -144,7 +145,12 @@ export const fetchExercises = async (courseId?: string, userId?: string): Promis
       let score: number | null = null;
       if (userId && exercise.exercise_submissions && exercise.exercise_submissions.length > 0) {
         const submission = exercise.exercise_submissions[0];
-        submission_status = submission.score !== null ? 'completed' : 'pending';
+        // Use the submission_status from database if available, otherwise fall back to score-based logic
+        if (submission.submission_status) {
+          submission_status = submission.submission_status as 'not_started' | 'pending' | 'completed';
+        } else {
+          submission_status = submission.score !== null ? 'completed' : 'pending';
+        }
         score = submission.score;
       }
 

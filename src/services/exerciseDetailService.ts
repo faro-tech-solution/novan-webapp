@@ -74,7 +74,7 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     // Get submission if exists
     const { data: submission, error: submissionError } = await supabase
       .from('exercise_submissions')
-              .select('id, solution, feedback, score, submitted_at')
+              .select('id, solution, feedback, score, submitted_at, submission_status')
       .eq('exercise_id', exerciseId)
       .eq('student_id', userId)
       .maybeSingle(); // Use maybeSingle instead of single to handle cases where no submission exists
@@ -89,7 +89,10 @@ export const fetchExerciseDetail = async (exerciseId: string, userId: string): P
     let submissionStatus: SubmissionStatusType = 'not_started';
     
     if (typedSubmission) {
-      if (typedSubmission.score !== null) {
+      // Use the submission_status from database if available, otherwise fall back to score-based logic
+      if (typedSubmission.submission_status) {
+        submissionStatus = typedSubmission.submission_status as SubmissionStatusType;
+      } else if (typedSubmission.score !== null) {
         submissionStatus = 'completed';
       } else {
         submissionStatus = 'pending';
@@ -214,7 +217,7 @@ export const submitExerciseSolution = async (
     course_id: courseId, // Set course_id from parameter
     solution: finalSolution,
     latest_answer: 'trainee', // Set latest_answer to role instead of solution
-    submission_status: 'pending', // Set default submission status
+    submission_status: autoGrade ? 'completed' : 'pending', // Set status based on auto_grade
     submitted_at: new Date().toISOString()
   };
 
