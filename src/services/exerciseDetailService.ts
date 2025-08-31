@@ -182,12 +182,13 @@ export const submitExerciseSolution = async (
   courseId: string,
   feedback?: string,
   autoGrade?: boolean,
-  attachments?: string[]
+  attachments?: string[],
+  exerciseType?: string
 ): Promise<{ error: string | null; submissionId?: string }> => {
   console.log('Submitting solution for exercise:', exerciseId, 'autoGrade:', autoGrade);
 
-  // Only store feedback in solution for auto_grade exercises
-  // For non-auto_grade exercises, feedback will be stored in conversation
+  // For simple exercises, we should store minimal solution and put feedback in conversation
+  // For other exercises, store feedback in solution only if auto_grade is true
   let finalSolution = solution;
   
   if (feedback && feedback.trim() && autoGrade) {
@@ -246,8 +247,8 @@ export const submitExerciseSolution = async (
 
   const submissionId = submissionResult?.id;
 
-  // For non-auto_grade exercises, create conversation entry if feedback exists
-  if (!autoGrade && (feedback?.trim() || (attachments && attachments.length > 0)) && submissionId) {
+  // For non-auto_grade exercises OR simple exercises, create conversation entry if feedback exists
+  if ((!autoGrade || exerciseType === 'simple') && (feedback?.trim() || (attachments && attachments.length > 0)) && submissionId) {
     try {
       const metaData = {
         type: 'initial_submission',
@@ -268,7 +269,7 @@ export const submitExerciseSolution = async (
         console.error('Error creating conversation entry:', conversationError);
         // Don't fail the submission if conversation creation fails
       } else {
-        console.log('Conversation entry created for non-auto_grade exercise');
+        console.log('Conversation entry created for exercise submission');
       }
     } catch (conversationError) {
       console.error('Error creating conversation entry:', conversationError);

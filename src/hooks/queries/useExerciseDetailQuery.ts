@@ -44,6 +44,7 @@ export const useSubmitExerciseMutation = () => {
       feedback,
       autoGrade,
       attachments,
+      exerciseType,
     }: {
       exerciseId: string;
       studentId: string;
@@ -52,6 +53,7 @@ export const useSubmitExerciseMutation = () => {
       feedback?: string;
       autoGrade?: boolean;
       attachments?: string[];
+      exerciseType?: string;
     }) => {
       const result = await submitExerciseSolution(
         exerciseId,
@@ -60,7 +62,8 @@ export const useSubmitExerciseMutation = () => {
         courseId,
         feedback,
         autoGrade,
-        attachments
+        attachments,
+        exerciseType
       );
 
       if (result.error) {
