@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
@@ -67,6 +67,14 @@ export const IframePlayer: React.FC<IframePlayerProps> = ({
     );
   }
 
+  // Memoize the iframe markup so it doesn't re-mount on incidental rerenders
+  const memoizedIframe = useMemo(() => (
+    <div 
+      className="bg-gray-100 rounded-lg overflow-hidden"
+      dangerouslySetInnerHTML={{ __html: iframeHtml }}
+    />
+  ), [iframeHtml]);
+
   return (
     <Card>
       <CardContent className="pt-6">
@@ -90,12 +98,7 @@ export const IframePlayer: React.FC<IframePlayerProps> = ({
           )}
 
           {/* Iframe HTML Content */}
-          <div className="relative">
-            <div 
-              className="bg-gray-100 rounded-lg overflow-hidden"
-              dangerouslySetInnerHTML={{ __html: iframeHtml }}
-            />
-          </div>
+          <div className="relative">{memoizedIframe}</div>
 
           {/* Complete Button */}
           {!isCompleted && !disabled && (

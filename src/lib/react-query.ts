@@ -4,12 +4,15 @@ import { QueryClient } from '@tanstack/react-query';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0,              // Data immediately becomes stale
-      gcTime: 5 * 60 * 1000,     // Keep unused data in cache for 5 minutes
-      retry: 1,                  // Only retry failed queries once
-      refetchOnWindowFocus: false, // Don't refetch when window regains focus
-      refetchOnMount: true,       // Refetch when component mounts
-      refetchOnReconnect: true,   // Refetch when reconnecting network
+      // Keep data fresh but avoid jitter on focus/mount that causes media remounts
+      staleTime: 15 * 60 * 1000,           // 15 minutes
+      gcTime: 30 * 60 * 1000,              // 30 minutes
+      retry: 1,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+      refetchIntervalInBackground: false,
     },
     mutations: {
       retry: 1,
@@ -31,11 +34,13 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// Use this function to customize query options when needed
+// Helper to customize per-query options when truly needed
 export const getQueryOptions = (customOptions = {}) => ({
-  staleTime: 0,
-  refetchOnWindowFocus: true,
-  refetchOnMount: true,
-  refetchOnReconnect: true,
-  ...customOptions
+  staleTime: 15 * 60 * 1000,
+  refetchOnWindowFocus: false,
+  refetchOnMount: false,
+  refetchOnReconnect: false,
+  refetchInterval: false,
+  refetchIntervalInBackground: false,
+  ...customOptions,
 });
