@@ -67,7 +67,6 @@ export const ExerciseInfoCard = ({
         )}
 
         {profile?.role === "trainee" &&
-          exercise.submission_status !== "completed" && 
           exercise.exercise_type !== "simple" && (
             <TraineeExerciseForm
               exercise={exercise}

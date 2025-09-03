@@ -76,33 +76,55 @@ sudo yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## 📚 Documentation
-
-For comprehensive documentation, visit the [docs](./docs/) directory:
-
-- **[📖 Documentation Index](./docs/README.md)** - Complete documentation overview
-- **[🎯 Project Overview](./docs/PROJECT_OVERVIEW.md)** - System overview and architecture
-- **[🗄️ Database Schema](./docs/DATABASE_SCHEMA.md)** - Database design and structure
-- **[🔧 Development Guide](./docs/DEVELOPMENT_GUIDE.md)** - Development setup and guidelines
-- **[🚀 Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)** - Production deployment guide
-- **[🌐 API Documentation](./docs/API_DOCUMENTATION.md)** - Complete API reference
-- **[🏗️ Project Structure](./docs/PROJECT_STRUCTURE.md)** - Code organization and architecture
-
 ## 🏗️ Project Structure
 
 ```
 novan-webapp/
-├── app/                    # Next.js 13+ app directory with pages and layouts
-├── src/                    # Source code including components, hooks, and utilities
-├── components/             # Reusable React components
-├── hooks/                  # Custom React hooks
-├── services/               # API and external service integrations
-├── types/                  # TypeScript type definitions
-├── utils/                  # Utility functions
+├── app/                    # Next.js 13+ app directory
+│   ├── portal/            # Main application routes
+│   │   ├── admin/         # Admin dashboard
+│   │   ├── trainer/       # Trainer interface
+│   │   ├── trainee/       # Student interface
+│   │   └── auth/          # Authentication pages
+│   └── layout.tsx         # Root layout
+├── src/
+│   ├── components/        # Reusable React components
+│   │   ├── ui/            # Base UI components
+│   │   ├── exercises/     # Exercise-related components
+│   │   ├── courses/       # Course management
+│   │   ├── dashboard/     # Dashboard components
+│   │   └── auth/          # Authentication components
+│   ├── hooks/             # Custom React hooks
+│   ├── services/          # API and external services
+│   ├── types/             # TypeScript type definitions
+│   ├── utils/             # Utility functions
+│   └── contexts/          # React contexts
 ├── migrations/             # Database migrations
-├── supabase/               # Supabase configuration
-└── public/                 # Static assets
+├── supabase/              # Supabase configuration
+└── public/                # Static assets
 ```
+
+## 🗄️ Database Schema
+
+### Core Tables
+
+- **`profiles`**: User profiles with comprehensive information
+- **`courses`**: Course definitions and metadata
+- **`course_terms`**: Course sessions and terms
+- **`course_enrollments`**: Student course enrollments
+- **`exercises`**: Exercise definitions and content
+- **`exercise_submissions`**: Student exercise submissions
+- **`awards`**: Achievement definitions
+- **`student_awards`**: Student achievement tracking
+- **`notifications`**: User notification system
+- **`accounting`**: Financial transaction tracking
+
+### Key Features
+
+- **Row Level Security (RLS)**: Comprehensive security policies
+- **Triggers**: Automated achievement checking and notifications
+- **Functions**: Database functions for business logic
+- **Indexes**: Optimized query performance
 
 ## 🚀 Deployment
 
@@ -155,4 +177,5 @@ This project is private and proprietary.
 
 ## 🆘 Support
 
-For technical support or questions, please contact the development team or refer to the comprehensive documentation in the [docs](./docs/) directory.
+For technical support or questions, please contact the development team.
+
