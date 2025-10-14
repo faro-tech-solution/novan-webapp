@@ -346,3 +346,4 @@ All tables have RLS enabled with appropriate policies:
 
 This schema provides a robust foundation for the learning management system with proper security, performance, and scalability considerations.
 
+

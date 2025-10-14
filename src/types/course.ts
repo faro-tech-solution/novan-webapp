@@ -69,4 +69,26 @@ export interface StudentCourse {
 export interface ReviewCourse {
   id: string;
   name: string;
+}
+
+// Public course interfaces for non-authenticated users
+export interface CourseIntroVideo {
+  url: string;
+  title: string;
+  duration: string;
+  thumbnail: string;
+  description: string;
+}
+
+export interface CoursePreviewData {
+  topics: string[];
+  description: string;
+  intro_videos: CourseIntroVideo[];
+}
+
+export interface PublicCourse extends Course {
+  preview_data: CoursePreviewData | null;
+  instructor_name?: string;
+  start_date?: string | null;
+  end_date?: string | null;
 } 

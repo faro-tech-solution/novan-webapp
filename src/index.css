@@ -6,7 +6,7 @@
 
 @font-face {
   font-family: 'YekanBakh';
-  src: url('/YekanBakh/webfonts/woff/YekanBakhNoEn-Regular.woff') format('woff');
+  src: url('/fonts/YekanBakh/woff/YekanBakhNoEn-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -14,7 +14,7 @@
 
 @font-face {
   font-family: 'YekanBakh';
-  src: url('/YekanBakh/webfonts/woff/YekanBakhNoEn-Bold.woff') format('woff');
+  src: url('/fonts/YekanBakh/woff/YekanBakhNoEn-Bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -22,7 +22,31 @@
 
 @font-face {
   font-family: 'YekanBakh';
-  src: url('/YekanBakh/webfonts/woff/YekanBakhNoEn-ExtraBlack.woff') format('woff');
+  src: url('/fonts/YekanBakh/woff/YekanBakhNoEn-ExtraBlack.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/Morabba/woff/Morabba-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/Morabba/woff/Morabba-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/Morabba/woff/Morabba-Heavy.woff') format('woff');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -122,6 +146,10 @@
 
   html {
     direction: rtl;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Morabba', 'YekanBakh', 'Tahoma', 'Arial', sans-serif;
   }
 }
 
