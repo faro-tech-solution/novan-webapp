@@ -192,16 +192,23 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Function to create notification for exercise feedback
 CREATE OR REPLACE FUNCTION create_feedback_notification()
 RETURNS TRIGGER AS $$
+DECLARE
+    course_id UUID;
 BEGIN
     -- Only create notification when feedback is updated
     IF OLD.feedback IS DISTINCT FROM NEW.feedback AND NEW.feedback IS NOT NULL THEN
+        -- Get course_id from exercise
+        SELECT e.course_id INTO course_id
+        FROM exercises e
+        WHERE e.id = NEW.exercise_id;
+        
         INSERT INTO notifications (
             title,
             description,
             receiver_id,
             type,
-            link,
             sender_id,
+            course_id,
             metadata
         )
         VALUES (
@@ -209,8 +216,8 @@ BEGIN
             NEW.feedback,
             NEW.student_id,
             'exercise_feedback',
-            '/exercise/' || NEW.exercise_id,
             NEW.graded_by,
+            course_id,
             jsonb_build_object(
                 'exercise_id', NEW.exercise_id,
                 'submission_id', NEW.id
@@ -230,7 +237,6 @@ BEGIN
         description,
         receiver_id,
         type,
-        link,
         metadata
     )
     VALUES (
@@ -238,7 +244,6 @@ BEGIN
         'congratulations_earned_new_award',
         NEW.student_id,
         'award_achieved',
-        '/progress',
         jsonb_build_object(
             'award_id', NEW.award_id,
             'achievement_id', NEW.id

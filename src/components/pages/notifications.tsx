@@ -54,8 +54,9 @@ export default function NotificationsPage() {
     }
   };
 
-  const onNotificationClick = (notification: Notification) =>
+  const onNotificationClick = (notification: Notification) => {
     handleNotificationClick(notification, setNotifications, (to: string) => router.push(to));
+  }
 
   if (loading) {
     return (
