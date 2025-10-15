@@ -17,6 +17,7 @@ export async function handleNotificationClick(
     setIsOpen?: (open: boolean) => void;
   }
 ) {
+  console.log("notification", notification);
   try {
     if (!notification.is_read) {
       await NotificationService.markAsRead(notification.id);
@@ -33,8 +34,9 @@ export async function handleNotificationClick(
     // Build redirect URL based on notification type and metadata
     let redirectUrl: string | null = null;
     const meta = notification.metadata || {};
-    const course_id = meta.course_id;
-    const exercise_id = meta.exercise_id;
+    const course_id = notification.course_id; // course_id is a column in notifications table
+    const exercise_id = meta.exercise_id; // exercise_id is in metadata
+    
     if (course_id) {
         if (notification.type === "award_achieved") {
             redirectUrl = `/portal/trainee/${course_id}/progress`;

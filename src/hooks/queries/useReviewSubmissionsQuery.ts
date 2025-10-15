@@ -75,7 +75,7 @@ const fetchSubmissions = async (params: SubmissionsQueryParams = {}): Promise<Su
         exercise_type,
         auto_grade
       ),
-      student:profiles!exercise_submissions_student_id_fkey (
+      student:profiles!student_id (
         id,
         first_name,
         last_name,
@@ -99,7 +99,11 @@ const fetchSubmissions = async (params: SubmissionsQueryParams = {}): Promise<Su
     query = query.eq('exercise_id', exerciseId);
   }
 
-  query = query.eq('student.is_demo', showDemoUsers);
+  // Filter demo users: when showDemoUsers is false, exclude demo users
+  // Using neq (not equal) which treats null as not equal to true, so null and false both pass
+  if (!showDemoUsers) {
+    query = query.not('student.is_demo', 'eq', true);
+  }
 
   // Apply search filter
   if (search) {

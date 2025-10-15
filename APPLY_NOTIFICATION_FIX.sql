@@ -1,18 +1,15 @@
--- Notification System Functions
--- =============================
+-- ============================================================================
+-- QUICK FIX: Exercise Conversation Notifications
+-- ============================================================================
+-- This script fixes the notification system for exercise conversations
+-- Apply this in your Supabase SQL Editor
+-- Date: 2024-10-14
+-- ============================================================================
 
--- Function to mark notification as read
-CREATE OR REPLACE FUNCTION mark_notification_as_read(notification_uuid UUID)
-RETURNS void AS $$
-BEGIN
-    UPDATE notifications
-    SET is_read = true,
-        read_at = now()
-    WHERE id = notification_uuid;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- Step 1: Update existing notification functions to remove 'link' column
+-- =========================================================================
 
--- Function to create notification for exercise feedback
+-- Function to create notification for exercise feedback (direct feedback field)
 CREATE OR REPLACE FUNCTION create_feedback_notification()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -76,51 +73,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to get latest notifications
-CREATE OR REPLACE FUNCTION get_latest_notifications(p_user_id UUID, p_limit INTEGER DEFAULT 5)
-RETURNS TABLE (
-    id UUID,
-    title TEXT,
-    description TEXT,
-    type notification_type,
-    created_at TIMESTAMPTZ,
-    is_read BOOLEAN,
-    link TEXT,
-    metadata JSONB,
-    sender_id UUID
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        n.id,
-        n.title,
-        n.description,
-        n.type,
-        n.created_at,
-        n.is_read,
-        n.link,
-        n.metadata,
-        n.sender_id
-    FROM notifications n
-    WHERE n.receiver_id = p_user_id
-    ORDER BY n.created_at DESC
-    LIMIT p_limit;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- Step 2: Create NEW function for conversation notifications
+-- ===========================================================
 
--- Function to get unread notification count
-CREATE OR REPLACE FUNCTION get_unread_count(p_user_id UUID)
-RETURNS INTEGER AS $$
-BEGIN
-    RETURN (
-        SELECT COUNT(*)
-        FROM notifications
-        WHERE receiver_id = p_user_id AND is_read = false
-    );
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Function to create notification for conversation messages
 CREATE OR REPLACE FUNCTION create_conversation_notification()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -170,4 +125,59 @@ BEGIN
     
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER; 
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Step 3: Create trigger for conversation notifications
+-- ======================================================
+
+-- Drop existing trigger if exists
+DROP TRIGGER IF EXISTS trigger_conversation_notification ON exercise_submissions_conversation;
+
+-- Create trigger for conversation notifications
+CREATE TRIGGER trigger_conversation_notification
+  AFTER INSERT ON exercise_submissions_conversation
+  FOR EACH ROW
+  EXECUTE FUNCTION create_conversation_notification();
+
+-- Step 4: Add comments for documentation
+-- =======================================
+
+COMMENT ON FUNCTION create_conversation_notification() IS 
+'Creates a notification for the student when a trainer or admin sends a message in the exercise conversation';
+
+COMMENT ON TRIGGER trigger_conversation_notification ON exercise_submissions_conversation IS 
+'Trigger to create notifications when trainer/admin responds to exercise submissions';
+
+-- Step 5: Verify installation
+-- ============================
+
+DO $$
+DECLARE
+    trigger_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO trigger_count
+    FROM pg_trigger
+    WHERE tgname = 'trigger_conversation_notification';
+    
+    IF trigger_count > 0 THEN
+        RAISE NOTICE '✅ SUCCESS: Conversation notification trigger installed successfully!';
+        RAISE NOTICE '   Trainer/admin messages will now create notifications for students.';
+    ELSE
+        RAISE WARNING '⚠️  WARNING: Trigger may not have been created properly.';
+    END IF;
+END $$;
+
+-- ============================================================================
+-- END OF SCRIPT
+-- ============================================================================
+-- 
+-- NEXT STEPS:
+-- 1. Test by having an admin/trainer send a message in an exercise conversation
+-- 2. Verify the student receives a notification
+-- 3. Check the notifications table to see the new entry
+--
+-- ROLLBACK (if needed):
+-- DROP TRIGGER IF EXISTS trigger_conversation_notification ON exercise_submissions_conversation;
+-- DROP FUNCTION IF EXISTS create_conversation_notification();
+-- ============================================================================
+
