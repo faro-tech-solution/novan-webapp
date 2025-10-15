@@ -32,6 +32,7 @@ interface SubmissionsQueryParams {
   exerciseId?: string;
   showDemoUsers?: boolean;
   lastAnswerBy?: 'trainee' | 'trainer' | 'admin' | 'all';
+  studentId?: string;
 }
 
 interface SubmissionsResponse {
@@ -49,7 +50,8 @@ const fetchSubmissions = async (params: SubmissionsQueryParams = {}): Promise<Su
     courseId,
     exerciseId,
     showDemoUsers = false,
-    lastAnswerBy = 'trainee'
+    lastAnswerBy = 'trainee',
+    studentId
   } = params;
 
   let query = supabase
@@ -69,11 +71,16 @@ const fetchSubmissions = async (params: SubmissionsQueryParams = {}): Promise<Su
       exercise:exercises (
         id,
         title,
+        description,
         points,
         form_structure,
         course_id,
         exercise_type,
-        auto_grade
+        auto_grade,
+        courses (
+          id,
+          name
+        )
       ),
       student:profiles!student_id (
         id,
@@ -105,11 +112,19 @@ const fetchSubmissions = async (params: SubmissionsQueryParams = {}): Promise<Su
     query = query.not('student.is_demo', 'eq', true);
   }
 
-  // Apply search filter
+  // Apply search filter (text search)
   if (search) {
+    // Escape special characters and use proper % wildcards for PostgREST
+    const escapedSearch = search.replace(/[%_\\]/g, '\\$&');
+    const wildcardSearch = `%${escapedSearch}%`;
     query = query.or(
-      `student.first_name.ilike.%${search}%,student.last_name.ilike.%${search}%,student.email.ilike.%${search}%,exercise.title.ilike.%${search}%`
+      `student.first_name.ilike.${wildcardSearch},student.last_name.ilike.${wildcardSearch},student.email.ilike.${wildcardSearch},exercise.title.ilike.${wildcardSearch}`
     );
+  }
+
+  // Apply student ID filter (for trainer dropdown)
+  if (studentId && studentId !== 'all') {
+    query = query.eq('student_id', studentId);
   }
 
   query = query.eq('latest_answer', lastAnswerBy);
@@ -133,11 +148,13 @@ const fetchSubmissions = async (params: SubmissionsQueryParams = {}): Promise<Su
     exercise: submission.exercise ? {
       id: submission.exercise.id,
       title: submission.exercise.title,
+      description: submission.exercise.description,
       points: submission.exercise.points,
       form_structure: parseFormStructure(submission.exercise.form_structure),
       course_id: submission.exercise.course_id,
       exercise_type: submission.exercise.exercise_type,
-      auto_grade: submission.exercise.auto_grade
+      auto_grade: submission.exercise.auto_grade,
+      course: submission.exercise.courses
     } : null
   })) as Submission[];
 

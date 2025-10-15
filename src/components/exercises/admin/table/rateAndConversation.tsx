@@ -68,6 +68,11 @@ const RateAndConversation: React.FC<RateAndConversationProps> = ({ selectedSubmi
           score: selectedSubmission.score || undefined,
           feedback: selectedSubmission.feedback || undefined
         }}
+        exerciseInfo={{
+          title: selectedSubmission.exercise.title,
+          description: selectedSubmission.exercise.description,
+          courseName: selectedSubmission.exercise.course?.name
+        }}
       />
       <ExerciseConversation
         submission={selectedSubmission}
