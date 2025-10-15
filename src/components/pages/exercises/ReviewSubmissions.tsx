@@ -141,91 +141,112 @@ const ReviewSubmissions = () => {
             </div>
 
             {/* Second row: status | courses | exercise | last response by */}
-            <div className="flex flex-col md:flex-row md:items-center md:space-x-4 md:space-x-reverse gap-2">
-              <Select
-                value={statusFilter}
-                onValueChange={(v) => {
-                  setStatusFilter(v as any);
-                  handleFilterChange();
-                }}
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">در انتظار بررسی</SelectItem>
-                  <SelectItem value="completed">بررسی شده</SelectItem>
-                  <SelectItem value="all">همه</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex flex-col md:flex-row md:items-end md:space-x-4 md:space-x-reverse gap-4">
+              {/* Status Filter */}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  وضعیت
+                </label>
+                <Select
+                  value={statusFilter}
+                  onValueChange={(v) => {
+                    setStatusFilter(v as any);
+                    handleFilterChange();
+                  }}
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">در انتظار بررسی</SelectItem>
+                    <SelectItem value="completed">بررسی شده</SelectItem>
+                    <SelectItem value="all">همه</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               
               {/* Course Filter */}
-              <Select
-                value={selectedCourse}
-                onValueChange={(v) => {
-                  setSelectedCourse(v);
-                  setSelectedExercise("all");
-                  handleFilterChange();
-                }}
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="انتخاب دوره" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">همه دوره‌ها</SelectItem>
-                  {courses.map((course) => (
-                    <SelectItem key={course.id} value={course.id}>
-                      {course.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              {/* Exercise Filter */}
-              <Select
-                value={selectedExercise}
-                onValueChange={(v) => {
-                  setSelectedExercise(v);
-                  handleFilterChange();
-                }}
-                disabled={selectedCourse === "all" || exercisesLoading}
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="انتخاب تمرین" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">همه تمرین‌ها</SelectItem>
-                  {exercises
-                    .filter(
-                      (ex) =>
-                        selectedCourse === "all" ||
-                        ex.course_id === selectedCourse
-                    )
-                    .map((ex) => (
-                      <SelectItem key={ex.id} value={ex.id}>
-                        {ex.title}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  دوره
+                </label>
+                <Select
+                  value={selectedCourse}
+                  onValueChange={(v) => {
+                    setSelectedCourse(v);
+                    setSelectedExercise("all");
+                    handleFilterChange();
+                  }}
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="انتخاب دوره" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">همه دوره‌ها</SelectItem>
+                    {courses.map((course) => (
+                      <SelectItem key={course.id} value={course.id}>
+                        {course.name}
                       </SelectItem>
                     ))}
-                </SelectContent>
-              </Select>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Exercise Filter */}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  تمرین
+                </label>
+                <Select
+                  value={selectedExercise}
+                  onValueChange={(v) => {
+                    setSelectedExercise(v);
+                    handleFilterChange();
+                  }}
+                  disabled={selectedCourse === "all" || exercisesLoading}
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="انتخاب تمرین" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">همه تمرین‌ها</SelectItem>
+                    {exercises
+                      .filter(
+                        (ex) =>
+                          selectedCourse === "all" ||
+                          ex.course_id === selectedCourse
+                      )
+                      .map((ex) => (
+                        <SelectItem key={ex.id} value={ex.id}>
+                          {ex.title}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
               
               {/* Last Response By Filter */}
-              <Select
-                value={lastAnswerBy}
-                onValueChange={(v) => {
-                  setLastAnswerBy(v as any);
-                  handleFilterChange();
-                }}
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="آخرین پاسخ توسط" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="trainee">دانشجو</SelectItem>
-                  <SelectItem value="trainer">مربی</SelectItem>
-                  <SelectItem value="admin">مدیر</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-gray-700">
+                  آخرین پاسخ توسط
+                </label>
+                <Select
+                  value={lastAnswerBy}
+                  onValueChange={(v) => {
+                    setLastAnswerBy(v as any);
+                    handleFilterChange();
+                  }}
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="آخرین پاسخ توسط" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="trainee">دانشجو</SelectItem>
+                    <SelectItem value="trainer">مربی</SelectItem>
+                    <SelectItem value="admin">مدیر</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
