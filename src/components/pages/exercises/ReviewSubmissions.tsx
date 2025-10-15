@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -23,6 +22,7 @@ import {
   useSubmissionsQuery,
   useCoursesForReviewQuery,
 } from "@/hooks/queries/useReviewSubmissionsQuery";
+import { useStudentsQuery } from "@/hooks/queries/useTrainersQuery";
 import { Submission } from "@/types/reviewSubmissions";
 import {
   Select,
@@ -34,6 +34,7 @@ import {
 import { useExercisesQuery } from "@/hooks/queries/useExercisesQuery";
 import { Checkbox } from "@/components/ui/checkbox";
 import UserNameWithBadge from "@/components/ui/UserNameWithBadge";
+import { SearchableSelect, SearchableSelectOption } from "@/components/ui/SearchableSelect";
 
 
 
@@ -41,7 +42,7 @@ import UserNameWithBadge from "@/components/ui/UserNameWithBadge";
 const ReviewSubmissions = () => {
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStudentId, setSelectedStudentId] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Filter states
@@ -61,7 +62,7 @@ const ReviewSubmissions = () => {
   const queryParams = {
     page: currentPage,
     pageSize,
-    search: searchTerm,
+    studentId: selectedStudentId,
     status: statusFilter,
     courseId: selectedCourse,
     exerciseId: selectedExercise,
@@ -77,6 +78,7 @@ const ReviewSubmissions = () => {
   
   const { data: courses = [] } = useCoursesForReviewQuery();
   const { exercises = [], loading: exercisesLoading } = useExercisesQuery();
+  const { data: students = [], isLoading: studentsLoading } = useStudentsQuery();
 
   const submissions = submissionsData?.submissions || [];
   const totalCount = submissionsData?.totalCount || 0;
@@ -99,6 +101,16 @@ const ReviewSubmissions = () => {
     setCurrentPage(1);
   };
 
+  // Prepare student options for the searchable select
+  const studentOptions: SearchableSelectOption[] = [
+    { value: "all", label: "همه دانشجویان" },
+    ...students.map((student) => ({
+      value: student.id,
+      label: `${student.first_name} ${student.last_name} - ${student.email}`,
+      searchText: `${student.first_name} ${student.last_name} ${student.email}`
+    }))
+  ];
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -111,17 +123,26 @@ const ReviewSubmissions = () => {
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex flex-col gap-4">
-            {/* First row: search textbox | نمایش کاربران آزمایشی */}
+            {/* First row: trainer dropdown | نمایش کاربران آزمایشی */}
             <div className="flex flex-col md:flex-row md:items-center md:space-x-4 md:space-x-reverse gap-2">
-              <Input
-                placeholder="جستجو بر اساس نام دانشجو، ایمیل، عنوان تمرین یا نام دوره..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  handleFilterChange();
-                }}
-                className="max-w-md"
-              />
+              <div className="flex flex-col gap-1 w-full lg:w-4/12">
+                <label className="text-sm font-medium text-gray-700">
+                  انتخاب دانشجو
+                </label>
+                <SearchableSelect
+                  options={studentOptions}
+                  value={selectedStudentId}
+                  onValueChange={(value) => {
+                    setSelectedStudentId(value);
+                    handleFilterChange();
+                  }}
+                  placeholder="انتخاب دانشجو..."
+                  emptyText="دانشجویی یافت نشد"
+                  searchPlaceholder="جستجو در دانشجویان..."
+                  className="w-full"
+                  disabled={studentsLoading}
+                />
+              </div>
               <div className="flex items-center space-x-2 space-x-reverse">
                 <Checkbox
                   id="show-demo-users"
