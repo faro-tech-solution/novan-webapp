@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { FormAnswer, ExerciseForm } from '@/types/formBuilder';
 import { formatDate } from '@/lib/utils';
 
@@ -13,12 +13,18 @@ interface SubmissionViewerProps {
     score?: number;
     feedback?: string;
   };
+  exerciseInfo?: {
+    title: string;
+    description?: string | null;
+    courseName?: string;
+  };
 }
 
 export const SubmissionViewer = ({
   form,
   answers,
-  submissionInfo
+  submissionInfo,
+  exerciseInfo
 }: SubmissionViewerProps): ReactElement => {
   const getAnswer = (questionId: string): string | string[] => {
     const answer = answers.find((a: FormAnswer) => a.questionId === questionId);
@@ -34,32 +40,46 @@ export const SubmissionViewer = ({
 
   return (
     <div className="space-y-4">
-      {submissionInfo && (
+      {exerciseInfo && (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">اطلاعات ارسال</CardTitle>
-          </CardHeader>
           <CardContent className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="font-medium">نام دانشجو:</span>
-              <span>{submissionInfo.studentName}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="font-medium">تاریخ ارسال:</span>
-              <span>{formatDate({dateString: submissionInfo.submittedAt || ''})}</span>
-            </div>
-            {submissionInfo.score !== undefined && (
-              <div className="flex justify-between items-center">
-                <span className="font-medium">نمره:</span>
-                <Badge variant={submissionInfo.score >= 80 ? "default" : submissionInfo.score >= 60 ? "secondary" : "destructive"}>
-                  {submissionInfo.score}
-                </Badge>
+            {submissionInfo && (
+              <div className="space-y-2 mt-3 flex flex-row justify-between">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium ml-2">نام دانشجو:</span>
+                  <span>{submissionInfo.studentName}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium ml-2">تاریخ ارسال:</span>
+                  <span>{formatDate({dateString: submissionInfo.submittedAt || ''})}</span>
+                </div>
               </div>
             )}
-            {submissionInfo.feedback && (
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                <span className="font-medium text-blue-800">بازخورد:</span>
-                <p className="text-blue-700 mt-1">{submissionInfo.feedback}</p>
+            {exerciseInfo.courseName && (
+              <div className="flex justify-between items-center">
+                <span className="font-medium">نام درس:</span>
+                <span>{exerciseInfo.courseName}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center">
+              <span className="font-medium">عنوان تمرین:</span>
+              <span>{exerciseInfo.title}</span>
+            </div>
+            {exerciseInfo.description && (
+              <div className="mt-4">
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="description">
+                    <AccordionTrigger className="text-right">
+                      <span className="font-medium text-gray-800">توضیحات تمرین</span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div 
+                        className="text-gray-700 p-3 bg-gray-50 rounded-lg"
+                        dangerouslySetInnerHTML={{ __html: exerciseInfo.description }}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             )}
           </CardContent>
@@ -101,11 +121,7 @@ export const SubmissionViewer = ({
           );
         })
       ) : (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p className="text-gray-500">هیچ سوالی برای نمایش وجود ندارد</p>
-          </CardContent>
-        </Card>
+        null
       )}
     </div>
   );
