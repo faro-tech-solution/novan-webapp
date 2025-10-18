@@ -56,7 +56,11 @@ const PublicCourseDetail = ({ course }: PublicCourseDetailProps) => {
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="p-8">
             <div className="space-y-12">
-                <div dangerouslySetInnerHTML={{ __html: course.preview_data?.description || '' }} />
+                <div
+                  className="prose prose-gray max-w-none prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-li:marker:text-gray-500"
+                  dir="rtl"
+                  dangerouslySetInnerHTML={{ __html: course.preview_data?.description || '' }}
+                />
 
                 {/* Video Introduction */}
                 <VideoIntroductionSection videos={previewData?.intro_videos || []} />
@@ -123,23 +127,33 @@ const PublicCourseDetail = ({ course }: PublicCourseDetailProps) => {
                 </section>
 
                 {/* Final CTA Banner */}
-                <section className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-12 text-center text-white">
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                    آینده‌ای درخشان در انتظار شماست!
-                  </h2>
-                  <p className="text-lg mb-8 max-w-3xl mx-auto" dir="rtl">
-                    برای شروع این مسیر هیجان‌انگیز، کافیست بر روی دکمه <span className="text-yellow-300 font-semibold">"ثبت‌نام در دوره"</span> کلیک کنید و مراحل ثبت‌نام را تکمیل نمایید.
-                  </p>
-                  <Button 
-                    size="lg" 
-                    onClick={handlePaymentRedirect}
-                    className="bg-white text-blue-600 hover:bg-gray-100 px-12 py-6 text-lg rounded-full font-bold"
-                  >
-                    ثبت‌نام در دوره و شروع مسیر حرفه‌ای خود!
-                  </Button>
-                  <p className="mt-6 text-sm">
-                    همین امروز اولین قدم را برای تبدیل شدن به یک حرفه‌ای بردارید.
-                  </p>
+                <section className="relative bg-blue-600 rounded-lg p-12 text-center text-white overflow-hidden">
+                  {/* Bear background image positioned in bottom left */}
+                  <div 
+                    className="absolute bottom-0 left-[30px] w-64 h-64 bg-cover bg-no-repeat bg-center"
+                    style={{
+                      backgroundImage: 'url(/bear-focus.png)',
+                      backgroundPosition: 'bottom left'
+                    }}
+                  />
+                  <div className="relative z-10">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                      آینده‌ای درخشان در انتظار شماست!
+                    </h2>
+                    <p className="text-lg mb-8 max-w-3xl mx-auto">
+                      برای شروع این مسیر هیجان‌انگیز، کافیست بر روی دکمه <span className="text-yellow-300 font-semibold">"ثبت‌نام در دوره"</span> کلیک کنید و مراحل ثبت‌نام را تکمیل نمایید.
+                    </p>
+                    <Button 
+                      size="lg" 
+                      onClick={handlePaymentRedirect}
+                      className="bg-white text-blue-600 hover:bg-blue-400 hover:text-white px-12 py-6 text-lg rounded-full font-bold"
+                    >
+                      ثبت‌نام در دوره و شروع مسیر حرفه‌ای خود!
+                    </Button>
+                    <p className="mt-6 text-sm">
+                      همین امروز اولین قدم را برای تبدیل شدن به یک حرفه‌ای بردارید.
+                    </p>
+                  </div>
                 </section>
               </div>
           </div>

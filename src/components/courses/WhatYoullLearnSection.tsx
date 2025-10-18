@@ -13,7 +13,7 @@ const WhatYoullLearnSection = ({ topics }: WhatYoullLearnSectionProps) => {
 
   return (
     <section className="space-y-6">
-      <h2 className="text-3xl font-bold text-gray-900 relative inline-block w-full">
+      <h2 className="text-3xl text-gray-900 relative inline-block w-full">
         <span className="relative inline-block">
           در این دوره چه چیزی یاد می‌گیریم؟
         </span>

@@ -81,7 +81,7 @@ export default function CoursesSection() {
 
         {!isLoading && !error && courses.length > 0 && (
           <div className="text-center mt-12">
-            <Link href="/portal/login">
+            <Link href="/courses">
               <Button 
                 size="lg"
                 className="bg-gray-200 hover:bg-[#6e61b5] hover:text-white text-[#6e61b5] px-8 py-4 rounded-lg"
