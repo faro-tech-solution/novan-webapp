@@ -16,6 +16,7 @@ import {
   Bell,
   CheckCircle,
   Wallet,
+  Calendar,
 } from "lucide-react";
 import {
   Sidebar,
@@ -161,6 +162,12 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       icon: Wallet,
       label: tSidebar("accounting"),
       key: "accounting",
+    },
+    {
+      href: "/portal/admin/events",
+      icon: Calendar,
+      label: "مدیریت رویدادها",
+      key: "events",
     },
     {
       href: "/portal/admin/profile",

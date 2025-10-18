@@ -237,6 +237,95 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          id: string
+          title: string
+          subtitle: string | null
+          description: string | null
+          thumbnail: string | null
+          registration_link: string | null
+          video_url: string | null
+          start_date: string
+          status: string
+          created_by: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          subtitle?: string | null
+          description?: string | null
+          thumbnail?: string | null
+          registration_link?: string | null
+          video_url?: string | null
+          start_date: string
+          status?: string
+          created_by: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          subtitle?: string | null
+          description?: string | null
+          thumbnail?: string | null
+          registration_link?: string | null
+          video_url?: string | null
+          start_date?: string
+          status?: string
+          created_by?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      event_presenters: {
+        Row: {
+          id: string
+          event_id: string
+          user_id: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          event_id: string
+          user_id: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          event_id?: string
+          user_id?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_presenters_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_presenters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       exercise_submissions: {
         Row: {
           course_id: string | null

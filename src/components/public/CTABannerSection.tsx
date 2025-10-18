@@ -20,7 +20,7 @@ export default function CTABannerSection() {
               </p>
               <Button 
                 size="lg"
-                className="bg-gray-200 text-[#6e61b5] hover:bg-gray-100 px-8 py-6 text-lg rounded-lg"
+                className="bg-gray-200 hover:bg-[#6e61b5] hover:text-white text-[#6e61b5] px-8 py-4 rounded-lg"
               >
                 <RocketIcon className="ml-2" />
                 امروز شروع کنید

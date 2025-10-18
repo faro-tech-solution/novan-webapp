@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import PublicCourseCard from '@/components/courses/PublicCourseCard';
 import { PublicCourse } from '@/types/course';
 import { fetchPublicCourses } from '@/services/courseService';
+import { ArrowLeft } from 'lucide-react';
 
 export default function CoursesSection() {
   const [courses, setCourses] = useState<PublicCourse[]>([]);
@@ -83,9 +84,10 @@ export default function CoursesSection() {
             <Link href="/portal/login">
               <Button 
                 size="lg"
-                className="bg-gray-200 hover:bg-blue-700 text-[#6e61b5] px-8 py-4 rounded-lg"
+                className="bg-gray-200 hover:bg-[#6e61b5] hover:text-white text-[#6e61b5] px-8 py-4 rounded-lg"
               >
                 مشاهده همه دوره‌ها
+                <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
           </div>

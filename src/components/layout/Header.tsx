@@ -81,7 +81,34 @@ const Header = ({
         </div>
 
         {/* Desktop Navigation */}
-        {/* Removed navigation links for home, dashboard, profile, instructors */}
+        {isPublicPage && (
+          <nav className="hidden md:flex items-center space-x-6 space-x-reverse">
+            <Link 
+              href="/" 
+              className={`text-sm font-medium transition-colors hover:text-blue-600 ${
+                pathname === '/' ? 'text-blue-600' : 'text-gray-700'
+              }`}
+            >
+              خانه
+            </Link>
+            <Link 
+              href="/courses" 
+              className={`text-sm font-medium transition-colors hover:text-blue-600 ${
+                pathname?.startsWith('/courses') ? 'text-blue-600' : 'text-gray-700'
+              }`}
+            >
+              دوره‌ها
+            </Link>
+            <Link 
+              href="/events" 
+              className={`text-sm font-medium transition-colors hover:text-blue-600 ${
+                pathname?.startsWith('/events') ? 'text-blue-600' : 'text-gray-700'
+              }`}
+            >
+              رویدادها
+            </Link>
+          </nav>
+        )}
 
         {/* Right side actions */}
         <div className="flex items-center space-x-4 space-x-reverse">
