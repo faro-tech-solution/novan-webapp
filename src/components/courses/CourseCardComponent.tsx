@@ -51,12 +51,12 @@ const CourseCardComponent = ({
           <div>
             <CardTitle className="text-lg">{course.name}</CardTitle>
             <CardDescription>
-              مربی: نامشخص
+              مربی: {course.instructor_id}
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Badge className={getStatusColor(course.status || 'active')}>
-              {getStatusText(course.status || 'active')}
+            <Badge className={getStatusColor(course.status)}>
+              {getStatusText(course.status)}
             </Badge>
             <CourseActions
               course={course}

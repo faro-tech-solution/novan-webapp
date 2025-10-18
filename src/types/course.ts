@@ -3,14 +3,14 @@ export interface Course {
   id: string;
   name: string;
   description: string | null;
-  price: number;
-  created_at: string | null;
-  updated_at: string | null;
+  instructor_id: string;
+  status: string;
+  max_students: number | null;
+  created_at: string;
   student_count?: number;
-  slug?: string;
-  thumbnail?: string | null;
-  status?: string;
-  max_students?: number | null;
+  price?: number;
+  slug: string;
+  thumbnail: string | null;
 }
 
 // Course interface for exercise-related contexts
@@ -19,7 +19,7 @@ export interface ExerciseCourse {
   name: string;
   status: string;
   slug: string;
-  thumbnail?: string;
+  thumbnail: string | null;
 }
 
 // Course interface for edit dialog
@@ -27,11 +27,12 @@ export interface EditableCourse {
   id: string;
   name: string;
   description: string | null;
-  max_students?: number | null;
-  status?: string;
-  price: number;
-  slug?: string;
-  thumbnail?: string | null;
+  max_students: number | null;
+  instructor_id: string;
+  status: string;
+  price?: number;
+  slug: string;
+  thumbnail: string | null;
 }
 
 // Course interface for student enrollment context
@@ -110,8 +111,4 @@ export interface PublicCourse extends Course {
   instructor_name?: string;
   start_date?: string | null;
   end_date?: string | null;
-  slug: string;
-  status: string;
-  thumbnail?: string | null;
-  max_students?: number | null;
 } 

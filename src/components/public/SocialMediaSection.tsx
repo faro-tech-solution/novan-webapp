@@ -74,7 +74,7 @@ export default function SocialMediaSection() {
                 </h3>
                 <p className="text-sm text-gray-600">
                   {social.name === 'YouTube' && 'کانال یوتیوب'}
-                  {social.name === 'Instagram' && 'پیج اینستاگرام'}
+                  {social.name === 'Instagram' && 'کانال اینستاگرام'}
                   {social.name === 'Telegram' && 'کانال تلگرام'}
                   {social.name === 'Castbox' && 'پادکست‌ها'}
                 </p>

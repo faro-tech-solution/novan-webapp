@@ -11,11 +11,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { EditableCourse } from '@/types/course';
+import { Instructor } from '@/types/instructor';
 
 const formSchema = z.object({
   name: z.string().min(1, 'نام درس الزامی است'),
   description: z.string().optional(),
   maxStudents: z.number().min(0, 'حداکثر تعداد دانشجویان نمی‌تواند منفی باشد').default(0),
+  instructorId: z.string().min(1, 'انتخاب مربی الزامی است'),
   status: z.string().min(1, 'انتخاب وضعیت الزامی است'),
   price: z.number().min(0, 'قیمت نمی‌تواند منفی باشد').default(0),
 });
@@ -31,6 +33,7 @@ interface EditCourseDialogProps {
 
 const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditCourseDialogProps) => {
   const [loading, setLoading] = useState(false);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -39,10 +42,18 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
       name: course.name,
       description: course.description || '',
       maxStudents: course.max_students || 0,
-      status: course.status || 'active',
+      instructorId: course.instructor_id,
+      status: course.status,
       price: course.price || 0,
     },
   });
+
+  // Fetch instructors when dialog opens
+  useEffect(() => {
+    if (open) {
+      fetchInstructors();
+    }
+  }, [open]);
 
   useEffect(() => {
     if (course && open) {
@@ -50,11 +61,32 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
         name: course.name,
         description: course.description || '',
         maxStudents: course.max_students || 0,
-        status: course.status || 'active',
+        instructorId: course.instructor_id,
+        status: course.status,
         price: course.price || 0,
       });
     }
   }, [course, open, form]);
+
+  const fetchInstructors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email')
+        .eq('role', 'trainer');
+
+      if (error) throw error;
+
+      setInstructors(data || []);
+    } catch (error) {
+      console.error('Error fetching instructors:', error);
+      toast({
+        title: 'خطا',
+        description: 'خطا در بارگذاری لیست مربیان',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -64,6 +96,7 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
         .update({
           name: data.name,
           description: data.description,
+          instructor_id: data.instructorId,
           max_students: data.maxStudents,
           status: data.status,
           price: data.price,
@@ -136,6 +169,30 @@ const EditCourseDialog = ({ open, onOpenChange, course, onCourseUpdated }: EditC
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="instructorId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>مربی</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="مربی را انتخاب کنید" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {instructors.map((instructor) => (
+                        <SelectItem key={instructor.id} value={instructor.id}>
+                          {instructor.first_name} {instructor.last_name} ({instructor.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}

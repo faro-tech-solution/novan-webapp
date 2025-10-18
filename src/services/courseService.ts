@@ -7,7 +7,7 @@ export const fetchCourses = async (): Promise<Course[] | any[]> => {
 
   const { data, error } = await supabase
     .from('courses')
-    .select('id, name, description, price, created_at, updated_at')
+    .select('id, name, instructor_id, status, slug, thumbnail')
     .order('name');
 
   if (error) {
@@ -28,10 +28,18 @@ export const fetchPublicCourses = async (): Promise<PublicCourse[]> => {
       id,
       name,
       description,
+      instructor_id,
+      status,
+      slug,
+      thumbnail,
       price,
-      created_at,
-      updated_at
+      start_date,
+      end_date,
+      preview_data,
+      max_students,
+      created_at
     `)
+    .eq('status', 'active')
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -39,17 +47,25 @@ export const fetchPublicCourses = async (): Promise<PublicCourse[]> => {
     throw error;
   }
 
-  // Transform data to match PublicCourse interface
+  // Fetch instructor profiles separately
+  const instructorIds = [...new Set((coursesData || []).map(c => c.instructor_id))];
+  const { data: instructors } = await supabase
+    .from('profiles')
+    .select('id, first_name, last_name')
+    .in('id', instructorIds);
+
+  // Create a map of instructor data
+  const instructorMap = new Map(
+    (instructors || []).map(inst => [
+      inst.id,
+      `${inst.first_name} ${inst.last_name}`
+    ])
+  );
+
+  // Transform data to include instructor_name
   const courses = (coursesData || []).map((course: any) => ({
     ...course,
-    instructor_name: 'نامشخص', // Default since instructor info is not available
-    status: 'active',
-    slug: course.id, // Use ID as slug for now
-    thumbnail: null,
-    start_date: null,
-    end_date: null,
-    preview_data: null,
-    max_students: null,
+    instructor_name: instructorMap.get(course.instructor_id) || 'نامشخص',
   }));
 
   console.log('Fetched public courses:', courses);
@@ -59,18 +75,25 @@ export const fetchPublicCourses = async (): Promise<PublicCourse[]> => {
 export const fetchCourseBySlug = async (slug: string): Promise<PublicCourse | null> => {
   console.log('Fetching course by slug:', slug);
 
-  // For now, treat slug as ID since we don't have slug column in current schema
   const { data, error } = await supabase
     .from('courses')
     .select(`
       id,
       name,
       description,
+      instructor_id,
+      status,
+      slug,
+      thumbnail,
       price,
-      created_at,
-      updated_at
+      start_date,
+      end_date,
+      preview_data,
+      max_students,
+      created_at
     `)
-    .eq('id', slug)
+    .eq('slug', slug)
+    .eq('status', 'active')
     .single();
 
   if (error) {
@@ -82,17 +105,24 @@ export const fetchCourseBySlug = async (slug: string): Promise<PublicCourse | nu
     return null;
   }
 
-  // Transform data to match PublicCourse interface
+  // Fetch instructor profile separately
+  let instructorName = 'نامشخص';
+  if (data.instructor_id) {
+    const { data: instructor } = await supabase
+      .from('profiles')
+      .select('first_name, last_name')
+      .eq('id', data.instructor_id)
+      .single();
+
+    if (instructor) {
+      instructorName = `${instructor.first_name} ${instructor.last_name}`;
+    }
+  }
+
+  // Transform data to include instructor_name
   const course = {
     ...data,
-    instructor_name: 'نامشخص',
-    status: 'active',
-    slug: data.id,
-    thumbnail: null,
-    start_date: null,
-    end_date: null,
-    preview_data: null,
-    max_students: null,
+    instructor_name: instructorName,
   };
 
   console.log('Fetched course:', course);
