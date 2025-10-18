@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -11,13 +11,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Instructor } from '@/types/instructor';
 
 const formSchema = z.object({
   name: z.string().min(1, 'نام درس الزامی است'),
   description: z.string().optional(),
   maxStudents: z.number().min(0, 'حداکثر تعداد دانشجویان نمی‌تواند منفی باشد').default(50),
-  instructorId: z.string().min(1, 'انتخاب مربی الزامی است'),
   status: z.string().min(1, 'انتخاب وضعیت الزامی است'),
   price: z.number().min(0, 'قیمت نمی‌تواند منفی باشد').default(0),
 });
@@ -32,7 +30,6 @@ interface CreateCourseDialogProps {
 
 const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCourseDialogProps) => {
   const [loading, setLoading] = useState(false);
-  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const { profile } = useAuth();
   const { toast } = useToast();
 
@@ -42,38 +39,11 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
       name: '',
       description: '',
       maxStudents: 50,
-      instructorId: '',
-              status: 'active',
+      status: 'active',
       price: 0,
     },
   });
 
-  // Fetch instructors when dialog opens
-  useEffect(() => {
-    if (open) {
-      fetchInstructors();
-    }
-  }, [open]);
-
-  const fetchInstructors = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, email')
-        .eq('role', 'trainer');
-
-      if (error) throw error;
-
-      setInstructors(data || []);
-    } catch (error) {
-      console.error('Error fetching instructors:', error);
-      toast({
-        title: 'خطا',
-        description: 'خطا در بارگذاری لیست مربیان',
-        variant: 'destructive',
-      });
-    }
-  };
 
   const onSubmit = async (data: FormData) => {
     if (!profile) return;
@@ -85,7 +55,6 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
         .insert({
           name: data.name,
           description: data.description,
-          instructor_id: data.instructorId,
           max_students: data.maxStudents,
           status: data.status,
           price: data.price,
@@ -158,30 +127,6 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="instructorId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>مربی</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="مربی را انتخاب کنید" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {instructors.map((instructor) => (
-                        <SelectItem key={instructor.id} value={instructor.id}>
-                          {instructor.first_name} {instructor.last_name} ({instructor.email})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}

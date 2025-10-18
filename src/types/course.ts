@@ -3,14 +3,14 @@ export interface Course {
   id: string;
   name: string;
   description: string | null;
-  instructor_id: string;
-  status: string;
-  max_students: number | null;
-  created_at: string;
+  price: number;
+  created_at: string | null;
+  updated_at: string | null;
   student_count?: number;
-  price?: number;
-  slug: string;
-  thumbnail?: string;
+  slug?: string;
+  thumbnail?: string | null;
+  status?: string;
+  max_students?: number | null;
 }
 
 // Course interface for exercise-related contexts
@@ -27,12 +27,11 @@ export interface EditableCourse {
   id: string;
   name: string;
   description: string | null;
-  max_students: number | null;
-  instructor_id: string;
-  status: string;
-  price?: number;
-  slug: string;
-  thumbnail?: string;
+  max_students?: number | null;
+  status?: string;
+  price: number;
+  slug?: string;
+  thumbnail?: string | null;
 }
 
 // Course interface for student enrollment context
@@ -82,7 +81,27 @@ export interface CourseIntroVideo {
 
 export interface CoursePreviewData {
   topics: string[];
+  side_description?: string | null;
   description: string;
+  differentiators?: Array<{
+    title: string;
+    description: string;
+    color: string;
+  }>;
+  who_is_for?: string[];
+  faqs?: Array<{
+    question: string;
+    answer: string;
+  }>;
+  testimonials?: Array<{
+    name: string;
+    rating: number;
+    text: string;
+  }>;
+  payments: {
+    zarinpal: string;
+    stripe: string;
+  },
   intro_videos: CourseIntroVideo[];
 }
 
@@ -91,4 +110,8 @@ export interface PublicCourse extends Course {
   instructor_name?: string;
   start_date?: string | null;
   end_date?: string | null;
+  slug: string;
+  status: string;
+  thumbnail?: string | null;
+  max_students?: number | null;
 } 

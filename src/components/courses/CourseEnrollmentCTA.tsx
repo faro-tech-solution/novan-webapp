@@ -65,7 +65,7 @@ const CourseEnrollmentCTA = ({ course }: CourseEnrollmentCTAProps) => {
 
     // Handle enrollment for authenticated users
     try {
-      if (isFree) {
+      if (isFree && userId) {
         // Auto-enroll for free courses
         const { error } = await supabase
           .from('course_enrollments')
@@ -85,8 +85,8 @@ const CourseEnrollmentCTA = ({ course }: CourseEnrollmentCTAProps) => {
         alert('ثبت‌نام با موفقیت انجام شد!');
         router.push(`/portal/trainee/courses/${course.id}`);
       } else {
-        // Redirect to payment/purchase flow for paid courses
-        router.push(`/portal/trainee/courses?purchase=${course.id}`);
+        // Redirect to payment page for paid courses
+        router.push(`/courses/${course.slug}/payment`);
       }
     } catch (error) {
       console.error('Error during enrollment:', error);
@@ -138,18 +138,15 @@ const CourseEnrollmentCTA = ({ course }: CourseEnrollmentCTAProps) => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border-2 border-blue-200">
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 py-1 px-2 border-2 border-blue-200 rounded-full">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-3xl font-bold text-blue-900">
+        <div className="mr-4">
+          <div className="flex items-center">
+            <span className="text-2xl text-blue-900">
               {formatPrice(course.price)}
             </span>
-            {!isFree && (
-              <span className="text-sm text-gray-600">(یکبار پرداخت)</span>
-            )}
           </div>
-          <p className="text-sm text-gray-700">
+          <p className="text-xs text-gray-700 mt-[-6px]">
             {isFree 
               ? 'دوره رایگان - همین حالا شروع کنید'
               : 'دسترسی کامل و دائمی به دوره'}
@@ -159,7 +156,7 @@ const CourseEnrollmentCTA = ({ course }: CourseEnrollmentCTAProps) => {
         <Button
           size="lg"
           onClick={handleEnrollClick}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-sm rounded-full"
         >
           {isFree ? (
             <>
@@ -174,12 +171,6 @@ const CourseEnrollmentCTA = ({ course }: CourseEnrollmentCTAProps) => {
           )}
         </Button>
       </div>
-
-      {!isAuthenticated && (
-        <p className="text-xs text-gray-600 mt-4 text-center">
-          برای ثبت‌نام در دوره، ابتدا باید وارد حساب کاربری خود شوید یا ثبت‌نام کنید
-        </p>
-      )}
     </div>
   );
 };

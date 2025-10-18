@@ -1,3 +1,4 @@
+export { default as AboutMentorSection } from './AboutMentorSection';
 export { default as CourseActions } from './CourseActions';
 export { default as CourseCardComponent } from './CourseCardComponent';
 export { default as CourseGrid } from './CourseGrid';
@@ -5,3 +6,4 @@ export { default as CourseManagementHeader } from './CourseManagementHeader';
 export { default as PublicCourseCard } from './PublicCourseCard';
 export { default as PublicCourseDetail } from './PublicCourseDetail';
 export { default as CourseEnrollmentCTA } from './CourseEnrollmentCTA';
+export { default as WhatYoullLearnSection } from './WhatYoullLearnSection';

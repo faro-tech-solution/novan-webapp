@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/components/layout/Header';
-import PublicCourseDetail from '@/components/courses/PublicCourseDetail';
+import PaymentPage from '@/components/courses/PaymentPage';
 import { fetchCourseBySlug } from '@/services/courseService';
 import { PublicCourse } from '@/types/course';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Footer from '@/components/public/Footer';
 
-export default function CourseDetailPage() {
+export default function CoursePaymentPage() {
   const params = useParams();
   const slug = params.slug as string;
 
@@ -27,12 +27,23 @@ export default function CourseDetailPage() {
   const loadCourse = async () => {
     try {
       setIsLoading(true);
+      console.log('Loading course with slug:', slug);
+      
+      // Fetch course from database
       const data = await fetchCourseBySlug(slug);
+      console.log('Fetched course data:', data);
       
       if (data) {
+        // Check if course has payment data
+        if (!data.preview_data?.payments) {
+          console.log('Course found but no payment data');
+          setNotFound(true);
+          return;
+        }
         setCourse(data);
         setNotFound(false);
       } else {
+        console.log('No course found in database');
         setNotFound(true);
       }
     } catch (err) {
@@ -96,10 +107,8 @@ export default function CourseDetailPage() {
   return (
     <>
       <Header />
-      <PublicCourseDetail course={course} />
+      <PaymentPage course={course} />
       <Footer />
     </>
   );
 }
-
-
