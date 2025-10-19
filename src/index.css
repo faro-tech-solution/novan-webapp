@@ -3,10 +3,25 @@
 @tailwind utilities;
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+@font-face {
+  font-family: 'YekanBakh';
+  src: url('/fonts/YekanBakh/woff/YekanBakhFaNum-Thin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
 
 @font-face {
   font-family: 'YekanBakh';
-  src: url('/YekanBakh/webfonts/woff/YekanBakhNoEn-Regular.woff') format('woff');
+  src: url('/fonts/YekanBakh/woff/YekanBakhFaNum-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'YekanBakh';
+  src: url('/fonts/YekanBakh/woff/YekanBakhFaNum-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -14,7 +29,7 @@
 
 @font-face {
   font-family: 'YekanBakh';
-  src: url('/YekanBakh/webfonts/woff/YekanBakhNoEn-Bold.woff') format('woff');
+  src: url('/fonts/YekanBakh/woff/YekanBakhFaNum-Bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -22,7 +37,31 @@
 
 @font-face {
   font-family: 'YekanBakh';
-  src: url('/YekanBakh/webfonts/woff/YekanBakhNoEn-ExtraBlack.woff') format('woff');
+  src: url('/fonts/YekanBakh/woff/YekanBakhFaNum-ExtraBlack.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/Morabba/woff/Morabba-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/Morabba/woff/Morabba-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Morabba';
+  src: url('/fonts/Morabba/woff/Morabba-Heavy.woff') format('woff');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -118,10 +157,15 @@
     @apply bg-background text-foreground;
     font-family: 'YekanBakh', 'Tahoma', 'Arial', sans-serif;
     direction: rtl;
+    font-weight: normal;
   }
 
   html {
     direction: rtl;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Morabba', 'YekanBakh', 'Tahoma', 'Arial', sans-serif;
   }
 }
 

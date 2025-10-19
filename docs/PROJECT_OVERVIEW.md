@@ -159,3 +159,4 @@ Novan Webapp is a comprehensive Learning Management System (LMS) designed to fac
 
 This overview provides a comprehensive understanding of the Novan Webapp project, its current capabilities, and future direction. The system is designed to be scalable, secure, and user-friendly while maintaining high performance and reliability standards.
 
+

@@ -31,8 +31,7 @@ export async function debugAchievements(studentId: string) {
       award_id,
       earned_at,
       awards (
-        name,
-        description,
+        code,
         rarity
       )
     `)
@@ -43,7 +42,7 @@ export async function debugAchievements(studentId: string) {
   } else {
     console.log(`Found ${existingAwards?.length || 0} existing awards:`);
     existingAwards?.forEach(award => {
-      console.log(`- ${award.awards?.name} (${award.awards?.rarity}): earned on ${new Date(award.earned_at).toLocaleString()}`);
+      console.log(`- ${award.awards?.code} (${award.awards?.rarity}): earned on ${new Date(award.earned_at).toLocaleString()}`);
     });
   }
   
@@ -86,8 +85,7 @@ export async function debugAchievements(studentId: string) {
       award_id,
       earned_at,
       awards (
-        name,
-        description,
+        code,
         rarity
       )
     `)
@@ -102,7 +100,7 @@ export async function debugAchievements(studentId: string) {
       // Show the new awards
       const newlyAdded = newAwards?.slice(0, newCount);
       newlyAdded?.forEach(award => {
-        console.log(`- NEW: ${award.awards?.name} (${award.awards?.rarity}): earned on ${new Date(award.earned_at).toLocaleString()}`);
+        console.log(`- NEW: ${award.awards?.code} (${award.awards?.rarity}): earned on ${new Date(award.earned_at).toLocaleString()}`);
       });
     } else {
       console.log('No new awards were added.');
