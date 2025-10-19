@@ -30,7 +30,13 @@ export const useStudentsQuery = () => {
         throw new Error(`Error fetching students: ${error.message}`);
       }
 
-      return data || [];
+      return (data ?? []).map((d) => ({
+        id: d.id,
+        first_name: d.first_name ?? '',
+        last_name: d.last_name ?? '',
+        email: d.email ?? '',
+        role: 'trainee',
+      }));
     },
   });
 };
