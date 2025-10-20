@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import useNegavidPlayer from '@/hooks/useNegavidPlayer';
 
 interface IframePlayerProps {
   iframeHtml: string;
@@ -21,6 +22,8 @@ export const IframePlayer: React.FC<IframePlayerProps> = ({
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const { toast } = useToast();
+  const message = ["Negavid", ".com", "info@negavid.com", "09333000000", "#fff", "3"];
+  useNegavidPlayer(message);
 
   useEffect(() => {
     setIsLoading(true);
@@ -74,6 +77,40 @@ export const IframePlayer: React.FC<IframePlayerProps> = ({
       dangerouslySetInnerHTML={{ __html: iframeHtml }}
     />
   ), [iframeHtml]);
+
+  
+
+  // return (
+  //   <div className="App">
+  //     <div
+  //       className="negavid-video-stream"
+  //       data-video-key="6790fe5f90c88ea86e251454dd2b8855"
+  //       style={{
+  //         position: "relative",
+  //         paddingBottom: "56.25%",
+  //         paddingTop: "25px",
+  //         height: 0,
+  //         overflow: "hidden",
+  //       }}
+  //     >
+  //       <iframe
+  //         id="DzhTpOAYfquZ63"
+  //         style={{
+  //           border: "none",
+  //           position: "absolute",
+  //           top: 0,
+  //           left: 0,
+  //           width: "100%",
+  //           height: "100%",
+  //         }}
+  //         src="https://play.negavid.com/stream/video/embed/code/DzhTpOAYfquZ63"
+  //         allowFullScreen={true}
+  //         webkitallowfullscreen="true"
+  //         mozallowfullscreen="true"
+  //         title="Negavid Video"
+  //       />
+  //     </div>
+  //   </div>
 
   return (
     <Card>
