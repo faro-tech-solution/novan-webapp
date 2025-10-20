@@ -71,7 +71,7 @@ export const UpcomingExercisesCard = ({ exercises, className = '' }: UpcomingExe
               const { bg, text, icon } = getDifficultyStyles(exercise.difficulty);
               return (
                 <Link
-                  href={`/${role}/exercise/${exercise.id}`}
+                  href={`/portal/${role}/${exercise.course_id}/exercise/${exercise.id}`}
                   key={exercise.id}
                   className={`flex items-center rounded-xl px-3 py-2 ${bg} ${text} shadow-sm transition hover:scale-[1.02] hover:shadow-md focus:outline-none text-sm`}
                   style={{ textDecoration: 'none' }}

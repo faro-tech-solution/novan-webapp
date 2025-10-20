@@ -161,12 +161,12 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: Exer
       <Card className={`transition-all duration-200 mb-3 overflow-hidden hover:shadow-md transition-shadow border-0 border-r-4 ${getCardBackground(submissionStatus)} ${getCardHeight(submissionStatus)}`}>
         <CardHeader className="px-5 py-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-gray-900 leading-tight flex gap-2">
+            <div className="text-gray-900 leading-tight flex gap-2">
               {getExerciseTypeIcon(exercise.exercise_type)}
               <div className={`text-sm md:text-base ${submissionStatus === 'completed' ? 'truncate' : ''}`}>
                 {displayTitle}
               </div>
-            </h3>
+            </div>
             {isExerciseNew(exercise.created_at) && submissionStatus === 'not_started' && (
               <Badge variant="destructive" className="text-xs px-2 opacity-50">
                 جدید

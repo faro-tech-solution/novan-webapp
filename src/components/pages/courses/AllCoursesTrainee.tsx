@@ -1,15 +1,15 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { useCoursesQuery } from "@/hooks/queries/useCoursesQuery";
+import { useStudentCoursesQuery } from "@/hooks/queries/useStudentCoursesQuery";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGoToTraineeCourseDashboard } from '@/lib/navigation';
 
 const AllCoursesTrainee = () => {
-  const { courses, loading, error, refetch } = useCoursesQuery();
+  const { data: courses = [], isLoading, error, refetch } = useStudentCoursesQuery();
   const goToTraineeCourseDashboard = useGoToTraineeCourseDashboard();
-
-  if (loading) {
+  console.log({courses})
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -48,32 +48,25 @@ const AllCoursesTrainee = () => {
                 {filteredCourses.map((course) => (
                   <div
                     key={course.id}
-                    className="rounded-2xl bg-gradient-to-br from-blue-400 to-blue-300 shadow p-0 flex flex-col justify-between h-full relative overflow-hidden cursor-pointer transition-transform hover:scale-[1.03]"
+                    className="rounded-2xl bg-gray-100 shadow p-0 flex flex-col justify-between h-full relative overflow-hidden cursor-pointer transition-transform hover:scale-[1.03]"
                     onClick={() => goToTraineeCourseDashboard(course.id)}
                     tabIndex={0}
                     role="button"
                     onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') goToTraineeCourseDashboard(course.id); }}
-                    aria-label={`مشاهده داشبورد دوره ${course.name}`}
+                    aria-label={`مشاهده داشبورد دوره ${course.title}`}
                   >
-                    {/* Illustration */}
-                    <div className="flex justify-center pt-6">
-                      <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-md">
-                        {/* Placeholder illustration: you can replace with an <img src=... /> if you have an image */}
-                        <span role="img" aria-label="course" className="text-5xl">👩‍💻</span>
-                      </div>
+                    {/* Thumbnail */}
+                    <div className="w-full h-40">
+                      <img
+                        src={course.thumbnail || '/placeholder.svg'}
+                        alt={course.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     {/* Course Info */}
                     <div className="flex-1 flex flex-col justify-end px-6 pb-6 pt-4">
-                      <h3 className="text-lg font-bold text-white mb-1">{course.name}</h3>
-                      <div className="text-blue-100 text-xs mb-4">Create by Course Agency</div>
-                      {/* <div className="flex gap-3 mt-2">
-                        <div className="flex items-center gap-1 bg-white/80 rounded-full px-3 py-1 text-xs text-blue-700 font-medium">
-                          <span role="img" aria-label="files">📁</span> 17 Files
-                        </div>
-                        <div className="flex items-center gap-1 bg-white/80 rounded-full px-3 py-1 text-xs text-blue-700 font-medium">
-                          <span role="img" aria-label="duration">⏰</span> 40 min
-                        </div>
-                      </div> */}
+                      <h3 className="text-lg font-bold text-gray-900 mb-1">{course.title}</h3>
+                      <div className="text-gray-600 text-xs mb-4">مدرس: {course.instructor || 'نامشخص'}</div>
                     </div>
                   </div>
                 ))}
