@@ -25,8 +25,7 @@ export const IframePlayer: React.FC<IframePlayerProps> = ({
   const { toast } = useToast();
   const { userEmail, profile } = useStableAuth();
   const fullName = profile ? `${profile.first_name} ${profile.last_name}` : '';
-  const message = [userEmail || '', fullName || '', "#ffee8c", "3"];
-  // const message = ["Novan.app", ".com", "info@negavid.com", "09333000000", "#fff", "3"];
+  const message = ["", "", userEmail || '', fullName || '', "#ffee8c", "3"];
   useNegavidPlayer(message);
 
   useEffect(() => {
