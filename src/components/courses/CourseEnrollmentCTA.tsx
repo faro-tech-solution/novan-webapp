@@ -51,12 +51,6 @@ const CourseEnrollmentCTA = ({ course }: CourseEnrollmentCTAProps) => {
   };
 
   const handleEnrollClick = async () => {
-    if (!isAuthenticated) {
-      // Redirect to registration with return URL
-      router.push(`/portal/register?returnUrl=/${course.slug}/dashboard`);
-      return;
-    }
-
     if (isEnrolled) {
       // Navigate to course content
       router.push(`/portal/trainee/${course.id}/dashboard`);
