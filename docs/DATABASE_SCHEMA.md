@@ -248,7 +248,47 @@ CREATE TABLE accounting (
 
 **Indexes**: `idx_accounting_user_id`, `idx_accounting_course_id`, `idx_accounting_transaction_date`
 
-### 7. Teacher Assignment System
+### 7. Product Management System
+
+#### `products` Table
+Stores downloadable/viewable products with access control and pricing.
+
+```sql
+CREATE TABLE public.products (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  description TEXT,
+  thumbnail TEXT,
+  product_type TEXT NOT NULL DEFAULT 'other' CHECK (product_type IN ('video', 'audio', 'ebook', 'other')),
+  file_url TEXT,
+  author TEXT,
+  category TEXT,
+  tags TEXT[] DEFAULT '{}',
+  duration INTEGER, -- Duration in seconds for video/audio
+  file_size BIGINT, -- File size in bytes
+  price INTEGER DEFAULT 0, -- Price in cents (0 = free)
+  access_level TEXT NOT NULL DEFAULT 'public' CHECK (access_level IN ('public', 'registered', 'paid')),
+  is_featured BOOLEAN DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'draft')),
+  created_by UUID REFERENCES auth.users(id) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+**Indexes**: `idx_products_slug`, `idx_products_category`, `idx_products_status`, `idx_products_is_featured`, `idx_products_access_level`, `idx_products_product_type`, `idx_products_created_by`
+
+**RLS Policies**:
+- Public read access to active products
+- Authenticated users can read registered/paid products
+- Admin-only write access
+
+**Functions**:
+- `generate_slug(input_title TEXT)`: Auto-generates unique slugs
+- `auto_generate_slug()`: Trigger function for slug generation
+
+### 8. Teacher Assignment System
 
 #### `teacher_course_assignments` Table
 Manages teacher assignments to courses.
@@ -286,6 +326,8 @@ CREATE TABLE public.teacher_term_assignments (
 - `difficulty`: 'آسان', 'متوسط', 'سخت'
 - `status`: 'active', 'completed', 'draft'
 - `rarity`: 'common', 'uncommon', 'rare', 'epic', 'legendary'
+- `product_type`: 'video', 'audio', 'ebook', 'other'
+- `access_level`: 'public', 'registered', 'paid'
 
 ### Constraints
 - Score values: 0-100
@@ -304,6 +346,7 @@ All tables have RLS enabled with appropriate policies:
 - **Courses**: Varies by role and assignment
 - **Notifications**: Users can only access their own notifications
 - **Accounting**: Admin-only access
+- **Products**: Public read for active products, authenticated read for registered/paid, admin-only write
 - **Teacher Assignments**: Admin management, teacher view of own assignments
 
 ## Key Functions
