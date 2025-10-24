@@ -1,7 +1,7 @@
 'use client';
 
 import Header from '@/components/layout/Header';
-import { HeroSection, ValuePropositionSection, CTABannerSection, CoursesSection, EventsSection, SocialMediaSection, Footer } from '@/components/public';
+import { HeroSection, ValuePropositionSection, CTABannerSection, CoursesSection, EventsSection, ProductsSection, SocialMediaSection, Footer } from '@/components/public';
 
 export default function HomePage() {
   return (
@@ -20,6 +20,9 @@ export default function HomePage() {
 
       {/* Events Section */}
       <EventsSection />
+
+      {/* Products Section */}
+      <ProductsSection />
 
       {/* Social Media Section */}
       <SocialMediaSection />

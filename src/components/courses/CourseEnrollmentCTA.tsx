@@ -13,7 +13,6 @@ interface CourseEnrollmentCTAProps {
 
 const CourseEnrollmentCTA = ({ course }: CourseEnrollmentCTAProps) => {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -28,7 +27,6 @@ const CourseEnrollmentCTA = ({ course }: CourseEnrollmentCTAProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        setIsAuthenticated(true);
         setUserId(user.id);
 
         // Check if already enrolled
@@ -40,8 +38,6 @@ const CourseEnrollmentCTA = ({ course }: CourseEnrollmentCTAProps) => {
           .single();
 
         setIsEnrolled(!!enrollment);
-      } else {
-        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('Error checking auth/enrollment:', error);
