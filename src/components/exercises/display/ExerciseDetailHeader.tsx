@@ -2,6 +2,8 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Clock, Award } from 'lucide-react';
+import { getDifficultyBadge, getSubmissionStatusBadge } from './ExerciseStatusBadges';
+import { formatEstimatedTime } from '@/utils/estimatedTimeUtils';
 
 interface ExerciseDetailHeaderProps {
   onBack: () => void;
@@ -18,29 +20,8 @@ export const ExerciseDetailHeader = ({
   points,
   submissionStatus
 }: ExerciseDetailHeaderProps) => {
-  const getDifficultyBadge = (difficulty: string | null) => {
-    switch (difficulty) {
-      case 'easy':
-        return <Badge className="bg-green-100 text-green-800">{difficulty}</Badge>;
-      case 'medium':
-        return <Badge className="bg-yellow-100 text-yellow-800">{difficulty}</Badge>;
-      case 'hard':
-        return <Badge className="bg-red-100 text-red-800">{difficulty}</Badge>;
-      default:
-        return <Badge variant="outline">{difficulty}</Badge>;
-    }
-  };
-
-  const getSubmissionStatusBadge = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <Badge className="bg-green-100 text-green-800">تکمیل شده</Badge>;
-      case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800">در انتظار بررسی</Badge>;
-      default:
-        return <Badge variant="outline">شروع نشده</Badge>;
-    }
-  };
+  // Format the estimated time using the utility
+  const formattedTime = formatEstimatedTime(estimatedTime, 'time');
 
   return (
     <div className="flex items-center justify-between">
@@ -52,7 +33,7 @@ export const ExerciseDetailHeader = ({
         {getDifficultyBadge(difficulty)}
         <Badge variant="outline">
           <Clock className="h-3 w-3 mr-1" />
-          {estimatedTime}
+          {formattedTime}
         </Badge>
         <Badge variant="outline">
           <Award className="h-3 w-3 mr-1" />

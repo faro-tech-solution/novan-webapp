@@ -19,7 +19,7 @@ import { getExerciseTypeIcon } from '@/utils/exerciseTypeIcons';
 import { translateDifficultyToDisplay } from '@/utils/difficultyTranslation';
 import { formatExerciseTitleWithNumber, formatExerciseTitleWithNumberFromList } from '@/utils/exerciseOrderUtils';
 import { isExerciseNew } from '@/utils/exerciseUtils';
-import { formatDuration } from '@/utils/exerciseStatsUtils';
+import { formatEstimatedTime } from '@/utils/estimatedTimeUtils';
 
 interface ExerciseCardProps {
   exercise: MyExerciseWithSubmission | Exercise;
@@ -131,10 +131,7 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: Exer
   const getVideoDuration = () => {
     if (!isVideoExercise || !exercise.estimated_time) return null;
     
-    const timeInSeconds = parseFloat(exercise.estimated_time) || 0;
-    const timeInMinutes = timeInSeconds / 60;
-    
-    return formatDuration(timeInMinutes, 'time');
+    return formatEstimatedTime(exercise.estimated_time, 'time');
   };
 
   // Determine the link based on user role
