@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
-import { RocketIcon, HandshakeIcon } from 'lucide-react';
+import { RocketIcon } from 'lucide-react';
 
 export default function HeroSection() {
   return (
@@ -33,23 +33,13 @@ export default function HeroSection() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/portal/register">
+              <Link href="/courses">
                 <Button 
                   size="lg"
                   className="border-2 border-blue-600 bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl group"
                 >
                   <RocketIcon className="ml-2 group-hover:translate-x-1 transition-transform" />
                   شروع یادگیری
-                </Button>
-              </Link>
-              <Link href="/portal/login">
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-6 text-lg rounded-lg transition-all duration-300 group"
-                >
-                  <HandshakeIcon className="ml-2" />
-                  درخواست مشاوره
                 </Button>
               </Link>
             </div>
