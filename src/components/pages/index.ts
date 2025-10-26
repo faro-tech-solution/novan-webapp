@@ -23,4 +23,7 @@ export * from './accounting';
 export * from './shared';
 
 // Notifications
-export { default as NotificationsPage } from './notifications'; 
+export { default as NotificationsPage } from './notifications';
+
+// Notes Pages
+export { default as NotesPage } from './notes/NotesPage';

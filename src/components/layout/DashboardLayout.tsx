@@ -18,6 +18,7 @@ import {
   Wallet,
   Calendar,
   Package,
+  StickyNote,
 } from "lucide-react";
 import {
   Sidebar,
@@ -100,6 +101,12 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       icon: FileText,
       label: tSidebar("myExercises"),
       key: "myExercises",
+    },
+    {
+      href: `/portal/trainee/${courseId}/notes`,
+      icon: StickyNote,
+      label: "یادداشت‌های من",
+      key: "notes",
     },
     {
       href: `/portal/trainee/${courseId}/progress`,

@@ -26,6 +26,10 @@ export const fetchAllNotes = async (courseId: string, userId: string): Promise<E
         id,
         title,
         order_index
+      ),
+      courses:course_id (
+        id,
+        name
       )
     `)
     .eq('course_id', courseId)
@@ -43,6 +47,10 @@ export const fetchAllNotes = async (courseId: string, userId: string): Promise<E
       id: item.exercises.id,
       title: item.exercises.title,
       order_index: item.exercises.order_index
+    } : undefined,
+    courses: item.courses ? {
+      id: item.courses.id,
+      title: item.courses.name
     } : undefined
   }));
 };
@@ -51,7 +59,10 @@ export const createNote = async (data: CreateNoteData, userId: string): Promise<
   const { data: note, error } = await supabase
     .from('exercise_notes')
     .insert({
-      ...data,
+      exercise_id: data.exercise_id || null, // Allow null for global notes
+      course_id: data.course_id,
+      title: data.title,
+      content: data.content,
       user_id: userId
     })
     .select()
@@ -66,12 +77,19 @@ export const createNote = async (data: CreateNoteData, userId: string): Promise<
 };
 
 export const updateNote = async (noteId: string, data: UpdateNoteData): Promise<ExerciseNote> => {
+  const updateData: any = {
+    content: data.content,
+    updated_at: new Date().toISOString()
+  };
+
+  // Only update title if provided
+  if (data.title !== undefined) {
+    updateData.title = data.title;
+  }
+
   const { data: note, error } = await supabase
     .from('exercise_notes')
-    .update({
-      content: data.content,
-      updated_at: new Date().toISOString()
-    })
+    .update(updateData)
     .eq('id', noteId)
     .select()
     .single();
