@@ -18,7 +18,7 @@ export interface CategoryExerciseStats {
 }
 
 // Video exercise types
-const VIDEO_EXERCISE_TYPES: ExerciseType[] = ['video', 'arvan_video', 'negavid', 'iframe'];
+const VIDEO_EXERCISE_TYPES: ExerciseType[] = ['video', 'negavid', 'iframe'];
 
 // Text exercise types
 const TEXT_EXERCISE_TYPES: ExerciseType[] = ['form', 'simple'];

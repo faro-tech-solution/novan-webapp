@@ -125,7 +125,7 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: Exer
   const difficultyDisplay = getDifficultyDisplay(exercise.difficulty);
 
   // Check if this is a video exercise
-  const isVideoExercise = ['video', 'arvan_video', 'negavid', 'iframe'].includes(exercise.exercise_type);
+  const isVideoExercise = ['video', 'negavid', 'iframe'].includes(exercise.exercise_type);
   
   // Get formatted duration for video exercises
   const getVideoDuration = () => {

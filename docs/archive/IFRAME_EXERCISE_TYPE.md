@@ -35,9 +35,11 @@ The iframe exercise type enables instructors to create exercises that embed exte
 
 The iframe exercise type supports various HTML embed codes:
 
-### ArvanCloud Video Player
+### Custom Video Player
 ```html
-<style>.r1_iframe_embed {position: relative; overflow: hidden; width: 100%; height: auto; padding-top: 56.25%; } .r1_iframe_embed iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }</style><div class="r1_iframe_embed"><iframe src="https://player.arvancloud.ir/index.html?config=https://novan.arvanvod.ir/waV5ZLBklg/vDOWJgjqBL/origin_config.json" style="border:0 #ffffff none;" name="00-001.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe></div>
+<div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%;">
+  <iframe src="https://example.com/video-player" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allowfullscreen></iframe>
+</div>
 ```
 
 ### YouTube Embed
