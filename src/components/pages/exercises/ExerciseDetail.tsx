@@ -7,7 +7,8 @@ import { useParams, useRouter } from 'next/navigation';
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { FormAnswer } from "@/types/formBuilder";
-import { ExerciseDetailHeader, ExerciseInfoCard } from "@/components/exercises";
+import { ExerciseInfoCard } from "@/components/exercises";
+import { ExerciseTabs } from "@/components/exercises/tabs";
 import { InstructorFormView } from "@/components/exercises/InstructorFormView";
 import { ExerciseConversation } from "@/components/exercises/ExerciseConversation";
 import ExerciseListSidebar from "@/components/exercises/ExerciseListSidebar";
@@ -141,24 +142,19 @@ const ExerciseDetail = () => {
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto space-y-6 p-6">
-            <ExerciseDetailHeader
-              onBack={() => router.back()}
-              difficulty={exercise.difficulty}
-              estimatedTime={exercise.estimated_time}
-              points={exercise.points}
-              submissionStatus={exercise.submission_status}
-            />
-
             <ExerciseInfoCard
               exercise={exercise}
-              title={exercise.title}
-              courseName={exercise.course_name}
               description={exercise.description}
               answers={answers}
               setAnswers={setAnswers}
               handleSubmit={handleSubmit}
               submitMutation={submitMutation}
             />
+
+            {/* Exercise Tabs - Only visible to trainees, and only for non-form/simple exercises */}
+            {profile?.role === "trainee" && exercise.exercise_type !== 'form' && exercise.exercise_type !== 'simple' && (
+              <ExerciseTabs exercise={exercise} />
+            )}
 
         {(profile?.role === "trainer" || profile?.role === "admin") && (
           <>
@@ -240,19 +236,6 @@ const ExerciseDetail = () => {
                 </div>
               </div>
 
-            ) : exercise.exercise_type === "arvan_video" ? (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">محتوای ویدیو آروان</h3>
-                <div className="bg-gray-50 p-4 rounded-md space-y-3">
-                  <div>
-                    <p className="font-medium text-sm text-gray-700">شناسه ویدیو:</p>
-                    <p className="text-gray-900 font-mono">{exercise.metadata?.arvan_video_id || 'تعریف نشده'}</p>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    این تمرین از سرویس ویدیو آروان کلود استفاده می‌کند. ویدیو از طریق CDN ایمن آروان ارائه می‌شود.
-                  </p>
-                </div>
-              </div>
             ) : exercise.exercise_type === "negavid" ? (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">محتوای ویدیو نگاود</h3>

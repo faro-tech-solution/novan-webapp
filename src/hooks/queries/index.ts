@@ -18,5 +18,10 @@ export * from './useTraineeDashboardQuery';
 // Courses
 export * from './useCoursesQuery';
 export * from './useStudentCoursesQuery';
+export * from './useMyCoursesQuery';
+
+// Notes
+export * from './useExerciseNotes';
+export * from './useGlobalNotes';
 
 // Add any new hooks here as they are created

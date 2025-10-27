@@ -89,7 +89,6 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
           auto_grade: data.auto_grade,
           form_structure: data.form_structure || { questions: [] },
           attachments: data.attachments || [],
-          arvan_video_id: data.arvan_video_id,
           negavid_video_id: data.negavid_video_id,
         };
         
@@ -157,7 +156,6 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
       auto_grade: exercise.auto_grade || false,
       form_structure: (typeof exercise.form_structure === 'object' && exercise.form_structure !== null ? exercise.form_structure : { questions: [] }) as any,
       attachments: exercise.attachments || [],
-      arvan_video_id: (exercise as any).arvan_video_id || "",
       negavid_video_id: (exercise as any).negavid_video_id || "",
     };
   }, [exercise]);
