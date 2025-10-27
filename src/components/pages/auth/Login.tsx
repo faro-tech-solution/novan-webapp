@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from 'next/link';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
@@ -19,11 +19,14 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { getDashboardPathForRole } from "@/utils";
+import { TurnstileCaptcha, TurnstileCaptchaRef } from "@/components/auth/TurnstileCaptcha";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined);
+  const captchaRef = useRef<TurnstileCaptchaRef>(null);
   const { login, profile } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -55,11 +58,21 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!captchaToken) {
+      toast({
+        title: "تایید امنیتی",
+        description: "لطفا تایید امنیتی را کامل کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
       console.log("Attempting login...");
-      const { error } = await login(email, password);
+      const { error } = await login(email, password, captchaToken);
       if (error) {
         console.error("Login error:", error);
         toast({
@@ -67,6 +80,9 @@ const Login = () => {
           description: error.message || "اطلاعات نادرست است",
           variant: "destructive",
         });
+        // Reset CAPTCHA on error
+        captchaRef.current?.reset();
+        setCaptchaToken(undefined);
       } else {
         console.log("Login successful");
         toast({
@@ -83,6 +99,9 @@ const Login = () => {
         description: "ورود ناموفق. لطفا دوباره تلاش کنید.",
         variant: "destructive",
       });
+      // Reset CAPTCHA on error
+      captchaRef.current?.reset();
+      setCaptchaToken(undefined);
     } finally {
       setLoading(false);
     }
@@ -132,7 +151,33 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <div className="space-y-2">
+                <Label>تایید امنیتی</Label>
+                <TurnstileCaptcha
+                  ref={captchaRef}
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+                  onVerify={setCaptchaToken}
+                  onError={(error) => {
+                    console.error('CAPTCHA error:', error);
+                    toast({
+                      title: "خطا در تایید امنیتی",
+                      description: "لطفا دوباره تلاش کنید",
+                      variant: "destructive",
+                    });
+                  }}
+                  onExpire={() => {
+                    setCaptchaToken(undefined);
+                    toast({
+                      title: "تایید امنیتی منقضی شد",
+                      description: "لطفا دوباره تایید کنید",
+                      variant: "destructive",
+                    });
+                  }}
+                  className="flex justify-center"
+                />
+              </div>
+
+              <Button type="submit" className="w-full" disabled={loading || !captchaToken}>
                 {loading ? "در حال ورود..." : "ورود"}
               </Button>
             </form>
