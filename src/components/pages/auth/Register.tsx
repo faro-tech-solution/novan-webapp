@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -19,6 +19,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
+import { TurnstileCaptcha, TurnstileCaptchaRef } from "@/components/auth/TurnstileCaptcha";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -28,6 +29,8 @@ const Register = () => {
   const [repeatPassword, setRepeatPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isPasswordStrong, setIsPasswordStrong] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined);
+  const captchaRef = useRef<TurnstileCaptchaRef>(null);
   const { register } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
@@ -53,6 +56,15 @@ const Register = () => {
       return;
     }
 
+    if (!captchaToken) {
+      toast({
+        title: "تایید امنیتی",
+        description: "لطفا تایید امنیتی را کامل کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -61,7 +73,8 @@ const Register = () => {
         lastName,
         email,
         password,
-        "trainee"
+        "trainee",
+        captchaToken
       );
       if (error) {
         toast({
@@ -69,6 +82,9 @@ const Register = () => {
           description: error.message || "ثبت نام ناموفق بود",
           variant: "destructive",
         });
+        // Reset CAPTCHA on error
+        captchaRef.current?.reset();
+        setCaptchaToken(undefined);
       } else {
         toast({
           title: "ثبت نام موفق",
@@ -83,6 +99,9 @@ const Register = () => {
         description: "ثبت نام ناموفق. لطفا دوباره تلاش کنید.",
         variant: "destructive",
       });
+      // Reset CAPTCHA on error
+      captchaRef.current?.reset();
+      setCaptchaToken(undefined);
     } finally {
       setLoading(false);
     }
@@ -160,10 +179,36 @@ const Register = () => {
                 />
               </div>
 
+              <div className="space-y-2">
+                <Label>تایید امنیتی</Label>
+                <TurnstileCaptcha
+                  ref={captchaRef}
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+                  onVerify={setCaptchaToken}
+                  onError={(error) => {
+                    console.error('CAPTCHA error:', error);
+                    toast({
+                      title: "خطا در تایید امنیتی",
+                      description: "لطفا دوباره تلاش کنید",
+                      variant: "destructive",
+                    });
+                  }}
+                  onExpire={() => {
+                    setCaptchaToken(undefined);
+                    toast({
+                      title: "تایید امنیتی منقضی شد",
+                      description: "لطفا دوباره تایید کنید",
+                      variant: "destructive",
+                    });
+                  }}
+                  className="flex justify-center"
+                />
+              </div>
+
               <Button
                 type="submit"
                 className="w-full"
-                disabled={loading || !isPasswordStrong}
+                disabled={loading || !isPasswordStrong || !captchaToken}
               >
                 {loading ? "در حال ثبت نام..." : "ثبت نام"}
               </Button>
