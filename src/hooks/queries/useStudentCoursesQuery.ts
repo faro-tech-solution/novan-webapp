@@ -22,7 +22,11 @@ const fetchStudentCourses = async (userId: string | undefined, courseId?: string
       courses (
         id,
         name,
-        description
+        description,
+        thumbnail,
+        slug,
+        status,
+        instructor_id
       )
     `)
     .eq('student_id', userId)
@@ -54,23 +58,50 @@ const fetchStudentCourses = async (userId: string | undefined, courseId?: string
     valid: enrollmentsWithCourses.length 
   });
 
+  // Fetch instructor names for courses
+  const instructorIds = Array.from(new Set(
+    enrollmentsWithCourses
+      .map((enrollment: any) => enrollment.courses?.instructor_id)
+      .filter((id: string | null | undefined): id is string => Boolean(id))
+  ));
+
+  let instructorMap: Record<string, string> = {};
+  if (instructorIds.length > 0) {
+    const { data: instructors, error: instructorsError } = await supabase
+      .from('profiles')
+      .select('id, first_name, last_name')
+      .in('id', instructorIds);
+
+    if (instructorsError) {
+      console.error('❌ Instructors fetch error:', instructorsError);
+    } else if (instructors) {
+      instructorMap = Object.fromEntries(
+        instructors.map((p: any) => [
+          p.id,
+          `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim() || 'نامشخص',
+        ])
+      );
+    }
+  }
+
   // Transform the data to match the StudentCourse interface
   const transformedCourses = enrollmentsWithCourses.map(enrollment => {
-    const course = enrollment.courses as { name: string; description: string | null } | null;
+    const course = enrollment.courses as { name: string; description: string | null; thumbnail?: string | null; slug?: string; status?: string; instructor_id?: string } | null;
+    const instructorName = course?.instructor_id ? (instructorMap[course.instructor_id] || 'نامشخص') : 'نامشخص';
     return {
       id: enrollment.course_id,
       title: course?.name ?? '',
-      instructor: 'نامشخص', // Default value since instructor_name doesn't exist
+      instructor: instructorName,
       progress: 0, // This would need to be calculated based on completed lessons
       totalLessons: 0, // This would need to be fetched from lessons table
       completedLessons: 0, // This would need to be calculated from student progress
       duration: '0 ساعت', // This would need to be calculated from lessons
       difficulty: 'متوسط', // Default value since column doesn't exist
       category: 'عمومی', // Default value since column doesn't exist
-      thumbnail: '', // Default value since column doesn't exist
+      thumbnail: course?.thumbnail ?? '',
       enrollDate: enrollment.enrolled_at,
       nextLesson: null, // This would need to be calculated based on progress
-      status: enrollment.status as 'active' | 'completed',
+      status: (enrollment.status as 'active' | 'completed') ?? 'active',
       description: course?.description ?? undefined
     };
   });

@@ -36,7 +36,7 @@ echo "📊 Dropping SpotPlayer tables..."
 psql "$DATABASE_URL" -f migrations/drop_spotplayer_tables.sql
 
 echo "✅ SpotPlayer removal completed successfully!"
-echo "The exercise_type constraint now allows: form, video, audio, simple, iframe, arvan_video"
+echo "The exercise_type constraint now allows: form, video, audio, simple, iframe"
 echo "Existing spotplayer exercises have been converted to simple type"
 echo "SpotPlayer metadata has been cleaned up from the exercises table"
 echo "SpotPlayer tables have been dropped: spotplayer_stream_logs, spotplayer_licenses, spotplayer_cookies" 

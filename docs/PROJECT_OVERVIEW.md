@@ -46,7 +46,6 @@ Novan Webapp is a comprehensive Learning Management System (LMS) designed to fac
   - Audio exercises for language learning
   - Simple text-based exercises
   - Iframe embedded content
-  - Arvan video streaming integration
 - **Submission Tracking**: Student progress and completion monitoring
 - **Grading System**: Automated and manual grading capabilities
 - **Order Management**: Flexible exercise sequencing within courses
@@ -158,4 +157,5 @@ Novan Webapp is a comprehensive Learning Management System (LMS) designed to fac
 - **User Satisfaction**: User feedback and ratings
 
 This overview provides a comprehensive understanding of the Novan Webapp project, its current capabilities, and future direction. The system is designed to be scalable, secure, and user-friendly while maintaining high performance and reliability standards.
+
 

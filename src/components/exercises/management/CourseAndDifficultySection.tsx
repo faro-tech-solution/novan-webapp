@@ -22,7 +22,7 @@ export const CourseAndDifficultySection = ({ form, courses }: CourseAndDifficult
     form.setValue("category_id", "no-category");
   }, [selectedCourseId, form]);
   
-  const isMediaType = exerciseType === 'video' || exerciseType === 'audio' || exerciseType === 'iframe' || exerciseType === 'arvan_video';
+  const isMediaType = exerciseType === 'video' || exerciseType === 'audio' || exerciseType === 'iframe';
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

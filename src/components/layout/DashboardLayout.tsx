@@ -16,6 +16,10 @@ import {
   Bell,
   CheckCircle,
   Wallet,
+  Calendar,
+  Package,
+  StickyNote,
+  MessageSquare,
 } from "lucide-react";
 import {
   Sidebar,
@@ -100,6 +104,12 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       key: "myExercises",
     },
     {
+      href: `/portal/trainee/${courseId}/notes`,
+      icon: StickyNote,
+      label: "یادداشت‌های من",
+      key: "notes",
+    },
+    {
       href: `/portal/trainee/${courseId}/progress`,
       icon: Bell,
       label: tSidebar("progress"),
@@ -151,6 +161,12 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       key: "exercises",
     },
     {
+      href: "/portal/admin/qa-management",
+      icon: MessageSquare,
+      label: "مدیریت پرسش و پاسخ",
+      key: "qaManagement",
+    },
+    {
       href: "/portal/admin/review-submissions",
       icon: CheckCircle,
       label: tSidebar("reviewSubmissions"),
@@ -161,6 +177,18 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       icon: Wallet,
       label: tSidebar("accounting"),
       key: "accounting",
+    },
+    {
+      href: "/portal/admin/events",
+      icon: Calendar,
+      label: "مدیریت رویدادها",
+      key: "events",
+    },
+    {
+      href: "/portal/admin/products",
+      icon: Package,
+      label: "مدیریت محصولات",
+      key: "products",
     },
     {
       href: "/portal/admin/profile",

@@ -11,13 +11,12 @@ export interface CreateExerciseData {
   courseId: string;
   category_id?: string | null;
 
-  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'arvan_video' | 'negavid';
+  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'negavid';
   content_url?: string | null;
   iframe_html?: string | null;
   auto_grade: boolean;
   formStructure: ExerciseForm | any;
 
-  arvan_video_id?: string;
   negavid_video_id?: string;
   attachments?: string[]; // Array of uploaded file URLs
 }
@@ -45,15 +44,6 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
     console.log('createExercise called with data:', exerciseData);
     const metadata: any = {};
     
-
-
-    // Add Arvan Video metadata if it's an Arvan Video exercise
-    if (exerciseData.exercise_type === 'arvan_video') {
-      if (exerciseData.arvan_video_id) {
-        metadata.arvan_video_id = exerciseData.arvan_video_id;
-      }
-    }
-
     // Add Negavid Video metadata if it's a Negavid Video exercise
     if (exerciseData.exercise_type === 'negavid') {
       console.log('Processing negavid exercise, negavid_video_id:', exerciseData.negavid_video_id);

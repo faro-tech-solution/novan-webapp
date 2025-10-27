@@ -132,17 +132,23 @@ export const FilePreviewList: React.FC<FilePreviewListProps> = ({
                       onClick={() => handleImageClick(attachment)}
                     />
                   ) : (
-                    <div className={`
-                      ${getImageSizeClasses()} 
-                      bg-gray-100 border border-gray-200 rounded-md
-                      flex flex-col items-center justify-center
-                      text-xs text-gray-600 p-2
-                    `}>
+                    <a
+                      href={attachment}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={fileName}
+                      className={`
+                        ${getImageSizeClasses()} 
+                        bg-gray-100 border border-gray-200 rounded-md
+                        flex flex-col items-center justify-center
+                        text-xs text-gray-600 p-2 cursor-pointer hover:bg-gray-200 transition-colors
+                      `}
+                    >
                       <div className="text-lg mb-1">{getFileIcon(fileName)}</div>
                       <div className="text-center text-xs">
                         <div className="font-medium text-gray-700">{getFileExtension(fileName)}</div>
                       </div>
-                    </div>
+                    </a>
                   )}
                   
                   {showRemoveButton && onRemove && (

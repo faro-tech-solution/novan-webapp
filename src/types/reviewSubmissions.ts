@@ -16,10 +16,15 @@ export interface Submission {
   exercise: {
     id: string;
     title: string;
+    description?: string | null;
     points?: number;
     form_structure: ExerciseForm | null;
     course_id?: string;
     exercise_type?: 'form' | 'video' | 'audio' | 'simple';
     auto_grade?: boolean;
+    course?: {
+      id: string;
+      name: string;
+    } | null;
   } | null;
 } 

@@ -43,6 +43,13 @@ CREATE TRIGGER trigger_award_notification
   FOR EACH ROW
   EXECUTE FUNCTION create_award_notification();
 
+-- Trigger to create notification when trainer/admin sends conversation message
+DROP TRIGGER IF EXISTS trigger_conversation_notification ON exercise_submissions_conversation;
+CREATE TRIGGER trigger_conversation_notification
+  AFTER INSERT ON exercise_submissions_conversation
+  FOR EACH ROW
+  EXECUTE FUNCTION create_conversation_notification();
+
 -- Accounting System Triggers
 -- ==========================
 

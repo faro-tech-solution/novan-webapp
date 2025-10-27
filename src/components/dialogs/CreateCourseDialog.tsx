@@ -75,6 +75,15 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
     }
   };
 
+  const generateSlug = (name: string): string => {
+    return name
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .trim();
+  };
+
   const onSubmit = async (data: FormData) => {
     if (!profile) return;
 
@@ -89,6 +98,7 @@ const CreateCourseDialog = ({ open, onOpenChange, onCourseCreated }: CreateCours
           max_students: data.maxStudents,
           status: data.status,
           price: data.price,
+          slug: generateSlug(data.name),
         });
 
       if (error) throw error;

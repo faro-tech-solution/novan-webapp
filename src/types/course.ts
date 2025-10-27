@@ -10,7 +10,7 @@ export interface Course {
   student_count?: number;
   price?: number;
   slug: string;
-  thumbnail?: string;
+  thumbnail: string | null;
 }
 
 // Course interface for exercise-related contexts
@@ -19,7 +19,7 @@ export interface ExerciseCourse {
   name: string;
   status: string;
   slug: string;
-  thumbnail?: string;
+  thumbnail: string | null;
 }
 
 // Course interface for edit dialog
@@ -32,7 +32,7 @@ export interface EditableCourse {
   status: string;
   price?: number;
   slug: string;
-  thumbnail?: string;
+  thumbnail: string | null;
 }
 
 // Course interface for student enrollment context
@@ -69,4 +69,46 @@ export interface StudentCourse {
 export interface ReviewCourse {
   id: string;
   name: string;
+}
+
+// Public course interfaces for non-authenticated users
+export interface CourseIntroVideo {
+  url: string;
+  title: string;
+  duration: string;
+  thumbnail: string;
+  description: string;
+}
+
+export interface CoursePreviewData {
+  topics: string[];
+  side_description?: string | null;
+  description: string;
+  differentiators?: Array<{
+    title: string;
+    description: string;
+    color: string;
+  }>;
+  who_is_for?: string[];
+  faqs?: Array<{
+    question: string;
+    answer: string;
+  }>;
+  testimonials?: Array<{
+    name: string;
+    rating: number;
+    text: string;
+  }>;
+  payments: {
+    zarinpal: string;
+    stripe: string;
+  },
+  intro_videos: CourseIntroVideo[];
+}
+
+export interface PublicCourse extends Course {
+  preview_data: CoursePreviewData | null;
+  instructor_name?: string;
+  start_date?: string | null;
+  end_date?: string | null;
 } 
