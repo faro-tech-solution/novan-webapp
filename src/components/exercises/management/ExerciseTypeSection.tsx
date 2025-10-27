@@ -9,12 +9,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UseFormReturn } from "react-hook-form";
 import { CreateExerciseFormData } from "./CreateExerciseForm";
 import { FileText, Video, AudioLines, ListChecks, ExternalLink } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { FormBuilder } from "../forms/FormBuilder";
+import { useToast } from "@/hooks/use-toast";
 
 interface ExerciseTypeSectionProps {
   form: UseFormReturn<CreateExerciseFormData>;
@@ -22,6 +24,31 @@ interface ExerciseTypeSectionProps {
 
 export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
   const exerciseType = form.watch("exercise_type");
+  const { toast } = useToast();
+
+  const extractArvanVideoId = (input: string): string | null => {
+    if (!input) return null;
+    const trimmed = input.trim();
+    const urlIdMatch = trimmed.match(/\/videos\/([^\/?#]+)(?:[\/?#]|$)/i);
+    if (urlIdMatch && urlIdMatch[1]) return urlIdMatch[1];
+    if (/^[A-Za-z0-9_-]{6,}$/i.test(trimmed)) return trimmed;
+    return null;
+  };
+
+  const handlePasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const extracted = extractArvanVideoId(text);
+      if (extracted) {
+        form.setValue("arvan_video_id", extracted, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
+        toast({ title: "شناسه ویدیو ثبت شد", description: extracted });
+      } else {
+        toast({ title: "شناسه معتبر پیدا نشد", description: "متن کلیپ‌بورد شامل شناسه یا لینک ویدیو آروان نبود" });
+      }
+    } catch (error) {
+      toast({ title: "دسترسی به کلیپ‌بورد ناموفق بود", description: "اجازه دسترسی به کلیپ‌بورد را بررسی کنید" });
+    }
+  };
 
   return (
     <Card>
@@ -110,6 +137,19 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                       </div>
 
                       <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="arvan_video" id="arvan_video" />
+                        <Label
+                          htmlFor="arvan_video"
+                          className="flex items-center cursor-pointer text-sm flex-row-reverse"
+                        >
+                          <Video className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">ویدیو آروان</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
                         <RadioGroupItem value="negavid" id="negavid" />
                         <Label
                           htmlFor="negavid"
@@ -135,7 +175,7 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
               control={form.control}
               name="auto_grade"
               render={({ field }) => {
-                const isMediaType = exerciseType === 'video' || exerciseType === 'audio' || exerciseType === 'iframe' || exerciseType === 'negavid';
+                const isMediaType = exerciseType === 'video' || exerciseType === 'audio' || exerciseType === 'iframe' || exerciseType === 'arvan_video' || exerciseType === 'negavid';
                 // Ensure default ON for media types
                 if (isMediaType && !field.value) {
                   // Avoid re-render loops by setting only when false
@@ -210,6 +250,34 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
               />
             )}
 
+            {exerciseType === "arvan_video" && (
+              <FormField
+                control={form.control}
+                name="arvan_video_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>شناسه ویدیو آروان *</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="c8a3062d-006b-45f7-8639-c20c9eee27d5"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                        <Button type="button" variant="secondary" onClick={handlePasteFromClipboard}>
+                          چسباندن از کلیپ‌بورد
+                        </Button>
+                      </div>
+                    </FormControl>
+                    <p className="text-sm text-muted-foreground">
+                      شناسه ویدیو در سرویس آروان کلود (Video ID). می‌توانید آدرس کامل ویدیو را از پنل آروان بچسبانید، شناسه به‌طور خودکار استخراج می‌شود.
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             {exerciseType === "negavid" && (
               <FormField
                 control={form.control}
@@ -224,6 +292,9 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                           {...field}
                           value={field.value || ""}
                         />
+                        <Button type="button" variant="secondary" onClick={handlePasteFromClipboard}>
+                          چسباندن از کلیپ‌بورد
+                        </Button>
                       </div>
                     </FormControl>
                     <p className="text-sm text-muted-foreground">

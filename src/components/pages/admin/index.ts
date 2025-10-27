@@ -1,1 +1,0 @@
-export { default as QAManagement } from './QAManagement';

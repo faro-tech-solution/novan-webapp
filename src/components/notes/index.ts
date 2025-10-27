@@ -1,1 +1,0 @@
-export { NotesManager } from './NotesManager';

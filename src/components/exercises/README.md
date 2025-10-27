@@ -17,6 +17,7 @@ exercises/
 │   ├── VideoPlayer.tsx
 │   ├── AudioPlayer.tsx
 │   ├── IframePlayer.tsx
+│   ├── ArvanVideoPlayer.tsx
 │   ├── NegavidVideoPlayer.tsx
 │   └── index.ts
 ├── forms/                       # Form-related components
@@ -26,6 +27,7 @@ exercises/
 ├── display/                     # Display components
 │   ├── ExerciseCard.tsx
 │   ├── ExerciseInfoCard.tsx
+│   ├── ExerciseDetailHeader.tsx
 │   ├── ExerciseStatusBadges.tsx
 │   ├── DraggableExerciseCard.tsx
 │   └── index.ts
@@ -54,7 +56,7 @@ The system supports two main categories of exercises:
 - **Submission**: Manual submission with form validation
 
 ### 2. Media-based Exercises
-- **Types**: `video`, `audio`, `iframe`, `negavid`
+- **Types**: `video`, `audio`, `iframe`, `arvan_video`, `negavid`
 - **Behavior**: Requires completion tracking
 - **Components**: Uses respective player components
 - **Submission**: Automatic or manual completion tracking

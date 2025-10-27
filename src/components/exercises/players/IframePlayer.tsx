@@ -82,41 +82,45 @@ export const IframePlayer: React.FC<IframePlayerProps> = ({
   ), [iframeHtml]);
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        {isCompleted && (
-          <div className="flex items-center text-green-600">
-            <CheckCircle className="h-5 w-5 ml-1" />
-            <span className="text-sm font-medium">تکمیل شده</span>
+    <Card>
+      <CardContent className="pt-6">
+        <div className="space-y-4">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            {isCompleted && (
+              <div className="flex items-center text-green-600">
+                <CheckCircle className="h-5 w-5 ml-1" />
+                <span className="text-sm font-medium">تکمیل شده</span>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* Loading State */}
-      {isLoading && (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-          <span className="mr-2 text-gray-600">در حال بارگذاری...</span>
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+              <span className="mr-2 text-gray-600">در حال بارگذاری...</span>
+            </div>
+          )}
+
+          {/* Iframe HTML Content */}
+          <div className="relative">{memoizedIframe}</div>
+
+          {/* Complete Button */}
+          {!isCompleted && !disabled && (
+            <div className="flex justify-center">
+              <Button
+                onClick={handleComplete}
+                disabled={disabled || isLoading}
+                className="px-6"
+              >
+                <CheckCircle className="h-4 w-4 ml-2" />
+                تکمیل تمرین
+              </Button>
+            </div>
+          )}
         </div>
-      )}
-
-      {/* Iframe HTML Content */}
-      <div className="relative">{memoizedIframe}</div>
-
-      {/* Complete Button */}
-      {!isCompleted && !disabled && (
-        <div className="flex justify-center">
-          <Button
-            onClick={handleComplete}
-            disabled={disabled || isLoading}
-            className="px-6"
-          >
-            <CheckCircle className="h-4 w-4 ml-2" />
-            تکمیل تمرین
-          </Button>
-        </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 }; 
