@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { ExerciseNote, CreateNoteData, UpdateNoteData } from '@/types/exerciseNotes';
+import { ExerciseNote, CreateNoteData } from '@/types/exerciseNotes';
 
 export const fetchAllUserNotes = async (userId: string): Promise<ExerciseNote[]> => {
   const { data, error } = await supabase
@@ -43,6 +43,7 @@ export const createGlobalNote = async (data: CreateNoteData, userId: string): Pr
     .from('exercise_notes')
     .insert({
       ...data,
+      exercise_id: data.exercise_id ?? null,
       user_id: userId
     })
     .select()

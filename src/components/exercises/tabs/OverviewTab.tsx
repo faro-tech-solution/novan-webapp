@@ -14,7 +14,7 @@ interface OverviewTabProps {
 export const OverviewTab: React.FC<OverviewTabProps> = ({ exercise }) => {
   const formattedTime = formatEstimatedTime(exercise.estimated_time, 'time');
   const formattedUpdateDate = exercise.updated_at || exercise.created_at
-    ? formatDate({ dateString: exercise.updated_at || exercise.created_at, format: 'jYYYY/jMM/jDD' })
+    ? formatDate({ dateString: (exercise.updated_at || exercise.created_at)!, format: 'jYYYY/jMM/jDD' })
     : '';
 
   return (

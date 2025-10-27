@@ -1,15 +1,22 @@
 import { supabase } from '@/integrations/supabase/client';
-import { ExerciseQuestion, CreateQuestionData, VoteData, AdminQuestion, QAManagementFilters, QAManagementStats, ModerationData, BulkModerationData } from '@/types/exerciseQA';
+import { ExerciseQuestion, CreateQuestionData, AdminQuestion, QAManagementFilters, QAManagementStats } from '@/types/exerciseQA';
 
-export const fetchQuestions = async (exerciseId: string, courseId: string): Promise<ExerciseQuestion[]> => {
+export const fetchQuestions = async (exerciseId: string, courseId?: string): Promise<ExerciseQuestion[]> => {
   // First, fetch questions without user data
-  const { data: questions, error } = await supabase
+  let query = supabase
     .from('exercise_questions')
     .select('*')
     .eq('exercise_id', exerciseId)
     .eq('is_deleted', false)
     .is('parent_id', null) // Only get questions, not replies
     .order('created_at', { ascending: false });
+
+  // Add courseId filter if provided
+  if (courseId) {
+    query = query.eq('course_id', courseId);
+  }
+
+  const { data: questions, error } = await query;
 
   if (error) {
     console.error('Error fetching questions:', error);
@@ -123,7 +130,7 @@ export const createQuestion = async (data: CreateQuestionData, userId: string): 
     throw new Error('Failed to create question');
   }
 
-  return question;
+  return question as any;
 };
 
 export const createReply = async (questionId: string, data: { content: string; course_id: string }, userId: string): Promise<ExerciseQuestion> => {
@@ -155,7 +162,7 @@ export const createReply = async (questionId: string, data: { content: string; c
     throw new Error('Failed to create reply');
   }
 
-  return reply;
+  return reply as any;
 };
 
 export const deleteQuestion = async (questionId: string): Promise<void> => {
@@ -267,7 +274,7 @@ export const getUserVote = async (questionId: string, userId: string): Promise<'
     .eq('user_id', userId)
     .single();
 
-  return data?.vote_type || null;
+  return data?.vote_type as 'upvote' | 'downvote' | null;
 };
 
 // Admin-specific functions
@@ -413,23 +420,6 @@ export const fetchQAManagementStats = async (): Promise<QAManagementStats> => {
     .eq('is_deleted', false)
     .is('parent_id', null);
 
-  // Get all main questions first
-  const { data: allMainQuestions } = await supabase
-    .from('exercise_questions')
-    .select('id')
-    .eq('is_deleted', false)
-    .is('parent_id', null);
-
-  // Get questions that have replies
-  const { data: questionsWithReplies } = await supabase
-    .from('exercise_questions')
-    .select('parent_id')
-    .not('parent_id', 'is', null)
-    .eq('is_deleted', false);
-
-  const mainQuestionIds = allMainQuestions?.map(q => q.id) || [];
-  const repliedQuestionIds = [...new Set(questionsWithReplies?.map(r => r.parent_id) || [])];
-  
   // Get pending questions count (questions with pending moderation status)
   const { count: pendingQuestions } = await supabase
     .from('exercise_questions')
@@ -504,7 +494,7 @@ export const fetchQAManagementStats = async (): Promise<QAManagementStats> => {
     const times = responseTimes
       .filter(rt => rt.parent)
       .map(rt => {
-        const questionTime = new Date(rt.parent.created_at).getTime();
+        const questionTime = new Date(rt.parent?.created_at || '').getTime();
         const replyTime = new Date(rt.created_at).getTime();
         return replyTime - questionTime;
       })

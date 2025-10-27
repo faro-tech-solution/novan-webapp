@@ -1,5 +1,3 @@
-import { ExerciseWithCourse } from './exercise';
-
 export interface ExerciseNote {
   id: string;
   exercise_id: string | null; // Allow null for global notes

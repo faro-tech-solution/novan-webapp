@@ -144,8 +144,6 @@ const ExerciseDetail = () => {
           <div className="max-w-4xl mx-auto space-y-6 p-6">
             <ExerciseInfoCard
               exercise={exercise}
-              title={exercise.title}
-              courseName={exercise.course_name}
               description={exercise.description}
               answers={answers}
               setAnswers={setAnswers}

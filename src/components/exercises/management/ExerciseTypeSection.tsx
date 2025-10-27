@@ -15,7 +15,6 @@ import { CreateExerciseFormData } from "./CreateExerciseForm";
 import { FileText, Video, AudioLines, ListChecks, ExternalLink } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { FormBuilder } from "../forms/FormBuilder";
-import { useToast } from "@/hooks/use-toast";
 
 interface ExerciseTypeSectionProps {
   form: UseFormReturn<CreateExerciseFormData>;
@@ -23,7 +22,6 @@ interface ExerciseTypeSectionProps {
 
 export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
   const exerciseType = form.watch("exercise_type");
-  const { toast } = useToast();
 
   return (
     <Card>
