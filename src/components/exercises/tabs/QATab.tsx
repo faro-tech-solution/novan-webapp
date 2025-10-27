@@ -71,7 +71,7 @@ export const QATab: React.FC<QATabProps> = ({ exercise }) => {
         <h3 className="text-lg font-semibold">پرسش و پاسخ</h3>
         <Dialog open={isQuestionDialogOpen} onOpenChange={setIsQuestionDialogOpen}>
           <DialogTrigger asChild>
-            <Button>سوال بپرسید</Button>
+            <Button>سوال بپرسید </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
