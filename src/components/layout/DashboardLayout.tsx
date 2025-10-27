@@ -19,6 +19,7 @@ import {
   Calendar,
   Package,
   StickyNote,
+  MessageSquare,
 } from "lucide-react";
 import {
   Sidebar,
@@ -158,6 +159,12 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       icon: FileText,
       label: tSidebar("exercises"),
       key: "exercises",
+    },
+    {
+      href: "/portal/admin/qa-management",
+      icon: MessageSquare,
+      label: "مدیریت پرسش و پاسخ",
+      key: "qaManagement",
     },
     {
       href: "/portal/admin/review-submissions",

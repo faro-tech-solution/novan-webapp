@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { ExerciseQuestion, CreateQuestionData } from '@/types/exerciseQA';
+import { ExerciseQuestion, CreateQuestionData, AdminQuestion, QAManagementFilters, QAManagementStats } from '@/types/exerciseQA';
 import {
   fetchQuestions,
   fetchQuestionReplies,
@@ -10,6 +10,10 @@ import {
   deleteQuestion,
   voteQuestion,
   getUserVote,
+  fetchAdminQuestions,
+  fetchQAManagementStats,
+  moderateQuestion,
+  bulkModerateQuestions,
 } from '@/services/exerciseQAService';
 
 export const useExerciseQuestions = (exerciseId: string, courseId: string, enabled = true) => {
@@ -158,6 +162,7 @@ export const useVoteQuestion = () => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['exerciseQuestions'] });
       await queryClient.cancelQueries({ queryKey: ['questionReplies'] });
+      await queryClient.cancelQueries({ queryKey: ['adminQuestions'] });
 
       // Snapshot previous value
       const previousQuestions = queryClient.getQueryData<ExerciseQuestion[]>(['exerciseQuestions']);
@@ -198,16 +203,180 @@ export const useVoteQuestion = () => {
           });
         });
       }
+
+      // Also optimistically update admin questions
+      const previousAdminQuestions = queryClient.getQueryData<AdminQuestion[]>(['adminQuestions']);
+      if (previousAdminQuestions) {
+        queryClient.setQueryData<AdminQuestion[]>(['adminQuestions'], (old) => {
+          if (!old) return old;
+          return old.map((q) => {
+            if (q.id === questionId) {
+              const currentUserVote = q.user_vote;
+              let newUpvotes = q.upvotes;
+              let newDownvotes = q.downvotes;
+
+              if (currentUserVote === voteType) {
+                // Remove vote
+                if (voteType === 'upvote') newUpvotes--;
+                else newDownvotes--;
+                return { ...q, upvotes: newUpvotes, downvotes: newDownvotes, user_vote: null };
+              } else if (currentUserVote) {
+                // Change vote
+                if (voteType === 'upvote') {
+                  newUpvotes++;
+                  newDownvotes--;
+                } else {
+                  newUpvotes--;
+                  newDownvotes++;
+                }
+                return { ...q, upvotes: newUpvotes, downvotes: newDownvotes, user_vote: voteType };
+              } else {
+                // Add vote
+                if (voteType === 'upvote') newUpvotes++;
+                else newDownvotes++;
+                return { ...q, upvotes: newUpvotes, downvotes: newDownvotes, user_vote: voteType };
+              }
+            }
+            return q;
+          });
+        });
+      }
+
+      return { previousQuestions, previousAdminQuestions };
     },
     onError: (_, __, context) => {
       // Rollback on error
       if (context?.previousQuestions) {
         queryClient.setQueryData(['exerciseQuestions'], context.previousQuestions);
       }
+      if (context?.previousAdminQuestions) {
+        queryClient.setQueryData(['adminQuestions'], context.previousAdminQuestions);
+      }
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['exerciseQuestions'] });
       queryClient.invalidateQueries({ queryKey: ['questionReplies'] });
+      queryClient.invalidateQueries({ queryKey: ['adminQuestions'] });
+    },
+  });
+};
+
+// Admin-specific hooks for Q&A management
+export const useAdminQuestions = (filters: QAManagementFilters = {}) => {
+  const { profile } = useAuth();
+  
+  return useQuery({
+    queryKey: ['adminQuestions', filters],
+    queryFn: async () => {
+      if (!profile || profile.role !== 'admin') {
+        throw new Error('Unauthorized');
+      }
+      
+      return await fetchAdminQuestions(filters);
+    },
+    enabled: !!profile && profile.role === 'admin',
+  });
+};
+
+export const useQAManagementStats = () => {
+  const { profile } = useAuth();
+  
+  return useQuery({
+    queryKey: ['qaManagementStats'],
+    queryFn: async (): Promise<QAManagementStats> => {
+      if (!profile || profile.role !== 'admin') {
+        throw new Error('Unauthorized');
+      }
+      
+      return await fetchQAManagementStats();
+    },
+    enabled: !!profile && profile.role === 'admin',
+  });
+};
+
+export const useModerateQuestion = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const { profile } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ 
+      questionId, 
+      action, 
+      adminNotes 
+    }: { 
+      questionId: string; 
+      action: 'approve' | 'reject' | 'flag' | 'pin' | 'unpin' | 'resolve' | 'unresolve';
+      adminNotes?: string;
+    }) => {
+      if (!profile || profile.role !== 'admin') {
+        throw new Error('Unauthorized');
+      }
+      
+      return await moderateQuestion(questionId, action, adminNotes);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['adminQuestions'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['qaManagementStats'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['questionReplies'],
+      });
+      toast({
+        title: 'عملیات موفق',
+        description: `سوال ${variables.action === 'approve' ? 'تایید' : variables.action === 'reject' ? 'رد' : 'بروزرسانی'} شد`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'خطا',
+        description: error instanceof Error ? error.message : 'خطا در انجام عملیات',
+        variant: 'destructive',
+      });
+    },
+  });
+};
+
+export const useBulkModerateQuestions = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const { profile } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ 
+      questionIds, 
+      action 
+    }: { 
+      questionIds: string[]; 
+      action: 'approve' | 'reject' | 'delete';
+    }) => {
+      if (!profile || profile.role !== 'admin') {
+        throw new Error('Unauthorized');
+      }
+      
+      return await bulkModerateQuestions(questionIds, action);
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({
+        queryKey: ['adminQuestions'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['qaManagementStats'],
+      });
+      toast({
+        title: 'عملیات موفق',
+        description: `${result.processedCount} سوال پردازش شد`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'خطا',
+        description: error instanceof Error ? error.message : 'خطا در انجام عملیات گروهی',
+        variant: 'destructive',
+      });
     },
   });
 };

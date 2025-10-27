@@ -13,6 +13,9 @@ export * from './courses';
 // Management Pages
 export * from './management';
 
+// Admin Pages
+export * from './admin';
+
 // User Pages
 export * from './users';
 

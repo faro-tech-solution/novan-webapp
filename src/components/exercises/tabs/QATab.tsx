@@ -3,13 +3,12 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
-import { useExerciseQuestions, useQuestionReplies, useCreateQuestion, useCreateReply, useVoteQuestion, useDeleteQuestion } from '@/hooks/queries/useExerciseQA';
+import { useExerciseQuestions, useQuestionReplies, useCreateQuestion, useCreateReply, useVoteQuestion } from '@/hooks/queries/useExerciseQA';
 import { ExerciseQuestion } from '@/types/exerciseQA';
 import { ExerciseDetail } from '@/types/exercise';
-import { MessageSquare, ChevronDown, ChevronUp, Send, Trash2, Reply as ReplyIcon, Loader2 } from 'lucide-react';
+import { MessageSquare, ChevronDown, ChevronUp, Reply as ReplyIcon, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { faIR } from 'date-fns/locale';
 
@@ -21,24 +20,26 @@ export const QATab: React.FC<QATabProps> = ({ exercise }) => {
   const { data: questions = [], isLoading } = useExerciseQuestions(exercise.id, exercise.course_id, exercise.exercise_type !== 'form' && exercise.exercise_type !== 'simple');
   const createQuestionMutation = useCreateQuestion();
   const voteMutation = useVoteQuestion();
-  const deleteMutation = useDeleteQuestion();
 
+  const [newQuestionTitle, setNewQuestionTitle] = useState('');
   const [newQuestionContent, setNewQuestionContent] = useState('');
   const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
 
   const handleCreateQuestion = () => {
-    if (!newQuestionContent.trim()) return;
+    if (!newQuestionTitle.trim() || !newQuestionContent.trim()) return;
     
     createQuestionMutation.mutate(
       {
         exercise_id: exercise.id,
         course_id: exercise.course_id,
+        title: newQuestionTitle,
         content: newQuestionContent,
         parent_id: null,
       },
       {
         onSuccess: () => {
+          setNewQuestionTitle('');
           setNewQuestionContent('');
           setIsQuestionDialogOpen(false);
         },
@@ -77,19 +78,37 @@ export const QATab: React.FC<QATabProps> = ({ exercise }) => {
               <DialogTitle>سوال جدید</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <RichTextEditor
-                value={newQuestionContent}
-                onChange={setNewQuestionContent}
-                placeholder="سوال خود را بنویسید..."
-                height="150px"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  عنوان سوال *
+                </label>
+                <input
+                  type="text"
+                  value={newQuestionTitle}
+                  onChange={(e) => setNewQuestionTitle(e.target.value)}
+                  placeholder="عنوان سوال خود را وارد کنید..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  maxLength={200}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  متن سوال *
+                </label>
+                <RichTextEditor
+                  value={newQuestionContent}
+                  onChange={setNewQuestionContent}
+                  placeholder="سوال خود را بنویسید..."
+                  height="150px"
+                />
+              </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setIsQuestionDialogOpen(false)}>
                   انصراف
                 </Button>
                 <Button
                   onClick={handleCreateQuestion}
-                  disabled={!newQuestionContent.trim() || createQuestionMutation.isPending}
+                  disabled={!newQuestionTitle.trim() || !newQuestionContent.trim() || createQuestionMutation.isPending}
                 >
                   {createQuestionMutation.isPending ? 'در حال ثبت...' : 'ثبت سوال'}
                 </Button>
@@ -117,7 +136,6 @@ export const QATab: React.FC<QATabProps> = ({ exercise }) => {
               isExpanded={expandedReplies.has(question.id)}
               onToggleExpand={() => toggleReplies(question.id)}
               onVote={(voteType) => voteMutation.mutate({ questionId: question.id, voteType })}
-              onDelete={() => deleteMutation.mutate(question.id)}
             />
           ))}
         </div>
@@ -132,10 +150,9 @@ interface QuestionCardProps {
   isExpanded: boolean;
   onToggleExpand: () => void;
   onVote: (voteType: 'upvote' | 'downvote') => void;
-  onDelete: () => void;
 }
 
-const QuestionCard: React.FC<QuestionCardProps> = ({ question, exercise, isExpanded, onToggleExpand, onVote, onDelete }) => {
+const QuestionCard: React.FC<QuestionCardProps> = ({ question, exercise, isExpanded, onToggleExpand, onVote }) => {
   const { data: replies = [], isLoading: repliesLoading } = useQuestionReplies(question.id, isExpanded);
   const createReplyMutation = useCreateReply();
   
@@ -179,6 +196,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, exercise, isExpan
                   {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: faIR })}
                 </span>
               </div>
+              {question.title && (
+                <h4 className="font-semibold text-gray-900 mb-2">{question.title}</h4>
+              )}
               <div
                 className="text-sm text-gray-700"
                 dangerouslySetInnerHTML={{ __html: question.content }}
