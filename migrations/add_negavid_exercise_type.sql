@@ -10,7 +10,7 @@ BEGIN
     -- Add the new constraint with negavid included
     ALTER TABLE exercises 
     ADD CONSTRAINT exercises_exercise_type_check
-    CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'iframe', 'negavid'));
+    CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'iframe', 'arvan_video', 'negavid'));
     
     RAISE NOTICE 'Successfully added negavid to exercise_type check constraint';
 END $$;

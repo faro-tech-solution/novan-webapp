@@ -1,5 +1,4 @@
 import { MyExerciseWithSubmission, Exercise, ExerciseType } from '@/types/exercise';
-import { estimatedTimeToMinutes } from './estimatedTimeUtils';
 
 export interface ExerciseStats {
   totalExercises: number;
@@ -18,7 +17,7 @@ export interface CategoryExerciseStats {
 }
 
 // Video exercise types
-const VIDEO_EXERCISE_TYPES: ExerciseType[] = ['video', 'negavid', 'iframe'];
+const VIDEO_EXERCISE_TYPES: ExerciseType[] = ['video', 'arvan_video', 'negavid', 'iframe'];
 
 // Text exercise types
 const TEXT_EXERCISE_TYPES: ExerciseType[] = ['form', 'simple'];
@@ -42,7 +41,12 @@ export const calculateOverallExerciseStats = (
   
   // Calculate total video duration in minutes (converting from seconds)
   const totalVideoDuration = videoExercises.reduce((total, ex) => {
-    return total + estimatedTimeToMinutes(ex.estimated_time);
+    const timeStr = ex.estimated_time || '0';
+    // Parse the time string - it should be in seconds
+    const timeInSeconds = parseFloat(timeStr) || 0;
+    
+    // Convert seconds to minutes
+    return total + (timeInSeconds / 60);
   }, 0);
   
   // Calculate completion percentage (only for exercises with submission status)
@@ -86,7 +90,12 @@ export const calculateCategoryExerciseStats = (
   
   // Calculate total video duration in minutes (converting from seconds)
   const totalVideoDuration = videoExercises.reduce((total, ex) => {
-    return total + estimatedTimeToMinutes(ex.estimated_time);
+    const timeStr = ex.estimated_time || '0';
+    // Parse the time string - it should be in seconds
+    const timeInSeconds = parseFloat(timeStr) || 0;
+    
+    // Convert seconds to minutes
+    return total + (timeInSeconds / 60);
   }, 0);
   
   // Calculate completion percentage (only for exercises with submission status)

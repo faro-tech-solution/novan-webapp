@@ -1,12 +1,15 @@
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FilePreviewList } from '@/components/ui/FilePreviewList';
 import { useAuth } from '@/contexts/AuthContext';
 import { TraineeExerciseForm } from '../TraineeExerciseForm';
 import { FormAnswer } from '@/types/formBuilder';
 import { ExerciseDetail } from '@/types/exercise';
+import { formatExerciseTitleWithNumber } from '@/utils/exerciseOrderUtils';
 
 interface ExerciseInfoCardProps {
+  title: string;
+  courseName: string;
   description?: string | null;
   exercise: ExerciseDetail;
   answers: FormAnswer[];
@@ -16,6 +19,8 @@ interface ExerciseInfoCardProps {
 }
 
 export const ExerciseInfoCard = ({
+  title,
+  courseName,
   description,
   exercise,
   answers,
@@ -25,11 +30,22 @@ export const ExerciseInfoCard = ({
 }: ExerciseInfoCardProps) => {
   const { profile, user } = useAuth();
 
+  // Format title with number if order_index is available
+  const displayTitle = exercise.order_index 
+    ? formatExerciseTitleWithNumber(title, exercise.order_index)
+    : title;
+
   return (
     <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl">{displayTitle}</CardTitle>
+        <CardDescription className="text-base space-y-2">
+          <div>درس: {courseName}</div>
+        </CardDescription>
+      </CardHeader>
       <CardContent>
         {description && (
-          <div className="bg-gray-50 p-4 rounded-lg mb-4">
+          <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-semibold mb-2">توضیحات تمرین:</h4>
             <div 
               className="text-sm text-gray-700"

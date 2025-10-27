@@ -2,11 +2,6 @@
 import { Badge } from '@/components/ui/badge';
 
 import { translateDifficultyToDisplay } from '@/utils/difficultyTranslation';
-import { 
-  translateSubmissionStatusToDisplay, 
-  getSubmissionStatusColor, 
-  getSubmissionStatusHoverColor 
-} from '@/utils/submissionStatusTranslation';
 
 export const getStatusBadge = (status: string) => {
   switch (status) {
@@ -49,16 +44,4 @@ export const getDifficultyBadge = (difficulty: string | null) => {
     default:
       return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{displayText}</Badge>;
   }
-};
-
-export const getSubmissionStatusBadge = (status: string | null) => {
-  const displayText = translateSubmissionStatusToDisplay(status);
-  const colorClass = getSubmissionStatusColor(status);
-  const hoverClass = getSubmissionStatusHoverColor(status);
-  
-  if (!status) {
-    return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{displayText}</Badge>;
-  }
-  
-  return <Badge className={`${colorClass} ${hoverClass} transition-colors`}>{displayText}</Badge>;
 };

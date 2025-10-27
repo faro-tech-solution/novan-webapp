@@ -25,6 +25,15 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
   try {
     const metadata: any = {};
     
+
+
+    // Add Arvan Video metadata if it's an Arvan Video exercise
+    if (exerciseData.exercise_type === 'arvan_video') {
+      if (exerciseData.arvan_video_id) {
+        metadata.arvan_video_id = exerciseData.arvan_video_id;
+      }
+    }
+
     // Add Negavid Video metadata if it's a Negavid Video exercise
     if (exerciseData.exercise_type === 'negavid') {
       if (exerciseData.negavid_video_id) {

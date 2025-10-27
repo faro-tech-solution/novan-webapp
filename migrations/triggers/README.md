@@ -11,7 +11,6 @@ This directory contains all database triggers organized by category. These trigg
 - `04_accounting_triggers.sql` - Financial and payment triggers
 - `05_activity_triggers.sql` - Activity logging triggers
 - `06_updated_at_triggers.sql` - Timestamp management triggers
-- `07_exercise_qa_triggers.sql` - Exercise Q&A system triggers
 
 ## Trigger Categories
 
@@ -44,12 +43,6 @@ This directory contains all database triggers organized by category. These trigg
   - course_enrollments
   - accounting
 
-### Exercise Q&A System Triggers
-- `trigger_update_qa_vote_count` - Automatically updates vote counts when votes change
-- `set_updated_at_qa` - Updates timestamp when Q&A posts are modified
-- `trigger_notify_trainer_new_question` - Sends notification to instructor for new questions
-- `trigger_notify_answer_to_question` - Sends notification to parent author for new replies
-
 ## Usage
 
 ### Apply All Triggers
@@ -69,7 +62,6 @@ To apply triggers by category:
 \i migrations/triggers/04_accounting_triggers.sql
 \i migrations/triggers/05_activity_triggers.sql
 \i migrations/triggers/06_updated_at_triggers.sql
-\i migrations/triggers/07_exercise_qa_triggers.sql
 ```
 
 ### Using Supabase CLI
@@ -132,30 +124,6 @@ psql -d your_database -f migrations/triggers/00_all_triggers.sql
 - **Function**: `set_updated_at()`
 - **Purpose**: Automatically updates timestamp when records are modified
 
-### Exercise Q&A Vote Count Trigger
-- **Table**: `exercise_qa_vote`
-- **Event**: `AFTER INSERT OR UPDATE OR DELETE`
-- **Function**: `update_qa_vote_count()`
-- **Purpose**: Automatically calculates and updates vote counts
-
-### Exercise Q&A Timestamp Trigger
-- **Table**: `exercise_qa`
-- **Event**: `BEFORE UPDATE`
-- **Function**: `update_updated_at_column()`
-- **Purpose**: Updates timestamp when Q&A posts are modified
-
-### Exercise Q&A Question Notification Trigger
-- **Table**: `exercise_qa`
-- **Event**: `AFTER INSERT`
-- **Function**: `notify_trainer_new_question()`
-- **Purpose**: Sends notification to instructor when new questions are posted
-
-### Exercise Q&A Reply Notification Trigger
-- **Table**: `exercise_qa`
-- **Event**: `AFTER INSERT`
-- **Function**: `notify_answer_to_question()`
-- **Purpose**: Sends notification to parent author when someone replies
-
 ## Troubleshooting
 
 If you encounter errors when applying triggers:
@@ -167,7 +135,6 @@ If you encounter errors when applying triggers:
 
 ## Recent Changes
 
-- Added Exercise Q&A system triggers for voting, notifications, and timestamp management
 - Organized triggers by functional category
 - Added comprehensive DROP statements for clean replacement
 - Aligned all triggers with current database schema

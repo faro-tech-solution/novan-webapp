@@ -10,7 +10,6 @@ This directory contains all database functions organized by category. These func
 - `03_notification_system.sql` - Notification creation and management functions
 - `04_accounting_system.sql` - Financial and balance calculation functions
 - `05_utility_functions.sql` - General utility and helper functions
-- `06_exercise_qa_functions.sql` - Exercise Q&A system functions
 
 ## Function Categories
 
@@ -42,11 +41,6 @@ This directory contains all database functions organized by category. These func
 - `log_student_activity(p_student_id UUID, p_activity_type TEXT, ...)` - Logs student activities
 - `handle_exercise_submission_activity()` - Handles exercise submission logging
 
-### Exercise Q&A System Functions
-- `update_qa_vote_count()` - Automatically updates vote counts when votes are added, changed, or removed
-- `notify_trainer_new_question()` - Sends notification to instructor when a new question is posted
-- `notify_answer_to_question()` - Sends notification to parent post author when someone replies
-
 ## Usage
 
 ### Apply All Functions
@@ -62,7 +56,6 @@ To apply functions by category:
 ```sql
 \i migrations/functions/01_user_management.sql
 \i migrations/functions/02_achievement_system.sql
-\i migrations/functions/06_exercise_qa_functions.sql
 -- etc.
 ```
 
@@ -78,7 +71,6 @@ To apply functions by category:
 
 ## Recent Changes
 
-- Added Exercise Q&A system functions for threaded discussions, voting, and bookmarking
 - Removed name-related column references from functions
 - Updated achievement system to use award codes instead of names
 - Aligned all functions with current database schema
