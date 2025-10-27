@@ -152,7 +152,7 @@ const Login = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>تایید امنیتی</Label>
+                <Label>تایید امنیتی </Label>
                 <TurnstileCaptcha
                   ref={captchaRef}
                   siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
