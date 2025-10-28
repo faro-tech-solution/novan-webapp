@@ -152,11 +152,18 @@ const register = async (
 
 ### Local Development
 
-For local testing, you may need to:
+**Development Mode Behavior:**
+- CAPTCHA is **automatically disabled** when not in production mode (`NODE_ENV !== 'production'`)
+- No CAPTCHA verification is required for login/registration during development
+- This makes local development easier without needing to configure Turnstile for localhost
+
+**For Production-like Testing:**
+If you need to test CAPTCHA functionality locally:
 
 1. Use a tool like ngrok to expose your local development server
 2. Add your ngrok URL to the Turnstile site configuration
 3. Or add `localhost` to your Turnstile site's allowed domains
+4. Set `NODE_ENV=production` in your local environment
 
 ### Production
 

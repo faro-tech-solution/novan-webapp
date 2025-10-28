@@ -45,15 +45,13 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
 
     
 
-    // Parse metadata to extract Arvan Video and Negavid Video fields
-    let arvan_video_id = "";
+    // Parse metadata to extract Negavid Video fields
     let negavid_video_id = "";
     let attachments: string[] = [];
     if (data.metadata) {
       const metadata = typeof data.metadata === 'string' 
         ? JSON.parse(data.metadata) 
         : data.metadata;
-      arvan_video_id = metadata?.arvan_video_id || "";
       negavid_video_id = metadata?.negavid_video_id || "";
       attachments = metadata?.attachments || [];
     }
@@ -63,7 +61,6 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
       course_name: data.courses.name,
       form_structure: parseFormStructure(data.form_structure),
       attachments: attachments,
-      arvan_video_id,
       negavid_video_id
     } as any as Exercise;
   } catch (error) {
@@ -129,14 +126,12 @@ export const fetchExercises = async (courseId?: string, userId?: string): Promis
 
     // Sort exercises within each category
     const exercises = (data || []).map((exercise: any) => {
-      // Parse metadata to extract Arvan Video fields
-      let arvan_video_id = "";
+      // Parse metadata to extract Negavid Video fields
       let attachments: string[] = [];
       if (exercise.metadata) {
         const metadata = typeof exercise.metadata === 'string' 
           ? JSON.parse(exercise.metadata) 
           : exercise.metadata;
-        arvan_video_id = metadata?.arvan_video_id || "";
         attachments = metadata?.attachments || [];
       }
 
@@ -160,7 +155,6 @@ export const fetchExercises = async (courseId?: string, userId?: string): Promis
         category_name: exercise.exercise_categories?.name,
         form_structure: parseFormStructure(exercise.form_structure),
         attachments: attachments,
-        arvan_video_id,
         submission_status,
         score
       };
@@ -223,15 +217,12 @@ export const getNextExercise = async (currentExerciseId: string, courseId: strin
       return null;
     }
 
-    // Parse metadata to extract Arvan Video and Negavid Video fields
-    let arvan_video_id = "";
     let negavid_video_id = "";
     let attachments: string[] = [];
     if (nextExercise.metadata) {
       const metadata = typeof nextExercise.metadata === 'string' 
         ? JSON.parse(nextExercise.metadata) 
         : nextExercise.metadata;
-      arvan_video_id = metadata?.arvan_video_id || "";
       negavid_video_id = metadata?.negavid_video_id || "";
       attachments = metadata?.attachments || [];
     }
@@ -241,7 +232,6 @@ export const getNextExercise = async (currentExerciseId: string, courseId: strin
       course_name: nextExercise.courses.name,
       form_structure: parseFormStructure(nextExercise.form_structure),
       attachments: attachments,
-      arvan_video_id,
       negavid_video_id
     } as any as Exercise;
   } catch (error) {

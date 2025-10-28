@@ -1,0 +1,1 @@
+export { NotesManager } from './NotesManager';

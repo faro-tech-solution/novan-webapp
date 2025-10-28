@@ -10,7 +10,7 @@ DROP CONSTRAINT IF EXISTS exercises_exercise_type_check;
 -- Add the new constraint without 'spotplayer'
 ALTER TABLE public.exercises 
 ADD CONSTRAINT exercises_exercise_type_check 
-CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'iframe', 'arvan_video'));
+CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'iframe'));
 
 -- Update any existing spotplayer exercises to 'simple' type
 UPDATE public.exercises 

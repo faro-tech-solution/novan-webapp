@@ -12,3 +12,6 @@ export function getDashboardPathForRole(role: string): string {
       return '/portal/login';
   }
 } 
+
+// Export Q&A helper functions
+export * from './qa-helpers'; 
