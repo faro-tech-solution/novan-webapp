@@ -11,6 +11,7 @@ import {
   BookOpen,
   FileText,
   Award,
+  MessageSquare,
 } from "lucide-react";
 import Link from 'next/link';
 
@@ -98,9 +99,23 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-
-
-
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">پرسش و پاسخ</CardTitle>
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">مدیریت</div>
+              <p className="text-xs text-muted-foreground">
+                سوالات و پاسخ‌های دانشجویان
+              </p>
+              <Link href="/portal/admin/qa-management">
+                <Button variant="outline" size="sm" className="mt-2">
+                  مشاهده
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </DashboardLayout>

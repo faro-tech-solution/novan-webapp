@@ -19,7 +19,6 @@ A modern Next.js-based learning management system built with TypeScript, Tailwin
 - **Audio**: Audio-based exercises
 - **Simple**: Basic text-based exercises
 - **Iframe**: Embedded content exercises
-- **Arvan Video**: Video streaming integration
 
 ## 🛠️ Tech Stack
 

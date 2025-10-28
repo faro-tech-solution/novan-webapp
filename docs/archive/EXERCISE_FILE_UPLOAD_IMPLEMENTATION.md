@@ -30,7 +30,6 @@ Implemented file upload functionality for exercise creation and editing in the a
 -- Attachments are stored in the metadata JSON field
 metadata: {
   "attachments": ["url1", "url2", "url3"],
-  "arvan_video_id": "video_id" // existing field
 }
 ```
 

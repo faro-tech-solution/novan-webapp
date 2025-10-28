@@ -401,9 +401,6 @@ export type Database = {
           course_id: string
           created_at: string
           created_by: string
-          days_to_close: number
-          days_to_due: number
-          days_to_open: number
           description: string | null
           difficulty: string | null
           estimated_time: string
@@ -424,9 +421,6 @@ export type Database = {
           course_id: string
           created_at?: string
           created_by: string
-          days_to_close: number
-          days_to_due: number
-          days_to_open: number
           description?: string | null
           difficulty: string | null
           estimated_time?: string
@@ -447,11 +441,8 @@ export type Database = {
           course_id?: string
           created_at?: string
           created_by?: string
-          days_to_close?: number
-          days_to_due?: number
-          days_to_open?: number
           description?: string | null
-          difficulty?: string
+          difficulty?: string | null
           estimated_time?: string
           exercise_type?: string
           form_structure?: Json | null
@@ -1052,6 +1043,422 @@ export type Database = {
           }
         ];
       };
+      notifications: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          receiver_id: string;
+          is_read: boolean;
+          created_at: string;
+          read_at: string | null;
+          type: string;
+          metadata: Json | null;
+          sender_id: string | null;
+          priority: string | null;
+          course_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          receiver_id: string;
+          is_read?: boolean;
+          created_at?: string;
+          read_at?: string | null;
+          type: string;
+          metadata?: Json | null;
+          sender_id?: string | null;
+          priority?: string | null;
+          course_id?: string | null;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          receiver_id?: string;
+          is_read?: boolean;
+          created_at?: string;
+          read_at?: string | null;
+          type?: string;
+          metadata?: Json | null;
+          sender_id?: string | null;
+          priority?: string | null;
+          course_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_receiver_id_fkey";
+            columns: ["receiver_id"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_sender_id_fkey";
+            columns: ["sender_id"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_course_id_fkey";
+            columns: ["course_id"];
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      products: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string;
+          description: string | null;
+          thumbnail: string | null;
+          product_type: string;
+          file_url: string | null;
+          author: string | null;
+          category: string | null;
+          tags: string[] | null;
+          duration: number | null;
+          file_size: number | null;
+          price: number;
+          access_level: string;
+          is_featured: boolean;
+          status: string;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          description?: string | null;
+          thumbnail?: string | null;
+          product_type?: string;
+          file_url?: string | null;
+          author?: string | null;
+          category?: string | null;
+          tags?: string[] | null;
+          duration?: number | null;
+          file_size?: number | null;
+          price?: number;
+          access_level?: string;
+          is_featured?: boolean;
+          status?: string;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          slug?: string;
+          description?: string | null;
+          thumbnail?: string | null;
+          product_type?: string;
+          file_url?: string | null;
+          author?: string | null;
+          category?: string | null;
+          tags?: string[] | null;
+          duration?: number | null;
+          file_size?: number | null;
+          price?: number;
+          access_level?: string;
+          is_featured?: boolean;
+          status?: string;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "products_created_by_fkey";
+            columns: ["created_by"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      exercise_qa: {
+        Row: {
+          id: string;
+          title: string | null;
+          description: string;
+          exercise_id: string;
+          user_id: string;
+          parent_id: string | null;
+          vote_count: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title?: string | null;
+          description: string;
+          exercise_id: string;
+          user_id: string;
+          parent_id?: string | null;
+          vote_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string | null;
+          description?: string;
+          exercise_id?: string;
+          user_id?: string;
+          parent_id?: string | null;
+          vote_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_qa_exercise_id_fkey";
+            columns: ["exercise_id"];
+            referencedRelation: "exercises";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_qa_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_qa_parent_id_fkey";
+            columns: ["parent_id"];
+            referencedRelation: "exercise_qa";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      exercise_qa_vote: {
+        Row: {
+          id: string;
+          exercise_qa_id: string;
+          user_id: string;
+          vote_type: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          exercise_qa_id: string;
+          user_id: string;
+          vote_type: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          exercise_qa_id?: string;
+          user_id?: string;
+          vote_type?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_qa_vote_exercise_qa_id_fkey";
+            columns: ["exercise_qa_id"];
+            referencedRelation: "exercise_qa";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_qa_vote_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      exercise_notes: {
+        Row: {
+          id: string;
+          exercise_id: string | null;
+          course_id: string;
+          user_id: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          exercise_id?: string | null;
+          course_id: string;
+          user_id: string;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          exercise_id?: string | null;
+          course_id?: string;
+          user_id?: string;
+          content?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_notes_exercise_id_fkey";
+            columns: ["exercise_id"];
+            referencedRelation: "exercises";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_notes_course_id_fkey";
+            columns: ["course_id"];
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_notes_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      exercise_questions: {
+        Row: {
+          id: string;
+          exercise_id: string;
+          course_id: string;
+          user_id: string;
+          parent_id: string | null;
+          content: string;
+          upvotes: number;
+          downvotes: number;
+          is_deleted: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          exercise_id: string;
+          course_id: string;
+          user_id: string;
+          parent_id?: string | null;
+          content: string;
+          upvotes?: number;
+          downvotes?: number;
+          is_deleted?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          exercise_id?: string;
+          course_id?: string;
+          user_id?: string;
+          parent_id?: string | null;
+          content?: string;
+          upvotes?: number;
+          downvotes?: number;
+          is_deleted?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_questions_exercise_id_fkey";
+            columns: ["exercise_id"];
+            referencedRelation: "exercises";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_questions_course_id_fkey";
+            columns: ["course_id"];
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_questions_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_questions_parent_id_fkey";
+            columns: ["parent_id"];
+            referencedRelation: "exercise_questions";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      exercise_question_votes: {
+        Row: {
+          id: string;
+          question_id: string;
+          user_id: string;
+          vote_type: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          question_id: string;
+          user_id: string;
+          vote_type: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          question_id?: string;
+          user_id?: string;
+          vote_type?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_question_votes_question_id_fkey";
+            columns: ["question_id"];
+            referencedRelation: "exercise_questions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_question_votes_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      exercise_qa_bookmark: {
+        Row: {
+          id: string;
+          qa_id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          qa_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          qa_id?: string;
+          user_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_qa_bookmark_qa_id_fkey";
+            columns: ["qa_id"];
+            referencedRelation: "exercise_qa";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_qa_bookmark_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
 
     }
     Views: {
@@ -1080,6 +1487,30 @@ export type Database = {
           p_duration_minutes?: number
         }
         Returns: string
+      }
+      moderate_question: {
+        Args: { question_id: string; action: string }
+        Returns: undefined
+      }
+      send_notification: {
+        Args: {
+          p_receiver_id: string
+          p_title: string
+          p_description?: string
+          p_type?: string
+          p_metadata?: Json
+          p_sender_id?: string
+          p_course_id?: string
+        }
+        Returns: string
+      }
+      update_exercise_order: {
+        Args: { p_course_id: string }
+        Returns: undefined
+      }
+      calculate_exercise_order: {
+        Args: { p_exercise_id: string }
+        Returns: number
       }
     }
     Enums: {

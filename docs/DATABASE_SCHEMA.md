@@ -121,7 +121,7 @@ CREATE TABLE public.exercises (
   created_by UUID REFERENCES auth.users(id) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  exercise_type TEXT DEFAULT 'form' CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'iframe', 'arvan_video')),
+  exercise_type TEXT DEFAULT 'form' CHECK (exercise_type IN ('form', 'video', 'audio', 'simple', 'iframe')),
   content_url TEXT,
   auto_grade BOOLEAN DEFAULT FALSE,
   course_id UUID NOT NULL REFERENCES courses(id),

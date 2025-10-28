@@ -10,7 +10,7 @@ export interface ExerciseData {
   created_at: string;
   updated_at: string;
   created_by: string;
-  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'arvan_video' | 'negavid';
+  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'negavid';
   content_url?: string | null;
   auto_grade: boolean;
   courses: {

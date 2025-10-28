@@ -22,7 +22,7 @@ const formSchema = z.object({
 
   points: z.number().min(1, "امتیاز باید بین 1 تا 250 باشد").max(250, "امتیاز باید بین 1 تا 250 باشد"),
   estimated_time: z.number().min(0, "زمان تخمینی باید بر حسب ثانیه و ۰ یا بیشتر باشد"),
-  exercise_type: z.enum(["form", "video", "audio", "simple", "iframe", "arvan_video", "negavid"] as const),
+  exercise_type: z.enum(["form", "video", "audio", "simple", "iframe", "negavid"] as const),
   content_url: z
     .string()
     .url("آدرس محتوا باید URL معتبر باشد")
@@ -36,7 +36,6 @@ const formSchema = z.object({
     .transform((val) => val as ExerciseForm),
 
   iframe_html: z.string().optional(),
-  arvan_video_id: z.string().optional(),
   negavid_video_id: z.string().optional(),
   attachments: z.array(z.string()).default([]), // Array of uploaded file URLs
 });
@@ -80,7 +79,6 @@ export const CreateExerciseForm = ({
       form_structure: { questions: [] },
       
       iframe_html: "",
-      arvan_video_id: "",
       negavid_video_id: "",
       attachments: [],
     },
