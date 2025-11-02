@@ -38,6 +38,8 @@ const formSchema = z.object({
   iframe_html: z.string().optional(),
   negavid_video_id: z.string().optional(),
   attachments: z.array(z.string()).default([]), // Array of uploaded file URLs
+  is_exercise: z.boolean().default(false),
+  transcription: z.string().optional().nullable(),
 });
 
 export type CreateExerciseFormData = z.infer<typeof formSchema>;
@@ -81,6 +83,8 @@ export const CreateExerciseForm = ({
       iframe_html: "",
       negavid_video_id: "",
       attachments: [],
+      is_exercise: false,
+      transcription: null,
     },
   });
 

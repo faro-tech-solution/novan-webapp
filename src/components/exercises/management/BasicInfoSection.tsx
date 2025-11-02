@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { FileUpload } from '@/components/ui/FileUpload';
 import { FilePreviewList } from '@/components/ui/FilePreviewList';
+import { Textarea } from '@/components/ui/textarea';
 import { UseFormReturn } from 'react-hook-form';
 import { CreateExerciseFormData } from './CreateExerciseForm';
 
@@ -65,6 +66,25 @@ export const BasicInfoSection = ({
                 onChange={field.onChange}
                 placeholder="توضیحات کاملی از تمرین ارائه دهید..."
                 height="120px"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="transcription"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>رونوشت ویدیو (Transcription)</FormLabel>
+            <FormControl>
+              <Textarea 
+                placeholder="رونوشت کامل ویدیو را اینجا وارد کنید..."
+                className="min-h-[150px]"
+                {...field}
+                value={field.value || ''}
               />
             </FormControl>
             <FormMessage />

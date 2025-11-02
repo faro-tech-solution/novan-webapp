@@ -47,6 +47,8 @@ export interface Exercise {
   course_name?: string;
   category_name?: string;
   negavid_video_id?: string;
+  is_exercise?: boolean;
+  transcription?: string | null;
 }
 
 // Exercise with course information from database
@@ -128,4 +130,6 @@ export interface ExerciseDetail {
   order_index?: number; // Calculated order based on category order and exercise order within category
   updated_at?: string;
   created_at?: string;
+  is_exercise?: boolean;
+  transcription?: string | null;
 }
