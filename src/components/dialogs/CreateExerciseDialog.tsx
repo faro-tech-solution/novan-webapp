@@ -50,6 +50,8 @@ const CreateExerciseDialog = ({
           content_url: data.content_url,
           auto_grade: data.auto_grade,
           form_structure: data.form_structure || { questions: [] },
+          is_exercise: data.is_exercise !== undefined ? data.is_exercise : false,
+          transcription: data.transcription || null,
         };
 
         await createExercise(exerciseData);

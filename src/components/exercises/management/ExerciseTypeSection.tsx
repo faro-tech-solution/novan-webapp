@@ -151,13 +151,37 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                    <FormLabel>نمره‌دهی خودکار</FormLabel><br />
-                    <FormLabel className="text-sm text-muted-foreground">
+                  <div className="space-y-1 leading-none">  
+                    <FormLabel>نمره‌دهی خودکار</FormLabel>
+                    <p className="text-sm text-muted-foreground">
                       دانشجو بلافاصله پس از تکمیل تمرین، نمره خود را دریافت می‌کند و
                       نیازی به بررسی مدرس نیست
-                    </FormLabel>
+                    </p>
+                  </div>
                 </FormItem>
               )}}
+            />
+
+            <FormField
+              control={form.control}
+              name="is_exercise"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-x-reverse bg-gray-100 p-4 rounded-md">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>این یک تمرین است</FormLabel>
+                    <p className="text-sm text-muted-foreground">
+                      اگر این گزینه غیرفعال باشد، این آیتم به عنوان درس عادی در نظر گرفته می‌شود
+                    </p>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             {(exerciseType === "video" || exerciseType === "audio") && (

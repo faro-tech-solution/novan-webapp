@@ -19,6 +19,8 @@ export interface CreateExerciseData {
 
   negavid_video_id?: string;
   attachments?: string[]; // Array of uploaded file URLs
+  is_exercise?: boolean;
+  transcription?: string | null;
 }
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
@@ -76,6 +78,8 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       form_structure: JSON.stringify(exerciseData.formStructure || { questions: [] }),
       metadata: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null,
       created_by: createdBy,
+      is_exercise: exerciseData.is_exercise !== undefined ? exerciseData.is_exercise : false,
+      transcription: exerciseData.transcription || null,
     };
 
     console.log('Final metadata:', metadata);
