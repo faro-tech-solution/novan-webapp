@@ -53,7 +53,10 @@ export const UpcomingExercisesCard = ({ exercises, className = '' }: UpcomingExe
   const role = profile?.role || 'trainee';
 
   // Filter exercises that are not completed
-  const incompleteExercises = exercises.filter(ex => ex.submission_status !== 'completed').slice(0, 3);
+  // RLS policies automatically filter out disabled exercises for trainees
+  const incompleteExercises = exercises.filter(ex => 
+    ex.submission_status !== 'completed'
+  ).slice(0, 3);
 
   return (
     <div className={`min-w-0 ${className}`}>

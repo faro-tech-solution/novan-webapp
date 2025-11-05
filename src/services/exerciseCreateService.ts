@@ -21,6 +21,7 @@ export interface CreateExerciseData {
   attachments?: string[]; // Array of uploaded file URLs
   is_exercise?: boolean;
   transcription?: string | null;
+  is_disabled?: boolean;
 }
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
@@ -80,6 +81,7 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
       created_by: createdBy,
       is_exercise: exerciseData.is_exercise !== undefined ? exerciseData.is_exercise : false,
       transcription: exerciseData.transcription || null,
+      is_disabled: exerciseData.is_disabled !== undefined ? exerciseData.is_disabled : false,
     };
 
     console.log('Final metadata:', metadata);

@@ -88,7 +88,8 @@ export const useExercisesQuery = (courseId?: string) => {
         attachments: data.attachments || [],
         negavid_video_id: data.negavid_video_id,
         is_exercise: data.is_exercise !== undefined ? data.is_exercise : false,
-        transcription: data.transcription || null
+        transcription: data.transcription || null,
+        is_disabled: data.is_disabled !== undefined ? data.is_disabled : false
       });
     },
     onSuccess: () => {

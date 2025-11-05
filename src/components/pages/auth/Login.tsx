@@ -36,9 +36,6 @@ const Login = () => {
   // Check if we're in production (captcha required)
   const isProduction = process.env.NODE_ENV === 'production';
 
-  // Add debugging logs
-  console.log("Login component - profile:", profile);
-
   // Redirect if already logged in
   useEffect(() => {
     if (!profile) return;

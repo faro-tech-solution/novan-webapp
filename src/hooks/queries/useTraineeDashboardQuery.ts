@@ -28,6 +28,7 @@ export const useTraineeDashboardQuery = () => {
   });
 
   // Get incomplete exercises (not completed) - limit to 3
+  // RLS policies automatically filter out disabled exercises for trainees
   const incompleteExercises = myExercises
     .filter(ex => ex.submission_status !== 'completed')
     .sort((a, b) => a.id.localeCompare(b.id))

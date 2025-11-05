@@ -40,6 +40,7 @@ const formSchema = z.object({
   attachments: z.array(z.string()).default([]), // Array of uploaded file URLs
   is_exercise: z.boolean().default(false),
   transcription: z.string().optional().nullable(),
+  is_disabled: z.boolean().default(false),
 });
 
 export type CreateExerciseFormData = z.infer<typeof formSchema>;
@@ -85,6 +86,7 @@ export const CreateExerciseForm = ({
       attachments: [],
       is_exercise: false,
       transcription: null,
+      is_disabled: false,
     },
   });
 

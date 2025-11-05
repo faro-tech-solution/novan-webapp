@@ -54,6 +54,7 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
       metadata: Object.keys(metadata).length > 0 ? JSON.stringify(metadata) : null,
       is_exercise: exerciseData.is_exercise !== undefined ? exerciseData.is_exercise : false,
       transcription: exerciseData.transcription !== undefined ? exerciseData.transcription : null,
+      is_disabled: exerciseData.is_disabled !== undefined ? exerciseData.is_disabled : false,
       updated_at: new Date().toISOString(),
     };
 

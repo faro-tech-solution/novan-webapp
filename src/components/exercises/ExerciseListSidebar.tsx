@@ -22,6 +22,7 @@ const ExerciseListSidebar: React.FC<ExerciseListSidebarProps> = ({
   courseId,
 }) => {
   const router = useRouter();
+  // RLS policies automatically filter out disabled exercises for trainees
   const { exercises = [], loading } = useExercisesQuery(courseId);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
