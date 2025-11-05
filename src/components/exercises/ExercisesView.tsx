@@ -109,6 +109,7 @@ export const ExercisesView = ({
   }, [localExercises]);
 
   // Get exercises to display based on selected category
+  // RLS policies automatically filter out disabled exercises for trainees
   const displayedExercises = useMemo(() => {
     if (selectedCategoryId === 'all') {
       // For trainee role, show only uncompleted exercises (next 10)

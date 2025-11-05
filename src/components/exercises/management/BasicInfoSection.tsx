@@ -5,6 +5,7 @@ import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { FileUpload } from '@/components/ui/FileUpload';
 import { FilePreviewList } from '@/components/ui/FilePreviewList';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { UseFormReturn } from 'react-hook-form';
 import { CreateExerciseFormData } from './CreateExerciseForm';
 
@@ -88,6 +89,27 @@ export const BasicInfoSection = ({
               />
             </FormControl>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="is_disabled"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-start space-x-3 space-x-reverse bg-gray-100 p-4 rounded-md">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="space-y-1 leading-none">  
+              <FormLabel>غیرفعال کردن تمرین</FormLabel>
+              <p className="text-sm text-muted-foreground">
+                تمرین‌های غیرفعال برای دانشجویان نمایش داده نمی‌شوند، اما برای مدیران و مربیان قابل مشاهده هستند
+              </p>
+            </div>
           </FormItem>
         )}
       />

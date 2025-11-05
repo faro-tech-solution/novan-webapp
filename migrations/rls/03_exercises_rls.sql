@@ -61,10 +61,29 @@ FOR SELECT USING (
 -- ========================================
 
 -- Policy 4: Users can view exercises (needed for dashboards)
--- All authenticated users can view exercises
+-- Trainees can view non-disabled exercises only
+-- Admins and trainers can see all exercises (including disabled ones)
 CREATE POLICY "Users can view exercises" ON exercises
 FOR SELECT USING (
   auth.role() = 'authenticated'
+  AND (
+    -- Admins and trainers can see all exercises (including disabled)
+    EXISTS (
+      SELECT 1 FROM profiles 
+      WHERE id = auth.uid() 
+      AND role IN ('admin', 'trainer')
+    )
+    OR
+    -- Trainees can only see non-disabled exercises
+    (
+      NOT EXISTS (
+        SELECT 1 FROM profiles 
+        WHERE id = auth.uid() 
+        AND role IN ('admin', 'trainer')
+      )
+      AND is_disabled = false
+    )
+  )
 );
 
 -- ========================================

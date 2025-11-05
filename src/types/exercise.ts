@@ -49,6 +49,7 @@ export interface Exercise {
   negavid_video_id?: string;
   is_exercise?: boolean;
   transcription?: string | null;
+  is_disabled?: boolean;
 }
 
 // Exercise with course information from database
@@ -102,6 +103,7 @@ export interface MyExerciseWithSubmission {
   submission_status: SubmissionStatusType;
   order_index?: number; // Calculated order based on category order and exercise order within category
   created_at: string;
+  is_disabled?: boolean;
 }
 
 // For exercise detail service

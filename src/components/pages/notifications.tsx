@@ -17,7 +17,6 @@ export default function NotificationsPage() {
   const router = useRouter();
   const translateNotification = useNotificationTranslation();
 
-  console.log({notifications, loading})
   useEffect(() => {
     fetchNotifications();
 
