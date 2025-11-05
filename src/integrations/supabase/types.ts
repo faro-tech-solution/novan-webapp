@@ -1107,6 +1107,60 @@ export type Database = {
           }
         ];
       };
+      reported_issues: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string
+          status: 'open' | 'in_progress' | 'resolved' | 'closed'
+          admin_notes: string | null
+          created_at: string
+          updated_at: string
+          resolved_at: string | null
+          resolved_by: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description: string
+          status?: 'open' | 'in_progress' | 'resolved' | 'closed'
+          admin_notes?: string | null
+          created_at?: string
+          updated_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string
+          status?: 'open' | 'in_progress' | 'resolved' | 'closed'
+          admin_notes?: string | null
+          created_at?: string
+          updated_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reported_issues_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reported_issues_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          },
+        ]
+      };
       products: {
         Row: {
           id: string;
