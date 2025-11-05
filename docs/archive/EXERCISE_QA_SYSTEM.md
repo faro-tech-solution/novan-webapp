@@ -231,4 +231,3 @@ Single table stores all content using parent_id relationships, simplifying queri
 3. Delete any post if needed for moderation
 4. View individual vote details for analytics
 5. Manage Q&A system across entire platform
-

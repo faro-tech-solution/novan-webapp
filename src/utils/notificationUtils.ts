@@ -17,7 +17,6 @@ export async function handleNotificationClick(
     setIsOpen?: (open: boolean) => void;
   }
 ) {
-  console.log("notification", notification);
   try {
     if (!notification.is_read) {
       await NotificationService.markAsRead(notification.id);

@@ -44,6 +44,8 @@ export const fetchExerciseById = async (exerciseId: string): Promise<Exercise> =
     }
 
     
+
+    // Parse metadata to extract Negavid Video fields
     let negavid_video_id = "";
     let attachments: string[] = [];
     if (data.metadata) {
@@ -124,6 +126,7 @@ export const fetchExercises = async (courseId?: string, userId?: string): Promis
 
     // Sort exercises within each category
     const exercises = (data || []).map((exercise: any) => {
+      // Parse metadata to extract Negavid Video fields
       let attachments: string[] = [];
       if (exercise.metadata) {
         const metadata = typeof exercise.metadata === 'string' 

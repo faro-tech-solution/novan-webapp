@@ -34,4 +34,3 @@ DO $$
 BEGIN
     RAISE NOTICE 'Successfully created exercise_qa table with indexes and RLS enabled';
 END $$;
-

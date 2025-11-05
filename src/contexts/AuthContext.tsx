@@ -30,13 +30,14 @@ interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   session: Session | null;
-  login: (email: string, password: string) => Promise<{ error: any }>;
+  login: (email: string, password: string, captchaToken?: string) => Promise<{ error: any }>;
   register: (
     first_name: string,
     last_name: string,
     email: string,
     password: string,
-    role: UserRole
+    role: UserRole,
+    captchaToken?: string
   ) => Promise<{ error: any }>;
   logout: () => Promise<void>;
   loading: boolean;
@@ -224,12 +225,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, captchaToken?: string) => {
     console.log("Login attempt for:", email);
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
+      options: captchaToken ? { captchaToken } : undefined,
     });
 
     if (error) {
@@ -246,7 +248,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     last_name: string,
     email: string,
     password: string,
-    role: UserRole
+    role: UserRole,
+    captchaToken?: string
   ) => {
     const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/` : '/';
 
@@ -260,6 +263,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           last_name,
           role,
         },
+        ...(captchaToken && { captchaToken }),
       },
     });
     return { error };

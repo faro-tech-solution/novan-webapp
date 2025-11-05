@@ -129,4 +129,3 @@ export type VoteStatus = 'upvoted' | 'downvoted' | 'none';
  * Q&A post type identifier
  */
 export type QAPostType = 'question' | 'answer' | 'reply';
-

@@ -164,11 +164,18 @@ export const ExerciseCard = ({ exercise, userRole = 'trainee', exercises }: Exer
                 {displayTitle}
               </div>
             </div>
-            {isExerciseNew(exercise.created_at) && submissionStatus === 'not_started' && (
-              <Badge variant="destructive" className="text-xs px-2 opacity-50">
-                جدید
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              {isExerciseNew(exercise.created_at) && submissionStatus === 'not_started' && (
+                <Badge variant="destructive" className="text-xs px-2 opacity-50">
+                  جدید
+                </Badge>
+              )}
+              {(exercise).is_disabled === true && (
+                <Badge variant="secondary" className="text-xs px-2 bg-red-100 text-red-800">
+                  غیرفعال
+                </Badge>
+              )}
+            </div>
           </div>
         </CardHeader>
         

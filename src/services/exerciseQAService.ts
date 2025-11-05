@@ -522,14 +522,14 @@ export const moderateQuestion = async (questionId: string, action: string, admin
     question_id: questionId,
     action: action,
     admin_notes: adminNotes
-  });
+  } as any);
 
   if (error) {
     console.error('Error moderating question:', error);
     throw new Error(error.message || 'Failed to moderate question');
   }
 
-  return data;
+  return data as any;
 };
 
 export const bulkModerateQuestions = async (questionIds: string[], action: string): Promise<{ success: boolean; processedCount: number }> => {

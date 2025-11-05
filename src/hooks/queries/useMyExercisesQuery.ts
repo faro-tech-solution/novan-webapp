@@ -46,6 +46,7 @@ export const useMyExercisesQuery = () => {
       }
 
       // Fetch exercises for enrolled courses
+      // RLS policies automatically filter out disabled exercises for trainees
       const { data: exercises, error: exercisesError } = await supabase
         .from('exercises')
         .select(`

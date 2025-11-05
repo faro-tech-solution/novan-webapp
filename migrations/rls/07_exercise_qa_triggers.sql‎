@@ -100,4 +100,3 @@ BEGIN
     RAISE NOTICE '- trigger_notify_answer_to_question: Sends notifications for new replies';
     RAISE NOTICE 'All Q&A triggers are now active!';
 END $$;
-

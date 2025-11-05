@@ -38,17 +38,6 @@ export const getDifficultyBadge = (difficulty: string | null) => {
   if (!difficulty) {
     return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{displayText}</Badge>;
   }
-  
-  switch (difficulty) {
-    case 'easy':
-      return <Badge className="bg-green-100 text-green-800 hover:bg-green-800 hover:text-green-100 transition-colors">{displayText}</Badge>;
-    case 'medium':
-      return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-800 hover:text-yellow-100 transition-colors">{displayText}</Badge>;
-    case 'hard':
-      return <Badge className="bg-red-100 text-red-800 hover:bg-red-800 hover:text-red-100 transition-colors">{displayText}</Badge>;
-    default:
-      return <Badge variant="outline" className="hover:bg-foreground hover:text-background transition-colors">{displayText}</Badge>;
-  }
 };
 
 export const getSubmissionStatusBadge = (status: string | null) => {

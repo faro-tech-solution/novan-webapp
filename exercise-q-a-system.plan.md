@@ -59,4 +59,3 @@ Row Level Security (RLS) enforces:
 **Components:** QAList, QAItem, QAForm, VoteButtons, BookmarkButton
 ## Migration
 Run migration file to create tables, RLS policies, functions, and triggers.
-

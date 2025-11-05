@@ -171,4 +171,3 @@ BEGIN
     RAISE NOTICE '- notify_trainer_new_question(): Notifies instructor of new questions';
     RAISE NOTICE '- notify_answer_to_question(): Notifies parent author of replies';
 END $$;
-

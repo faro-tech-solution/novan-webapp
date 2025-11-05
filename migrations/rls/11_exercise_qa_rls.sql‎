@@ -349,4 +349,3 @@ BEGIN
     RAISE NOTICE '- exercise_qa_bookmark: 5 policies (1 SELECT, 3 INSERT, 1 DELETE)';
     RAISE NOTICE 'Total: 20 RLS policies for complete access control';
 END $$;
-

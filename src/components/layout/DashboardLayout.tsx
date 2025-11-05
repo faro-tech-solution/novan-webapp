@@ -20,6 +20,7 @@ import {
   Package,
   StickyNote,
   MessageSquare,
+  AlertCircle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -32,6 +33,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useSubmissionsQuery } from "@/hooks/queries/useReviewSubmissionsQuery";
+import { useReportedIssueStats } from "@/hooks/queries/useReportedIssues";
 import { Badge } from "@/components/ui/badge";
 
 interface DashboardLayoutProps {
@@ -191,6 +193,12 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       key: "products",
     },
     {
+      href: "/portal/admin/reported-issues",
+      icon: AlertCircle,
+      label: "مشکلات گزارش شده",
+      key: "reportedIssues",
+    },
+    {
       href: "/portal/admin/profile",
       icon: Settings,
       label: tSidebar("profile"),
@@ -215,6 +223,8 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
 
   const { data: submissionsData } = useSubmissionsQuery({ status: "pending" });
   const pendingReviewCount = submissionsData?.totalCount || 0;
+  const issueStats = useReportedIssueStats();
+  const openIssuesCount = issueStats?.open || 0;
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -327,10 +337,16 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
                         <Link href={item.href} className="flex items-center">
                           <item.icon className="h-5 w-5" />
                           <span>{item.label}</span>
-                          {item.href === "/review-submissions" &&
+                          {item.href === "/portal/admin/review-submissions" &&
                             pendingReviewCount > 0 && (
                               <Badge className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
                                 {pendingReviewCount}
+                              </Badge>
+                            )}
+                          {item.href === "/portal/admin/reported-issues" &&
+                            openIssuesCount > 0 && (
+                              <Badge className="ml-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                {openIssuesCount}
                               </Badge>
                             )}
                         </Link>

@@ -14,7 +14,7 @@ export const fetchNotes = async (exerciseId: string, userId: string): Promise<Ex
     throw new Error('Failed to fetch notes');
   }
 
-  return data || [];
+  return (data || []) as any;
 };
 
 export const fetchAllNotes = async (courseId: string, userId: string): Promise<ExerciseNote[]> => {
@@ -73,7 +73,7 @@ export const createNote = async (data: CreateNoteData, userId: string): Promise<
     throw new Error('Failed to create note');
   }
 
-  return note;
+  return note as any;
 };
 
 export const updateNote = async (noteId: string, data: UpdateNoteData): Promise<ExerciseNote> => {
@@ -99,7 +99,7 @@ export const updateNote = async (noteId: string, data: UpdateNoteData): Promise<
     throw new Error('Failed to update note');
   }
 
-  return note;
+  return note as any;
 };
 
 export const deleteNote = async (noteId: string): Promise<void> => {

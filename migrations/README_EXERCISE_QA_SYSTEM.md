@@ -384,4 +384,3 @@ For issues or questions:
 **Migration Version**: 1.0.0  
 **Date**: 2024-10-18  
 **Compatibility**: PostgreSQL 14+ with Supabase
-

@@ -54,7 +54,7 @@ export const createGlobalNote = async (data: CreateNoteData, userId: string): Pr
     throw new Error('Failed to create note');
   }
 
-  return note;
+  return note as any;
 };
 
 // Re-export existing functions for backward compatibility

@@ -90,6 +90,9 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
           form_structure: data.form_structure || { questions: [] },
           attachments: data.attachments || [],
           negavid_video_id: data.negavid_video_id,
+          is_exercise: data.is_exercise !== undefined ? data.is_exercise : false,
+          transcription: data.transcription || null,
+          is_disabled: data.is_disabled !== undefined ? data.is_disabled : false,
         };
         
         console.log('Transformed exerciseData:', exerciseData);
@@ -157,6 +160,9 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
       form_structure: (typeof exercise.form_structure === 'object' && exercise.form_structure !== null ? exercise.form_structure : { questions: [] }) as any,
       attachments: exercise.attachments || [],
       negavid_video_id: (exercise as any).negavid_video_id || "",
+      is_exercise: exercise.is_exercise !== undefined ? exercise.is_exercise : false,
+      transcription: exercise.transcription || null,
+      is_disabled: exercise.is_disabled !== undefined ? exercise.is_disabled : false,
     };
   }, [exercise]);
 

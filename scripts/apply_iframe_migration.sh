@@ -35,4 +35,4 @@ echo "   2. Enter the full HTML code (including style and div tags) in the ifram
 echo "   3. Students will be able to view the embedded content and complete the exercise"
 echo ""
 echo "💡 Example HTML code:"
-echo "   <div style=\"position: relative; width: 100%; height: 0; padding-bottom: 56.25%;\"><iframe src=\"https://www.youtube.com/embed/VIDEO_ID\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\" frameborder=\"0\" allowfullscreen></iframe></div>" 
+echo "   <div style=\"position: relative; width: 100%; height: 0; padding-bottom: 56.25%;\"><iframe src=\"https://www.youtube.com/embed/VIDEO_ID\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\" frameborder=\"0\" allowfullscreen></iframe></div>"

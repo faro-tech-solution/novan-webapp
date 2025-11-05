@@ -390,4 +390,3 @@ Potential additions:
 - **Services**: `src/services/qa.service.ts` (Phase 4)
 - **Hooks**: `src/hooks/useQA.ts` (Phase 5)
 - **Components**: `src/components/exercises/qa/` (Phase 6)
-

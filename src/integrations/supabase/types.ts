@@ -441,8 +441,8 @@ export type Database = {
           course_id?: string
           created_at?: string
           created_by?: string
-          description?: string
-          difficulty?: string
+          description?: string | null
+          difficulty?: string | null
           estimated_time?: string
           exercise_type?: string
           form_structure?: Json | null
@@ -1043,33 +1043,313 @@ export type Database = {
           }
         ];
       };
+      notifications: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          receiver_id: string;
+          is_read: boolean;
+          created_at: string;
+          read_at: string | null;
+          type: string;
+          metadata: Json | null;
+          sender_id: string | null;
+          priority: string | null;
+          course_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          receiver_id: string;
+          is_read?: boolean;
+          created_at?: string;
+          read_at?: string | null;
+          type: string;
+          metadata?: Json | null;
+          sender_id?: string | null;
+          priority?: string | null;
+          course_id?: string | null;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          receiver_id?: string;
+          is_read?: boolean;
+          created_at?: string;
+          read_at?: string | null;
+          type?: string;
+          metadata?: Json | null;
+          sender_id?: string | null;
+          priority?: string | null;
+          course_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_receiver_id_fkey";
+            columns: ["receiver_id"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_sender_id_fkey";
+            columns: ["sender_id"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_course_id_fkey";
+            columns: ["course_id"];
+            referencedRelation: "courses";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      reported_issues: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string
+          status: 'open' | 'in_progress' | 'resolved' | 'closed'
+          admin_notes: string | null
+          created_at: string
+          updated_at: string
+          resolved_at: string | null
+          resolved_by: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description: string
+          status?: 'open' | 'in_progress' | 'resolved' | 'closed'
+          admin_notes?: string | null
+          created_at?: string
+          updated_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string
+          status?: 'open' | 'in_progress' | 'resolved' | 'closed'
+          admin_notes?: string | null
+          created_at?: string
+          updated_at?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reported_issues_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reported_issues_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "auth.users"
+            referencedColumns: ["id"]
+          },
+        ]
+      };
+      products: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string;
+          description: string | null;
+          thumbnail: string | null;
+          product_type: string;
+          file_url: string | null;
+          author: string | null;
+          category: string | null;
+          tags: string[] | null;
+          duration: number | null;
+          file_size: number | null;
+          price: number;
+          access_level: string;
+          is_featured: boolean;
+          status: string;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          description?: string | null;
+          thumbnail?: string | null;
+          product_type?: string;
+          file_url?: string | null;
+          author?: string | null;
+          category?: string | null;
+          tags?: string[] | null;
+          duration?: number | null;
+          file_size?: number | null;
+          price?: number;
+          access_level?: string;
+          is_featured?: boolean;
+          status?: string;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          slug?: string;
+          description?: string | null;
+          thumbnail?: string | null;
+          product_type?: string;
+          file_url?: string | null;
+          author?: string | null;
+          category?: string | null;
+          tags?: string[] | null;
+          duration?: number | null;
+          file_size?: number | null;
+          price?: number;
+          access_level?: string;
+          is_featured?: boolean;
+          status?: string;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "products_created_by_fkey";
+            columns: ["created_by"];
+            referencedRelation: "auth.users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      exercise_qa: {
+        Row: {
+          id: string;
+          title: string | null;
+          description: string;
+          exercise_id: string;
+          user_id: string;
+          parent_id: string | null;
+          vote_count: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title?: string | null;
+          description: string;
+          exercise_id: string;
+          user_id: string;
+          parent_id?: string | null;
+          vote_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string | null;
+          description?: string;
+          exercise_id?: string;
+          user_id?: string;
+          parent_id?: string | null;
+          vote_count?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_qa_exercise_id_fkey";
+            columns: ["exercise_id"];
+            referencedRelation: "exercises";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_qa_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_qa_parent_id_fkey";
+            columns: ["parent_id"];
+            referencedRelation: "exercise_qa";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      exercise_qa_vote: {
+        Row: {
+          id: string;
+          exercise_qa_id: string;
+          user_id: string;
+          vote_type: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          exercise_qa_id: string;
+          user_id: string;
+          vote_type: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          exercise_qa_id?: string;
+          user_id?: string;
+          vote_type?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_qa_vote_exercise_qa_id_fkey";
+            columns: ["exercise_qa_id"];
+            referencedRelation: "exercise_qa";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exercise_qa_vote_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       exercise_notes: {
         Row: {
           id: string;
-          exercise_id: string;
+          exercise_id: string | null;
           course_id: string;
           user_id: string;
-          title: string;
           content: string;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          exercise_id: string | null;
+          exercise_id?: string | null;
           course_id: string;
           user_id: string;
-          title: string;
           content: string;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          exercise_id?: string;
+          exercise_id?: string | null;
           course_id?: string;
           user_id?: string;
-          title?: string;
           content?: string;
           created_at?: string;
           updated_at?: string;
@@ -1090,7 +1370,7 @@ export type Database = {
           {
             foreignKeyName: "exercise_notes_user_id_fkey";
             columns: ["user_id"];
-            referencedRelation: "profiles";
+            referencedRelation: "auth.users";
             referencedColumns: ["id"];
           }
         ];
@@ -1103,17 +1383,9 @@ export type Database = {
           user_id: string;
           parent_id: string | null;
           content: string;
-          title: string | null;
           upvotes: number;
           downvotes: number;
           is_deleted: boolean;
-          moderation_status: string;
-          is_pinned: boolean;
-          is_resolved: boolean;
-          admin_notes: string | null;
-          moderated_by: string | null;
-          moderated_at: string | null;
-          reply_count: number;
           created_at: string;
           updated_at: string;
         };
@@ -1124,17 +1396,9 @@ export type Database = {
           user_id: string;
           parent_id?: string | null;
           content: string;
-          title?: string | null;
           upvotes?: number;
           downvotes?: number;
           is_deleted?: boolean;
-          moderation_status?: string;
-          is_pinned?: boolean;
-          is_resolved?: boolean;
-          admin_notes?: string | null;
-          moderated_by?: string | null;
-          moderated_at?: string | null;
-          reply_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -1145,17 +1409,9 @@ export type Database = {
           user_id?: string;
           parent_id?: string | null;
           content?: string;
-          title?: string | null;
           upvotes?: number;
           downvotes?: number;
           is_deleted?: boolean;
-          moderation_status?: string;
-          is_pinned?: boolean;
-          is_resolved?: boolean;
-          admin_notes?: string | null;
-          moderated_by?: string | null;
-          moderated_at?: string | null;
-          reply_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -1175,19 +1431,13 @@ export type Database = {
           {
             foreignKeyName: "exercise_questions_user_id_fkey";
             columns: ["user_id"];
-            referencedRelation: "profiles";
+            referencedRelation: "auth.users";
             referencedColumns: ["id"];
           },
           {
             foreignKeyName: "exercise_questions_parent_id_fkey";
             columns: ["parent_id"];
             referencedRelation: "exercise_questions";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "exercise_questions_moderated_by_fkey";
-            columns: ["moderated_by"];
-            referencedRelation: "profiles";
             referencedColumns: ["id"];
           }
         ];
@@ -1224,144 +1474,41 @@ export type Database = {
           {
             foreignKeyName: "exercise_question_votes_user_id_fkey";
             columns: ["user_id"];
-            referencedRelation: "profiles";
+            referencedRelation: "auth.users";
             referencedColumns: ["id"];
           }
         ];
       };
-      products: {
+      exercise_qa_bookmark: {
         Row: {
           id: string;
-          title: string;
-          slug: string;
-          description: string | null;
-          thumbnail: string | null;
-          product_type: string;
-          file_url: string | null;
-          author: string | null;
-          category: string | null;
-          tags: string[];
-          duration: number | null;
-          file_size: number | null;
-          price: number;
-          access_level: string;
-          is_featured: boolean;
-          status: string;
-          created_by: string;
+          qa_id: string;
+          user_id: string;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
-          title: string;
-          slug?: string;
-          description?: string | null;
-          thumbnail?: string | null;
-          product_type?: string;
-          file_url?: string | null;
-          author?: string | null;
-          category?: string | null;
-          tags?: string[];
-          duration?: number | null;
-          file_size?: number | null;
-          price?: number;
-          access_level?: string;
-          is_featured?: boolean;
-          status?: string;
-          created_by: string;
+          qa_id: string;
+          user_id: string;
           created_at?: string;
-          updated_at?: string;
         };
         Update: {
           id?: string;
-          title?: string;
-          slug?: string;
-          description?: string | null;
-          thumbnail?: string | null;
-          product_type?: string;
-          file_url?: string | null;
-          author?: string | null;
-          category?: string | null;
-          tags?: string[];
-          duration?: number | null;
-          file_size?: number | null;
-          price?: number;
-          access_level?: string;
-          is_featured?: boolean;
-          status?: string;
-          created_by?: string;
+          qa_id?: string;
+          user_id?: string;
           created_at?: string;
-          updated_at?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "products_created_by_fkey";
-            columns: ["created_by"];
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          }
-        ];
-      };
-      notifications: {
-        Row: {
-          id: string;
-          title: string;
-          description: string | null;
-          receiver_id: string;
-          is_read: boolean;
-          created_at: string;
-          read_at: string | null;
-          type: string;
-          metadata: Json;
-          sender_id: string | null;
-          priority: string;
-          course_id: string | null;
-        };
-        Insert: {
-          id?: string;
-          title: string;
-          description?: string | null;
-          receiver_id: string;
-          is_read?: boolean;
-          created_at?: string;
-          read_at?: string | null;
-          type: string;
-          metadata?: Json;
-          sender_id?: string | null;
-          priority?: string;
-          course_id?: string | null;
-        };
-        Update: {
-          id?: string;
-          title?: string;
-          description?: string | null;
-          receiver_id?: string;
-          is_read?: boolean;
-          created_at?: string;
-          read_at?: string | null;
-          type?: string;
-          metadata?: Json;
-          sender_id?: string | null;
-          priority?: string;
-          course_id?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "notifications_receiver_id_fkey";
-            columns: ["receiver_id"];
-            referencedRelation: "profiles";
+            foreignKeyName: "exercise_qa_bookmark_qa_id_fkey";
+            columns: ["qa_id"];
+            referencedRelation: "exercise_qa";
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "notifications_sender_id_fkey";
-            columns: ["sender_id"];
+            foreignKeyName: "exercise_qa_bookmark_user_id_fkey";
+            columns: ["user_id"];
             referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "notifications_course_id_fkey";
-            columns: ["course_id"];
-            referencedRelation: "courses";
             referencedColumns: ["id"];
           }
         ];
@@ -1396,16 +1543,28 @@ export type Database = {
         Returns: string
       }
       moderate_question: {
-        Args: {
-          question_id: string
-          action: string
-          admin_notes?: string | null
-        }
-        Returns: boolean
-      }
-      update_question_reply_count: {
-        Args: Record<PropertyKey, never>
+        Args: { question_id: string; action: string }
         Returns: undefined
+      }
+      send_notification: {
+        Args: {
+          p_receiver_id: string
+          p_title: string
+          p_description?: string
+          p_type?: string
+          p_metadata?: Json
+          p_sender_id?: string
+          p_course_id?: string
+        }
+        Returns: string
+      }
+      update_exercise_order: {
+        Args: { p_course_id: string }
+        Returns: undefined
+      }
+      calculate_exercise_order: {
+        Args: { p_exercise_id: string }
+        Returns: number
       }
     }
     Enums: {

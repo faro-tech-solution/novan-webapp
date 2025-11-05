@@ -1,4 +1,5 @@
 import Providers from "@/components/Providers";
+import { ReportIssueButton } from "@/components/issues";
 import "@/index.css";
 
 export default function RootLayout({
@@ -11,6 +12,7 @@ export default function RootLayout({
       <body>
         <Providers>
           {children}
+          <ReportIssueButton />
         </Providers>
       </body>
     </html>

@@ -52,7 +52,9 @@ export const useExercisesQuery = (courseId?: string) => {
             : { questions: [] },
         
         attachments: exerciseData.attachments || [],
-        negavid_video_id: exerciseData.negavid_video_id
+        negavid_video_id: exerciseData.negavid_video_id,
+        is_exercise: exerciseData.is_exercise !== undefined ? exerciseData.is_exercise : false,
+        transcription: exerciseData.transcription || null
       }, user.id);
     },
     onSuccess: () => {
@@ -84,7 +86,10 @@ export const useExercisesQuery = (courseId?: string) => {
             : { questions: [] },
 
         attachments: data.attachments || [],
-        negavid_video_id: data.negavid_video_id
+        negavid_video_id: data.negavid_video_id,
+        is_exercise: data.is_exercise !== undefined ? data.is_exercise : false,
+        transcription: data.transcription || null,
+        is_disabled: data.is_disabled !== undefined ? data.is_disabled : false
       });
     },
     onSuccess: () => {

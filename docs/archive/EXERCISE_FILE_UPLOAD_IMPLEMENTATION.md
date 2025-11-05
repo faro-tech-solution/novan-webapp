@@ -29,7 +29,7 @@ Implemented file upload functionality for exercise creation and editing in the a
 ```sql
 -- Attachments are stored in the metadata JSON field
 metadata: {
-  "attachments": ["url1", "url2", "url3"]
+  "attachments": ["url1", "url2", "url3"],
 }
 ```
 

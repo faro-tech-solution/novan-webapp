@@ -100,7 +100,7 @@ export const IframePlayer: React.FC<IframePlayerProps> = ({
           <span className="mr-2 text-gray-600">در حال بارگذاری...</span>
         </div>
       )}
-
+      
       {/* Iframe HTML Content */}
       <div className="relative">{memoizedIframe}</div>
 
