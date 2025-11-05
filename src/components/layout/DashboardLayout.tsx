@@ -20,6 +20,7 @@ import {
   Package,
   StickyNote,
   MessageSquare,
+  ClipboardList,
 } from "lucide-react";
 import {
   Sidebar,
@@ -159,6 +160,12 @@ const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
       icon: FileText,
       label: tSidebar("exercises"),
       key: "exercises",
+    },
+    {
+      href: "/portal/admin/quiz-management",
+      icon: ClipboardList,
+      label: "مدیریت بانک سوالات آزمون",
+      key: "quizManagement",
     },
     {
       href: "/portal/admin/qa-management",

@@ -13,6 +13,9 @@ import { NegavidVideoPlayer } from "./players/NegavidVideoPlayer";
 // Import form components
 import { FormRenderer } from "./forms/FormRenderer";
 
+// Import quiz components
+import { QuizView } from "../quiz/QuizView";
+
 // Import utility functions
 import { extractNegavidVideoData } from "@/utils/negavidVideoExerciseUtils";
 
@@ -224,7 +227,49 @@ export const ExerciseHandler = ({
     }
   };
 
+  const renderQuizExercise = () => {
+    // Extract quiz config from metadata
+    let quizType: 'chapter' | 'progress' = 'chapter';
+    
+    if (exercise.metadata) {
+      try {
+        // Parse metadata if it's a string
+        const parsedMetadata = typeof exercise.metadata === 'string' 
+          ? JSON.parse(exercise.metadata) 
+          : exercise.metadata;
+        
+        if (parsedMetadata && typeof parsedMetadata === 'object') {
+          const config = parsedMetadata.quiz_config;
+          if (config?.quiz_type) {
+            quizType = config.quiz_type;
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing exercise metadata:', error);
+      }
+    }
+
+    return (
+      <QuizView
+        exerciseId={exercise.id}
+        quizType={quizType}
+        onComplete={(results) => {
+          // Quiz submission is handled by QuizView itself (stored in quiz_attempts table)
+          // We do NOT call onSubmit() for quizzes because:
+          // 1. Quiz results are stored in quiz_attempts table, not exercise_submissions
+          // 2. Quizzes can be retaken, and we don't want to update exercise_submissions each time
+          // 3. The quiz completion status is tracked separately from exercise completion
+        }}
+      />
+    );
+  };
+
   const renderExercise = () => {
+    // Quiz exercises
+    if (exercise.exercise_type === 'quiz') {
+      return renderQuizExercise();
+    }
+    
     // Form-based exercises
     if (exercise.exercise_type === 'form') {
       return renderFormExercise();

@@ -32,6 +32,17 @@ export const updateExercise = async (exerciseId: string, exerciseData: CreateExe
       }
     }
 
+    // Add quiz config to metadata if it's a quiz exercise
+    if (exerciseData.exercise_type === 'quiz') {
+      // Ensure quiz_config exists with default values
+      metadata.quiz_config = {
+        quiz_type: exerciseData.quiz_config?.quiz_type || 'chapter',
+        min_questions: exerciseData.quiz_config?.min_questions || 5,
+        max_questions: exerciseData.quiz_config?.max_questions || 10,
+        passing_score: exerciseData.quiz_config?.passing_score || 60,
+      };
+    }
+
     // Add attachments to metadata
     if (exerciseData.attachments && exerciseData.attachments.length > 0) {
       metadata.attachments = exerciseData.attachments;

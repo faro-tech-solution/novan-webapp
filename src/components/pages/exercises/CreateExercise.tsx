@@ -92,6 +92,7 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
           negavid_video_id: data.negavid_video_id,
           is_exercise: data.is_exercise !== undefined ? data.is_exercise : false,
           transcription: data.transcription || null,
+          quiz_config: data.quiz_config,
         };
         
         console.log('Transformed exerciseData:', exerciseData);
@@ -144,6 +145,29 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
     | undefined => {
     if (!exercise) return undefined;
 
+    // Parse metadata to extract quiz_config and other fields
+    let quiz_config: CreateExerciseFormData['quiz_config'] = undefined;
+    let negavid_video_id = "";
+    
+    if (exercise.metadata) {
+      try {
+        const parsedMetadata = typeof exercise.metadata === 'string' 
+          ? JSON.parse(exercise.metadata) 
+          : exercise.metadata;
+        
+        if (parsedMetadata && typeof parsedMetadata === 'object') {
+          if (parsedMetadata.quiz_config) {
+            quiz_config = parsedMetadata.quiz_config;
+          }
+          if (parsedMetadata.negavid_video_id) {
+            negavid_video_id = parsedMetadata.negavid_video_id;
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing exercise metadata:', error);
+      }
+    }
+
     return {
       title: exercise.title,
       description: exercise.description || "",
@@ -158,9 +182,10 @@ const CreateExercise = ({ exerciseId }: CreateExerciseProps) => {
       auto_grade: exercise.auto_grade || false,
       form_structure: (typeof exercise.form_structure === 'object' && exercise.form_structure !== null ? exercise.form_structure : { questions: [] }) as any,
       attachments: exercise.attachments || [],
-      negavid_video_id: (exercise as any).negavid_video_id || "",
+      negavid_video_id: negavid_video_id || (exercise as any).negavid_video_id || "",
       is_exercise: exercise.is_exercise !== undefined ? exercise.is_exercise : false,
       transcription: exercise.transcription || null,
+      quiz_config: quiz_config,
     };
   }, [exercise]);
 

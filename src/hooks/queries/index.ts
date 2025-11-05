@@ -24,4 +24,8 @@ export * from './useMyCoursesQuery';
 export * from './useExerciseNotes';
 export * from './useGlobalNotes';
 
+// Quiz hooks
+export * from './useQuizQuestionsQuery';
+export * from './useQuizAttemptsQuery';
+
 // Add any new hooks here as they are created

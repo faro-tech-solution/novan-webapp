@@ -151,8 +151,8 @@ const ExerciseDetail = () => {
               submitMutation={submitMutation}
             />
 
-        {/* Exercise Tabs - Only visible to trainees, and only for non-form/simple exercises */}
-        {profile?.role === "trainee" && exercise.exercise_type !== 'form' && exercise.exercise_type !== 'simple' && (
+        {/* Exercise Tabs - Only visible to trainees, and only for non-form/simple/quiz exercises */}
+        {profile?.role === "trainee" && exercise.exercise_type !== 'form' && exercise.exercise_type !== 'simple' && exercise.exercise_type !== 'quiz' && (
           <ExerciseTabs exercise={exercise} />
         )}
 

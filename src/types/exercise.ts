@@ -1,7 +1,7 @@
 import { ExerciseForm, FormAnswer } from './formBuilder';
 import { Json } from '@/integrations/supabase/types';
 
-export type ExerciseType = 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'negavid';
+export type ExerciseType = 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'negavid' | 'quiz';
 export type SubmissionStatusType = 'not_started' | 'pending' | 'completed';
 export type ExerciseStatusType = 'active' | 'closed';
 

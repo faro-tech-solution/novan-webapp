@@ -12,9 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UseFormReturn } from "react-hook-form";
 import { CreateExerciseFormData } from "./CreateExerciseForm";
-import { FileText, Video, AudioLines, ListChecks, ExternalLink } from "lucide-react";
+import { FileText, Video, AudioLines, ListChecks, ExternalLink, ClipboardList } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { FormBuilder } from "../forms/FormBuilder";
+import { QuizConfigSection } from "./QuizConfigSection";
 
 interface ExerciseTypeSectionProps {
   form: UseFormReturn<CreateExerciseFormData>;
@@ -118,6 +119,19 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                           <Video className="h-4 w-4 ml-1" />
                           <div>
                             <div className="font-medium">ویدیو نگاود</div>
+                          </div>
+                        </Label>
+                      </div>
+
+                      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse border border-gray-200 rounded-md p-3 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="quiz" id="quiz" />
+                        <Label
+                          htmlFor="quiz"
+                          className="flex items-center cursor-pointer text-sm flex-row-reverse"
+                        >
+                          <ClipboardList className="h-4 w-4 ml-1" />
+                          <div>
+                            <div className="font-medium">آزمون</div>
                           </div>
                         </Label>
                       </div>
@@ -269,6 +283,8 @@ export const ExerciseTypeSection = ({ form }: ExerciseTypeSectionProps) => {
                 />
               </div>
             )}
+
+            {exerciseType === "quiz" && <QuizConfigSection form={form} />}
           </div>
 
           

@@ -11,7 +11,7 @@ export interface CreateExerciseData {
   courseId: string;
   category_id?: string | null;
 
-  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'negavid';
+  exercise_type: 'form' | 'video' | 'audio' | 'simple' | 'iframe' | 'negavid' | 'quiz';
   content_url?: string | null;
   iframe_html?: string | null;
   auto_grade: boolean;
@@ -21,6 +21,12 @@ export interface CreateExerciseData {
   attachments?: string[]; // Array of uploaded file URLs
   is_exercise?: boolean;
   transcription?: string | null;
+  quiz_config?: {
+    quiz_type: 'chapter' | 'progress';
+    min_questions: number;
+    max_questions: number;
+    passing_score: number;
+  };
 }
 
 const parseFormStructure = (form_structure: any): ExerciseForm => {
@@ -53,6 +59,19 @@ export const createExercise = async (exerciseData: CreateExerciseData, createdBy
         metadata.negavid_video_id = exerciseData.negavid_video_id;
         console.log('Added negavid_video_id to metadata:', metadata.negavid_video_id);
       }
+    }
+
+    // Add quiz config to metadata if it's a quiz exercise
+    if (exerciseData.exercise_type === 'quiz') {
+      console.log('Processing quiz exercise, quiz_config:', exerciseData.quiz_config);
+      // Ensure quiz_config exists with default values
+      metadata.quiz_config = {
+        quiz_type: exerciseData.quiz_config?.quiz_type || 'chapter',
+        min_questions: exerciseData.quiz_config?.min_questions || 5,
+        max_questions: exerciseData.quiz_config?.max_questions || 10,
+        passing_score: exerciseData.quiz_config?.passing_score || 60,
+      };
+      console.log('Added quiz_config to metadata:', metadata.quiz_config);
     }
 
     // Add attachments to metadata

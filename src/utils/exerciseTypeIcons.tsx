@@ -4,7 +4,8 @@ import {
   FileText, 
   FormInput,
   Monitor,
-  PlayCircle
+  PlayCircle,
+  ClipboardList
 } from 'lucide-react';
 import { ExerciseType } from '@/types/exercise';
 
@@ -23,6 +24,8 @@ export const getExerciseTypeIcon = (exerciseType: ExerciseType) => {
       return <Monitor className="h-4 w-4 text-orange-500" />;
     case 'form':
       return <FormInput className="h-4 w-4 text-teal-500" />;
+    case 'quiz':
+      return <ClipboardList className="h-4 w-4 text-pink-500" />;
     case 'simple':
     default:
       return <FileText className="h-4 w-4 text-gray-500" />;
@@ -44,6 +47,8 @@ export const getExerciseTypeIconSmall = (exerciseType: ExerciseType) => {
       return <Monitor className="h-3 w-3 text-orange-500" />;
     case 'form':
       return <FormInput className="h-3 w-3 text-teal-500" />;
+    case 'quiz':
+      return <ClipboardList className="h-3 w-3 text-pink-500" />;
     case 'simple':
     default:
       return <FileText className="h-3 w-3 text-gray-500" />;
@@ -65,6 +70,8 @@ export const getExerciseTypeLabel = (exerciseType: ExerciseType): string => {
       return 'صفحه وب';
     case 'form':
       return 'فرم';
+    case 'quiz':
+      return 'آزمون';
     case 'simple':
     default:
       return 'متنی';

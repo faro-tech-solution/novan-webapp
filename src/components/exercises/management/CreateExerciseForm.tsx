@@ -22,7 +22,7 @@ const formSchema = z.object({
 
   points: z.number().min(1, "امتیاز باید بین 1 تا 250 باشد").max(250, "امتیاز باید بین 1 تا 250 باشد"),
   estimated_time: z.number().min(0, "زمان تخمینی باید بر حسب ثانیه و ۰ یا بیشتر باشد"),
-  exercise_type: z.enum(["form", "video", "audio", "simple", "iframe", "negavid"] as const),
+  exercise_type: z.enum(["form", "video", "audio", "simple", "iframe", "negavid", "quiz"] as const),
   content_url: z
     .string()
     .url("آدرس محتوا باید URL معتبر باشد")
@@ -40,6 +40,12 @@ const formSchema = z.object({
   attachments: z.array(z.string()).default([]), // Array of uploaded file URLs
   is_exercise: z.boolean().default(false),
   transcription: z.string().optional().nullable(),
+  quiz_config: z.object({
+    quiz_type: z.enum(['chapter', 'progress']).optional(),
+    min_questions: z.number().min(5).max(10).optional(),
+    max_questions: z.number().min(5).max(10).optional(),
+    passing_score: z.number().min(0).max(100).optional(),
+  }).optional(),
 });
 
 export type CreateExerciseFormData = z.infer<typeof formSchema>;
@@ -85,6 +91,7 @@ export const CreateExerciseForm = ({
       attachments: [],
       is_exercise: false,
       transcription: null,
+      quiz_config: undefined,
     },
   });
 
@@ -94,6 +101,31 @@ export const CreateExerciseForm = ({
       form.reset(defaultValues);
     }
   }, [defaultValues, form]);
+
+  // Initialize quiz_config with defaults when exercise_type is set to 'quiz'
+  const exerciseType = form.watch('exercise_type');
+  useEffect(() => {
+    if (exerciseType === 'quiz') {
+      const currentQuizConfig = form.getValues('quiz_config');
+      // Only set defaults if quiz_config doesn't exist or is empty
+      if (!currentQuizConfig || Object.keys(currentQuizConfig).length === 0) {
+        form.setValue('quiz_config', {
+          quiz_type: 'chapter',
+          min_questions: 5,
+          max_questions: 10,
+          passing_score: 60,
+        });
+      } else {
+        // Ensure all fields have values, fill with defaults if missing
+        form.setValue('quiz_config', {
+          quiz_type: currentQuizConfig.quiz_type || 'chapter',
+          min_questions: currentQuizConfig.min_questions || 5,
+          max_questions: currentQuizConfig.max_questions || 10,
+          passing_score: currentQuizConfig.passing_score || 60,
+        });
+      }
+    }
+  }, [exerciseType, form]);
 
   const handleFormSubmit = useCallback(
     async (e: React.FormEvent) => {
