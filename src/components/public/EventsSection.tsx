@@ -50,26 +50,25 @@ const EventsSection = () => {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Calendar className="h-8 w-8 text-blue-600" />
-            <h2 className="text-3xl font-bold text-gray-900">
+          <div className="flex items-center gap-2 mb-4">
+            <Calendar className="h-8 w-8 text-gray-900" />
+            <h2 className="text-2xl sm:text-2xl text-gray-900">
               رویدادهای آینده
             </h2>
           </div>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            در رویدادهای آموزشی ما شرکت کنید و از تجربیات ارزشمند بهره‌مند شوید
-          </p>
         </div>
 
         {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {events.map((event) => (
-            <EventCard 
-              key={event.id} 
-              event={event}
-              className="bg-white"
-            />
-          ))}
+        <div className="grid grid-cols-1 gap-6">
+          <div className="max-w-[800px] w-full mx-auto">
+            {events.map((event) => (
+              <EventCard 
+                key={event.id} 
+                event={event}
+                className="bg-white"
+              />
+            ))}
+          </div>
         </div>
 
         {/* View All Events Button */}

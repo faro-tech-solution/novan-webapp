@@ -200,30 +200,32 @@ export default function CoursesPageContent() {
       )}
 
       {/* Courses Grid */}
-      {filteredCourses.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-            <Filter className="h-12 w-12 text-gray-400" />
+      <div className="max-w-[800px] w-full mx-auto">
+        {filteredCourses.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+              <Filter className="h-12 w-12 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              دوره‌ای یافت نشد
+            </h3>
+            <p className="text-gray-600 mb-4">
+              با فیلترهای فعلی هیچ دوره‌ای پیدا نشد. فیلترها را تغییر دهید یا پاک کنید.
+            </p>
+            {hasActiveFilters && (
+              <Button onClick={clearFilters}>
+                پاک کردن فیلترها
+              </Button>
+            )}
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            دوره‌ای یافت نشد
-          </h3>
-          <p className="text-gray-600 mb-4">
-            با فیلترهای فعلی هیچ دوره‌ای پیدا نشد. فیلترها را تغییر دهید یا پاک کنید.
-          </p>
-          {hasActiveFilters && (
-            <Button onClick={clearFilters}>
-              پاک کردن فیلترها
-            </Button>
-          )}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredCourses.map((course) => (
-            <PublicCourseCard key={course.id} course={course} />
-          ))}
-        </div>
-      )}
+        ) : (
+          <div className="grid grid-cols-1 gap-6">
+            {filteredCourses.map((course) => (
+              <PublicCourseCard key={course.id} course={course} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
