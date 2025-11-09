@@ -29,7 +29,7 @@ A modern Next.js-based learning management system built with TypeScript, Tailwin
 - **State Management**: React Query (TanStack Query)
 - **Forms**: React Hook Form with Zod validation
 - **UI Components**: Radix UI, Lucide React icons
-- **Deployment**: Docker-based deployment to VPS
+- **Deployment**: Netlify with SSR support
 
 ## 📋 Prerequisites
 
@@ -127,38 +127,15 @@ novan-webapp/
 
 ## 🚀 Deployment
 
-### Docker Deployment (VPS)
+### Netlify Deployment
 
-The project is fully dockerized and can be deployed to any VPS (e.g., Hostinger) using Docker.
-
-**Quick Start:**
-```bash
-# Build the image
-docker build -t novan-webapp:latest .
-
-# Run with docker-compose
-docker-compose up -d
-
-# Or run directly
-docker run -d \
-  --name novan-webapp \
-  -p 3000:3000 \
-  --env-file .env \
-  novan-webapp:latest
-```
-
-**Automated Deployment:**
-- Configure GitHub Actions secrets (see `docs/DOCKER_DEPLOYMENT.md`)
-- Push to `main` branch for production deployment
-- Push to `staging` branch for staging deployment (development mode)
-- The workflow automatically builds and deploys to your VPS
-
-**Environments:**
-- **Production**: Deploys when merging to `main` branch (port 3000)
-- **Staging**: Deploys when merging to `staging` branch (port 3001, development mode)
-
-For detailed Docker deployment instructions, see [DOCKER_DEPLOYMENT.md](./DOCKER_DEPLOYMENT.md).
-For staging/production workflow, see [STAGING_DEPLOYMENT.md](./STAGING_DEPLOYMENT.md).
+1. **Connect Repository**: Link your Git repository to Netlify
+2. **Build Settings**:
+   - Build command: `yarn build`
+   - Publish directory: `.next`
+   - Node version: `18`
+3. **Environment Variables**: Add Supabase credentials
+4. **Deploy**: Automatic deployment on push to main branch
 
 ## 📚 Available Scripts
 
