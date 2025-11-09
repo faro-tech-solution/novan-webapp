@@ -2,9 +2,7 @@
 
 ## 🚀 Overview
 
-This guide covers deploying the Novan Webapp using Docker to a VPS (Virtual Private Server), such as Hostinger VPS. The project is fully dockerized and supports automated deployments via GitHub Actions.
-
-For detailed Docker deployment instructions, see [DOCKER_DEPLOYMENT.md](./DOCKER_DEPLOYMENT.md).
+This guide covers deploying the Novan Webapp to various environments, with a focus on Netlify deployment which is the primary hosting platform for this project.
 
 ## 🌍 Environment Configuration
 
@@ -16,21 +14,13 @@ Create environment-specific configuration files:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_dev_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_dev_anon_key
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_turnstile_site_key
-TURNSTILE_SECRET_KEY=your_turnstile_secret_key
-DATABASE_URL=your_database_url
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 NODE_ENV=development
 ```
 
-#### Production (`.env.production` or `.env` on VPS)
+#### Production (`.env.production`)
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_prod_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_prod_anon_key
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_turnstile_site_key
-TURNSTILE_SECRET_KEY=your_turnstile_secret_key
-DATABASE_URL=your_database_url
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 NODE_ENV=production
 ```
 
@@ -68,18 +58,6 @@ sudo yarn build
 sudo yarn start
 ```
 
-### Docker Build Testing
-
-Test the Docker build locally:
-
-```bash
-# Build Docker image
-docker build -t novan-webapp:latest .
-
-# Run container locally
-docker run -p 3000:3000 --env-file .env.local novan-webapp:latest
-```
-
 ### Build Optimization
 
 The build process includes several optimizations:
@@ -87,86 +65,116 @@ The build process includes several optimizations:
 - **Code Splitting**: Automatic route-based code splitting
 - **Tree Shaking**: Removal of unused code
 - **Image Optimization**: Next.js automatic image optimization
-- **Standalone Output**: Optimized Docker image with minimal dependencies
-- **Multi-stage Build**: Reduced final image size
+- **Bundle Analysis**: Analyze bundle size and dependencies
 
-## 🐳 Docker Deployment
+## 🚀 Netlify Deployment
 
-### Local Docker Deployment
+### 1. Repository Setup
 
-1. **Build the Image**
+1. **Push to Git Repository**
    ```bash
-   docker build -t novan-webapp:latest .
+   git add .
+   git commit -m "feat: prepare for production deployment"
+   git push origin main
    ```
 
-2. **Run with Docker Compose**
-   ```bash
-   docker-compose up -d
-   ```
+2. **Connect to Netlify**
+   - Log in to Netlify dashboard
+   - Click "New site from Git"
+   - Connect your repository
+   - Select the main branch
 
-3. **Or Run Directly**
-   ```bash
-   docker run -d \
-     --name novan-webapp \
-     --restart unless-stopped \
-     -p 3000:3000 \
-     --env-file .env \
-     novan-webapp:latest
-   ```
+### 2. Build Configuration
 
-### VPS Deployment
+Configure the following build settings in Netlify:
 
-For detailed VPS deployment instructions, see [DOCKER_DEPLOYMENT.md](./DOCKER_DEPLOYMENT.md).
+#### Build Settings
+- **Build command**: `yarn build`
+- **Publish directory**: `.next`
+- **Node version**: `18`
 
-#### Quick Steps:
+#### Environment Variables
+Add these environment variables in Netlify:
 
-1. **Set up VPS**
-   - Install Docker and Docker Compose
-   - Configure SSH access
-   - Set up firewall rules
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
+NODE_ENV=production
+```
 
-2. **Configure GitHub Actions**
-   - Add required secrets to GitHub repository
-   - Configure VPS access credentials
+### 3. Deployment Configuration
 
-3. **Deploy**
-   - Push to `main` branch to trigger automatic deployment
-   - Or use manual deployment script
+#### Netlify Configuration File (`netlify.toml`)
+
+```toml
+[build]
+  command = "yarn build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--version"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-cache"
+```
+
+### 4. Domain and SSL
+
+1. **Custom Domain**
+   - Add your custom domain in Netlify
+   - Configure DNS settings
+   - Enable HTTPS with Let's Encrypt
+
+2. **SSL Configuration**
+   - Netlify provides automatic SSL certificates
+   - Force HTTPS redirects
+   - Configure security headers
 
 ## 🔄 Continuous Deployment
 
-### Automated Deployments (GitHub Actions)
+### Automatic Deployments
 
-The project includes a GitHub Actions workflow that automatically:
+1. **Branch Deployments**
+   - Main branch: Production deployment
+   - Feature branches: Preview deployments
+   - Pull requests: Deploy previews
 
-1. **Builds Docker Image**
-   - Builds the application
-   - Creates optimized Docker image
-   - Caches dependencies for faster builds
-
-2. **Deploys to VPS**
-   - Transfers image to VPS
-   - Stops old container
-   - Starts new container
-   - Cleans up old images
-
-3. **Deploy Triggers**
-   - Push to `main` or `master` branch: Automatic production deployment
-   - Push to `staging` branch: Automatic staging deployment (development mode)
-   - Manual workflow dispatch: On-demand deployment (choose staging or production)
+2. **Deploy Triggers**
+   - Push to main: Automatic production deployment
+   - Pull request: Preview deployment
+   - Manual deployment: On-demand deployment
 
 ### Deployment Pipeline
 
 ```mermaid
 graph LR
-    A[Code Push] --> B[GitHub Actions]
-    B --> C[Build Docker Image]
-    C --> D[Build Success?]
-    D -->|Yes| E[Transfer to VPS]
-    D -->|No| F[Build Failure Notification]
-    E --> G[Deploy Container]
-    G --> H[Health Check]
-    H --> I[Deployment Complete]
+    A[Code Push] --> B[Netlify Build]
+    B --> C[Build Success?]
+    C -->|Yes| D[Deploy to Production]
+    C -->|No| E[Build Failure Notification]
+    D --> F[Health Check]
+    F --> G[Deployment Complete]
 ```
 
 ## 🧪 Testing Deployment
@@ -175,12 +183,9 @@ graph LR
 
 - [ ] All tests pass locally
 - [ ] Build completes successfully
-- [ ] Docker build works locally
 - [ ] Environment variables configured
 - [ ] Database migrations applied
 - [ ] Supabase production configured
-- [ ] VPS access configured
-- [ ] GitHub secrets configured
 
 ### Post-Deployment Verification
 
@@ -189,38 +194,20 @@ graph LR
    - Verify database connections
    - Check API endpoints
    - Test exercise functionality
-   - Verify all routes work
 
 2. **Performance Testing**
    - Page load times
    - API response times
    - Database query performance
    - Image loading optimization
-   - Container resource usage
 
 3. **Security Testing**
    - Authentication flows
    - Authorization checks
    - Data validation
-   - HTTPS enforcement (if using reverse proxy)
-   - Environment variable security
+   - HTTPS enforcement
 
 ## 🔍 Monitoring and Analytics
-
-### Container Monitoring
-
-1. **Check Container Status**
-   ```bash
-   docker ps
-   docker logs novan-webapp
-   docker stats novan-webapp
-   ```
-
-2. **Health Checks**
-   - Container health status
-   - Application responsiveness
-   - Resource usage
-   - Error logs
 
 ### Performance Monitoring
 
@@ -256,7 +243,7 @@ graph LR
 #### Build Failures
 ```bash
 # Check build logs
-docker build -t novan-webapp:latest . --progress=plain
+netlify logs
 
 # Verify dependencies
 yarn install --frozen-lockfile
@@ -265,91 +252,46 @@ yarn install --frozen-lockfile
 node --version
 ```
 
-#### Container Won't Start
-```bash
-# Check logs
-docker logs novan-webapp
-
-# Check container status
-docker ps -a
-
-# Verify environment variables
-docker exec novan-webapp env
-```
-
 #### Environment Variable Issues
 - Verify all required variables are set
 - Check variable names and values
 - Ensure no trailing spaces
 - Validate Supabase credentials
-- Check `.env` file format
 
 #### Database Connection Issues
 - Verify Supabase URL and credentials
 - Check database permissions
 - Ensure migrations are applied
 - Test database connectivity
-- Check network connectivity from container
-
-#### Port Already in Use
-```bash
-# Find process using port 3000
-sudo lsof -i :3000
-
-# Kill process or change port
-docker run -p 3001:3000 novan-webapp:latest
-```
 
 ### Rollback Strategy
 
 1. **Quick Rollback**
-   ```bash
-   # Stop current container
-   docker stop novan-webapp
-   
-   # Tag old image as latest
-   docker tag novan-webapp:old novan-webapp:latest
-   
-   # Start container with old image
-   docker run -d \
-     --name novan-webapp \
-     --restart unless-stopped \
-     -p 3000:3000 \
-     --env-file .env \
-     novan-webapp:latest
-   ```
+   - Use Netlify's rollback feature
+   - Revert to previous deployment
+   - Maintain service availability
 
 2. **Database Rollback**
    - Revert database migrations if needed
    - Restore from backup if necessary
    - Coordinate with frontend changes
 
-3. **Git Rollback**
-   ```bash
-   git revert <commit-hash>
-   git push origin main
-   ```
-
 ## 📊 Performance Optimization
 
 ### Build Optimization
 
-1. **Docker Layer Caching**
-   - Optimize Dockerfile layer order
-   - Use multi-stage builds
-   - Cache dependencies
+1. **Bundle Analysis**
+   ```bash
+   # Analyze bundle size
+   yarn build --analyze
+   ```
 
-2. **Bundle Analysis**
-   - Analyze bundle size
-   - Identify large dependencies
-   - Optimize imports
-
-3. **Code Splitting**
+2. **Code Splitting**
    - Implement dynamic imports
    - Use React.lazy for components
    - Optimize route-based splitting
 
-4. **Image Optimization**
+3. **Image Optimization**
    - Use Next.js Image component
    - Implement proper image formats
    - Optimize image loading
@@ -360,19 +302,11 @@ docker run -p 3001:3000 novan-webapp:latest
    - Implement React Query caching
    - Use browser caching
    - Optimize database queries
-   - Configure reverse proxy caching
 
-2. **Resource Management**
-   - Monitor container resource usage
-   - Set appropriate memory limits
-   - Optimize CPU usage
-   - Configure auto-restart policies
-
-3. **Performance Monitoring**
+2. **Performance Monitoring**
    - Monitor Core Web Vitals
    - Track user experience metrics
    - Optimize based on data
-   - Set up alerts
 
 ## 🔐 Security Considerations
 
@@ -380,38 +314,18 @@ docker run -p 3001:3000 novan-webapp:latest
 
 1. **Environment Security**
    - Secure environment variables
-   - Use secrets management
    - Restrict access to production
    - Use secure communication channels
-   - Never commit `.env` files
 
 2. **Application Security**
    - Enable HTTPS everywhere
-   - Implement security headers (via reverse proxy)
+   - Implement security headers
    - Regular security audits
-   - Keep dependencies updated
-   - Use non-root user in container
 
 3. **Database Security**
    - Row Level Security (RLS)
    - Secure database connections
    - Regular security updates
-   - Use strong credentials
-   - Limit database access
-
-4. **Container Security**
-   - Use minimal base images
-   - Keep images updated
-   - Scan for vulnerabilities
-   - Use non-root user
-   - Limit container capabilities
-
-5. **VPS Security**
-   - Keep system updated
-   - Configure firewall
-   - Use SSH keys instead of passwords
-   - Set up fail2ban
-   - Regular security audits
 
 ## 📈 Scaling Considerations
 
@@ -421,51 +335,34 @@ docker run -p 3001:3000 novan-webapp:latest
    - Optimize database queries
    - Implement proper indexing
    - Use connection pooling
-   - Consider read replicas
 
 2. **Application Scaling**
    - Implement caching layers
    - Use CDN for static assets
    - Optimize API responses
-   - Load balancing (multiple containers)
 
 3. **Infrastructure Scaling**
    - Monitor resource usage
    - Scale based on demand
-   - Use Docker Swarm or Kubernetes for orchestration
    - Implement auto-scaling
-
-### Horizontal Scaling
-
-To scale horizontally:
-
-```bash
-# Run multiple containers with load balancer
-docker run -d --name novan-webapp-1 -p 3001:3000 --env-file .env novan-webapp:latest
-docker run -d --name novan-webapp-2 -p 3002:3000 --env-file .env novan-webapp:latest
-
-# Configure Nginx as load balancer
-# (See DOCKER_DEPLOYMENT.md for Nginx configuration)
-```
 
 ## 📚 Additional Resources
 
 ### Documentation
-- [Docker Documentation](https://docs.docker.com/)
+- [Netlify Documentation](https://docs.netlify.com)
 - [Next.js Deployment](https://nextjs.org/docs/deployment)
 - [Supabase Production](https://supabase.com/docs/guides/getting-started/tutorials/self-hosting)
-- [Docker Deployment Guide](./DOCKER_DEPLOYMENT.md)
 
 ### Tools
-- [Docker Compose](https://docs.docker.com/compose/)
-- [GitHub Actions](https://docs.github.com/en/actions)
+- [Netlify CLI](https://docs.netlify.com/cli/get-started)
 - [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci)
 - [WebPageTest](https://www.webpagetest.org)
 
 ### Best Practices
 - [Web Performance](https://web.dev/performance)
 - [Security Headers](https://owasp.org/www-project-secure-headers)
-- [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
 - [Progressive Web Apps](https://web.dev/progressive-web-apps)
 
-This deployment guide provides comprehensive information for deploying the Novan Webapp to production environments using Docker. Follow these guidelines to ensure successful deployment and optimal performance.
+This deployment guide provides comprehensive information for deploying the Novan Webapp to production environments. Follow these guidelines to ensure successful deployment and optimal performance.
+
+
