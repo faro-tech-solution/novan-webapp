@@ -1,13 +1,13 @@
-version: '3.9'
-
 services:
-  web:
+  app:
     build:
       context: .
+      target: runner
+    image: novan-webapp-app:latest
     ports:
       - "3000:3000"
     env_file:
       - .env.production
     environment:
-      - NODE_ENV=production
+      NODE_ENV: production
 

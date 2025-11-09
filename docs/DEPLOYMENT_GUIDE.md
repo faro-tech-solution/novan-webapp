@@ -59,10 +59,10 @@ docker run --rm -p 3000:3000 --env-file .env.production novan-webapp:latest
 A lightweight `docker-compose.yml` is provided to mirror the production image locally:
 
 ```bash
-docker compose up --build
+docker compose up --build app
 ```
 
-By default it loads `.env.production`. Override with `--env-file` or by editing the compose file for your environment.
+By default it builds the `app` service image (`novan-webapp-app:latest`) and loads `.env.production`. Override with `--env-file` or by editing the compose file for your environment.
 
 ### Build Optimization
 
