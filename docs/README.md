@@ -29,7 +29,7 @@ A modern Next.js-based learning management system built with TypeScript, Tailwin
 - **State Management**: React Query (TanStack Query)
 - **Forms**: React Hook Form with Zod validation
 - **UI Components**: Radix UI, Lucide React icons
-- **Deployment**: Netlify with SSR support
+- **Deployment**: Docker images built via GitHub Actions
 
 ## 📋 Prerequisites
 
@@ -127,15 +127,12 @@ novan-webapp/
 
 ## 🚀 Deployment
 
-### Netlify Deployment
+### Container Workflow
 
-1. **Connect Repository**: Link your Git repository to Netlify
-2. **Build Settings**:
-   - Build command: `yarn build`
-   - Publish directory: `.next`
-   - Node version: `18`
-3. **Environment Variables**: Add Supabase credentials
-4. **Deploy**: Automatic deployment on push to main branch
+1. **Build Image**: `docker build -t novan-webapp:latest .`
+2. **Run Locally**: `docker run --rm -p 3000:3000 --env-file .env.production novan-webapp:latest`
+3. **Compose Support**: `docker compose up --build` (uses the production image by default)
+4. **CI/CD**: GitHub Actions builds and validates the image on each push. Extend the workflow to publish to your container registry of choice and deploy from there.
 
 ## 📚 Available Scripts
 
