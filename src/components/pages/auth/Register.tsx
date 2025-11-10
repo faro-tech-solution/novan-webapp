@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -19,7 +19,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
-import { TurnstileCaptcha, TurnstileCaptchaRef } from "@/components/auth/TurnstileCaptcha";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -29,14 +29,26 @@ const Register = () => {
   const [repeatPassword, setRepeatPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isPasswordStrong, setIsPasswordStrong] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState<string | undefined>(undefined);
-  const captchaRef = useRef<TurnstileCaptchaRef>(null);
   const { register } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
   // Check if we're in production (captcha required)
   const isProduction = process.env.NODE_ENV === 'production';
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const { executeRecaptcha, status: recaptchaStatus, error: recaptchaError } = useRecaptcha(
+    isProduction ? recaptchaSiteKey : undefined
+  );
+
+  useEffect(() => {
+    if (recaptchaError) {
+      toast({
+        title: "خطا در تایید امنیتی",
+        description: recaptchaError,
+        variant: "destructive",
+      });
+    }
+  }, [recaptchaError, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,19 +71,23 @@ const Register = () => {
       return;
     }
 
-    // Only require captcha in production
-    if (isProduction && !captchaToken) {
-      toast({
-        title: "تایید امنیتی",
-        description: "لطفا تایید امنیتی را کامل کنید",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setLoading(true);
 
     try {
+      let captchaToken: string | undefined;
+
+      if (isProduction) {
+        if (!recaptchaSiteKey) {
+          throw new Error("کلید reCAPTCHA تنظیم نشده است.");
+        }
+
+        if (recaptchaStatus !== 'ready') {
+          throw new Error("reCAPTCHA هنوز آماده نیست. لطفا چند لحظه صبر کنید و دوباره تلاش کنید.");
+        }
+
+        captchaToken = await executeRecaptcha('register');
+      }
+
       const { error } = await register(
         firstName,
         lastName,
@@ -86,9 +102,6 @@ const Register = () => {
           description: error.message || "ثبت نام ناموفق بود",
           variant: "destructive",
         });
-        // Reset CAPTCHA on error
-        captchaRef.current?.reset();
-        setCaptchaToken(undefined);
       } else {
         toast({
           title: "ثبت نام موفق",
@@ -103,9 +116,6 @@ const Register = () => {
         description: "ثبت نام ناموفق. لطفا دوباره تلاش کنید.",
         variant: "destructive",
       });
-      // Reset CAPTCHA on error
-      captchaRef.current?.reset();
-      setCaptchaToken(undefined);
     } finally {
       setLoading(false);
     }
@@ -182,39 +192,14 @@ const Register = () => {
                   required
                 />
               </div>
-
-              {isProduction && (
-                <div className="space-y-2">
-                  <Label>تایید امنیتی</Label>
-                  <TurnstileCaptcha
-                    ref={captchaRef}
-                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
-                    onVerify={setCaptchaToken}
-                    onError={(error) => {
-                      console.error('CAPTCHA error:', error);
-                      toast({
-                        title: "خطا در تایید امنیتی",
-                        description: "لطفا دوباره تلاش کنید",
-                        variant: "destructive",
-                      });
-                    }}
-                    onExpire={() => {
-                      setCaptchaToken(undefined);
-                      toast({
-                        title: "تایید امنیتی منقضی شد",
-                        description: "لطفا دوباره تایید کنید",
-                        variant: "destructive",
-                      });
-                    }}
-                    className="flex justify-center"
-                  />
-                </div>
-              )}
-
               <Button
                 type="submit"
                 className="w-full"
-                disabled={loading || !isPasswordStrong || (isProduction && !captchaToken)}
+                disabled={
+                  loading ||
+                  !isPasswordStrong ||
+                  (isProduction && recaptchaStatus !== 'ready')
+                }
               >
                 {loading ? "در حال ثبت نام..." : "ثبت نام"}
               </Button>
