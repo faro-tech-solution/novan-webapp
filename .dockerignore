@@ -1,6 +1,5 @@
 .git
 .github
-.next
 node_modules
 npm-debug.log
 yarn-error.log
@@ -11,4 +10,3 @@ coverage
 tmp
 Dockerfile
 docker-compose.yml
-
