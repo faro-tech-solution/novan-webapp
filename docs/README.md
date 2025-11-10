@@ -125,15 +125,6 @@ novan-webapp/
 - **Functions**: Database functions for business logic
 - **Indexes**: Optimized query performance
 
-## 🚀 Deployment
-
-### Container Workflow
-
-1. **Build Image**: `docker build -t novan-webapp:latest .`
-2. **Run Locally**: `docker run --rm -p 3000:3000 --env-file .env.production novan-webapp:latest`
-3. **Compose Support**: `docker compose up --build app` (builds `novan-webapp-app:latest`)
-4. **CI/CD**: GitHub Actions builds and validates the image on each push. Extend the workflow to publish to your container registry of choice and deploy from there.
-
 ## 📚 Available Scripts
 
 - `yarn dev` - Start development server
