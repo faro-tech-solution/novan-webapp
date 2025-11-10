@@ -41,7 +41,7 @@ const Login = () => {
   useEffect(() => {
     if (recaptchaError) {
       toast({
-        title: "خطا در تایید امنیتی",
+        title: "خطا در تایید امنیتی ",
         description: recaptchaError,
         variant: "destructive",
       });
