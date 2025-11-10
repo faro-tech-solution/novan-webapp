@@ -1,80 +1,61 @@
-# CAPTCHA Implementation with Cloudflare Turnstile
+# CAPTCHA Implementation with Google reCAPTCHA v3
 
-This document explains how to set up and use CAPTCHA verification using Cloudflare Turnstile in the Novan Webapp.
+This document explains how to set up and use CAPTCHA verification using Google reCAPTCHA v3 in the Novan Webapp.
 
 ## Overview
 
-CAPTCHA verification has been implemented to prevent bot attacks on both login and registration pages. The implementation uses Cloudflare Turnstile, which provides a privacy-focused alternative to traditional CAPTCHA solutions.
+CAPTCHA verification has been implemented to prevent bot attacks on both login and registration pages. The implementation uses Google reCAPTCHA v3 and integrates with Supabase’s bot protection through the `captchaToken` parameter.
 
 ## Setup Instructions
 
-### 1. Get Cloudflare Turnstile Keys
+### 1. Get Google reCAPTCHA v3 Keys
 
-1. Go to [Cloudflare Turnstile Dashboard](https://dash.cloudflare.com/?to=/:account/turnstile)
-2. Sign up or log in to your Cloudflare account
-3. Create a new site:
-   - Enter your domain name (e.g., `yourdomain.com`)
-   - Choose the appropriate widget mode
-   - Copy the **Site Key** and **Secret Key**
+1. Go to the [Google reCAPTCHA Admin Console](https://www.google.com/recaptcha/admin/create)
+2. Choose **reCAPTCHA v3**
+3. Add your domain name (e.g., `yourdomain.com`)
+4. Accept the terms of service and create the keys
+5. Copy the **Site Key** and **Secret Key**
 
 ### 2. Configure Environment Variables
 
 Add the following environment variables to your `.env.local` file:
 
 ```bash
-# Cloudflare Turnstile Configuration
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=your_turnstile_site_key
-TURNSTILE_SECRET_KEY=your_turnstile_secret_key
+# Google reCAPTCHA v3 Configuration
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key
 ```
 
 **Important Notes:**
-- `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is used on the frontend and can be public
-- `TURNSTILE_SECRET_KEY` should be kept secret and used for server-side verification
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` is used on the frontend and can be public
+- `RECAPTCHA_SECRET_KEY` must remain secret and is used by Supabase for server-side verification
 
 ### 3. Configure Supabase
 
-1. Go to your Supabase Dashboard
-2. Navigate to **Authentication** > **Settings**
-3. Under **Bot and Abuse Protection**, enable **CAPTCHA protection**
-4. Select **Turnstile** as the provider
-5. Enter your `TURNSTILE_SECRET_KEY` in the **Secret key** field
-6. Save the configuration
+1. In the Supabase Dashboard, navigate to **Authentication** > **Settings**
+2. Under **Bot and Abuse Protection**, enable **CAPTCHA protection**
+3. Select **reCAPTCHA** as the provider
+4. Enter your `RECAPTCHA_SECRET_KEY` in the **Secret key** field
+5. Save the configuration
 
 ## Implementation Details
 
-### Components
+### Hooks
 
-#### TurnstileCaptcha Component
+#### `useRecaptcha` Hook
 
-A reusable React component (`src/components/auth/TurnstileCaptcha.tsx`) that wraps the Cloudflare Turnstile widget:
+A reusable client hook (`src/hooks/useRecaptcha.ts`) manages loading the Google reCAPTCHA script and executing actions when needed.
 
-```typescript
-interface TurnstileCaptchaProps {
-  siteKey: string;
-  onVerify: (token: string) => void;
-  onError?: (error: string) => void;
-  onExpire?: () => void;
-  theme?: 'light' | 'dark' | 'auto';
-  size?: 'normal' | 'compact';
-  className?: string;
-}
-```
-
-**Features:**
-- Automatic token management
-- Error handling
-- Expiration handling
-- Reset functionality
-- Theme and size customization
+Key features:
+- Lazy-loads the reCAPTCHA script only in production
+- Exposes `executeRecaptcha(action)` to obtain a token
+- Provides loading/error state so forms can handle disabled buttons and toast messages
 
 ### Authentication Integration
 
-#### AuthContext Updates
-
-The `AuthContext` has been updated to support CAPTCHA tokens:
+`AuthContext` already supports passing a `captchaToken` when calling Supabase:
 
 ```typescript
-// Login function
 const login = async (email: string, password: string, captchaToken?: string) => {
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -84,7 +65,6 @@ const login = async (email: string, password: string, captchaToken?: string) => 
   return { error };
 };
 
-// Register function
 const register = async (
   first_name: string,
   last_name: string,
@@ -110,86 +90,74 @@ const register = async (
 
 #### Login Page (`src/components/pages/auth/Login.tsx`)
 
-- Added CAPTCHA verification before form submission
-- Disabled submit button until CAPTCHA is completed
-- Reset CAPTCHA on authentication errors
-- Persian error messages for CAPTCHA-related issues
+- Loads reCAPTCHA v3 when running in production
+- Prevents form submission until reCAPTCHA is ready
+- Executes `executeRecaptcha('login')` prior to calling Supabase
+- Displays localized error messages when the token cannot be obtained
 
 #### Register Page (`src/components/pages/auth/Register.tsx`)
 
-- Added CAPTCHA verification before form submission
-- Disabled submit button until CAPTCHA is completed
-- Reset CAPTCHA on registration errors
-- Persian error messages for CAPTCHA-related issues
+- Follows the same pattern as the login page
+- Uses action name `'register'` when requesting tokens
+- Keeps strong-password validation and localized error handling
 
 ## User Experience
 
 ### Flow
 
 1. User visits login/register page
-2. User fills out the form
-3. User completes CAPTCHA challenge
-4. Submit button becomes enabled
-5. Form submission includes CAPTCHA token
-6. Supabase validates the token server-side
-7. Authentication proceeds if token is valid
+2. reCAPTCHA automatically loads in the background (in production)
+3. User fills out the form
+4. On submit, the app executes reCAPTCHA for the relevant action
+5. The returned token is sent to Supabase along with the form data
+6. Supabase validates the token server-side and proceeds with authentication if valid
 
 ### Error Handling
 
-- **CAPTCHA not completed**: Form submission is blocked with a Persian error message
-- **CAPTCHA error**: Error message displayed, CAPTCHA resets automatically
-- **CAPTCHA expired**: User notified to complete CAPTCHA again
-- **Authentication failure**: CAPTCHA resets for retry
+- **reCAPTCHA loading failure**: User sees a localized toast instructing them to retry
+- **reCAPTCHA not ready**: Submit button is disabled until the script signals readiness
+- **Authentication failure**: Standard error handling from Supabase is shown
 
 ## Security Features
 
-1. **Server-side validation**: CAPTCHA tokens are validated by Supabase using the secret key
-2. **Token expiration**: Tokens expire automatically for security
-3. **Reset on errors**: CAPTCHA resets after failed authentication attempts
-4. **Privacy-focused**: Turnstile is privacy-focused and doesn't track users
+1. **Server-side validation**: Tokens are validated by Supabase using the secret key
+2. **Action-based scoring**: reCAPTCHA v3 evaluates different actions (`login`, `register`) independently
+3. **No visual challenge**: Users are not interrupted by a widget, keeping the flow smooth
 
 ## Testing
 
 ### Local Development
 
-**Development Mode Behavior:**
-- CAPTCHA is **automatically disabled** when not in production mode (`NODE_ENV !== 'production'`)
-- No CAPTCHA verification is required for login/registration during development
-- This makes local development easier without needing to configure Turnstile for localhost
+- reCAPTCHA is **automatically disabled** when not in production mode (`NODE_ENV !== 'production'`)
+- Local development does not require real keys or token execution
 
-**For Production-like Testing:**
-If you need to test CAPTCHA functionality locally:
+### Production-like Testing
 
-1. Use a tool like ngrok to expose your local development server
-2. Add your ngrok URL to the Turnstile site configuration
-3. Or add `localhost` to your Turnstile site's allowed domains
-4. Set `NODE_ENV=production` in your local environment
+If you need to test reCAPTCHA locally with real tokens:
+
+1. Expose your local server via a tool such as ngrok
+2. Add the ngrok URL to the list of allowed domains in the reCAPTCHA console
+3. Set `NODE_ENV=production` and provide the environment variables
 
 ### Production
 
-Ensure your production domain is properly configured in the Turnstile dashboard.
+Ensure your production domain is registered in the Google reCAPTCHA console and that Supabase is configured with the matching secret key.
 
 ## Troubleshooting
 
-### Common Issues
-
-1. **CAPTCHA not loading**: Check that `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set correctly
-2. **Authentication failing**: Verify that `TURNSTILE_SECRET_KEY` is configured in Supabase
-3. **Domain issues**: Ensure your domain is added to the Turnstile site configuration
-
-### Debug Mode
-
-Enable debug mode in Turnstile for development by adding `?turnstile=debug` to your URL.
+1. **reCAPTCHA script not loading**: Verify that `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` is set and allowed for your domain
+2. **Authentication failing**: Confirm that `RECAPTCHA_SECRET_KEY` is correctly entered in Supabase
+3. **Actions not visible in Google dashboard**: Check that you are using distinct action names (`login`, `register`)
 
 ## Dependencies
 
-- `@marsidev/react-turnstile`: React wrapper for Cloudflare Turnstile
 - `@supabase/supabase-js`: Supabase client with CAPTCHA support
+
+No additional npm packages are required; Google’s script is loaded directly.
 
 ## Future Enhancements
 
-- Add CAPTCHA to password reset functionality
-- Implement CAPTCHA for other sensitive operations
-- Add analytics for CAPTCHA completion rates
-- Consider implementing CAPTCHA bypass for trusted users
+- Add reCAPTCHA checks to password reset or other sensitive flows
+- Track successful vs failed scores for monitoring suspicious activity
+- Consider adaptive flows based on the score returned by reCAPTCHA
 
