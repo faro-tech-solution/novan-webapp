@@ -9,12 +9,9 @@ interface FAQSectionProps {
 }
 
 const FAQSection = ({ previewData }: FAQSectionProps) => {
-    if (!previewData?.faqs || previewData.faqs.length === 0) {
-        return null;
-    }
-
-  const faqs = previewData.faqs;
   const [openFaqIndex, setOpenFaqIndex] = useState<number>(0);
+  
+  const faqs = previewData?.faqs ?? [];
 
   return (
     <section className="space-y-6">

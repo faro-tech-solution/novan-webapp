@@ -8,7 +8,7 @@ ENV NODE_ENV=production
 FROM base AS deps
 RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 COPY package.json yarn.lock ./
-RUN corepack enable && yarn install --frozen-lockfile
+RUN corepack enable && yarn install --frozen-lockfile --production=false
 
 FROM base AS builder
 ENV NODE_ENV=production

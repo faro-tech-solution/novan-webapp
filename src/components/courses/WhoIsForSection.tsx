@@ -17,7 +17,7 @@ const WhoIsForSection = ({ previewData, courseName = "این دوره" }: WhoIsF
     <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-8">
       <h2 className="text-3xl text-gray-900 mb-6 relative inline-block w-full">
         <span className="relative inline-block">
-          دوره "{courseName}" برای چه کسانی طراحی شده است؟
+          دوره &quot;{courseName}&quot; برای چه کسانی طراحی شده است؟
         </span>
       </h2>
       <div className="space-y-4 text-gray-700 leading-relaxed mx-auto" dir="rtl">
