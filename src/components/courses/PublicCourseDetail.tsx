@@ -101,7 +101,7 @@ const PublicCourseDetail = ({ course }: PublicCourseDetailProps) => {
                       آینده‌ای درخشان در انتظار شماست!
                     </h2>
                     <p className="text-lg mb-8 max-w-3xl mx-auto">
-                      برای شروع این مسیر هیجان‌انگیز، کافیست بر روی دکمه <span className="text-yellow-300 font-semibold">"ثبت‌نام در دوره"</span> کلیک کنید و مراحل ثبت‌نام را تکمیل نمایید.
+                      برای شروع این مسیر هیجان‌انگیز، کافیست بر روی دکمه <span className="text-yellow-300 font-semibold">&quot;ثبت‌نام در دوره&quot;</span> کلیک کنید و مراحل ثبت‌نام را تکمیل نمایید.
                     </p>
                     <Button 
                       size="lg" 

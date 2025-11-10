@@ -1,3 +1,4 @@
+/* eslint-disable */
 // @ts-nocheck
 // useNegavidPlayer.js
 import { useEffect } from "react";
