@@ -6,4 +6,5 @@ export { default as CourseManagementHeader } from './CourseManagementHeader';
 export { default as PublicCourseCard } from './PublicCourseCard';
 export { default as PublicCourseDetail } from './PublicCourseDetail';
 export { default as CourseEnrollmentCTA } from './CourseEnrollmentCTA';
-export { default as WhatYoullLearnSection } from './WhatYoullLearnSection';
+export { default as PreviewComponentRenderer } from './PreviewComponentRenderer';
+export { default as PreviewDataBuilder } from './PreviewDataBuilder';

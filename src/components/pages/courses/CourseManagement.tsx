@@ -1,7 +1,6 @@
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import CreateCourseDialog from "@/components/dialogs/CreateCourseDialog";
-import EditCourseDialog from "@/components/dialogs/EditCourseDialog";
 import CourseStudentsDialog from "@/components/dialogs/CourseStudentsDialog";
 import ExerciseCategoriesDialog from "@/components/dialogs/ExerciseCategoriesDialog";
 import CourseManagementHeader from "@/components/courses/CourseManagementHeader";
@@ -11,11 +10,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useCoursesQuery } from "@/hooks/queries/useCoursesQuery";
 import { Course } from "@/types/course";
-import { useQueryClient } from "@tanstack/react-query";
 
 const CourseManagement = () => {
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
+  const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showStudentsDialog, setShowStudentsDialog] = useState(false);
   const [showCategoriesDialog, setShowCategoriesDialog] = useState(false);
@@ -23,11 +20,13 @@ const CourseManagement = () => {
   const { profile } = useAuth();
   const { toast } = useToast();
   const { courses, loading, error, deleteCourse } = useCoursesQuery();
-  const queryClient = useQueryClient();
+
+  const handleCreateCourse = () => {
+    router.push('/portal/admin/courses-management/create');
+  };
 
   const handleEditCourse = (course: Course) => {
-    setSelectedCourse(course);
-    setShowEditDialog(true);
+    router.push(`/portal/admin/courses-management/${course.id}`);
   };
 
   const handleDeleteCourse = (course: Course) => {
@@ -81,16 +80,6 @@ const CourseManagement = () => {
     }
   };
 
-  const handleCourseCreated = () => {
-    queryClient.invalidateQueries({ queryKey: ["courses"] });
-    setShowCreateDialog(false);
-  };
-
-  const handleCourseUpdated = () => {
-    queryClient.invalidateQueries({ queryKey: ["courses"] });
-    setShowEditDialog(false);
-  };
-
   // Only admins can create courses
   const canCreateCourses = profile?.role === "admin";
   const isAdmin = profile?.role === "admin";
@@ -122,7 +111,7 @@ const CourseManagement = () => {
         <CourseManagementHeader
           isAdmin={isAdmin}
           canCreateCourses={canCreateCourses}
-          onCreateCourse={() => setShowCreateDialog(true)}
+          onCreateCourse={handleCreateCourse}
         />
 
         {/* Courses Grid */}
@@ -132,32 +121,13 @@ const CourseManagement = () => {
           userId={profile?.id}
           canCreateCourses={canCreateCourses}
           isAdmin={isAdmin}
-          onCreateCourse={() => setShowCreateDialog(true)}
+          onCreateCourse={handleCreateCourse}
           onManageCategories={handleManageCategories}
           onEditCourse={handleEditCourse}
           onDeleteCourse={handleDeleteCourse}
           onViewStudents={handleViewStudents}
         />
       </div>
-
-      {/* Create Course Dialog */}
-      {canCreateCourses && (
-        <CreateCourseDialog
-          open={showCreateDialog}
-          onOpenChange={setShowCreateDialog}
-          onCourseCreated={handleCourseCreated}
-        />
-      )}
-
-      {/* Edit Course Dialog */}
-      {selectedCourse && isAdmin && (
-        <EditCourseDialog
-          open={showEditDialog}
-          onOpenChange={setShowEditDialog}
-          course={selectedCourse}
-          onCourseUpdated={handleCourseUpdated}
-        />
-      )}
 
       {/* Students Dialog */}
       {selectedCourse && (
