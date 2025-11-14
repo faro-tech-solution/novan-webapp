@@ -1,7 +1,7 @@
 'use client';
 
 import { PublicCourse } from '@/types/course';
-import { BookOpen, Headphones, Key, PlayCircle } from 'lucide-react';
+import { PlayCircle } from 'lucide-react';
 import CourseEnrollmentCTA from './CourseEnrollmentCTA';
 import { Card } from '../ui/card';
 
@@ -10,13 +10,6 @@ interface ProductHeaderSectionProps {
 }
 
 const ProductHeaderSection = ({ course }: ProductHeaderSectionProps) => {
-  // Mock data for demonstration - in production, these would come from the database
-  const features = [
-    { icon: BookOpen, title: 'آموزش مهارت محور و عملی', color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-300' },
-    { icon: Headphones, title: 'پشتیبانی آنلاین', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-300' },
-    { icon: Key, title: 'دسترسی دائمی به ویدئوها', color: 'text-purple-600', bgColor: 'bg-purple-50', borderColor: 'border-purple-300' }
-  ];
-
   return (
     <div className="grid lg:grid-cols-12 gap-4 mb-8">
       {/* Right Column - 7/12 width: Course Image and Feature Boxes (RTL: appears on right) */}
@@ -34,21 +27,6 @@ const ProductHeaderSection = ({ course }: ProductHeaderSectionProps) => {
               <PlayCircle className="w-32 h-32 text-blue-400" />
             </div>
           )}
-        </div>
-
-        {/* Feature Boxes */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className={`flex flex-col rounded-lg p-4 shadow-sm border-2 items-center gap-2 transition-shadow ${feature.bgColor} ${feature.borderColor}`}
-            >
-              <div>
-                <feature.icon className={`w-6 h-6 ${feature.color}`} />
-              </div>
-              <h3 className={`text-gray-900 ${feature.color}`}>{feature.title}</h3>
-            </div>
-          ))}
         </div>
       </div>
 

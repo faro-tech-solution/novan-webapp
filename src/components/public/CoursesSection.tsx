@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import PublicCourseCard from '@/components/courses/PublicCourseCard';
 import { PublicCourse } from '@/types/course';
 import { fetchPublicCourses } from '@/services/courseService';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, GraduationCap } from 'lucide-react';
 
 export default function CoursesSection() {
   const [courses, setCourses] = useState<PublicCourse[]>([]);
@@ -28,19 +28,17 @@ export default function CoursesSection() {
     }
   };
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-10 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-4 flex items-center gap-2">
+          <GraduationCap className="w-8 h-8 text-gray-900" aria-hidden="true" />
+          <h2 className="text-2xl sm:text-2xl text-gray-900 text-right">
             دوره‌های آموزشی
           </h2>
-          <p className="text-lg text-gray-600">
-            دوره‌های متنوع برای یادگیری و پیشرفت در مسیر شغلی
-          </p>
         </div>
 
         {isLoading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="animate-pulse">
                 <div className="bg-white rounded-lg shadow p-6 h-96">
@@ -72,9 +70,11 @@ export default function CoursesSection() {
         )}
 
         {!isLoading && !error && courses.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {courses.map((course) => (
-              <PublicCourseCard key={course.id} course={course} />
+              <div key={course.id} className="max-w-[800px] w-full mx-auto">
+                <PublicCourseCard course={course} />
+              </div>
             ))}
           </div>
         )}

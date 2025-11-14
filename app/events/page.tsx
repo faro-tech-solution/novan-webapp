@@ -112,30 +112,13 @@ export default function EventsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="max-w-3xl mx-auto px-4 py-8">
             {filteredEvents.map((event) => (
               <EventCard 
                 key={event.id} 
                 event={event}
               />
             ))}
-          </div>
-        )}
-
-        {/* Call to Action */}
-        {!loading && !error && filteredEvents.length > 0 && (
-          <div className="text-center mt-16">
-            <div className="bg-gray-50 rounded-lg p-8">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                از رویدادهای ما غافل نشوید
-              </h3>
-              <p className="text-gray-600 mb-6">
-                برای اطلاع از آخرین رویدادها، در خبرنامه ما عضو شوید
-              </p>
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                عضویت در خبرنامه
-              </button>
-            </div>
           </div>
         )}
       </main>

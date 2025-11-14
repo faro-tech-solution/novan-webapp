@@ -8,14 +8,10 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductHeaderSection from './ProductHeaderSection';
-import VideoIntroductionSection from './VideoIntroductionSection';
-import WhyDifferentSection from './WhyDifferentSection';
-import WhoIsForSection from './WhoIsForSection';
-import FAQSection from './FAQSection';
-import TestimonialsSection from './TestimonialsSection';
 import AboutMentorSection from './AboutMentorSection';
-import WhatYoullLearnSection from './WhatYoullLearnSection';
 import PricingSection from './PricingSection';
+import PreviewComponentRenderer from './PreviewComponentRenderer';
+import { PreviewComponent } from '@/types/previewData';
 
 interface PublicCourseDetailProps {
   course: PublicCourse;
@@ -24,6 +20,11 @@ interface PublicCourseDetailProps {
 const PublicCourseDetail = ({ course }: PublicCourseDetailProps) => {
   const router = useRouter();
   const previewData = course.preview_data;
+  
+  const previewComponents: PreviewComponent[] = 
+    (previewData && typeof previewData === 'object' && 'components' in previewData && Array.isArray((previewData as any).components))
+      ? (previewData as any).components || []
+      : [];
 
   const handlePaymentRedirect = () => {
     router.push(`/courses/${course.slug}/payment`);
@@ -56,35 +57,16 @@ const PublicCourseDetail = ({ course }: PublicCourseDetailProps) => {
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="p-8">
             <div className="space-y-12">
-                <div
-                  className="prose prose-gray max-w-none prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-700 prose-li:marker:text-gray-500"
-                  dir="rtl"
-                  dangerouslySetInnerHTML={{ __html: course.preview_data?.description || '' }}
-                />
-
-                {/* Video Introduction */}
-                <VideoIntroductionSection videos={previewData?.intro_videos || []} />
-
-                {/* What You'll Learn */}
-                <WhatYoullLearnSection topics={previewData?.topics} />
-
-                {/* About Mentor */}
-                <AboutMentorSection course={course} />
-
-                {/* Why Different */}
-                <WhyDifferentSection previewData={previewData} />
-
-                {/* Who Is This For */}
-                <WhoIsForSection previewData={previewData} courseName={course.name} />
-
-                {/* FAQ Section */}
-                <FAQSection previewData={previewData} />
-
-                {/* Testimonials */}
-                <TestimonialsSection previewData={previewData} courseName={course.name} />
-
-                {/* Pricing Section */}
-                <PricingSection price={course.price} onPaymentRedirect={handlePaymentRedirect} />
+              {/* Dynamic preview components */}
+              {previewComponents.map((component) => (
+                <PreviewComponentRenderer key={component.id} component={component} />
+              ))}
+              
+              {/* About Mentor - Always show */}
+              <AboutMentorSection course={course} />
+              
+              {/* Pricing Section - Always show */}
+              <PricingSection price={course.price} onPaymentRedirect={handlePaymentRedirect} />
 
                 {/* Final CTA Banner */}
                 <section className="relative bg-blue-600 rounded-lg p-12 text-center text-white overflow-hidden">
