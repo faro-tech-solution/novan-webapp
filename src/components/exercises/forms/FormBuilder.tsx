@@ -82,7 +82,7 @@ export const FormBuilder: React.FC<FormBuilderProps> = ({ value, onChange }) => 
       {questions.length === 0 ? (
         <Card>
           <CardContent className="p-6 text-center text-gray-500">
-            هنوز سوالی اضافه نشده است. با کلیک روی "افزودن سوال" شروع کنید.
+            هنوز سوالی اضافه نشده است. با کلیک روی &quot;افزودن سوال&quot; شروع کنید.
           </CardContent>
         </Card>
       ) : (

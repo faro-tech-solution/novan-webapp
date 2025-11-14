@@ -359,7 +359,7 @@ export const NotesManager: React.FC<NotesManagerProps> = ({
           <AlertDialogHeader>
             <AlertDialogTitle>تأیید حذف یادداشت</AlertDialogTitle>
             <AlertDialogDescription>
-              آیا مطمئن هستید که می‌خواهید یادداشت "{noteToDelete?.title}" را حذف کنید؟ این عمل قابل بازگشت نیست.
+              آیا مطمئن هستید که می‌خواهید یادداشت &quot;{noteToDelete?.title}&quot; را حذف کنید؟ این عمل قابل بازگشت نیست.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -51,6 +51,14 @@ export const IframePlayer: React.FC<IframePlayerProps> = ({
     }
   };
 
+  // Memoize the iframe markup so it doesn't re-mount on incidental rerenders
+  const memoizedIframe = useMemo(() => (
+    <div 
+      className="bg-gray-100 rounded-lg overflow-hidden"
+      dangerouslySetInnerHTML={{ __html: iframeHtml }}
+    />
+  ), [iframeHtml]);
+
   if (hasError) {
     return (
       <Card>
@@ -72,14 +80,6 @@ export const IframePlayer: React.FC<IframePlayerProps> = ({
       </Card>
     );
   }
-
-  // Memoize the iframe markup so it doesn't re-mount on incidental rerenders
-  const memoizedIframe = useMemo(() => (
-    <div 
-      className="bg-gray-100 rounded-lg overflow-hidden"
-      dangerouslySetInnerHTML={{ __html: iframeHtml }}
-    />
-  ), [iframeHtml]);
 
   return (
     <div className="space-y-4">

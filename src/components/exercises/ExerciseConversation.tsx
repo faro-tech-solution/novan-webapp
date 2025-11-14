@@ -108,7 +108,7 @@ export const ExerciseConversation: React.FC<ExerciseConversationProps> = ({
     // Handle simple exercise submission for temporary submissions
     if (isTemporarySubmission && isSimpleExercise && onExerciseSubmit) {
       // For simple exercises, upload files first then submit
-      let attachmentUrls: string[] = [];
+      const attachmentUrls: string[] = [];
       
       if (selectedFiles && selectedFiles.length > 0) {
         setUploading(true);

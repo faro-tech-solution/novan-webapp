@@ -107,7 +107,7 @@ export const DraggableExerciseCard = ({
               <AlertDialogHeader>
                 <AlertDialogTitle>حذف تمرین</AlertDialogTitle>
                 <AlertDialogDescription>
-                  آیا مطمئن هستید که می‌خواهید تمرین "{exercise.title}" را حذف کنید؟
+                  آیا مطمئن هستید که می‌خواهید تمرین &quot;{exercise.title}&quot; را حذف کنید؟
                   <br />
                   <span className="text-red-600 font-medium">
                     این عمل قابل بازگشت نیست و تمام اطلاعات مربوط به این تمرین حذف خواهد شد.
