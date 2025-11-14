@@ -90,7 +90,7 @@ const PreviewDataBuilder = ({ value, onChange }: PreviewDataBuilderProps) => {
 
   const updateComponent = (id: string, updates: Partial<PreviewComponent>) => {
     updateComponents(
-      components.map(comp => comp.id === id ? { ...comp, ...updates } : comp)
+      components.map(comp => comp.id === id ? { ...comp, ...updates } : comp) as any
     );
   };
 

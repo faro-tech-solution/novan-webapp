@@ -186,7 +186,7 @@ const CreateCourse = ({ courseId }: CreateCourseProps) => {
             max_students: data.maxStudents,
             status: data.status,
             price: data.price,
-            preview_data: previewData.length > 0 ? { components: previewData } : null,
+            preview_data: previewData.length > 0 ? ({ components: previewData } as any) : null,
           })
           .eq('id', courseId);
 
@@ -208,7 +208,7 @@ const CreateCourse = ({ courseId }: CreateCourseProps) => {
             status: data.status,
             price: data.price,
             slug: generateSlug(data.name),
-            preview_data: previewData.length > 0 ? { components: previewData } : null,
+            preview_data: previewData.length > 0 ? ({ components: previewData } as any) : null,
           });
 
         if (error) throw error;
