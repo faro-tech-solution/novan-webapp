@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,8 @@ import {
   Play,
   Award,
   Filter,
-  Loader2
+  Loader2,
+  ArrowLeftRight
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import DashboardLayout from '@/components/layout/DashboardLayout';
@@ -22,6 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 const StudentCourses = () => {
   const [filter, setFilter] = useState('all');
   const { toast } = useToast();
+  const router = useRouter();
   const { data: courses = [], isLoading, error, refetch } = useStudentCoursesQuery();
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
@@ -204,12 +207,21 @@ const StudentCourses = () => {
                   {/* Actions */}
                   <div className="flex space-x-2 space-x-reverse">
                     <Button 
-                      className="w-full" 
+                      className="flex-1" 
                       variant="outline" 
                       size="sm"
                       onClick={() => setSelectedCourse(course)}
                     >
                       جزئیات
+                    </Button>
+                    <Button 
+                      className="flex-1" 
+                      variant="default" 
+                      size="sm"
+                      onClick={() => router.push(`/portal/trainee/${course.id}/dashboard`)}
+                    >
+                      <ArrowLeftRight className="h-4 w-4 ml-2" />
+                      تغییر دوره
                     </Button>
                   </div>
                 </div>
