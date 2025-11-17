@@ -1,9 +1,11 @@
+import { useParams } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { ExercisesView } from '@/components/exercises/ExercisesView';
 import { useMyExercisesQuery } from '@/hooks/queries/useMyExercisesQuery';
 
 const MyExercises = () => {
-  const { data: myExercises = [], isLoading, error } = useMyExercisesQuery();
+  const { courseId }: any = useParams();
+  const { data: myExercises = [], isLoading, error } = useMyExercisesQuery(courseId);
 
   return (
     <DashboardLayout title="تمرین‌های من">

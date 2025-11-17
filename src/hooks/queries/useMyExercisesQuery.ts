@@ -4,14 +4,102 @@ import { useStableAuth } from '@/hooks/useStableAuth';
 
 
 
-export const useMyExercisesQuery = () => {
+export const useMyExercisesQuery = (courseId?: string) => {
   const { user, isQueryEnabled } = useStableAuth();
 
   return useQuery({
-    queryKey: ['myExercises', user?.id],
+    queryKey: ['myExercises', user?.id, courseId],
     queryFn: async () => {
       if (!user) {
         throw new Error('User not authenticated');
+      }
+
+      // If courseId is provided, verify the user is enrolled in that course
+      if (courseId) {
+        const { data: enrollment, error: enrollmentError } = await supabase
+          .from('course_enrollments')
+          .select(`
+            course_id,
+            courses (
+              id,
+              name
+            )
+          `)
+          .eq('student_id', user.id)
+          .eq('course_id', courseId)
+          .eq('status', 'active')
+          .single();
+
+        if (enrollmentError || !enrollment) {
+          throw new Error('خطا در دریافت دوره: شما در این دوره ثبت‌نام نکرده‌اید');
+        }
+
+        // Fetch exercises for the specific course
+        // RLS policies automatically filter out disabled exercises for trainees
+        const { data: exercises, error: exercisesError } = await supabase
+          .from('exercises')
+          .select(`
+            *,
+            courses (
+              id,
+              name
+            ),
+            exercise_categories (
+              id,
+              name,
+              description
+            ),
+            exercise_submissions (
+              id,
+              score,
+              submitted_at,
+              feedback,
+              graded_at,
+              graded_by,
+              solution,
+              student_id
+            )
+          `)
+          .eq('course_id', courseId)
+          .order('order_index', { ascending: true })
+          .order('created_at', { ascending: true });
+
+        if (exercisesError) {
+          throw new Error('خطا در دریافت تمرین‌ها: ' + exercisesError.message);
+        }
+
+        if (!exercises) {
+          return [];
+        }
+
+        // Transform the data to match the expected format
+        const transformedExercises = exercises.map(exercise => {
+          const submission = exercise.exercise_submissions?.[0];
+          // Determine submission status
+          const submissionStatus: 'not_started' | 'pending' | 'completed' = submission ? 'completed' : 'not_started';
+
+          return {
+            id: exercise.id,
+            title: exercise.title,
+            description: exercise.description,
+            course_id: exercise.course_id,
+            course_name: exercise.courses?.name,
+            category_id: (exercise as any).category_id,
+            category_name: (exercise as any).exercise_categories?.name,
+            difficulty: exercise.difficulty,
+            points: exercise.points,
+            estimated_time: exercise.estimated_time,
+            score: submission?.score || null,
+            submission_status: submissionStatus,
+            exercise_type: (exercise as any).exercise_type || 'form',
+            auto_grade: (exercise as any).auto_grade || false,
+            content_url: (exercise as any).content_url || null,
+            order_index: (exercise as any).order_index,
+            created_at: exercise.created_at,
+          };
+        });
+
+        return transformedExercises;
       }
 
       // Fetch enrollments with term information

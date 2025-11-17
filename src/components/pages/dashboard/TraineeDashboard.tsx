@@ -1,3 +1,4 @@
+import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useMyExercisesQuery } from '@/hooks/queries/useMyExercisesQuery';
@@ -8,7 +9,8 @@ import { UpcomingExercisesCard } from '@/components/dashboard/UpcomingExercisesC
 import WelcomeCard from '@/components/dashboard/WelcomeCard';
 
 const TraineeDashboard = () => {
-  const { data: myExercises = [], isLoading: loading, error, refetch } = useMyExercisesQuery();
+  const { courseId }: any = useParams();
+  const { data: activeCourseExercises = [], isLoading: loading, error, refetch } = useMyExercisesQuery(courseId);
 
 
 
@@ -45,13 +47,13 @@ const TraineeDashboard = () => {
           <WelcomeCard />
         </div>
         <div className="hidden md:block md:w-1/3 pr-4">
-          <TraineeStatsCards exercises={myExercises} gridMode />
+          <TraineeStatsCards exercises={activeCourseExercises} gridMode />
         </div>
       </div>
       <div className="flex flex-row w-full p-2 md:p-4 mt-0">
         <div className="w-full md:w-1/3">
           {/* Incomplete Exercises */}
-          <UpcomingExercisesCard exercises={myExercises} />
+          <UpcomingExercisesCard exercises={activeCourseExercises} />
         </div>
       </div>
     </DashboardLayout>
